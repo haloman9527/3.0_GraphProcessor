@@ -1,0 +1,83 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4ed13b4ce2b292c4bac8840eec4017f7, type: 3}
+  m_Name: Math
+  m_EditorClassIdentifier: 
+  serializedNodes:
+  - type: GraphProcessor.FloatNode, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+    jsonDatas: '{"guid":"492766b1-1d32-407f-9208-279c03818231","position":{"serializedVersion":"2","x":383.232666015625,"y":-195.3424835205078,"width":75.0,"height":77.0},"expanded":true,"locked":false,"ports":{"keys":["value"],"values":[{"graph":{"fileID":11400000,"guid":"aca8a6ee61ec72940915205998dcc484","type":2},"ownerGUID":"492766b1-1d32-407f-9208-279c03818231","fieldName":"value","typeQualifiedName":"System.Single,
+      mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089","isMulti":true,"direction":1,"typeConstraint":1,"edgeGUIDs":[]}]},"value":2.009999990463257}'
+  - type: GraphProcessor.AddNode, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+    jsonDatas: '{"guid":"ed390495-fe2c-4af7-a1b2-441f7bb077c9","position":{"serializedVersion":"2","x":526.0,"y":-164.0,"width":119.0,"height":101.0},"expanded":true,"locked":false,"ports":{"keys":["a","b","output"],"values":[{"graph":{"fileID":11400000,"guid":"aca8a6ee61ec72940915205998dcc484","type":2},"ownerGUID":"ed390495-fe2c-4af7-a1b2-441f7bb077c9","fieldName":"a","typeQualifiedName":"System.Single,
+      mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089","isMulti":false,"direction":0,"typeConstraint":1,"edgeGUIDs":[]},{"graph":{"fileID":11400000,"guid":"aca8a6ee61ec72940915205998dcc484","type":2},"ownerGUID":"ed390495-fe2c-4af7-a1b2-441f7bb077c9","fieldName":"b","typeQualifiedName":"System.Single,
+      mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089","isMulti":false,"direction":0,"typeConstraint":1,"edgeGUIDs":[]},{"graph":{"fileID":11400000,"guid":"aca8a6ee61ec72940915205998dcc484","type":2},"ownerGUID":"ed390495-fe2c-4af7-a1b2-441f7bb077c9","fieldName":"output","typeQualifiedName":"System.Single,
+      mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089","isMulti":false,"direction":1,"typeConstraint":1,"edgeGUIDs":[]}]},"a":0.0,"b":0.0,"output":0.0}'
+  - type: GraphProcessor.FloatNode, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+    jsonDatas: '{"guid":"b2d4ca3b-d29b-4f82-a8bf-f0503d24221c","position":{"serializedVersion":"2","x":382.1921691894531,"y":-100.38563537597656,"width":75.0,"height":77.0},"expanded":true,"locked":false,"ports":{"keys":["value"],"values":[{"graph":{"fileID":11400000,"guid":"aca8a6ee61ec72940915205998dcc484","type":2},"ownerGUID":"b2d4ca3b-d29b-4f82-a8bf-f0503d24221c","fieldName":"value","typeQualifiedName":"System.Single,
+      mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089","isMulti":true,"direction":1,"typeConstraint":1,"edgeGUIDs":[]}]},"value":0.0}'
+  - type: GraphProcessor.DebugNode, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+    jsonDatas: '{"guid":"84ce1fa4-a9e7-4d99-a1ec-81074c4111a9","position":{"serializedVersion":"2","x":684.0562133789063,"y":-199.60130310058595,"width":85.0,"height":91.0},"expanded":true,"locked":false,"ports":{"keys":["input"],"values":[{"graph":{"fileID":11400000,"guid":"aca8a6ee61ec72940915205998dcc484","type":2},"ownerGUID":"84ce1fa4-a9e7-4d99-a1ec-81074c4111a9","fieldName":"input","typeQualifiedName":"System.Object,
+      mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089","isMulti":false,"direction":0,"typeConstraint":0,"edgeGUIDs":[]}]}}'
+  position: {x: -223, y: 493, z: 0}
+  scale: {x: 1.520875, y: 1.520875, z: 1}
+  blackboardPosition:
+    serializedVersion: 2
+    x: 0
+    y: 0
+    width: 213
+    height: 305
+  blackboardoVisible: 1
+  edges:
+    keys: []
+    values: []
+  groups:
+  - title: New Group
+    color: {r: 0, g: 0, b: 0, a: 1}
+    position:
+      serializedVersion: 2
+      x: 583.87445
+      y: -187.39212
+      width: 400
+      height: 200
+    size: {x: 400, y: 200}
+    innerNodeGUIDs:
+    - 492766b1-1d32-407f-9208-279c03818231
+    - ed390495-fe2c-4af7-a1b2-441f7bb077c9
+    - b2d4ca3b-d29b-4f82-a8bf-f0503d24221c
+    - 84ce1fa4-a9e7-4d99-a1ec-81074c4111a9
+    innerStackGUIDs: []
+  stackNodes:
+    keys: []
+    values: []
+  parametersGUID:
+    keys:
+    - b61f3a60-88c2-46fb-b704-a77890792055
+    values:
+    - name: New SingleParam
+      typeQualifiedName: System.Single, mscorlib, Version=4.0.0.0, Culture=neutral,
+        PublicKeyToken=b77a5c561934e089
+      guid: b61f3a60-88c2-46fb-b704-a77890792055
+      value:
+        id: 0
+  parametersName:
+    keys:
+    - New SingleParam
+    values:
+    - b61f3a60-88c2-46fb-b704-a77890792055
+  references:
+    version: 1
+    00000000:
+      type: {class: Single, ns: System, asm: mscorlib}
