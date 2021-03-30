@@ -8,7 +8,6 @@ using System.Linq;
 using System;
 using UnityEditor.SceneManagement;
 using CZToolKit.Core;
-using CZToolKit.Core.RX;
 using Blackboard = UnityEditor.Experimental.GraphView.Blackboard;
 
 namespace GraphProcessor.Editors

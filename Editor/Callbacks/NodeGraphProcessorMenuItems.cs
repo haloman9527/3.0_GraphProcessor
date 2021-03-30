@@ -12,7 +12,7 @@ namespace GraphProcessor.Editors
     /// To add the menu items that create node C# script templates files you can inherit from this class and use it's API combined with [MenuItem]
     /// See GraphProcessorMenuItems.cs in examples for implementation details
     /// </summary>
-    public class NodeGraphProcessorMenuItems
+    public static class NodeGraphProcessorMenuItems
     {
         static readonly string nodeBaseName = "Node.cs";
         static readonly string nodeViewBaseName = "NodeView.cs";
@@ -49,7 +49,7 @@ namespace GraphProcessor.Editors
             public const int beforeCreateScript = 79;
         }
 
-        protected static string GetCurrentProjectWindowPath()
+        static string GetCurrentProjectWindowPath()
         {
             var path = "";
             var obj = Selection.activeObject;
@@ -69,12 +69,12 @@ namespace GraphProcessor.Editors
             return null;
         }
 
-        protected static void CreateDefaultNodeCSharpScritpt()
+        static void CreateDefaultNodeCSharpScritpt()
         {
             ProjectWindowUtil.CreateScriptAssetFromTemplateFile(nodeTemplatePath, nodeBaseName);
         }
 
-        protected static void CreateDefaultNodeViewCSharpScritpt()
+        static void CreateDefaultNodeViewCSharpScritpt()
         {
             ProjectWindowUtil.CreateScriptAssetFromTemplateFile(nodeViewTemplatePath, nodeViewBaseName);
         }

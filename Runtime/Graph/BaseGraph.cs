@@ -2,7 +2,6 @@
 using System;
 using UnityEngine;
 using System.Linq;
-using CZToolKit.Core.Blackboards;
 
 namespace GraphProcessor
 {
@@ -46,25 +45,29 @@ namespace GraphProcessor
 
         protected virtual void OnEnable()
         {
-            Flush();
+            Deserialize();
+
+#if UNITY_EDITOR
+            if (!Application.isPlaying)
+                Flush();
+#endif
         }
 
         public void Flush()
         {
-            Deserialize();
-
             // 更新节点端口
             foreach (var node in nodes.Values)
             {
                 NodeDataCache.UpdateStaticPorts(node);
             }
 
-            foreach (var node in nodes.Values)
-            {
-                node.Initialize(this);
-            }
-
             Clean();
+        }
+
+        public BaseGraph Clone()
+        {
+            BaseGraph graph = Instantiate(this);
+            return graph;
         }
 
         #region Operation
@@ -233,6 +236,7 @@ namespace GraphProcessor
             }
         }
         #endregion
+
         public void OnBeforeSerialize()
         {
             serializedNodes.Clear();
@@ -261,6 +265,7 @@ namespace GraphProcessor
 
         public void OnAfterDeserialize() { }
 
+        /// <summary> 清理无用数据 </summary>
         public void Clean()
         {
             // 清理无效连接

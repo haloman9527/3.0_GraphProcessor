@@ -44,6 +44,13 @@ namespace GraphProcessor
         public bool Locked { get { return locked; } set { locked = value; } }
         public NodePortsDictionary Ports { get { return ports; } }
 
+        /// <summary> 仅在新增加时调用 </summary>
+        public virtual void OnCreated()
+        {
+            guid = Guid.NewGuid().ToString();
+            Ports.Clear();
+        }
+
         /// <summary> 创建时调用，请不要在其它任何地方调用，因为这会重置GUID </summary>
         public void Initialize(BaseGraph _graph)
         {
@@ -52,13 +59,6 @@ namespace GraphProcessor
             {
                 port.Owner = this;
             }
-        }
-
-        /// <summary> 仅在新增加时调用 </summary>
-        public virtual void OnCreated()
-        {
-            guid = Guid.NewGuid().ToString();
-            Ports.Clear();
         }
 
         #region Ports
