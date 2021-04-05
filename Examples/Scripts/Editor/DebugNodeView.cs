@@ -23,12 +23,18 @@ namespace GraphProcessor.Editors
 
         private void UpdateLabel()
         {
-            debugNode.TryGetInputValue("input", out object value);
-
-            if (value == null)
-                label.text = "NULL";
+            if(debugNode.TryGetInputValue("input", out object value))
+            {
+                if (value == null)
+                    label.text = "NULL";
+                else
+                    label.text = value.ToString();
+            }
             else
-                label.text = value.ToString();
+            {
+                label.text = debugNode.text;
+            }
+
         }
     }
 }

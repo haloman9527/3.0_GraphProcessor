@@ -6,12 +6,13 @@ using System.Linq;
 namespace GraphProcessor
 {
     [Serializable]
-    public class BaseGraph : ScriptableObject, ISerializationCallbackReceiver
+#if ODIN_INSPECTOR
+    public class BaseGraph : Sirenix.OdinInspector.SerializedScriptableObject
+#else
+    public class BaseGraph : ScriptableObject
+#endif
     {
         public static readonly Vector2 DefaultBlackboardSize = new Vector2(150, 200);
-
-        [SerializeField]
-        public List<JsonElement> serializedNodes = new List<JsonElement>();
 
         public Vector3 position = Vector3.zero;
         public Vector3 scale = Vector3.one;
@@ -19,7 +20,8 @@ namespace GraphProcessor
         public bool blackboardoVisible = true;
 
         [SerializeField]
-        NodesDictionary nodes = new NodesDictionary();
+        //NodesDictionary nodes = new NodesDictionary();
+        Dictionary<string, BaseNode> nodes = new Dictionary<string, BaseNode>();
 
         [SerializeField]
         EdgesDictionary edges = new EdgesDictionary();
@@ -43,10 +45,52 @@ namespace GraphProcessor
         public List<BaseGroup> Groups { get { return groups; } }
         public StackNodesDictionary StackNodes { get { return stackNodes; } }
 
+#if !ODIN_INSPECTOR
+        [SerializeField]
+        public List<JsonElement> serializedNodes = new List<JsonElement>();
+
+
+        public virtual void OnBeforeSerialize()
+        {
+            serializedNodes.Clear();
+
+            foreach (var node in nodes.Values)
+            {
+                serializedNodes.Add(JsonSerializer.SerializeNode(node));
+            }
+        }
+
+        public virtual void OnAfterDeserialize() { }
+
+        public void Deserialize()
+        {
+            nodes.Clear();
+
+            foreach (var serializedNode in serializedNodes.ToList())
+            {
+                var node = JsonSerializer.DeserializeNode(serializedNode) as BaseNode;
+                if (node == null)
+                {
+                    serializedNodes.Remove(serializedNode);
+                    continue;
+                }
+                AddNode(node);
+            }
+        }
+        
+
         protected virtual void OnEnable()
         {
             Deserialize();
+#if UNITY_EDITOR
+            if (!Application.isPlaying)
+                Flush();
+#endif
+        }
+#endif
 
+        protected virtual void OnEnable()
+        {
 #if UNITY_EDITOR
             if (!Application.isPlaying)
                 Flush();
@@ -56,7 +100,7 @@ namespace GraphProcessor
         public void Flush()
         {
             // 更新节点端口
-            foreach (var node in nodes.Values)
+            foreach (var node in Nodes.Values)
             {
                 NodeDataCache.UpdateStaticPorts(node);
             }
@@ -74,18 +118,20 @@ namespace GraphProcessor
         /// <summary> 添加个节点 </summary>
         public void AddNode(BaseNode _node)
         {
+            if (_node == null) return;
             _node.Initialize(this);
-            nodes[_node.GUID] = _node;
+            Nodes[_node.GUID] = _node;
             NodeDataCache.UpdateStaticPorts(_node);
         }
 
         /// <summary> 移除指定节点 </summary>
         public void RemoveNode(BaseNode _node)
         {
+            if (_node == null) return;
             // 断开这个节点的所有连接
             Disconnect(_node);
             // 移除这个节点
-            nodes.Remove(_node.GUID);
+            Nodes.Remove(_node.GUID);
         }
 
         /// <summary> 连接两个端口 </summary>
@@ -204,7 +250,7 @@ namespace GraphProcessor
 
         public bool RemoveExposedParameter(ExposedParameter _exposedParameter)
         {
-            if (nodes.Values.OfType<ParameterNode>().Where(_node => _node.paramGUID == _exposedParameter.GUID).Count() > 0)
+            if (Nodes.Values.OfType<ParameterNode>().Where(_node => _node.paramGUID == _exposedParameter.GUID).Count() > 0)
             {
                 Debug.LogWarning("该参数正被节点引用");
                 return false;
@@ -237,34 +283,6 @@ namespace GraphProcessor
         }
         #endregion
 
-        public void OnBeforeSerialize()
-        {
-            serializedNodes.Clear();
-
-            foreach (var node in nodes.Values)
-            {
-                serializedNodes.Add(JsonSerializer.SerializeNode(node));
-            }
-        }
-
-        public void Deserialize()
-        {
-            nodes.Clear();
-
-            foreach (var serializedNode in serializedNodes.ToList())
-            {
-                var node = JsonSerializer.DeserializeNode(serializedNode) as BaseNode;
-                if (node == null)
-                {
-                    serializedNodes.Remove(serializedNode);
-                    continue;
-                }
-                AddNode(node);
-            }
-        }
-
-        public void OnAfterDeserialize() { }
-
         /// <summary> 清理无用数据 </summary>
         public void Clean()
         {
@@ -274,6 +292,7 @@ namespace GraphProcessor
                 // 如果线段为空
                 if (edge.Value == null)
                 {
+                    Debug.Log(2);
                     Disconnect(edge.Key);
                     continue;
                 }
@@ -296,12 +315,12 @@ namespace GraphProcessor
                 }
             }
 
-            foreach (var node in nodes.ToArray())
+            foreach (var node in Nodes.ToArray())
             {
                 // 清理无效节点
                 if (node.Value == null)
                 {
-                    nodes.Remove(node.Key);
+                    Nodes.Remove(node.Key);
                     continue;
                 }
 
@@ -325,7 +344,7 @@ namespace GraphProcessor
                     groups.Remove(group);
                     continue;
                 }
-                group.innerNodeGUIDs.RemoveAll(nodeGUID => !nodes.ContainsKey(nodeGUID));
+                group.innerNodeGUIDs.RemoveAll(nodeGUID => !Nodes.ContainsKey(nodeGUID));
                 group.innerStackGUIDs.RemoveAll(stackGUID => !stackNodes.ContainsKey(stackGUID));
             }
 
@@ -333,7 +352,7 @@ namespace GraphProcessor
             foreach (var stack in stackNodes.ToArray())
             {
                 if (stack.Value == null) stackNodes.Remove(stack.Key);
-                stack.Value.nodeGUIDs.RemoveAll(nodeGUID => !nodes.ContainsKey(nodeGUID));
+                stack.Value.nodeGUIDs.RemoveAll(nodeGUID => !Nodes.ContainsKey(nodeGUID));
             }
         }
     }

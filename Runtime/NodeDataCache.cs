@@ -1,4 +1,5 @@
 ﻿using CZToolKit.Core;
+using GraphVisualizer;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,38 @@ namespace GraphProcessor
         private static PortDataCache PortCache;
 
         private static bool Initialized { get { return PortCache != null; } }
+
+        private static void CachePorts(Type nodeType)
+        {
+            List<FieldInfo> fieldInfos = GetNodeFields(nodeType);
+
+            foreach (var fieldInfo in fieldInfos)
+            {
+                // 获取接口特性
+                if (!AttributeCache.TryGetFieldAttribute(nodeType, fieldInfo.Name, out PortAttribute portAttribute)) continue;
+
+                if (!PortCache.ContainsKey(nodeType)) PortCache.Add(nodeType, new List<NodePort>());
+
+                PortCache[nodeType].Add(new NodePort(fieldInfo));
+            }
+
+            //List<MethodInfo> methodInfos = GetNodeMethods(nodeType);
+            //foreach (var methodInfo in methodInfos)
+            //{
+            //    // 获取接口特性
+            //    if (!AttributeCache.TryGetMethodAttribute(nodeType, methodInfo.Name, out CustomPortBehaviourAttribute portBehaviourAttribute)) continue;
+            //}
+        }
+
+        private static void BuildCache()
+        {
+            PortCache = new PortDataCache();
+            List<Type> nodeTypes = ChildrenTypeCache.GetChildrenTypes<BaseNode>();
+            foreach (var nodeType in nodeTypes)
+            {
+                CachePorts(nodeType);
+            }
+        }
 
         /// <summary> 更新端口 </summary>
         public static void UpdateStaticPorts(BaseNode _node)
@@ -67,22 +100,11 @@ namespace GraphProcessor
                 }
             }
 
-
-            //// 添加缺失的接口
+            // 添加缺失的接口
             foreach (NodePort staticPort in staticPorts.Values)
             {
                 if (!_node.Ports.ContainsKey(staticPort.FieldName))
                     _node.Ports[staticPort.FieldName] = new NodePort(staticPort, _node);
-            }
-        }
-
-        private static void BuildCache()
-        {
-            PortCache = new PortDataCache();
-            List<Type> nodeTypes = ChildrenTypeCache.GetChildrenTypes<BaseNode>();
-            foreach (var nodeType in nodeTypes)
-            {
-                CachePorts(nodeType);
             }
         }
 
@@ -117,28 +139,6 @@ namespace GraphProcessor
             }
 
             return methodInfos;
-        }
-
-        private static void CachePorts(Type nodeType)
-        {
-            List<FieldInfo> fieldInfos = GetNodeFields(nodeType);
-
-            foreach (var fieldInfo in fieldInfos)
-            {
-                // 获取接口特性
-                if (!AttributeCache.TryGetFieldAttribute(nodeType, fieldInfo.Name, out PortAttribute portAttribute)) continue;
-
-                if (!PortCache.ContainsKey(nodeType)) PortCache.Add(nodeType, new List<NodePort>());
-
-                PortCache[nodeType].Add(new NodePort(fieldInfo));
-            }
-
-            //List<MethodInfo> methodInfos = GetNodeMethods(nodeType);
-            //foreach (var methodInfo in methodInfos)
-            //{
-            //    // 获取接口特性
-            //    if (!AttributeCache.TryGetMethodAttribute(nodeType, methodInfo.Name, out CustomPortBehaviourAttribute portBehaviourAttribute)) continue;
-            //}
         }
 
         [Serializable]

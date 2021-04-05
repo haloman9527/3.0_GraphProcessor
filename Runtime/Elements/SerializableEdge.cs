@@ -19,21 +19,41 @@ namespace GraphProcessor
 
         [SerializeField]
         string inputNodeGUID;
-        public string inputFieldName;
+        [SerializeField]
+        string inputFieldName;
 
         [SerializeField]
         string outputNodeGUID;
-        public string outputFieldName;
+        [SerializeField]
+        string outputFieldName;
         #endregion
         public BaseGraph Owner { get { return owner; } }
         public string GUID { get { return guid; } }
         public string InputNodeGUID { get { return inputNodeGUID; } }
         public string OutputNodeGUID { get { return outputNodeGUID; } }
 
-        public BaseNode InputNode { get { owner.Nodes.TryGetValue(inputNodeGUID, out BaseNode node); return node; } }
-        public BaseNode OutputNode { get { owner.Nodes.TryGetValue(outputNodeGUID, out BaseNode node); return node; } }
-        public NodePort InputPort { get { return InputNode != null ? InputNode.Ports[inputFieldName] : null; } }
-        public NodePort OutputPort { get { return OutputNode != null ? OutputNode.Ports[outputFieldName] : null; } }
+        public BaseNode InputNode { get { owner.Nodes.TryGetValue(InputNodeGUID, out BaseNode node); return node; } }
+        public BaseNode OutputNode { get { owner.Nodes.TryGetValue(OutputNodeGUID, out BaseNode node); return node; } }
+        public string InputFieldName { get { return inputFieldName; } }
+        public string OutputFieldName { get { return outputFieldName; } }
+        public NodePort InputPort
+        {
+            get
+            {
+                NodePort nodePort = null;
+                InputNode?.TryGetPort(InputFieldName, out nodePort);
+                return nodePort;
+            }
+        }
+        public NodePort OutputPort
+        {
+            get
+            {
+                NodePort nodePort = null;
+                OutputNode?.TryGetPort(OutputFieldName, out nodePort);
+                return nodePort;
+            }
+        }
 
         public SerializableEdge() { }
 

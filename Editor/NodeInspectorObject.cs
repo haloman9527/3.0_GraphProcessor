@@ -1,9 +1,8 @@
-using UnityEditor;
 using System.Collections.Generic;
-using Object = UnityEngine.Object;
 using System.Linq;
+using UnityEditor;
 using UnityEngine;
-using System;
+using Object = UnityEngine.Object;
 
 #if ODIN_INSPECTOR
 using Sirenix.OdinInspector.Editor;
@@ -30,24 +29,24 @@ namespace GraphProcessor.Editors
         PropertyTree tree;
         public override void OnInspectorGUI()
         {
-#if !ODIN_INSPECTOR
-            base.OnInspectorGUI();
-#else
+#if ODIN_INSPECTOR
             if (inspector.node != null)
             {
                 tree.BeginDraw(true);
                 tree.Draw(true);
                 tree.EndDraw();
             }
+#else
+            base.OnInspectorGUI();
 #endif
         }
     }
 
     /// <summary> Node inspector object, you can inherit from this class to customize your node inspector. </summary>
-#if !ODIN_INSPECTOR
-    public class NodeInspectorObject : ScriptableObject
-#else
+#if ODIN_INSPECTOR
     public class NodeInspectorObject : SerializedScriptableObject
+#else
+    public class NodeInspectorObject : ScriptableObject
 #endif
     {
         [HideInInspector]
@@ -58,6 +57,8 @@ namespace GraphProcessor.Editors
 
 #if ODIN_INSPECTOR
         [HideLabel, HideReferenceObjectPicker]
+#else
+        [SerializeReference]
 #endif
         [SerializeField]
         public BaseNode node;

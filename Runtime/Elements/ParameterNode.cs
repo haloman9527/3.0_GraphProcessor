@@ -10,7 +10,7 @@ namespace GraphProcessor
         [Port(PortDirection.Output, DisplayName = "Value")]
         [PortSize(12)]
         [Tooltip("接口无限制，参数提供")]
-        public object output;
+        object output;
 
         [HideInInspector]
         public string paramGUID;
@@ -22,19 +22,18 @@ namespace GraphProcessor
 
         public override bool GetValue<T>(NodePort _port, ref T _value)
         {
-            bool result = false;
-            if (Parameter is T tValue)
+            if (Parameter.Value is T tValue)
             {
                 _value = tValue;
-                result = true;
+                return true;
             }
-            return result;
+            return false;
         }
 
-        public override void Execute(NodePort _port, params object[] _params)
-        {
-            if (Parameter != null && _params != null && _params.Length != 0)
-                Parameter.Value = _params[0];
-        }
+        //public override void Execute(NodePort _port, params object[] _params)
+        //{
+        //    if (Parameter != null && _params != null && _params.Length != 0)
+        //        Parameter.Value = _params[0];
+        //}
     }
 }

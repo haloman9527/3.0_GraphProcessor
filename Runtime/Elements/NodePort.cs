@@ -10,21 +10,7 @@ namespace GraphProcessor
     /// <summary> Runtime class that stores all info about one port that is needed for the processing </summary>
     public class NodePort
     {
-
         #region 静态方法
-        public static string GetBothName(string _fieldName, PortDirection _direction)
-        {
-            switch (_direction)
-            {
-                case PortDirection.Input:
-                    return _fieldName + " Input";
-                case PortDirection.Output:
-                    return _fieldName + " Output";
-                default:
-                    return _fieldName;
-            }
-        }
-
         /// <summary> 接口兼容性查询 </summary>
         public static bool IsCompatible(NodePort port1, NodePort port2)
         {
@@ -190,6 +176,7 @@ namespace GraphProcessor
             if (edgeGUIDs.Contains(_edgeGUID))
                 edgeGUIDs.Remove(_edgeGUID);
         }
+
 
         public void DisconnectEdge(SerializableEdge _edge)
         {

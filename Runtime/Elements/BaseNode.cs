@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 using System;
+using System.Collections.Generic;
+using CZToolKit.Core.Attributes;
 
 namespace GraphProcessor
 {
@@ -26,7 +28,7 @@ namespace GraphProcessor
         }
         #endregion
 
-        BaseGraph owner;
+        [SerializeField] BaseGraph owner;
 
         /// <summary> 唯一标识 </summary>
         [SerializeField, HideInInspector] string guid;
@@ -36,13 +38,14 @@ namespace GraphProcessor
         [SerializeField] bool expanded = true;
         /// <summary> 锁定状态 </summary>
         [SerializeField] bool locked = false;
-        [SerializeField] NodePortsDictionary ports = new NodePortsDictionary();
+        //[SerializeField] NodePortsDictionary ports = new NodePortsDictionary();
+        [SerializeField] Dictionary<string, NodePort> ports = new Dictionary<string, NodePort>();
 
         public BaseGraph Owner { get { return owner; } }
         public string GUID { get { return guid; } }
         public bool Expanded { get { return expanded; } set { expanded = value; } }
         public bool Locked { get { return locked; } set { locked = value; } }
-        public NodePortsDictionary Ports { get { return ports; } }
+        public Dictionary<string, NodePort> Ports { get { return ports; } }
 
         /// <summary> 仅在新增加时调用 </summary>
         public virtual void OnCreated()
@@ -55,7 +58,7 @@ namespace GraphProcessor
         public void Initialize(BaseGraph _graph)
         {
             owner = _graph;
-            foreach (var port in ports.Values)
+            foreach (var port in Ports.Values)
             {
                 port.Owner = this;
             }
@@ -83,14 +86,14 @@ namespace GraphProcessor
         /// <summary> 通过名字获取一个接口 </summary>
         public bool TryGetPort(string _fieldName, out NodePort _nodePort)
         {
-            if (ports.TryGetValue(_fieldName, out _nodePort)) return true;
+            if (Ports.TryGetValue(_fieldName, out _nodePort)) return true;
             else return false;
         }
 
         /// <summary> 接口是否存在 </summary>
         public bool HasPort(string _fieldName)
         {
-            return ports.ContainsKey(_fieldName);
+            return Ports.ContainsKey(_fieldName);
         }
 
         #endregion

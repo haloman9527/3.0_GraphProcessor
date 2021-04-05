@@ -1,6 +1,5 @@
 ﻿using System;
 using UnityEngine;
-using CZToolKit.Core;
 
 namespace GraphProcessor
 {
@@ -14,6 +13,9 @@ namespace GraphProcessor
         Type valueType;
         [SerializeField]
         string guid;
+#if ODIN_INSPECTOR
+        [Sirenix.OdinInspector.HideReferenceObjectPicker]
+#endif
         [SerializeField, SerializeReference]
         object value;
 

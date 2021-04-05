@@ -181,8 +181,8 @@ namespace GraphProcessor.Editors
                 var edgeView = new EdgeView()
                 {
                     userData = serializedEdge,
-                    input = inputNodeView.PortViews[serializedEdge.inputFieldName],
-                    output = outputNodeView.PortViews[serializedEdge.outputFieldName]
+                    input = inputNodeView.PortViews[serializedEdge.InputFieldName],
+                    output = outputNodeView.PortViews[serializedEdge.OutputFieldName]
                 };
 
                 ConnectView(edgeView);
@@ -327,16 +327,18 @@ namespace GraphProcessor.Editors
 
                 inputNode = inputNode ?? edge.InputNode;
                 outputNode = outputNode ?? edge.OutputNode;
-                if (inputNode == null || outputNode == null)
-                    continue;
+                if (inputNode == null || outputNode == null) continue;
 
                 inputNode.TryGetPort(edge.InputPort.FieldName, out NodePort inputPort);
                 outputNode.TryGetPort(edge.OutputPort.FieldName, out NodePort outputPort);
                 if (!inputPort.IsMulti && inputPort.IsConnected) continue;
                 if (!outputPort.IsMulti && outputPort.IsConnected) continue;
 
-                if (nodeViews.TryGetValue(edge.InputNodeGUID, out BaseNodeView inputNodeView) && nodeViews.TryGetValue(edge.OutputNodeGUID, out BaseNodeView outputNodeView))
-                    Connect(inputNodeView.PortViews[edge.inputFieldName], outputNodeView.PortViews[edge.outputFieldName]);
+                if (nodeViews.TryGetValue(inputNode.GUID, out BaseNodeView inputNodeView)
+                    && nodeViews.TryGetValue(outputNode.GUID, out BaseNodeView outputNodeView))
+                {
+                    Connect(inputNodeView.PortViews[edge.InputFieldName], outputNodeView.PortViews[edge.OutputFieldName]);
+                }
             }
         }
 

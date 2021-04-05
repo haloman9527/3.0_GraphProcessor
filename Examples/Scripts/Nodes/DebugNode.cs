@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Sirenix.OdinInspector;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -8,6 +9,9 @@ namespace GraphProcessor
     public class DebugNode : BaseNode
     {
         [Port(PortDirection.Input, IsMulti = false, TypeConstraint = PortTypeConstraint.None)]
-        public object input;
+        object input;
+
+        [TextArea]
+        public string text;
     }
 }
