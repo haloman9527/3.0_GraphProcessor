@@ -19,9 +19,8 @@ namespace GraphProcessor
         public Rect blackboardPosition = new Rect(Vector2.zero, DefaultBlackboardSize);
         public bool blackboardoVisible = true;
 
-        [SerializeField]
-        //NodesDictionary nodes = new NodesDictionary();
-        Dictionary<string, BaseNode> nodes = new Dictionary<string, BaseNode>();
+        //SerializeField] NodesDictionary nodes = new NodesDictionary();
+        [SerializeField] Dictionary<string, BaseNode> nodes = new Dictionary<string, BaseNode>();
 
         [SerializeField]
         EdgesDictionary edges = new EdgesDictionary();
@@ -41,9 +40,9 @@ namespace GraphProcessor
         ParamNameGUIDDictionary parametersName = new ParamNameGUIDDictionary();
 
         public Dictionary<string, BaseNode> Nodes { get { return nodes; } }
-        public EdgesDictionary Edges { get { return edges; } }
+        public Dictionary<string, SerializableEdge> Edges { get { return edges; } }
         public List<BaseGroup> Groups { get { return groups; } }
-        public StackNodesDictionary StackNodes { get { return stackNodes; } }
+        public Dictionary<string, BaseStackNode> StackNodes { get { return stackNodes; } }
 
 #if !ODIN_INSPECTOR
         [SerializeField]
@@ -111,6 +110,11 @@ namespace GraphProcessor
         public BaseGraph Clone()
         {
             BaseGraph graph = Instantiate(this);
+            graph.name = name;
+            foreach (var node in graph.Nodes.Values)
+            {
+                node.Initialize(graph);
+            }
             return graph;
         }
 
@@ -283,7 +287,7 @@ namespace GraphProcessor
         }
         #endregion
 
-        /// <summary> 清理无用数据 </summary>
+        /// <summary> 清理和修复 </summary>
         public void Clean()
         {
             // 清理无效连接
@@ -292,7 +296,6 @@ namespace GraphProcessor
                 // 如果线段为空
                 if (edge.Value == null)
                 {
-                    Debug.Log(2);
                     Disconnect(edge.Key);
                     continue;
                 }
@@ -323,6 +326,8 @@ namespace GraphProcessor
                     Nodes.Remove(node.Key);
                     continue;
                 }
+                // 修复节点
+                node.Value.Initialize(this);
 
                 // 清理节点无效连接
                 foreach (var nodePort in node.Value.Ports.ToArray())

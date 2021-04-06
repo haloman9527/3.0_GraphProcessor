@@ -40,8 +40,7 @@ namespace GraphProcessor
         private static void BuildCache()
         {
             PortCache = new PortDataCache();
-            List<Type> nodeTypes = ChildrenTypeCache.GetChildrenTypes<BaseNode>();
-            foreach (var nodeType in nodeTypes)
+            foreach (var nodeType in ChildrenTypeCache.GetChildrenTypes<BaseNode>())
             {
                 CachePorts(nodeType);
             }

@@ -4,7 +4,6 @@ using UnityEditor;
 using UnityEngine.UIElements;
 using UnityEditor.Callbacks;
 using CZToolKit.Core.Editors;
-using System.Reflection;
 
 namespace GraphProcessor.Editors
 {
@@ -23,6 +22,24 @@ namespace GraphProcessor.Editors
                 return true;
             }
 
+            return false;
+        }
+
+        public static bool IsOpened(BaseGraph _graph)
+        {
+            Type type = NodeEditorUtility.GetGraphWindowType(_graph.GetType());
+
+            UnityEngine.Object[] objs = Resources.FindObjectsOfTypeAll(type);
+            BaseGraphWindow window = null;
+            foreach (var obj in objs)
+            {
+                if (obj.GetType() == type)
+                {
+                    window = obj as BaseGraphWindow;
+                    if (window.graphData == _graph)
+                        return true;
+                }
+            }
             return false;
         }
 

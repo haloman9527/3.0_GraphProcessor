@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using System;
 using System.Collections.Generic;
-using CZToolKit.Core.Attributes;
 
 namespace GraphProcessor
 {
@@ -47,14 +46,14 @@ namespace GraphProcessor
         public bool Locked { get { return locked; } set { locked = value; } }
         public Dictionary<string, NodePort> Ports { get { return ports; } }
 
-        /// <summary> 仅在新增加时调用 </summary>
+        /// <summary> 创建时调用，请不要在其它任何地方调用，因为这会重置GUID </summary>
         public virtual void OnCreated()
         {
             guid = Guid.NewGuid().ToString();
             Ports.Clear();
         }
 
-        /// <summary> 创建时调用，请不要在其它任何地方调用，因为这会重置GUID </summary>
+        /// <summary> 请不要在其它任何地方调用 </summary>
         public void Initialize(BaseGraph _graph)
         {
             owner = _graph;

@@ -3,7 +3,7 @@
 }
 
 #controls {
-    background-color: rgba(63, 63, 63, 0.8);
+    background-color: rgba(63, 63, 63, 1);
 }
 
 #settings-button {
@@ -176,7 +176,7 @@ ParameterNodeView #controls EnumField > VisualElement > VisualElement {
 
 #input-container > .port-input-element {
     max-width: 180px;
-    background-color: rgba(72, 72, 72, 0.6);
+    background-color: rgba(72, 72, 72, 1);
     margin-top: 3px;
     margin-bottom: 2px;
     padding-top: 1px;

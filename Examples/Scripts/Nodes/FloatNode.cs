@@ -12,17 +12,11 @@ namespace GraphProcessor
 
         public override bool GetValue<T>(NodePort _port, ref T _value)
         {
-            switch (_port.FieldName)
+            if (value is T tValue)
             {
-                case "value":
-                    if (value is T tValue)
-                    {
-                        _value = tValue;
-                        return true;
-                    }
-                    break;
+                _value = tValue;
+                return true;
             }
-
             return false;
         }
     }

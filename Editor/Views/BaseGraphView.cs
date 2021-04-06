@@ -154,7 +154,7 @@ namespace GraphProcessor.Editors
 
             foreach (var node in GraphData.Nodes.Values)
             {
-                var v = AddNodeView(node);
+                var nodeView = AddNodeView(node);
             }
         }
 

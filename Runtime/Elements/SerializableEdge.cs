@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace GraphProcessor
@@ -8,14 +6,12 @@ namespace GraphProcessor
     [Serializable]
     public class SerializableEdge
     {
-        #region nonserialize
-        [SerializeField]
-        BaseGraph owner;
-        #endregion
-
-        #region serialize
+        /// <summary> 自身GUID </summary>
         [SerializeField]
         string guid;
+
+        [SerializeField]
+        BaseGraph owner;
 
         [SerializeField]
         string inputNodeGUID;
@@ -26,7 +22,7 @@ namespace GraphProcessor
         string outputNodeGUID;
         [SerializeField]
         string outputFieldName;
-        #endregion
+
         public BaseGraph Owner { get { return owner; } }
         public string GUID { get { return guid; } }
         public string InputNodeGUID { get { return inputNodeGUID; } }
@@ -40,8 +36,8 @@ namespace GraphProcessor
         {
             get
             {
-                NodePort nodePort = null;
-                InputNode?.TryGetPort(InputFieldName, out nodePort);
+                if (InputNode == null) return null;
+                InputNode.TryGetPort(InputFieldName, out NodePort nodePort);
                 return nodePort;
             }
         }
@@ -49,8 +45,8 @@ namespace GraphProcessor
         {
             get
             {
-                NodePort nodePort = null;
-                OutputNode?.TryGetPort(OutputFieldName, out nodePort);
+                if (OutputNode == null) return null;
+                OutputNode.TryGetPort(OutputFieldName, out NodePort nodePort);
                 return nodePort;
             }
         }
