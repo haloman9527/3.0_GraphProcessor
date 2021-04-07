@@ -5,6 +5,7 @@ using System.Linq;
 
 namespace GraphProcessor
 {
+    /// <summary> 若项目中安装了Odin，则继承Odin的SO基类 </summary>
     [Serializable]
 #if ODIN_INSPECTOR
     public class BaseGraph : Sirenix.OdinInspector.SerializedScriptableObject
@@ -12,6 +13,7 @@ namespace GraphProcessor
     public class BaseGraph : ScriptableObject, ISerializationCallbackReceiver
 #endif
     {
+        /// <summary> 黑板的默认大小 </summary>
         public static readonly Vector2 DefaultBlackboardSize = new Vector2(150, 200);
 
         public Vector3 position = Vector3.zero;
@@ -89,6 +91,7 @@ namespace GraphProcessor
 #endif
         }
 
+        /// <summary> 刷新及修复数据 </summary>
         public void Flush()
         {
             // 更新节点端口
@@ -100,6 +103,7 @@ namespace GraphProcessor
             Clean();
         }
 
+        /// <summary> 克隆 </summary>
         public BaseGraph Clone()
         {
             BaseGraph graph = Instantiate(this);
@@ -112,7 +116,15 @@ namespace GraphProcessor
         }
 
         #region Operation
-        /// <summary> 添加个节点 </summary>
+        /// <summary> 根据类型添加一个节点 </summary>
+        public T AddNode<T>(Vector2 _nodePosition) where T : BaseNode
+        {
+            T node = BaseNode.CreateNew<T>(_nodePosition);
+            AddNode(node);
+            return node;
+        }
+
+        /// <summary> 添加节点 </summary>
         public void AddNode(BaseNode _node)
         {
             if (_node == null) return;
@@ -127,18 +139,20 @@ namespace GraphProcessor
             if (_node == null) return;
             // 断开这个节点的所有连接
             Disconnect(_node);
-            // 移除这个节点
+            // 移除节点
             Nodes.Remove(_node.GUID);
         }
 
         /// <summary> 连接两个端口 </summary>
         public SerializableEdge Connect(NodePort _inputPort, NodePort _outputPort)
         {
+            // 在连接两个端口是，如果端口设置为只能连接一个端口，则需要在连接前把其他所有连接断开
             if (!_inputPort.IsMulti)
                 Disconnect(_inputPort);
             if (!_outputPort.IsMulti)
                 Disconnect(_outputPort);
 
+            // 创建一条连线
             SerializableEdge edge = SerializableEdge.CreateNewEdge(this, _inputPort, _outputPort);
             Edges[edge.GUID] = edge;
 

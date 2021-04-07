@@ -270,12 +270,10 @@ namespace GraphProcessor.Editors
         {
             try
             {
-                Debug.Log(1);
                 return JsonUtility.FromJson(serializedData, typeof(CopyPasteHelper)) != null;
             }
             catch
             {
-                Debug.Log(2);
                 return false;
             }
         }

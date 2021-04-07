@@ -2,15 +2,14 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Reflection;
 using UnityEditor;
-using UnityEngine;
+using UnityEditor.Experimental.GraphView;
 
 namespace GraphProcessor.Editors
 {
     public static class NodeEditorUtility
     {
+
         #region GraphViewTypeCache
         /// <summary> GraphEditorWindow类型缓存 Key:Graph类型 Value:Graph视图类型 </summary>
         static Dictionary<Type, Type> GRAPH_EDITOR_WINDOW_TYPE_CACHE;
@@ -85,6 +84,23 @@ namespace GraphProcessor.Editors
         }
         #endregion
 
+        #region NodeNames
+        public static string GetNodeDisplayName(Type _nodeType)
+        {
+            if (AttributeCache.TryGetTypeAttribute(_nodeType, out NodeMenuItemAttribute attri))
+            {
+                if (attri.Titles != null && attri.Titles.Length != 0)
+                    return attri.Titles[attri.Titles.Length - 1];
+            }
+            return _nodeType.Name;
+        }
+
+        public static string GetPortDisplayName(string _fieldName)
+        {
+            return ObjectNames.NicifyVariableName(_fieldName);
+        }
+        #endregion
+
         public static MonoScript FindScriptFromType(Type _type)
         {
             var scriptGUIDs = AssetDatabase.FindAssets($"t:script {_type.Name}");
@@ -103,23 +119,6 @@ namespace GraphProcessor.Editors
 
             return null;
         }
-
-        #region NodeNames
-        public static string GetNodeDisplayName(Type _nodeType)
-        {
-            if (AttributeCache.TryGetTypeAttribute(_nodeType, out NodeMenuItemAttribute attri))
-            {
-                if (attri.Titles != null && attri.Titles.Length != 0)
-                    return attri.Titles[attri.Titles.Length - 1];
-            }
-            return _nodeType.Name;
-        }
-
-        public static string GetPortDisplayName(string _fieldName)
-        {
-            return ObjectNames.NicifyVariableName(_fieldName);
-        }
-        #endregion
     }
 }
 

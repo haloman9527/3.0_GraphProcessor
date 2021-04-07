@@ -10,7 +10,8 @@ namespace GraphProcessor
         [Port(PortDirection.Output, DisplayName = "Value")]
         [PortSize(12)]
         [Tooltip("接口无限制，参数提供")]
-        object output;
+        [HideInInspector]
+        public object output;
 
         [HideInInspector]
         public string paramGUID;

@@ -43,9 +43,9 @@ namespace GraphProcessor.Editors
             return null;
         }
 
-        public static void LoadGraph(BaseGraph _graph)
+        public static void LoadGraph(BaseGraph _graphData)
         {
-            Type type = NodeEditorUtility.GetGraphWindowType(_graph.GetType());
+            Type type = NodeEditorUtility.GetGraphWindowType(_graphData.GetType());
 
             UnityEngine.Object[] objs = Resources.FindObjectsOfTypeAll(type);
             BaseGraphWindow window = null;
@@ -62,12 +62,14 @@ namespace GraphProcessor.Editors
             {
                 window = CreateInstance(type) as BaseGraphWindow;
                 window.Show();
+                window.LoadGraphInternal(_graphData);
             }
             else
             {
                 window.Focus();
+                if (window.GraphData != _graphData)
+                    window.LoadGraphInternal(_graphData);
             }
-            window.LoadGraphInternal(_graph);
         }
 
         #endregion
@@ -101,9 +103,7 @@ namespace GraphProcessor.Editors
 
         void LoadGraphInternal(BaseGraph _graphData)
         {
-            if (graphData == _graphData)
-                return;
-            if (graphData != null)
+            if (graphData != null && graphData != _graphData)
             {
                 EditorUtility.SetDirty(graphData);
                 AssetDatabase.SaveAssets();

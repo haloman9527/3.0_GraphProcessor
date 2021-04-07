@@ -39,7 +39,7 @@ namespace GraphProcessor.Editors
         void InitializeInnerNodes()
         {
             int i = 0;
-            foreach (var nodeGUID in stackNode.nodeGUIDs)
+            foreach (var nodeGUID in stackNode.nodeGUIDs.ToArray())
             {
                 if (owner.GraphData.Nodes.TryGetValue(nodeGUID, out BaseNode node))
                 {

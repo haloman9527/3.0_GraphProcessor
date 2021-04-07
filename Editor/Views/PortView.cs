@@ -65,6 +65,32 @@ namespace GraphProcessor.Editors
             return pv;
         }
 
+        public static PortView CreatePV(Orientation orientation, Direction direction, NodePort portData, Type displayType, BaseEdgeConnectorListener edgeConnectorListener)
+        {
+            var pv = new PortView(orientation, direction, portData, displayType, edgeConnectorListener);
+
+            pv.m_EdgeConnector = new BaseEdgeConnector(edgeConnectorListener);
+            pv.AddManipulator(pv.m_EdgeConnector);
+
+            // Force picking in the port label to enlarge the edge creation zone
+            var portLabel = pv.Q("type");
+            if (portLabel != null)
+            {
+                portLabel.pickingMode = PickingMode.Position;
+                portLabel.style.flexGrow = 1;
+            }
+            bool vertical = orientation == Orientation.Vertical;
+            // hide label when the port is vertical
+            if (vertical && portLabel != null)
+                portLabel.style.display = DisplayStyle.None;
+
+            // Fixup picking mode for vertical top ports
+            if (vertical)
+                pv.Q("connector").pickingMode = PickingMode.Position;
+
+            return pv;
+        }
+
 
         public int size;
         public NodePort portData;
@@ -81,7 +107,7 @@ namespace GraphProcessor.Editors
         public int ConnectionCount { get { return edges.Count; } }
         bool vertical;
         PortView(Orientation _orientation, Direction _direction, NodePort _portData, BaseEdgeConnectorListener edgeConnectorListener)
-            : base(_orientation, _direction, Capacity.Multi, _portData.DisplayType)
+            : base(_orientation, _direction, _portData.IsMulti ? Capacity.Multi : Capacity.Single, _portData.DisplayType)
         {
             styleSheets.Add(Resources.Load<StyleSheet>(PortViewStyleFile));
             StyleSheet userPortStyle = Resources.Load<StyleSheet>(UserPortStyleFile);
@@ -89,9 +115,25 @@ namespace GraphProcessor.Editors
                 styleSheets.Add(userPortStyle);
 
             listener = edgeConnectorListener;
-            portType = _portData.DisplayType;
             portData = _portData;
 
+            vertical = _orientation == Orientation.Vertical;
+            if (vertical)
+                AddToClassList("Vertical");
+
+            UpdatePortSize();
+        }
+
+        PortView(Orientation _orientation, Direction _direction, NodePort _portData, Type _displayType, BaseEdgeConnectorListener edgeConnectorListener)
+            : base(_orientation, _direction, _portData.IsMulti ? Capacity.Multi : Capacity.Single, _displayType)
+        {
+            styleSheets.Add(Resources.Load<StyleSheet>(PortViewStyleFile));
+            StyleSheet userPortStyle = Resources.Load<StyleSheet>(UserPortStyleFile);
+            if (userPortStyle != null)
+                styleSheets.Add(userPortStyle);
+
+            listener = edgeConnectorListener;
+            portData = _portData;
 
             vertical = _orientation == Orientation.Vertical;
             if (vertical)
@@ -110,14 +152,13 @@ namespace GraphProcessor.Editors
             if (AttributeCache.TryGetFieldAttribute(Owner.NodeDataType, FieldName, out TooltipAttribute toolTipAttrib))
                 tooltip = toolTipAttrib.tooltip;
             else if (vertical)
-            {
                 tooltip = NodeEditorUtility.GetPortDisplayName(FieldName);
-            }
 
             if (AttributeCache.TryGetFieldAttribute(Owner.NodeDataType, FieldName, out PortAttribute attrib) && !string.IsNullOrEmpty(attrib.DisplayName))
                 portName = attrib.DisplayName;
             else
                 portName = NodeEditorUtility.GetPortDisplayName(FieldName);
+
             AddToClassList(FieldName);
             visualClass = "Port_" + portType.Name;
         }

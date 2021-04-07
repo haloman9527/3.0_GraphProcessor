@@ -94,12 +94,14 @@ namespace GraphProcessor.Editors
             topPortContainer.style.justifyContent = Justify.Center;
             topPortContainer.style.alignItems = Align.Center;
             topPortContainer.style.flexDirection = FlexDirection.Row;
+            topPortContainer.style.height = 15;
             Insert(0, topPortContainer);
 
             bottomPortContainer = new VisualElement { name = "BottomPortContainer" };
             bottomPortContainer.style.justifyContent = Justify.Center;
             bottomPortContainer.style.alignItems = Align.Center;
             bottomPortContainer.style.flexDirection = FlexDirection.Row;
+            bottomPortContainer.style.height = 15;
             Add(bottomPortContainer);
 
             inputContainerElement = new VisualElement { name = "input-container" };
@@ -144,6 +146,11 @@ namespace GraphProcessor.Editors
             Initialized = true;
         }
 
+        protected virtual PortView CustomCreatePortView(Orientation _orientation, Direction _direction, NodePort _nodePort, BaseEdgeConnectorListener _listener)
+        {
+            return null;
+        }
+
         void InitializePorts()
         {
             BaseEdgeConnectorListener listener = Owner.connectorListener;
@@ -154,7 +161,10 @@ namespace GraphProcessor.Editors
                 Orientation orientation =
                     AttributeCache.TryGetFieldAttribute(NodeDataType, nodePort.Value.FieldName, out VerticalAttribute vertical) ?
                     Orientation.Vertical : Orientation.Horizontal;
-                PortView portView = PortView.CreatePV(orientation, direction, nodePort.Value, listener);
+
+                PortView portView = CustomCreatePortView(orientation, direction, nodePort.Value, listener);
+                if (portView == null)
+                    portView = PortView.CreatePV(orientation, direction, nodePort.Value, listener);
                 portView.Initialize(this);
                 PortViews[nodePort.Key] = portView;
             }
