@@ -1,5 +1,4 @@
 ﻿using CZToolKit.Core;
-using GraphVisualizer;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -64,19 +63,19 @@ namespace GraphProcessor
 
             // 清理端口，移除不存在的端口
             // 通过遍历当前节点的接口实现
-            foreach (NodePort port in _node.Ports.Values.ToList())
+            foreach (var port in _node.Ports.ToList())
             {
-                if (staticPorts.TryGetValue(port.FieldName, out NodePort cachePort))
+                if (staticPorts.TryGetValue(port.Key, out NodePort cachePort))
                 {
                     // 如果端口特性发生了更改，则把端口清理掉
-                    if (port.DisplayType != cachePort.DisplayType ||
-                        port.Direction != cachePort.Direction ||
-                        port.IsMulti != cachePort.IsMulti ||
-                        port.TypeConstraint != cachePort.TypeConstraint)
+                    if (port.Value.DisplayType != cachePort.DisplayType ||
+                        port.Value.Direction != cachePort.Direction ||
+                        port.Value.IsMulti != cachePort.IsMulti ||
+                        port.Value.TypeConstraint != cachePort.TypeConstraint)
                     {
-                        port.Reload(cachePort);
+                        port.Value.Reload(cachePort);
 
-                        foreach (var edge in port.GetEdges().ToList())
+                        foreach (var edge in port.Value.GetEdges().ToList())
                         {
                             if (edge == null) continue;
                             if (!NodePort.IsCompatible(edge.InputPort, edge.OutputPort))
@@ -84,18 +83,18 @@ namespace GraphProcessor
                         }
                     }
                     else
-                        port.DisplayType = cachePort.DisplayType;
+                        port.Value.DisplayType = cachePort.DisplayType;
                 }
                 else
                 {
                     // 如果端口特性已被移除，则把端口清理掉
                     // 先断开所有连接
                     // 移除端口
-                    foreach (SerializableEdge edge in port.GetEdges().ToList())
+                    foreach (SerializableEdge edge in port.Value.GetEdges().ToList())
                     {
                         _node.Owner.Disconnect(edge);
                     }
-                    _node.Ports.Remove(port.FieldName);
+                    _node.Ports.Remove(port.Key);
                 }
             }
 

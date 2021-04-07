@@ -3,7 +3,7 @@ using UnityEngine.UIElements;
 
 namespace GraphProcessor.Editors
 {
-    [CustomNodeEditor(typeof(RelayNode))]
+    [CustomNodeView(typeof(RelayNode))]
     public class RelayNodeView : BaseNodeView
     {
         protected override void OnInitialized()

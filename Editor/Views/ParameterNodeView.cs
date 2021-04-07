@@ -2,7 +2,7 @@ using UnityEngine.UIElements;
 
 namespace GraphProcessor.Editors
 {
-    [CustomNodeEditor(typeof(ParameterNode))]
+    [CustomNodeView(typeof(ParameterNode))]
     public class ParameterNodeView : BaseNodeView
     {
         ParameterNode parameterNode;

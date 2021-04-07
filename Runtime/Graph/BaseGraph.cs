@@ -9,7 +9,7 @@ namespace GraphProcessor
 #if ODIN_INSPECTOR
     public class BaseGraph : Sirenix.OdinInspector.SerializedScriptableObject
 #else
-    public class BaseGraph : ScriptableObject
+    public class BaseGraph : ScriptableObject, ISerializationCallbackReceiver
 #endif
     {
         public static readonly Vector2 DefaultBlackboardSize = new Vector2(150, 200);
@@ -76,23 +76,16 @@ namespace GraphProcessor
                 AddNode(node);
             }
         }
-        
+#endif
 
         protected virtual void OnEnable()
         {
+#if !ODIN_INSPECTOR
             Deserialize();
-#if UNITY_EDITOR
-            if (!Application.isPlaying)
-                Flush();
-#endif
-        }
 #endif
 
-        protected virtual void OnEnable()
-        {
 #if UNITY_EDITOR
-            if (!Application.isPlaying)
-                Flush();
+            Flush();
 #endif
         }
 
@@ -300,7 +293,6 @@ namespace GraphProcessor
                     continue;
                 }
 
-
                 if (edge.Value.InputNode == null || edge.Value.OutputNode == null || edge.Value.InputNode == edge.Value.OutputNode)
                 {
                     Disconnect(edge.Key);
@@ -314,6 +306,14 @@ namespace GraphProcessor
                     Disconnect(edge.Key);
                     edge.Value.InputPort?.DisconnectEdge(edge.Value);
                     edge.Value.OutputPort?.DisconnectEdge(edge.Value);
+                    continue;
+                }
+
+                if (!edge.Value.InputPort.EdgeGUIDS.Contains(edge.Key) || !edge.Value.OutputPort.EdgeGUIDS.Contains(edge.Key))
+                {
+                    Disconnect(edge.Key);
+                    edge.Value.InputPort.DisconnectEdge(edge.Value);
+                    edge.Value.OutputPort.DisconnectEdge(edge.Value);
                     continue;
                 }
             }
@@ -356,7 +356,11 @@ namespace GraphProcessor
             // 清理Stack中的无效节点
             foreach (var stack in stackNodes.ToArray())
             {
-                if (stack.Value == null) stackNodes.Remove(stack.Key);
+                if (stack.Value == null)
+                {
+                    stackNodes.Remove(stack.Key);
+                    continue;
+                }
                 stack.Value.nodeGUIDs.RemoveAll(nodeGUID => !Nodes.ContainsKey(nodeGUID));
             }
         }

@@ -73,6 +73,7 @@ namespace GraphProcessor.Editors
             OnGeometryChanged(null);
 
             OnInitialized();
+            MarkDirtyRepaint();
         }
 
         protected virtual void OnInitialized()

@@ -3,11 +3,11 @@ using System;
 namespace GraphProcessor.Editors
 {
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
-    public class CustomNodeEditorAttribute : Attribute
+    public class CustomNodeViewAttribute : Attribute
     {
         public Type NodeType;
 
-        public CustomNodeEditorAttribute(Type _nodeType)
+        public CustomNodeViewAttribute(Type _nodeType)
         {
             NodeType = _nodeType;
         }

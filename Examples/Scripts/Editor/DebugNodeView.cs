@@ -1,12 +1,9 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UIElements;
+﻿using UnityEngine.UIElements;
 
 namespace GraphProcessor.Editors
 {
-    [CustomNodeEditor(typeof(DebugNode))]
-    public class PrintNodeView : BaseNodeView
+    [CustomNodeView(typeof(DebugNode))]
+    public class DebugNodeView : BaseNodeView
     {
         DebugNode debugNode; 
         Label label = new Label();
@@ -19,6 +16,7 @@ namespace GraphProcessor.Editors
             {
                 UpdateLabel();
             }));
+            UpdateLabel();
         }
 
         private void UpdateLabel()
@@ -34,7 +32,6 @@ namespace GraphProcessor.Editors
             {
                 label.text = debugNode.text;
             }
-
         }
     }
 }

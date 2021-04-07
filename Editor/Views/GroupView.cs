@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace GraphProcessor.Editors
 {
-    public class GroupView : UnityEditor.Experimental.GraphView.Group
+    public class GroupView : Group
     {
         const string groupStylePath = "GraphProcessorStyles/GroupView";
         static StyleSheet groupViewStyle;
@@ -21,26 +21,28 @@ namespace GraphProcessor.Editors
             }
         }
 
+
         public BaseGraphView owner;
-        public BaseGroup group;
+        public BaseGroup groupData;
+        Label titleLabel;
         ColorField colorField;
 
-        public void Initialize(BaseGraphView graphView, BaseGroup group)
+        public void Initialize(BaseGraphView _owner, BaseGroup _groupData)
         {
             styleSheets.Add(GroupViewStyle);
 
-            this.group = group;
-            owner = graphView;
+            owner = _owner;
+            groupData = _groupData;
+            title = _groupData.title;
+            base.SetPosition(_groupData.position);
 
-            title = group.title;
-            base.SetPosition(group.position);
-
-            colorField = new ColorField { value = this.group.color, name = "headerColorPicker" };
+            titleLabel = headerContainer.Q("titleLabel") as Label;
+            colorField = new ColorField { value = groupData.color, name = "headerColorPicker" };
             colorField.RegisterValueChangedCallback(e =>
             {
                 UpdateGroupColor(e.newValue);
             });
-            UpdateGroupColor(this.group.color);
+            UpdateGroupColor(groupData.color);
 
             headerContainer.Add(colorField);
 
@@ -49,7 +51,7 @@ namespace GraphProcessor.Editors
 
         void InitializeInnerNodes()
         {
-            foreach (var nodeGUID in group.innerNodeGUIDs.ToList())
+            foreach (var nodeGUID in groupData.innerNodeGUIDs.ToList())
             {
                 if (!owner.GraphData.Nodes.ContainsKey(nodeGUID)) continue;
 
@@ -57,7 +59,7 @@ namespace GraphProcessor.Editors
                 AddElement(nodeView);
             }
 
-            foreach (var stackGUID in group.innerStackGUIDs.ToList())
+            foreach (var stackGUID in groupData.innerStackGUIDs.ToList())
             {
                 if (!owner.GraphData.StackNodes.ContainsKey(stackGUID)) continue;
 
@@ -68,13 +70,19 @@ namespace GraphProcessor.Editors
 
         public void UpdateGroupColor(Color newColor)
         {
-            group.color = newColor;
-            style.backgroundColor = newColor;
+            groupData.color = newColor;
+            headerContainer.style.backgroundColor = newColor;
+
+            // 计算背景明度，设置文字颜色
+            // 当明度大于0.5f,且透明度大于0.5f，文字颜色为黑色
+            // 否则为白色
+            float luminance = 0.299f * newColor.r + 0.587f * newColor.g + 0.114f * newColor.b;
+            titleLabel.style.color = luminance > 0.5f && newColor.a > 0.5f ? Color.black : Color.white * 0.9f;
         }
 
         protected override void OnGroupRenamed(string oldName, string newName)
         {
-            group.title = newName;
+            groupData.title = newName;
             base.OnGroupRenamed(oldName, newName);
         }
 
@@ -96,15 +104,15 @@ namespace GraphProcessor.Editors
                 BaseNodeView nodeView = element as BaseNodeView;
                 if (nodeView != null)
                 {
-                    if (!group.innerNodeGUIDs.Contains(nodeView.NodeData.GUID))
-                        group.innerNodeGUIDs.Add(nodeView.NodeData.GUID);
+                    if (!groupData.innerNodeGUIDs.Contains(nodeView.NodeData.GUID))
+                        groupData.innerNodeGUIDs.Add(nodeView.NodeData.GUID);
                     continue;
                 }
                 BaseStackNodeView stackNodeView = element as BaseStackNodeView;
                 if (stackNodeView != null)
                 {
-                    if (!group.innerStackGUIDs.Contains(stackNodeView.stackNode.GUID))
-                        group.innerStackGUIDs.Add(stackNodeView.stackNode.GUID);
+                    if (!groupData.innerStackGUIDs.Contains(stackNodeView.stackNode.GUID))
+                        groupData.innerStackGUIDs.Add(stackNodeView.stackNode.GUID);
                 }
             }
             base.OnElementsAdded(elements);
@@ -117,9 +125,9 @@ namespace GraphProcessor.Editors
                 foreach (VisualElement element in elements)
                 {
                     if (element is BaseNodeView nodeView)
-                        group.innerNodeGUIDs.Remove(nodeView.NodeData.GUID);
+                        groupData.innerNodeGUIDs.Remove(nodeView.NodeData.GUID);
                     else if (element is BaseStackNodeView stackNodeView)
-                        group.innerNodeGUIDs.Remove(stackNodeView.stackNode.GUID);
+                        groupData.innerNodeGUIDs.Remove(stackNodeView.stackNode.GUID);
                 }
             }
 
@@ -129,7 +137,7 @@ namespace GraphProcessor.Editors
         public override void SetPosition(Rect newPos)
         {
             base.SetPosition(newPos);
-            group.position = newPos;
+            groupData.position = newPos;
         }
     }
 }

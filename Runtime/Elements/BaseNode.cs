@@ -37,8 +37,12 @@ namespace GraphProcessor
         [SerializeField] bool expanded = true;
         /// <summary> 锁定状态 </summary>
         [SerializeField] bool locked = false;
-        //[SerializeField] NodePortsDictionary ports = new NodePortsDictionary();
+
+#if ODIN_INSPECTOR
         [SerializeField] Dictionary<string, NodePort> ports = new Dictionary<string, NodePort>();
+#else
+        [SerializeField] NodePortsDictionary ports = new NodePortsDictionary();
+#endif
 
         public BaseGraph Owner { get { return owner; } }
         public string GUID { get { return guid; } }

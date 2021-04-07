@@ -16,6 +16,9 @@ namespace GraphProcessor.Editors
     public class NodeInspectorObjectEditor : Editor
     {
         NodeInspectorObject inspector;
+#if ODIN_INSPECTOR
+        PropertyTree tree;
+#endif
 
         protected virtual void OnEnable()
         {
@@ -26,7 +29,6 @@ namespace GraphProcessor.Editors
 #endif
         }
 
-        PropertyTree tree;
         public override void OnInspectorGUI()
         {
 #if ODIN_INSPECTOR

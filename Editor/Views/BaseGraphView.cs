@@ -96,7 +96,7 @@ namespace GraphProcessor.Editors
 
             serializeGraphElements = SerializeGraphElementsCallback;
             canPasteSerializedData = CanPasteSerializedDataCallback;
-            unserializeAndPaste = UnserializeAndPasteCallback;
+            unserializeAndPaste = DeserializeAndPasteCallback;
 
             graphViewChanged = GraphViewChangedCallback;
             viewTransformChanged = ViewTransformChangedCallback;
@@ -235,18 +235,32 @@ namespace GraphProcessor.Editors
         {
             var data = new CopyPasteHelper();
 
-            foreach (BaseNodeView nodeView in elements.Where(e => e is BaseNodeView))
-                data.copiedNodes.Add(JsonSerializer.SerializeNode(nodeView.NodeData));
+            foreach (var element in elements)
+            {
+                if (element is BaseNodeView nodeView)
+                {
+                    data.copiedNodes.Add(JsonSerializer.SerializeNode(nodeView.NodeData));
+                    continue;
+                }
 
-            foreach (BaseStackNodeView stackNodeView in elements.Where(e => e is BaseStackNodeView))
-                data.copiedStacks.Add(JsonSerializer.Serialize(stackNodeView.stackNode));
+                if (element is BaseStackNodeView stackNodeView)
+                {
+                    data.copiedStacks.Add(JsonSerializer.Serialize(stackNodeView.stackNode));
+                    continue;
+                }
 
-            foreach (GroupView groupView in elements.Where(e => e is GroupView))
-                data.copiedGroups.Add(JsonSerializer.Serialize(groupView.group));
+                if (element is GroupView groupView)
+                {
+                    data.copiedGroups.Add(JsonSerializer.Serialize(groupView.groupData));
+                    continue;
+                }
 
-            foreach (EdgeView edgeView in elements.Where(e => e is EdgeView))
-                data.copiedEdges.Add(JsonSerializer.Serialize(edgeView.serializedEdge));
-
+                if (element is EdgeView edgeView)
+                {
+                    data.copiedEdges.Add(JsonSerializer.Serialize(edgeView.serializedEdge));
+                    continue;
+                }
+            }
             ClearSelection();
 
             return JsonUtility.ToJson(data, true);
@@ -256,15 +270,17 @@ namespace GraphProcessor.Editors
         {
             try
             {
+                Debug.Log(1);
                 return JsonUtility.FromJson(serializedData, typeof(CopyPasteHelper)) != null;
             }
             catch
             {
+                Debug.Log(2);
                 return false;
             }
         }
 
-        void UnserializeAndPasteCallback(string operationName, string serializedData)
+        void DeserializeAndPasteCallback(string operationName, string serializedData)
         {
             var data = JsonUtility.FromJson<CopyPasteHelper>(serializedData);
 
@@ -290,29 +306,16 @@ namespace GraphProcessor.Editors
             foreach (var serializedGroup in data.copiedGroups)
             {
                 var group = JsonSerializer.Deserialize<BaseGroup>(serializedGroup);
-
-                //Same than for node
                 group.OnCreated();
-
-                // try to centre the created node in the screen
                 group.position.position += new Vector2(20, 20);
 
                 var oldGUIDList = group.innerNodeGUIDs.ToList();
                 group.innerNodeGUIDs.Clear();
+
                 foreach (var guid in oldGUIDList)
                 {
-                    GraphData.Nodes.TryGetValue(guid, out var node);
-
-                    // In case group was copied from another graph
-                    if (node == null)
-                    {
-                        copiedNodesMap.TryGetValue(guid, out node);
+                    if (copiedNodesMap.TryGetValue(guid, out var node))
                         group.innerNodeGUIDs.Add(node.GUID);
-                    }
-                    else
-                    {
-                        group.innerNodeGUIDs.Add(copiedNodesMap[guid].GUID);
-                    }
                 }
 
                 AddGroup(group);
@@ -329,8 +332,8 @@ namespace GraphProcessor.Editors
                 outputNode = outputNode ?? edge.OutputNode;
                 if (inputNode == null || outputNode == null) continue;
 
-                inputNode.TryGetPort(edge.InputPort.FieldName, out NodePort inputPort);
-                outputNode.TryGetPort(edge.OutputPort.FieldName, out NodePort outputPort);
+                inputNode.TryGetPort(edge.InputFieldName, out NodePort inputPort);
+                outputNode.TryGetPort(edge.OutputFieldName, out NodePort outputPort);
                 if (!inputPort.IsMulti && inputPort.IsConnected) continue;
                 if (!outputPort.IsMulti && outputPort.IsConnected) continue;
 
@@ -407,7 +410,7 @@ namespace GraphProcessor.Editors
             var groupView = elem as GroupView;
 
             if (groupView != null)
-                groupView.group.size = groupView.GetPosition().size;
+                groupView.groupData.size = groupView.GetPosition().size;
         }
 
         #region 系统回调
@@ -638,36 +641,36 @@ namespace GraphProcessor.Editors
             }
         }
 
-        public RelayNodeView AddRelayNode(PortView inputPort, PortView outputPort, Vector2 position)
+        public RelayNodeView AddRelayNode(PortView _inputPortView, PortView _outputPortView, Vector2 _position)
         {
-            var relayNode = BaseNode.CreateNew<RelayNode>(position);
+            var relayNode = BaseNode.CreateNew<RelayNode>(_position);
             var view = AddNode(relayNode) as RelayNodeView;
 
-            if (outputPort != null)
-                Connect(view.PortViews["input"], outputPort);
+            if (_outputPortView != null)
+                Connect(view.PortViews["input"], _outputPortView);
 
-            if (inputPort != null)
-                Connect(inputPort, view.PortViews["output"]);
+            if (_inputPortView != null)
+                Connect(_inputPortView, view.PortViews["output"]);
             return view;
         }
 
-        public BaseNodeView AddNode(BaseNode node)
+        public BaseNodeView AddNode(BaseNode _nodeData)
         {
-            GraphData.AddNode(node);
-            BaseNodeView nodeView = AddNodeView(node);
+            GraphData.AddNode(_nodeData);
+            BaseNodeView nodeView = AddNodeView(_nodeData);
             EditorUtility.SetDirty(GraphData);
-            RegisterCompleteObjectUndo("AddNode " + node.GetType().Name);
+            RegisterCompleteObjectUndo("AddNode " + _nodeData.GetType().Name);
             return nodeView;
         }
 
-        public BaseNodeView AddNodeView(BaseNode node)
+        public BaseNodeView AddNodeView(BaseNode _nodeData)
         {
-            Type nodeViewType = NodeEditorUtility.GetNodeViewType(node.GetType());
+            Type nodeViewType = NodeEditorUtility.GetNodeViewType(_nodeData.GetType());
 
             BaseNodeView nodeView = Activator.CreateInstance(nodeViewType) as BaseNodeView;
-            nodeView.Initialize(this, node);
+            nodeView.Initialize(this, _nodeData);
             AddElement(nodeView);
-            nodeViews[node.GUID] = nodeView;
+            nodeViews[_nodeData.GUID] = nodeView;
             return nodeView;
         }
 
@@ -704,23 +707,23 @@ namespace GraphProcessor.Editors
             nodeViews.Clear();
         }
 
-        public GroupView AddGroup(BaseGroup _group)
+        public GroupView AddGroup(BaseGroup _groupData)
         {
-            GraphData.AddGroup(_group);
-            _group.OnCreated();
-            return AddGroupView(_group);
+            GraphData.AddGroup(_groupData);
+            _groupData.OnCreated();
+            return AddGroupView(_groupData);
         }
 
-        public GroupView AddGroupView(BaseGroup block)
+        public GroupView AddGroupView(BaseGroup _groupData)
         {
             var groupView = new GroupView();
-            groupView.Initialize(this, block);
+            groupView.Initialize(this, _groupData);
             AddElement(groupView);
             groupViews.Add(groupView);
             return groupView;
         }
 
-        public void AddSelectionsToGroup(GroupView view)
+        public void AddSelectionsToGroup(GroupView _groupView)
         {
             foreach (var selectedNode in selection)
             {
@@ -729,14 +732,14 @@ namespace GraphProcessor.Editors
                     if (groupViews.Exists(x => x.ContainsElement(selectedNode as BaseNodeView)))
                         continue;
 
-                    view.AddElement(selectedNode as BaseNodeView);
+                    _groupView.AddElement(selectedNode as BaseNodeView);
                 }
             }
         }
 
         public void RemoveGroup(GroupView _groupView)
         {
-            GraphData.RemoveGroup(_groupView.group);
+            GraphData.RemoveGroup(_groupView.groupData);
             RemoveElement(_groupView);
             groupViews.Remove(_groupView);
         }
@@ -748,10 +751,10 @@ namespace GraphProcessor.Editors
             groupViews.Clear();
         }
 
-        public BaseStackNodeView AddStackNode(BaseStackNode stackNode)
+        public BaseStackNodeView AddStackNode(BaseStackNode _stackData)
         {
-            GraphData.AddStackNode(stackNode);
-            return AddStackNodeView(stackNode);
+            GraphData.AddStackNode(_stackData);
+            return AddStackNodeView(_stackData);
         }
 
         public BaseStackNodeView AddStackNodeView(BaseStackNode _stackNode)

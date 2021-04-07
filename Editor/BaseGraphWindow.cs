@@ -25,9 +25,9 @@ namespace GraphProcessor.Editors
             return false;
         }
 
-        public static bool IsOpened(BaseGraph _graph)
+        public static BaseGraphWindow GetWindow(BaseGraph _graphData)
         {
-            Type type = NodeEditorUtility.GetGraphWindowType(_graph.GetType());
+            Type type = NodeEditorUtility.GetGraphWindowType(_graphData.GetType());
 
             UnityEngine.Object[] objs = Resources.FindObjectsOfTypeAll(type);
             BaseGraphWindow window = null;
@@ -36,11 +36,11 @@ namespace GraphProcessor.Editors
                 if (obj.GetType() == type)
                 {
                     window = obj as BaseGraphWindow;
-                    if (window.graphData == _graph)
-                        return true;
+                    if (window.graphData == _graphData)
+                        return window;
                 }
             }
-            return false;
+            return null;
         }
 
         public static void LoadGraph(BaseGraph _graph)
@@ -58,19 +58,16 @@ namespace GraphProcessor.Editors
                     break;
                 }
             }
-            if (window != null)
-            {
-                window.Focus();
-
-                if (window.graphData != _graph)
-                    window.LoadGraphInternal(_graph);
-            }
-            else
+            if (window == null)
             {
                 window = CreateInstance(type) as BaseGraphWindow;
                 window.Show();
-                window.LoadGraphInternal(_graph);
             }
+            else
+            {
+                window.Focus();
+            }
+            window.LoadGraphInternal(_graph);
         }
 
         #endregion
@@ -104,7 +101,9 @@ namespace GraphProcessor.Editors
 
         void LoadGraphInternal(BaseGraph _graphData)
         {
-            if (graphData != null && graphData != _graphData)
+            if (graphData == _graphData)
+                return;
+            if (graphData != null)
             {
                 EditorUtility.SetDirty(graphData);
                 AssetDatabase.SaveAssets();

@@ -9,7 +9,7 @@ namespace GraphProcessor
     public class BaseGroup
     {
         public string title;
-        public Color color = new Color(0, 0, 0, 0.3f);
+        public Color color = new Color(0, 0, 0, 0.7f);
         public Rect position;
         public Vector2 size;
 

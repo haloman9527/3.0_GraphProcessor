@@ -51,9 +51,9 @@ namespace GraphProcessor.Editors
             if (NODE_VIEW_TYPE_CACHE == null)
             {
                 NODE_VIEW_TYPE_CACHE = new Dictionary<Type, Type>();
-                foreach (var _nodeViewType in TypeCache.GetTypesWithAttribute<CustomNodeEditorAttribute>())
+                foreach (var _nodeViewType in TypeCache.GetTypesWithAttribute<CustomNodeViewAttribute>())
                 {
-                    if (AttributeCache.TryGetTypeAttribute(_nodeViewType, out CustomNodeEditorAttribute attri))
+                    if (AttributeCache.TryGetTypeAttribute(_nodeViewType, out CustomNodeViewAttribute attri))
                         NODE_VIEW_TYPE_CACHE[attri.NodeType] = _nodeViewType;
                 }
             }
@@ -75,7 +75,7 @@ namespace GraphProcessor.Editors
                 StackNodeViewTypeCache = new Dictionary<Type, Type>();
                 foreach (var t in TypeCache.GetTypesWithAttribute<CustomStackNodeView>())
                 {
-                    if (AttributeCache.TryGetTypeAttribute(t, out CustomNodeEditorAttribute attri))
+                    if (AttributeCache.TryGetTypeAttribute(t, out CustomNodeViewAttribute attri))
                         StackNodeViewTypeCache[attri.NodeType] = t;
                 }
             }
