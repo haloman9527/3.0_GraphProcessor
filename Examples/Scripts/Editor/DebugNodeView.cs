@@ -29,9 +29,7 @@ namespace GraphProcessor.Editors
                     label.text = value.ToString();
             }
             else
-            {
                 label.text = debugNode.text;
-            }
         }
     }
 }

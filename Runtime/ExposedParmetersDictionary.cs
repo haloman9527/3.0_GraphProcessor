@@ -15,6 +15,7 @@ namespace GraphProcessor
         {
             keys.Clear();
             values.Clear();
+
             foreach (KeyValuePair<string, ExposedParameter> pair in this)
             {
                 keys.Add(pair.Key);
@@ -35,7 +36,7 @@ namespace GraphProcessor
     }
 
     [Serializable]
-    public sealed class ExposedParameter
+    public class ExposedParameter
     {
         [SerializeField] string name;
         [SerializeField] string typeQualifiedName;
@@ -44,7 +45,7 @@ namespace GraphProcessor
 #if ODIN_INSPECTOR
         [Sirenix.OdinInspector.HideReferenceObjectPicker]
 #endif
-        [SerializeField, SerializeReference]
+        [SerializeField,SerializeReference]
         object value;
 
 

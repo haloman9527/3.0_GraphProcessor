@@ -34,14 +34,13 @@ namespace GraphProcessor
         StackNodesDictionary stackNodes = new StackNodesDictionary();
 
         [SerializeField]
-        ExposedParmetersDictionary blackboard = new ExposedParmetersDictionary();
+        //[SerializeReference]ExposedParmetersDictionary blackboard = new ExposedParmetersDictionary();
+        Dictionary<string, ExposedParameter> blackboard = new Dictionary<string, ExposedParameter>();
         [SerializeField]
         [HideInInspector]
         GUIDMapDictionary guidMap = new GUIDMapDictionary();
 
         public Dictionary<string, BaseNode> Nodes { get { return nodes; } }
-
-
         public Dictionary<string, SerializableEdge> Edges { get { return edges; } }
         public List<BaseGroup> Groups { get { return groups; } }
         public Dictionary<string, BaseStackNode> StackNodes { get { return stackNodes; } }
@@ -100,7 +99,6 @@ namespace GraphProcessor
             {
                 NodeDataCache.UpdateStaticPorts(node);
             }
-
             Clean();
         }
 
