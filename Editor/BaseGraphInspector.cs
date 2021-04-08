@@ -57,7 +57,6 @@ namespace GraphProcessor.Editors
             EditorGUILayout.BeginHorizontal();
             if (GUILayout.Button(new GUIContent("Clean","清理空数据(空节点，空连接等)"),GUILayout.Height(30)))
             {
-                //Undo.RegisterCompleteObjectUndo(target, "Clean");
                 (target as BaseGraph).Clean();
                 EditorUtility.SetDirty(target);
             }

@@ -5,7 +5,6 @@ using UnityEditor.Experimental.GraphView;
 using UnityEngine.UIElements;
 using System.Linq;
 using System;
-using CZToolKit.Core.Blackboards;
 
 using Blackboard = UnityEditor.Experimental.GraphView.Blackboard;
 
@@ -34,12 +33,11 @@ namespace GraphProcessor.Editors
             if (string.IsNullOrEmpty(_newName)) return;
             BlackboardField blackboardField = _field as BlackboardField;
             string oldParamName = blackboardField.text;
-            if (!GraphView.GraphData.Blackboard.Rename(oldParamName, _newName))
+            if (!GraphView.GraphData.RenameExposeParameter(oldParamName, _newName))
                 return;
             blackboardField.text = _newName;
 
-            GraphView.GraphData.Blackboard.TryGetParam(_newName, out IBlackboardProperty property);
-            IBlackboardPropertyGUID param = property as IBlackboardPropertyGUID;
+            GraphView.GraphData.TryGetExposedParameterFromName(_newName, out ExposedParameter param);
             foreach (var item in GraphView.NodeViews.Values.OfType<ParameterNodeView>())
             {
                 if ((item.NodeData as ParameterNode).paramGUID == param.GUID)
@@ -59,7 +57,7 @@ namespace GraphProcessor.Editors
                     string name = rawName;
 
                     int i = 0;
-                    while (GraphView.GraphData.Blackboard.Contains(name))
+                    while (GraphView.GraphData.TryGetExposedParameterFromName(name,out ExposedParameter param))
                     {
                         name = rawName + " " + i++;
                     }
@@ -73,36 +71,36 @@ namespace GraphProcessor.Editors
 
         public void AddParam(string _name, Type _valueType)
         {
-            if (FieldFactory.PropertyCreator.TryGetValue(_valueType, out Func<CZToolKit.Core.Blackboards.Blackboard, string, IBlackboardPropertyGUID> creator))
+            if (FieldFactory.PropertyCreator.TryGetValue(_valueType, out Func<string, ExposedParameter> creator))
             {
-                IBlackboardPropertyGUID property = creator(GraphView.GraphData.Blackboard, _name);
-                GraphView.GraphData.Blackboard.AddProperty(property);
+                ExposedParameter property = creator(_name);
+                GraphView.GraphData.AddExposedParameter(property);
                 AddParamField(property);
             }
         }
 
-        public VisualElement AddParamField(IBlackboardPropertyGUID param)
+        public VisualElement AddParamField(ExposedParameter _param)
         {
             VisualElement property = new VisualElement();
-            BlackboardField blackboardField = new BlackboardField() { text = param.Name, typeText = param.PropertyType.Name, userData = param };
+            BlackboardField blackboardField = new BlackboardField() { text = _param.Name, typeText = _param.ValueType.Name, userData = _param };
             property.Add(blackboardField);
 
-            VisualElement fieldDrawer = FieldFactory.CreateField(param.PropertyType, param.Value, _newValue =>
+            VisualElement fieldDrawer = FieldFactory.CreateField(_param.ValueType, _param.Value, _newValue =>
             {
-                param.Value = _newValue;
-                if (param.Value != null)
-                    blackboardField.typeText = param.Value.GetType().Name;
+                _param.Value = _newValue;
+                if (_param.Value != null)
+                    blackboardField.typeText = _param.Value.GetType().Name;
             }, "");
             BlackboardRow blackboardRow = new BlackboardRow(blackboardField, fieldDrawer);
             property.Add(blackboardRow);
             contentContainer.Add(property);
-            fields[param.GUID] = property;
+            fields[_param.GUID] = property;
             return property;
         }
 
         public void RemoveField(BlackboardField blackboardField)
         {
-            IBlackboardPropertyGUID param = blackboardField.userData as IBlackboardPropertyGUID;
+            ExposedParameter param = blackboardField.userData as ExposedParameter;
             contentContainer.Remove(fields[param.GUID]);
         }
 
@@ -116,9 +114,9 @@ namespace GraphProcessor.Editors
         protected virtual void UpdateParameterList()
         {
             contentContainer.Clear();
-            foreach (var param in GraphView.GraphData.Blackboard.GetParams())
+            foreach (var param in GraphView.GraphData.GetExposedParameters())
             {
-                AddParamField(param as IBlackboardPropertyGUID);
+                AddParamField(param);
             }
         }
     }

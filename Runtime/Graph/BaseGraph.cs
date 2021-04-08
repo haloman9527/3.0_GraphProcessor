@@ -2,7 +2,6 @@
 using System;
 using UnityEngine;
 using System.Linq;
-using CZToolKit.Core.Blackboards;
 
 namespace GraphProcessor
 {
@@ -35,16 +34,18 @@ namespace GraphProcessor
         StackNodesDictionary stackNodes = new StackNodesDictionary();
 
         [SerializeField]
-#if ODIN_INSPECTOR
-        [Sirenix.OdinInspector.HideLabel]
-#endif
-        BlackboardWithGUID blackboard = new BlackboardWithGUID();
+        ExposedParmetersDictionary blackboard = new ExposedParmetersDictionary();
+        [SerializeField]
+        [HideInInspector]
+        GUIDMapDictionary guidMap = new GUIDMapDictionary();
 
         public Dictionary<string, BaseNode> Nodes { get { return nodes; } }
+
+
         public Dictionary<string, SerializableEdge> Edges { get { return edges; } }
         public List<BaseGroup> Groups { get { return groups; } }
         public Dictionary<string, BaseStackNode> StackNodes { get { return stackNodes; } }
-        public BlackboardWithGUID Blackboard { get { return blackboard; } }
+        public Dictionary<string, ExposedParameter> Blackboard { get { return blackboard; } }
 
 #if !ODIN_INSPECTOR
         [SerializeField]
@@ -230,14 +231,100 @@ namespace GraphProcessor
             stackNodes.Remove(_stackNode.GUID);
         }
 
-        public bool RemoveExposedParameter(IBlackboardPropertyGUID _exposedParameter)
+        #endregion
+
+        #region Exposed
+        #region Get
+        public bool TryGetExposedParameterFromName(string _name, out ExposedParameter _param)
+        {
+            if (guidMap.TryGetValue(_name, out string guid))
+                return Blackboard.TryGetValue(guid, out _param);
+
+            _param = null;
+            return false;
+        }
+
+        public bool TryGetExposedParameterFromGUID(string _guid, out ExposedParameter _param)
+        {
+            return Blackboard.TryGetValue(_guid, out _param);
+        }
+        #endregion
+
+        #region Set
+        public void SetExposedParameterValueFromName(string _name, object _value)
+        {
+            if (guidMap.TryGetValue(_name, out string guid))
+                SetExposedParameterValueFromGUID(guid, _value);
+
+        }
+        public void SetExposedParameterValueFromGUID(string _guid, object _value)
+        {
+            if (Blackboard.TryGetValue(_guid, out ExposedParameter param))
+                param.Value = _value;
+        }
+        #endregion
+
+        #region Add
+        public ExposedParameter AddExposedParameter(string _name, object _value)
+        {
+            if (guidMap.TryGetValue(_name, out string guid) && Blackboard.TryGetValue(guid, out ExposedParameter param))
+                return null;
+            return AddExposedParameter(new ExposedParameter(_name, _value));
+        }
+
+        public ExposedParameter AddExposedParameter(ExposedParameter _param)
+        {
+            if (guidMap.TryGetValue(_param.Name, out string guid) && Blackboard.TryGetValue(_param.GUID, out ExposedParameter param))
+                return null;
+            guidMap[_param.Name] = _param.GUID;
+            Blackboard[_param.GUID] = _param;
+            return _param;
+        }
+        #endregion
+
+        public IEnumerable<ExposedParameter> GetExposedParameters()
+        {
+            foreach (var param in Blackboard.Values)
+            {
+                yield return param;
+            }
+        }
+        public bool RenameExposeParameter(string _oldName, string _newName)
+        {
+            if (!guidMap.TryGetValue(_oldName, out string guid)) { Debug.LogError($"{_oldName}不被包含在黑板数据内"); return false; }
+            if (string.IsNullOrEmpty(_newName)) return false;
+            if (guidMap.ContainsKey(_newName)) { Debug.LogError($"黑板内已存在同名数据{_newName}"); return false; }
+
+            guidMap[_newName] = guidMap[_oldName];
+            guidMap.Remove(_oldName);
+            if (Blackboard.TryGetValue(guid, out ExposedParameter param))
+                param.Name = _newName;
+            return true;
+        }
+
+        public bool RemoveExposedParameterFromName(string _name)
+        {
+            if (guidMap.TryGetValue(_name, out string guid))
+                return RemoveExposedParameterFromGUID(guid);
+            return true;
+        }
+
+        public bool RemoveExposedParameterFromGUID(string _guid)
+        {
+            if (Blackboard.TryGetValue(_guid, out ExposedParameter exposedParameter))
+                return RemoveExposedParameter(exposedParameter);
+            return true;
+        }
+
+        public bool RemoveExposedParameter(ExposedParameter _exposedParameter)
         {
             if (Nodes.Values.OfType<ParameterNode>().Where(_node => _node.paramGUID == _exposedParameter.GUID).Count() > 0)
             {
                 Debug.LogWarning("该参数正被节点引用");
                 return false;
             }
-            Blackboard.RemoveData(_exposedParameter.Name);
+            guidMap.Remove(_exposedParameter.Name);
+            Blackboard.Remove(_exposedParameter.GUID);
             return true;
         }
         #endregion
@@ -326,7 +413,11 @@ namespace GraphProcessor
                 stack.Value.nodeGUIDs.RemoveAll(nodeGUID => !Nodes.ContainsKey(nodeGUID));
             }
 
-            Blackboard.Clean();
+            foreach (var item in guidMap.ToArray())
+            {
+                if (!Blackboard.ContainsKey(item.Value))
+                    guidMap.Remove(item.Key);
+            }
         }
     }
 }

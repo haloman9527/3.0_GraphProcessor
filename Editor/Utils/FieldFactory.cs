@@ -23,7 +23,7 @@ namespace GraphProcessor.Editors
         static readonly MethodInfo createFieldMethod = typeof(FieldFactory).GetMethod("CreateFieldSpecific", BindingFlags.Static | BindingFlags.Public);
 
 
-        public static Dictionary<Type, Func<Blackboard, string, IBlackboardPropertyGUID>> PropertyCreator = new Dictionary<Type, Func<Blackboard, string, IBlackboardPropertyGUID>>();
+        public static Dictionary<Type, Func<string, ExposedParameter>> PropertyCreator = new Dictionary<Type, Func<string, ExposedParameter>>();
 
         static FieldFactory()
         {
@@ -92,11 +92,9 @@ namespace GraphProcessor.Editors
                 return;
             }
 
-            PropertyCreator[typeof(F)] = (bb, name) =>
+            PropertyCreator[typeof(F)] = (name) =>
             {
-                BlackboardPropertyGUID<F> property = new BlackboardPropertyGUID<F>();
-                property.Name = name;
-                property.TValue = _defaultValue;
+                ExposedParameter property = new ExposedParameter(name, _defaultValue);
                 return property;
             };
             FieldDrawersCache[fieldType] = drawerType;
