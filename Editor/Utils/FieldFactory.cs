@@ -7,6 +7,7 @@ using System;
 using System.Linq;
 using System.Reflection;
 using System.Globalization;
+using CZToolKit.Core.Blackboards;
 
 namespace GraphProcessor.Editors
 {
@@ -21,6 +22,9 @@ namespace GraphProcessor.Editors
 
         static readonly MethodInfo createFieldMethod = typeof(FieldFactory).GetMethod("CreateFieldSpecific", BindingFlags.Static | BindingFlags.Public);
 
+
+        public static Dictionary<Type, Func<Blackboard, string, IBlackboardPropertyGUID>> PropertyCreator = new Dictionary<Type, Func<Blackboard, string, IBlackboardPropertyGUID>>();
+
         static FieldFactory()
         {
 
@@ -31,24 +35,24 @@ namespace GraphProcessor.Editors
                 AddDrawer(drawerAttribute.fieldType, type);
             }
 
-            AddDrawer<bool, Toggle>();
-            AddDrawer<int, IntegerField>();
-            AddDrawer<long, LongField>();
-            AddDrawer<float, FloatField>();
-            AddDrawer<double, DoubleField>();
-            AddDrawer<string, TextField>();
-            AddDrawer<Bounds, BoundsField>();
-            AddDrawer<Color, ColorField>();
-            AddDrawer<Vector2, Vector2Field>();
-            AddDrawer<Vector2Int, Vector2IntField>();
-            AddDrawer<Vector3, Vector3Field>();
-            AddDrawer<Vector3Int, Vector3IntField>();
-            AddDrawer<Vector4, Vector4Field>();
-            AddDrawer<AnimationCurve, CurveField>();
-            AddDrawer<Enum, EnumField>();
-            AddDrawer<Gradient, GradientField>();
-            AddDrawer<UnityEngine.Object, ObjectField>();
-            AddDrawer<Rect, RectField>();
+            AddDrawer<bool, Toggle>(false);
+            AddDrawer<int, IntegerField>(0);
+            AddDrawer<long, LongField>(0);
+            AddDrawer<float, FloatField>(0);
+            AddDrawer<double, DoubleField>(0);
+            AddDrawer<string, TextField>("");
+            AddDrawer<Bounds, BoundsField>(new Bounds());
+            AddDrawer<Color, ColorField>(new Color());
+            AddDrawer<Vector2, Vector2Field>(new Vector2());
+            AddDrawer<Vector2Int, Vector2IntField>(new Vector2Int());
+            AddDrawer<Vector3, Vector3Field>(new Vector3());
+            AddDrawer<Vector3Int, Vector3IntField>(new Vector3Int());
+            AddDrawer<Vector4, Vector4Field>(new Vector4());
+            AddDrawer<AnimationCurve, CurveField>(new AnimationCurve());
+            //AddDrawer<Enum, EnumField>();
+            AddDrawer<Gradient, GradientField>(new Gradient());
+            AddDrawer<UnityEngine.Object, ObjectField>(new UnityEngine.Object());
+            AddDrawer<Rect, RectField>(new Rect());
 
             SpecialFieldDraweCreator[typeof(LayerMask)] = (fieldType, value, onValueChanged, label) =>
             {
@@ -76,7 +80,7 @@ namespace GraphProcessor.Editors
             FieldDrawersCache[fieldType] = drawerType;
         }
 
-        static void AddDrawer<F, D>()
+        static void AddDrawer<F, D>(F _defaultValue)
         {
             Type fieldType = typeof(F);
             Type drawerType = typeof(D);
@@ -88,6 +92,13 @@ namespace GraphProcessor.Editors
                 return;
             }
 
+            PropertyCreator[typeof(F)] = (bb, name) =>
+            {
+                BlackboardPropertyGUID<F> property = new BlackboardPropertyGUID<F>();
+                property.Name = name;
+                property.TValue = _defaultValue;
+                return property;
+            };
             FieldDrawersCache[fieldType] = drawerType;
         }
 
@@ -170,7 +181,7 @@ namespace GraphProcessor.Editors
                 onValueChanged(e.newValue);
             });
 
-            return fieldDrawer as INotifyValueChanged<T>;
+            return fieldDrawer;
         }
 
         public static VisualElement CreateField(Type fieldType, object value, Action<object> onValueChanged, string label)
@@ -197,7 +208,6 @@ namespace GraphProcessor.Editors
             {
                 try
                 {
-
                     var createFieldSpecificMethod = createFieldMethod.MakeGenericMethod(fieldType);
                     try
                     {

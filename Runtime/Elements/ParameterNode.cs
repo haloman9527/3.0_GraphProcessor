@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CZToolKit.Core.Blackboards;
+using System;
 using UnityEngine;
 
 namespace GraphProcessor
@@ -16,9 +17,9 @@ namespace GraphProcessor
         [HideInInspector]
         public string paramGUID;
 
-        public ExposedParameter Parameter
+        public IBlackboardPropertyGUID Parameter
         {
-            get { return Owner.GetExposedParameterFromGUID(paramGUID); }
+            get { return Owner.Blackboard.TryGetParamFromGUID(paramGUID, out IBlackboardProperty param) ? param as IBlackboardPropertyGUID : null; }
         }
 
         public override bool GetValue<T>(NodePort _port, ref T _value)
@@ -31,10 +32,11 @@ namespace GraphProcessor
             return false;
         }
 
-        //public override void Execute(NodePort _port, params object[] _params)
-        //{
-        //    if (Parameter != null && _params != null && _params.Length != 0)
-        //        Parameter.Value = _params[0];
-        //}
+        public override Type PortDynamicType(NodePort _port)
+        {
+            if (_port.FieldName == nameof(output) && Parameter?.PropertyType != null)
+                return Parameter.PropertyType;
+            return null;
+        }
     }
 }

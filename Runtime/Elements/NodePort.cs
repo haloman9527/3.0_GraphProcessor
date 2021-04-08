@@ -82,8 +82,6 @@ namespace GraphProcessor
 
         public NodePort() { }
 
-        public NodePort(BaseNode _owner) { Owner = _owner; }
-
         public NodePort(FieldInfo _fieldInfo)
         {
             fieldName = _fieldInfo.Name;
@@ -108,7 +106,10 @@ namespace GraphProcessor
             direction = port.direction;
             isMulti = port.IsMulti;
             typeConstraint = port.typeConstraint;
-            DisplayType = port.DisplayType;
+
+            DisplayType = Owner.PortDynamicType(this);
+            if (DisplayType == null)
+                DisplayType = port.DisplayType;
         }
 
         public void Reload(NodePort port)
@@ -117,7 +118,9 @@ namespace GraphProcessor
             direction = port.direction;
             isMulti = port.isMulti;
             typeConstraint = port.typeConstraint;
-            DisplayType = port.DisplayType;
+            DisplayType = Owner.PortDynamicType(this);
+            if (DisplayType == null)
+                DisplayType = port.DisplayType;
         }
 
         public bool TryGetValue<T>(ref T _value)

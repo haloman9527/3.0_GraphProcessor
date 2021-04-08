@@ -152,5 +152,8 @@ namespace GraphProcessor
         public virtual void OnConnected(NodePort _port, NodePort _targetPort) { }
 
         public virtual void OnDisconnected(NodePort _port, NodePort _targetPort) { }
+
+        /// <summary> 接口动态类型 </summary>
+        public virtual Type PortDynamicType(NodePort _port) { return null; }
     }
 }

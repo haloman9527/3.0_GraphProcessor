@@ -8,7 +8,6 @@ namespace GraphProcessor.Editors
     public class BaseStackNodeView : StackNode
     {
         const string styleSheet = "GraphProcessorStyles/BaseStackNodeView";
-        public delegate void ReorderNodeAction(BaseNodeView nodeView, int oldIndex, int newIndex);
         public static StyleSheet stackStyle;
         public static StyleSheet StackStyle
         {
@@ -22,8 +21,6 @@ namespace GraphProcessor.Editors
 
         protected BaseGraphView owner;
         protected internal BaseStackNode stackNode;
-
-        public event ReorderNodeAction onNodeReordered;
 
         public virtual void Initialize(BaseGraphView _graphView, BaseStackNode _stackNode)
         {
@@ -65,15 +62,11 @@ namespace GraphProcessor.Editors
 
             if (accept && element is BaseNodeView nodeView)
             {
-                var index = Mathf.Clamp(proposedIndex, 0, stackNode.nodeGUIDs.Count - 1);
+                int index = Mathf.Clamp(proposedIndex, 0, stackNode.nodeGUIDs.Count - 1);
 
                 int oldIndex = stackNode.nodeGUIDs.FindIndex(g => g == nodeView.NodeData.GUID);
                 if (oldIndex != -1)
-                {
                     stackNode.nodeGUIDs.Remove(nodeView.NodeData.GUID);
-                    if (oldIndex != index)
-                        onNodeReordered?.Invoke(nodeView, oldIndex, index);
-                }
 
                 stackNode.nodeGUIDs.Insert(index, nodeView.NodeData.GUID);
             }

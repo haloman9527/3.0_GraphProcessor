@@ -94,14 +94,14 @@ namespace GraphProcessor.Editors
             topPortContainer.style.justifyContent = Justify.Center;
             topPortContainer.style.alignItems = Align.Center;
             topPortContainer.style.flexDirection = FlexDirection.Row;
-            topPortContainer.style.height = 15;
+            //topPortContainer.style.height = 15;
             Insert(0, topPortContainer);
 
             bottomPortContainer = new VisualElement { name = "BottomPortContainer" };
             bottomPortContainer.style.justifyContent = Justify.Center;
             bottomPortContainer.style.alignItems = Align.Center;
             bottomPortContainer.style.flexDirection = FlexDirection.Row;
-            bottomPortContainer.style.height = 15;
+            //bottomPortContainer.style.height = 15;
             Add(bottomPortContainer);
 
             inputContainerElement = new VisualElement { name = "input-container" };
@@ -569,6 +569,8 @@ namespace GraphProcessor.Editors
 
         public virtual new bool RefreshPorts()
         {
+            float top = 0;
+            float bottom = 0;
             foreach (var portView in PortViews.Values)
             {
                 switch (portView.direction)
@@ -577,18 +579,26 @@ namespace GraphProcessor.Editors
                         if (portView.orientation == Orientation.Horizontal)
                             inputContainer.Add(portView);
                         else
+                        {
+                            top = 3;
                             topPortContainer.Add(portView);
+                        }
                         break;
                     case Direction.Output:
                         if (portView.orientation == Orientation.Horizontal)
                             outputContainer.Add(portView);
                         else
+                        {
+                            bottom = 3;
                             bottomPortContainer.Add(portView);
+                        }
                         break;
                     default:
                         break;
                 }
             }
+            bottomPortContainer.style.height = bottomPortContainer.style.height.value.value + bottom;
+            topPortContainer.style.height = topPortContainer.style.height.value.value + top;
             return base.RefreshPorts();
         }
 

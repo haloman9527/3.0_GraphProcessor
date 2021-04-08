@@ -9,6 +9,7 @@ using System;
 using UnityEditor.SceneManagement;
 using CZToolKit.Core;
 using Blackboard = UnityEditor.Experimental.GraphView.Blackboard;
+using CZToolKit.Core.Blackboards;
 
 namespace GraphProcessor.Editors
 {
@@ -374,7 +375,7 @@ namespace GraphProcessor.Editors
                             RemoveNode(nodeView);
                             return true;
                         case BlackboardField blackboardField:
-                            if (GraphData.RemoveExposedParameter(blackboardField.userData as ExposedParameter))
+                            if (GraphData.RemoveExposedParameter(blackboardField.userData as IBlackboardPropertyGUID))
                                 blackboard.RemoveField(blackboardField);
                             return true;
                         case GroupView groupView:
@@ -535,7 +536,7 @@ namespace GraphProcessor.Editors
                 {
                     RegisterCompleteObjectUndo("Create Parameter Node");
                     var paramNode = BaseNode.CreateNew<ParameterNode>(mousePos);
-                    paramNode.paramGUID = (paramFieldView.userData as ExposedParameter).GUID;
+                    paramNode.paramGUID = (paramFieldView.userData as IBlackboardPropertyGUID).GUID;
                     AddNode(paramNode);
                 }
             }

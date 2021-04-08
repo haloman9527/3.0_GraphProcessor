@@ -2,6 +2,7 @@
 using System;
 using UnityEngine;
 using System.Linq;
+using CZToolKit.Core.Blackboards;
 
 namespace GraphProcessor
 {
@@ -33,18 +34,17 @@ namespace GraphProcessor
         [SerializeField]
         StackNodesDictionary stackNodes = new StackNodesDictionary();
 
-        // GUID和变量的映射表
         [SerializeField]
-        ExposedParametersDictionary parametersGUID = new ExposedParametersDictionary();
-
-        // 字段名和GUID的映射表
-        [SerializeField, HideInInspector]
-        ParamNameGUIDDictionary parametersName = new ParamNameGUIDDictionary();
+#if ODIN_INSPECTOR
+        [Sirenix.OdinInspector.HideLabel]
+#endif
+        BlackboardWithGUID blackboard = new BlackboardWithGUID();
 
         public Dictionary<string, BaseNode> Nodes { get { return nodes; } }
         public Dictionary<string, SerializableEdge> Edges { get { return edges; } }
         public List<BaseGroup> Groups { get { return groups; } }
         public Dictionary<string, BaseStackNode> StackNodes { get { return stackNodes; } }
+        public BlackboardWithGUID Blackboard { get { return blackboard; } }
 
 #if !ODIN_INSPECTOR
         [SerializeField]
@@ -230,67 +230,15 @@ namespace GraphProcessor
             stackNodes.Remove(_stackNode.GUID);
         }
 
-        public bool ContainsPrameter(string _name)
-        {
-            return parametersName.ContainsKey(_name);
-        }
-
-        public ExposedParameter AddExposedParameter(string _name, Type _valueType, object _value)
-        {
-            if (ContainsPrameter(_name)) return null;
-            ExposedParameter parameter = new ExposedParameter(_name, _valueType) { Value = _value };
-            parametersGUID[parameter.GUID] = parameter;
-            parametersName[parameter.Name] = parameter.GUID;
-            return parameter;
-        }
-
-        public ExposedParameter AddExposedParameter(ExposedParameter _param)
-        {
-            if (ContainsPrameter(_param.Name)) return null;
-            parametersGUID[_param.GUID] = _param;
-            parametersName[_param.Name] = _param.GUID;
-            return _param;
-        }
-
-        public void RenameParameter(ExposedParameter _param, string _newName)
-        {
-            parametersName.Remove(_param.Name);
-            _param.Name = _newName;
-            parametersName[_param.Name] = _param.GUID;
-        }
-
-        public bool RemoveExposedParameter(ExposedParameter _exposedParameter)
+        public bool RemoveExposedParameter(IBlackboardPropertyGUID _exposedParameter)
         {
             if (Nodes.Values.OfType<ParameterNode>().Where(_node => _node.paramGUID == _exposedParameter.GUID).Count() > 0)
             {
                 Debug.LogWarning("该参数正被节点引用");
                 return false;
             }
-            parametersGUID.Remove(_exposedParameter.GUID);
-            parametersName.Remove(_exposedParameter.Name);
+            Blackboard.RemoveData(_exposedParameter.Name);
             return true;
-        }
-
-        public ExposedParameter GetExposedParameterFromGUID(string _guid)
-        {
-            if (parametersGUID.TryGetValue(_guid, out ExposedParameter _param))
-                return _param;
-            return null;
-        }
-
-        public ExposedParameter GetExposedParameterFromName(string _name)
-        {
-            if (parametersName.TryGetValue(_name, out string _paramGUID))
-                return parametersGUID[_paramGUID];
-            return null;
-        }
-
-        public IEnumerable<ExposedParameter> GetParameters()
-        {
-            foreach (var item in parametersGUID)
-            {
-                yield return item.Value;
-            }
         }
         #endregion
 
@@ -377,6 +325,8 @@ namespace GraphProcessor
                 }
                 stack.Value.nodeGUIDs.RemoveAll(nodeGUID => !Nodes.ContainsKey(nodeGUID));
             }
+
+            Blackboard.Clean();
         }
     }
 }
