@@ -72,12 +72,8 @@ namespace GraphProcessor.Editors
         {
             groupData.color = newColor;
             headerContainer.style.backgroundColor = newColor;
-
-            // 计算背景明度，设置文字颜色
-            // 当明度大于0.5f,且透明度大于0.5f，文字颜色为黑色
-            // 否则为白色
-            float luminance = 0.299f * newColor.r + 0.587f * newColor.g + 0.114f * newColor.b;
-            titleLabel.style.color = luminance > 0.5f && newColor.a > 0.5f ? Color.black : Color.white * 0.9f;
+            // 当明度大于0.5f,且透明度大于0.5f，文字颜色为黑色，否则为白色
+            titleLabel.style.color = newColor.GetLuminance() > 0.5f && newColor.a > 0.5f ? Color.black : Color.white * 0.9f;
         }
 
         protected override void OnGroupRenamed(string oldName, string newName)

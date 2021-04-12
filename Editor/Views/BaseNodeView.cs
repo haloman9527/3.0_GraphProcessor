@@ -23,6 +23,7 @@ namespace GraphProcessor.Editors
         VisualElement topPortContainer;
         VisualElement bottomPortContainer;
         NodeSettingsView settingsContainer;
+        Label titleLabel;
         Button settingButton;
 
         Dictionary<string, PortView> portViews = new Dictionary<string, PortView>();
@@ -30,12 +31,21 @@ namespace GraphProcessor.Editors
 
         [NonSerialized] List<IconBadge> badges = new List<IconBadge>();
 
-        public bool Initialized { get; private set; }
-        public BaseGraphView Owner { get; private set; }
         public VisualElement controlsContainer { get; private set; }
-        VisualElement inputContainerElement { get; set; }
+        protected VisualElement inputContainerElement { get; set; }
+        public Label TitleLabel
+        {
+            get
+            {
+                if (titleLabel == null)
+                    titleLabel = titleContainer.Q<Label>("title-label");
+                return titleLabel;
+            }
+        }
         public Dictionary<string, PortView> PortViews { get { return portViews; } }
 
+        public bool Initialized { get; private set; }
+        public BaseGraphView Owner { get; private set; }
         public BaseNode NodeData { get; private set; }
         public Type NodeDataType { get; private set; }
         public bool Lockable { get; private set; }
@@ -52,7 +62,6 @@ namespace GraphProcessor.Editors
         protected virtual bool HasSettings { get; set; }
 
         #region  Initialization
-
         public void Initialize(BaseGraphView _owner, BaseNode _nodeData)
         {
             styleSheets.Add(Resources.Load<StyleSheet>(BaseNodeViewStyle));
@@ -63,6 +72,11 @@ namespace GraphProcessor.Editors
             Lockable = AttributeCache.TryGetTypeAttribute(NodeDataType, out LockableAttribute lockableAttribute);
             if (AttributeCache.TryGetTypeAttribute(NodeDataType, out NodeTooltipAttribute nodeTooltipAttribute))
                 tooltip = nodeTooltipAttribute.Tooltip;
+            if (AttributeCache.TryGetTypeAttribute(NodeDataType, out NodeTitleTintAttribute nodeTitleTintAttribute))
+            {
+                titleContainer.style.backgroundColor = nodeTitleTintAttribute.BackgroundColor;
+                TitleLabel.style.color = nodeTitleTintAttribute.BackgroundColor.GetLuminance() > 0.5f && nodeTitleTintAttribute.BackgroundColor.a > 0.5f ? Color.black : Color.white * 0.9f;
+            }
 
             InitializeView();
             InitializePorts();
@@ -94,14 +108,12 @@ namespace GraphProcessor.Editors
             topPortContainer.style.justifyContent = Justify.Center;
             topPortContainer.style.alignItems = Align.Center;
             topPortContainer.style.flexDirection = FlexDirection.Row;
-            //topPortContainer.style.height = 15;
             Insert(0, topPortContainer);
 
             bottomPortContainer = new VisualElement { name = "BottomPortContainer" };
             bottomPortContainer.style.justifyContent = Justify.Center;
             bottomPortContainer.style.alignItems = Align.Center;
             bottomPortContainer.style.flexDirection = FlexDirection.Row;
-            //bottomPortContainer.style.height = 15;
             Add(bottomPortContainer);
 
             inputContainerElement = new VisualElement { name = "input-container" };
