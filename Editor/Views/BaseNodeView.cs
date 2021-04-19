@@ -257,6 +257,16 @@ namespace GraphProcessor.Editors
 
         #region API
 
+        public void HightlightOn()
+        {
+
+        }
+
+        public void HightlightOf()
+        {
+
+        }
+
         public void SetDeletable(bool deletable)
         {
             if (deletable)

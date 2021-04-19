@@ -28,6 +28,10 @@ namespace GraphProcessor.Editors
 
             PortViews[nameof(parameterNode.output)].tooltip = parameterNode.Parameter.ValueType.Name;
 
+            Add(new IMGUIContainer(() =>
+            {
+                tooltip = parameterNode.Parameter?.Value.ToString();
+            }));
         }
     }
 }

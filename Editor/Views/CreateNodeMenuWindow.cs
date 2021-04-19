@@ -1,17 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using UnityEngine;
-using UnityEditor.UIElements;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine.UIElements;
-using UnityEditor;
 using CZToolKit.Core;
 
 namespace GraphProcessor.Editors
 {
-    // TODO: replace this by the new UnityEditor.Searcher package
     public class CreateNodeMenuWindow : ScriptableObject, ISearchWindowProvider
     {
         BaseGraphView graphView;

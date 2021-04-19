@@ -8,7 +8,7 @@ using CZToolKit.Core.Editors;
 namespace GraphProcessor.Editors
 {
     [Serializable]
-    public class BaseGraphWindow : BasicEditorWindow<BaseGraphWindow>
+    public class BaseGraphWindow : BasicEditorWindow
     {
         #region 静态
         [OnOpenAsset(0)]
