@@ -11,6 +11,7 @@ namespace GraphProcessor.Examples
     {
         protected override IEnumerable<Type> GetNodeTypes()
         {
+            yield return typeof(StringNode);
             yield return typeof(FloatNode);
             yield return typeof(AddNode);
             yield return typeof(DebugNode);

@@ -2,7 +2,7 @@
 
 namespace GraphProcessor.Editors
 {
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = true)]
     public class CustomGraphWindowAttribute : Attribute
     {
         public Type GraphType;

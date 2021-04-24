@@ -3,7 +3,7 @@
 namespace GraphProcessor
 {
     /// <summary> 节点菜单，和自定义节点名 </summary>
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
     public class NodeMenuItemAttribute : Attribute
     {
         /// <summary> 节点菜单路径 </summary>

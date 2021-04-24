@@ -14,7 +14,7 @@ namespace GraphProcessor.Editors
 {
     public class BaseGraphView : GraphView
     {
-        const string GraphViewStylePath = "GraphProcessorStyles/BaseGraphView";
+        const string GraphViewStylePath = "GraphProcessor/Styles/BaseGraphView";
         static StyleSheet graphViewStyle;
         public static StyleSheet GraphViewStyle
         {
@@ -506,7 +506,8 @@ namespace GraphProcessor.Editors
             {
                 foreach (var nodeView in nodeViews.Values)
                 {
-                    nodeView.CloseSettings();
+                    if (nodeView is IHasSettingNodeView settingNodeView)
+                        settingNodeView.CloseSettings();
                 }
             }
 

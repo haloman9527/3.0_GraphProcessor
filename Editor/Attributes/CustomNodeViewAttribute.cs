@@ -2,7 +2,7 @@ using System;
 
 namespace GraphProcessor.Editors
 {
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = true)]
     public class CustomNodeViewAttribute : Attribute
     {
         public Type NodeType;

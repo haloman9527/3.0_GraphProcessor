@@ -1,0 +1,18 @@
+
+#settings-button {
+    border-width: 0px;
+    width: 28px;
+    height: 28px;
+    background-color: rgba(63, 63, 63, 0);
+    border-radius: 0px;
+}
+
+#settings-button > #icon {
+    -unity-background-scale-mode: scale-to-fit;
+    background-image: resource("GraphProcessor/Icons/SettingsIcons");
+    flex-grow: 1;
+}
+
+#settings-button:hover {
+    background-color: rgba(127, 127, 127 0.2);
+}

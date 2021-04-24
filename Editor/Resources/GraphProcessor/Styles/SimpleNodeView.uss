@@ -1,0 +1,53 @@
+#title {
+    height: 16px;
+}
+
+#title.input {
+    flex-direction: row-reverse;
+}
+
+#node-border {
+    border-radius: 10px;
+}
+
+#selection-border {
+    border-radius: 12px;
+}
+
+#title > Label {
+    margin-left: 2px;
+    font-size: 11px;
+}
+
+#title #top PortView {
+    padding-right: 0;
+    padding-left: 0;
+    margin-top: 2px;
+}
+
+PortView > Label {
+    visibility: hidden;
+    width: 0;
+}
+
+#controls EnumField {
+    margin: 0;
+}
+
+#controls EnumField > VisualElement {
+    border-width: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-left: 4px;
+    padding-right: 4px;
+    height: 14px;
+}
+
+#controls EnumField > VisualElement > TextElement {
+    font-size: 10px;
+    margin-top: 0;
+}
+
+#controls EnumField > VisualElement > VisualElement {
+    margin-right: -2px;
+}

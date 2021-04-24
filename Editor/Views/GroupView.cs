@@ -9,7 +9,7 @@ namespace GraphProcessor.Editors
 {
     public class GroupView : Group
     {
-        const string groupStylePath = "GraphProcessorStyles/GroupView";
+        const string groupStylePath = "GraphProcessor/Styles/GroupView";
         static StyleSheet groupViewStyle;
         public static StyleSheet GroupViewStyle
         {

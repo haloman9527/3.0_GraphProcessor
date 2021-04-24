@@ -12,8 +12,6 @@ namespace GraphProcessor.Editors
 {
     public class ExposedParameterView : Blackboard
     {
-        readonly string exposedParameterViewStyle = "GraphProcessorStyles/ExposedParameterView";
-
         public BaseGraphView GraphView { get { return graphView as BaseGraphView; } }
         public Dictionary<string, VisualElement> fields = new Dictionary<string, VisualElement>();
 
@@ -21,10 +19,9 @@ namespace GraphProcessor.Editors
         {
             title = "Parameters";
             scrollable = true;
-            styleSheets.Add(Resources.Load<StyleSheet>(exposedParameterViewStyle));
-            this.addItemRequested += OnAddClicked;
             UpdateParameterList();
-            this.editTextRequested = Rename;
+            addItemRequested += OnAddClicked;
+            editTextRequested = Rename;
             base.SetPosition(GraphView.GraphData.blackboardPosition);
         }
 
@@ -47,11 +44,11 @@ namespace GraphProcessor.Editors
 
         protected virtual void OnAddClicked(Blackboard t)
         {
-            var parameterType = new GenericMenu();
+            GenericMenu parameterTypes = new GenericMenu();
 
-            foreach (var valueType in FieldFactory.FieldDrawersCache.Keys)
+            foreach (var valueType in FieldFactory.PropertyCreatorMap.Keys)
             {
-                parameterType.AddItem(new GUIContent(valueType.Name), false, () =>
+                parameterTypes.AddItem(new GUIContent(valueType.Name), false, () =>
                 {
                     string rawName = "New " + valueType.Name + "Param";
                     string name = rawName;
@@ -65,13 +62,13 @@ namespace GraphProcessor.Editors
                 });
             }
 
-            parameterType.ShowAsContext();
+            parameterTypes.ShowAsContext();
         }
 
 
         public void AddParam(string _name, Type _valueType)
         {
-            if (FieldFactory.PropertyCreator.TryGetValue(_valueType, out Func<string, ExposedParameter> creator))
+            if (FieldFactory.PropertyCreatorMap.TryGetValue(_valueType, out Func<string, ExposedParameter> creator))
             {
                 ExposedParameter property = creator(_name);
                 GraphView.GraphData.AddExposedParameter(property);

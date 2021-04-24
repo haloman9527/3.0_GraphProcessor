@@ -1,237 +1,166 @@
-﻿using System.Collections;
+﻿using CZToolKit.Core;
+using System;
+using System.Reflection;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
-using System;
-using System.Linq;
-using System.Reflection;
-using System.Globalization;
-using CZToolKit.Core.Blackboards;
 
 namespace GraphProcessor.Editors
 {
     public static class FieldFactory
     {
-        public delegate VisualElement DrawerCreator(Type fieldType, object value, Action<object> onValueChanged, string label);
-        public delegate Type TypeProcessor(Type _originalType);
-
-        public static readonly Dictionary<Type, Type> FieldDrawersCache = new Dictionary<Type, Type>();
-        private static readonly Dictionary<Type, DrawerCreator> SpecialFieldDraweCreator = new Dictionary<Type, DrawerCreator>();
-        static readonly Dictionary<Type, TypeProcessor> FieldTypeProcessorsCache = new Dictionary<Type, TypeProcessor>();
-
         static readonly MethodInfo createFieldMethod = typeof(FieldFactory).GetMethod("CreateFieldSpecific", BindingFlags.Static | BindingFlags.Public);
 
-
-        public static Dictionary<Type, Func<string, ExposedParameter>> PropertyCreator = new Dictionary<Type, Func<string, ExposedParameter>>();
+        public static readonly Dictionary<Type, Type> FieldDrawersCache = new Dictionary<Type, Type>();
+        public static readonly Dictionary<Type, Func<string, ExposedParameter>> PropertyCreatorMap = new Dictionary<Type, Func<string, ExposedParameter>>();
+        public static readonly Dictionary<Type, Func<VisualElement>> FieldDrawerCreatorMap = new Dictionary<Type, Func<VisualElement>>();
 
         static FieldFactory()
         {
-
-            foreach (var type in AppDomain.CurrentDomain.GetAllTypes())
+            foreach (var drawerType in TypeCache.GetTypesWithAttribute<FieldDrawerAttribute>())
             {
-                var drawerAttribute = type.GetCustomAttributes(typeof(FieldDrawerAttribute), false).FirstOrDefault() as FieldDrawerAttribute;
-                if (drawerAttribute == null) continue;
-                AddDrawer(drawerAttribute.fieldType, type);
+                if (AttributeCache.TryGetTypeAttribute(drawerType, out FieldDrawerAttribute fieldDrawerAttribute))
+                    AddDrawer(fieldDrawerAttribute.fieldType, drawerType);
             }
 
-            AddDrawer<bool, Toggle>(false);
-            AddDrawer<int, IntegerField>(0);
-            AddDrawer<long, LongField>(0);
-            AddDrawer<float, FloatField>(0);
-            AddDrawer<double, DoubleField>(0);
-            AddDrawer<string, TextField>("");
-            AddDrawer<Bounds, BoundsField>(new Bounds());
-            AddDrawer<Color, ColorField>(new Color());
-            AddDrawer<Vector2, Vector2Field>(new Vector2());
-            AddDrawer<Vector2Int, Vector2IntField>(new Vector2Int());
-            AddDrawer<Vector3, Vector3Field>(new Vector3());
-            AddDrawer<Vector3Int, Vector3IntField>(new Vector3Int());
-            AddDrawer<Vector4, Vector4Field>(new Vector4());
-            AddDrawer<AnimationCurve, CurveField>(new AnimationCurve());
-            //AddDrawer<Enum, EnumField>();
-            AddDrawer<Gradient, GradientField>(new Gradient());
-            AddDrawer<UnityEngine.Object, ObjectField>(new UnityEngine.Object());
-            AddDrawer<Rect, RectField>(new Rect());
+            AddDrawer(typeof(Enum), typeof(EnumField));
+            AddDrawer<bool, Toggle>(() => { return false; },
+                () => { return new Toggle(); });
+            AddDrawer<int, IntegerField>(() => { return 0; },
+                () => { return new IntegerField(); });
+            AddDrawer<long, LongField>(() => { return 0; },
+                () => { return new LongField(); });
+            AddDrawer<float, FloatField>(() => { return 0; },
+                () => { return new FloatField(); });
+            AddDrawer<double, DoubleField>(() => { return 0; },
+                () => { return new DoubleField(); });
+            AddDrawer<string, TextField>(() => { return ""; },
+                () => { return new TextField() { multiline = true }; });
 
-            SpecialFieldDraweCreator[typeof(LayerMask)] = (fieldType, value, onValueChanged, label) =>
-            {
-                // LayerMasks inherit from INotifyValueChanged<int> instead of INotifyValueChanged<LayerMask>
-                // so we can't register it inside our factory system :(
-                var layerField = new LayerMaskField(label, ((LayerMask)value).value);
-                layerField.RegisterValueChangedCallback(e =>
+            AddDrawer<LayerMask, LayerMaskField>(() => { return 0; },
+                () => { return new LayerMaskField(); });
+            AddDrawer<Rect, RectField>(() => { return new Rect(); },
+                () => { return new RectField(); });
+            AddDrawer<Bounds, BoundsField>(() => { return new Bounds(); },
+                () => { return new BoundsField(); });
+            AddDrawer<BoundsInt, BoundsIntField>(() => { return new BoundsInt(); },
+                () => { return new BoundsIntField(); });
+            AddDrawer<Color, ColorField>(() => { return new Color(); },
+                () => { return new ColorField(); });
+            AddDrawer<Vector2, Vector2Field>(() => { return new Vector2(); },
+                () => { return new Vector2Field(); });
+            AddDrawer<Vector2Int, Vector2IntField>(() => { return new Vector2Int(); },
+                () => { return new Vector2IntField(); });
+            AddDrawer<Vector3, Vector3Field>(() => { return new Vector3(); },
+                () => { return new Vector3Field(); });
+            AddDrawer<Vector3Int, Vector3IntField>(() => { return new Vector3Int(); },
+                () => { return new Vector3IntField(); });
+            AddDrawer<Vector4, Vector4Field>(() => { return new Vector4(); },
+                () => { return new Vector4Field(); });
+            AddDrawer<AnimationCurve, CurveField>(() => { return new AnimationCurve(); },
+                () => { return new CurveField(); });
+            AddDrawer<Gradient, GradientField>(() => { return new Gradient(); },
+                () => { return new GradientField(); });
+            AddDrawer<UnityEngine.Object, ObjectField>(() => { return new UnityEngine.Object(); },
+                () =>
                 {
-                    onValueChanged(new LayerMask { value = e.newValue });
+                    return new ObjectField() { allowSceneObjects = true, objectType = typeof(UnityEngine.Object) };
                 });
-                return layerField;
-            };
         }
 
-        static void AddDrawer(Type fieldType, Type drawerType)
+        static void AddDrawer(Type _fieldType, Type _drawerType)
         {
-            var iNotifyType = typeof(INotifyValueChanged<>).MakeGenericType(fieldType);
+            var iNotifyType = typeof(INotifyValueChanged<>).MakeGenericType(_fieldType);
 
-            if (!iNotifyType.IsAssignableFrom(drawerType))
+            if (!iNotifyType.IsAssignableFrom(_drawerType))
             {
-                Debug.LogWarning("The custom field drawer " + drawerType + " does not implements INotifyValueChanged< " + fieldType + " >");
+                Debug.LogWarning("The custom field drawer " + _drawerType + " does not implements INotifyValueChanged< " + _fieldType + " >");
                 return;
             }
 
-            FieldDrawersCache[fieldType] = drawerType;
+            FieldDrawersCache[_fieldType] = _drawerType;
+            FieldDrawerCreatorMap[_fieldType] = () => { return Activator.CreateInstance(_drawerType) as VisualElement; };
         }
 
-        static void AddDrawer<F, D>(F _defaultValue)
+        static void AddDrawer<F, D>(Func<F> _defaultValueGetter, Func<VisualElement> _fieldDrawerCreator) where D : VisualElement, new()
         {
             Type fieldType = typeof(F);
             Type drawerType = typeof(D);
 
-            var iNotifyType = typeof(INotifyValueChanged<>).MakeGenericType(fieldType);
-            if (!iNotifyType.IsAssignableFrom(drawerType))
+            PropertyCreatorMap[fieldType] = (name) =>
             {
-                Debug.LogWarning("The custom field drawer " + drawerType + " does not implements INotifyValueChanged< " + fieldType + " >");
-                return;
-            }
-
-            PropertyCreator[typeof(F)] = (name) =>
-            {
-                ExposedParameter property = new ExposedParameter(name, _defaultValue);
-                return property;
+                return new ExposedParameter(name, _defaultValueGetter());
             };
+
             FieldDrawersCache[fieldType] = drawerType;
+            FieldDrawerCreatorMap[fieldType] = _fieldDrawerCreator;
+        }
+
+        public static VisualElement CreateField(Type _fieldType, string _label)
+        {
+            object fieldDrawer = null;
+            if (_fieldType == typeof(Enum))
+                fieldDrawer = new EnumField(_label, Activator.CreateInstance(_fieldType) as Enum);
+            else if (FieldDrawerCreatorMap.TryGetValue(_fieldType, out Func<VisualElement> drawerCreator))
+            {
+                fieldDrawer = drawerCreator();
+            }
+            return fieldDrawer as VisualElement;
         }
 
         public static INotifyValueChanged<T> CreateField<T>(T value, string label = null)
         {
-            return CreateField(value != null ? value.GetType() : typeof(T), label) as INotifyValueChanged<T>;
+            return CreateField(typeof(T), label) as INotifyValueChanged<T>;
         }
 
-        public static VisualElement CreateField(Type t, string label)
+        public static INotifyValueChanged<T> CreateFieldSpecific<T>(T _value, Action<object> _onValueChanged, string _label)
         {
-            Type drawerType;
-
-            FieldDrawersCache.TryGetValue(t, out drawerType);
-
-            if (drawerType == null)
-                drawerType = FieldDrawersCache.FirstOrDefault(kp => kp.Key.IsReallyAssignableFrom(t)).Value;
-
-            if (drawerType == null)
-            {
-                Debug.LogWarning("Can't find field drawer for type: " + t);
-                return null;
-            }
-
-            // Call the constructor that have a label
-            object field;
-
-            if (drawerType == typeof(EnumField))
-            {
-                field = new EnumField(label, Activator.CreateInstance(t) as Enum);
-            }
-            else
-            {
-                try
-                {
-                    field = Activator.CreateInstance(drawerType,
-                        BindingFlags.CreateInstance |
-                        BindingFlags.Public |
-                        BindingFlags.NonPublic |
-                        BindingFlags.Instance |
-                        BindingFlags.OptionalParamBinding, null,
-                        new object[] { label, Type.Missing }, CultureInfo.CurrentCulture);
-                }
-                catch
-                {
-                    field = Activator.CreateInstance(drawerType,
-                        BindingFlags.CreateInstance |
-                        BindingFlags.Public |
-                        BindingFlags.NonPublic |
-                        BindingFlags.Instance |
-                        BindingFlags.OptionalParamBinding, null,
-                        new object[] { label }, CultureInfo.CurrentCulture);
-                }
-            }
-
-            // For mutiline
-            switch (field)
-            {
-                case TextField textField:
-                    textField.multiline = true;
-                    break;
-                case ObjectField objField:
-                    objField.allowSceneObjects = true;
-                    objField.objectType = typeof(UnityEngine.Object);
-                    break;
-            }
-
-            return field as VisualElement;
-        }
-
-        public static INotifyValueChanged<T> CreateFieldSpecific<T>(T value, Action<object> onValueChanged, string label)
-        {
-            var fieldDrawer = CreateField<T>(value, label);
-
+            var fieldDrawer = CreateField(_value, _label);
             if (fieldDrawer == null)
                 return null;
-
-            fieldDrawer.value = value;
+            BaseField<T> tDrawer = fieldDrawer as BaseField<T>;
+            tDrawer.labelElement.style.minWidth = 48;
+            tDrawer.labelElement.style.width = 54;
+            tDrawer.label = _label;
+            fieldDrawer.value = _value;
             fieldDrawer.RegisterValueChangedCallback((e) =>
             {
-                onValueChanged(e.newValue);
+                _onValueChanged(e.newValue);
             });
-
             return fieldDrawer;
         }
 
-        public static VisualElement CreateField(Type fieldType, object value, Action<object> onValueChanged, string label)
+        public static VisualElement CreateField(Type _fieldType, object _value, Action<object> _onValueChanged, string _label)
         {
-            if (typeof(Enum).IsAssignableFrom(fieldType))
-                fieldType = typeof(Enum);
+            if (typeof(Enum).IsAssignableFrom(_fieldType))
+                _fieldType = typeof(Enum);
 
-            VisualElement field = null;
+            VisualElement fieldDrawer = null;
 
-            // Handle special cases here
-            if (fieldType == typeof(LayerMask))
+            if (_fieldType == typeof(LayerMask))
             {
-                // LayerMasks inherit from INotifyValueChanged<int> instead of INotifyValueChanged<LayerMask>
-                // so we can't register it inside our factory system :(
-                var layerField = new LayerMaskField(label, ((LayerMask)value).value);
+                var layerField = new LayerMaskField(_label, ((LayerMask)_value).value);
                 layerField.RegisterValueChangedCallback(e =>
                 {
-                    onValueChanged(new LayerMask { value = e.newValue });
+                    _onValueChanged(new LayerMask { value = e.newValue });
                 });
-
-                field = layerField;
+                layerField.labelElement.style.minWidth = 48;
+                layerField.labelElement.style.width = 54;
+                fieldDrawer = layerField;
             }
             else
             {
+                var createFieldSpecificMethod = createFieldMethod.MakeGenericMethod(_fieldType);
                 try
                 {
-                    var createFieldSpecificMethod = createFieldMethod.MakeGenericMethod(fieldType);
-                    try
-                    {
-                        field = createFieldSpecificMethod.Invoke(null, new object[] { value, onValueChanged, label }) as VisualElement;
-                    }
-                    catch { }
-
-                    // handle the Object field case
-                    if (field == null && (value == null || value is UnityEngine.Object))
-                    {
-                        createFieldSpecificMethod = createFieldMethod.MakeGenericMethod(typeof(UnityEngine.Object));
-                        field = createFieldSpecificMethod.Invoke(null, new object[] { value, onValueChanged, label }) as VisualElement;
-                        if (field is ObjectField objField)
-                        {
-                            objField.objectType = fieldType;
-                            objField.value = value as UnityEngine.Object;
-                        }
-                    }
+                    fieldDrawer = createFieldSpecificMethod.Invoke(null, new object[] { _value, _onValueChanged, _label }) as VisualElement;
                 }
-                catch (Exception e)
-                {
-                    Debug.LogError(e);
-                }
+                catch { }
             }
 
-            return field;
+            return fieldDrawer;
         }
     }
 }

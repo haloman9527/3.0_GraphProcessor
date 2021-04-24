@@ -6,9 +6,6 @@ namespace GraphProcessor
     [AttributeUsage(AttributeTargets.Field)]
     public class PortAttribute : Attribute
     {
-        /// <summary> 自定义接口显示名称 </summary>
-        public string DisplayName;
-
         /// <summary> 接口方向 </summary>
         public readonly PortDirection Direction;
 
@@ -21,12 +18,6 @@ namespace GraphProcessor
         /// <summary> 是否绘制字段 </summary>
         public ShowBackingValue ShowBackValue = ShowBackingValue.Never;
 
-        public Type CustomPortConnectionType;
-
-        public PortAttribute(PortDirection _direction)
-        {
-            Direction = _direction;
-        }
         public PortAttribute(PortDirection _direction, bool _isMulti = true, PortTypeConstraint _typeConstraint = PortTypeConstraint.Inherited)
         {
             Direction = _direction;

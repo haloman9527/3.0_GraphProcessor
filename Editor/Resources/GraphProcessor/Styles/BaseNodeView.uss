@@ -6,24 +6,6 @@
     background-color: rgba(63, 63, 63, 1);
 }
 
-#settings-button {
-    border-width: 0px;
-    width: 28px;
-    height: 28px;
-    background-color: rgba(63, 63, 63, 0);
-    border-radius: 0px;
-}
-
-#settings-button > #icon {
-    -unity-background-scale-mode: scale-to-fit;
-    background-image: resource("Icons/SettingsIcons");
-    flex-grow: 1;
-}
-
-#settings-button:hover {
-    background-color: rgba(127, 127, 127 0.2);
-}
-
 #contents #top .executed #connector, #contents #top .executed #connector #cap,
 #contents #top .executes #connector, #contents #top .executes #connector #cap,
 #contents #top .true #connector, #contents #top .true #connector #cap,
@@ -35,60 +17,6 @@
 
 .Highlight {
     background-color: rgba(0, 63, 63, 0.8);
-}
-
-ParameterNodeView #title {
-    height: 16px;
-}
-
-ParameterNodeView #title.input {
-    flex-direction: row-reverse;
-}
-
-ParameterNodeView #node-border {
-    border-radius: 10px;
-}
-
-ParameterNodeView #selection-border {
-    border-radius: 12px;
-}
-
-ParameterNodeView #title > Label {
-    margin-left: 2px;
-    font-size: 11px;
-}
-
-ParameterNodeView #title #top PortView {
-    padding-right: 0;
-    padding-left: 0;
-    margin-top: 2px;
-}
-
-ParameterNodeView PortView > Label {
-    visibility: hidden;
-    width: 0;
-}
-
-ParameterNodeView #controls EnumField {
-    margin: 0;
-}
-
-ParameterNodeView #controls EnumField > VisualElement {
-    border-width: 0;
-    margin-top: 0;
-    margin-bottom: 0;
-    padding-left: 4px;
-    padding-right: 4px;
-    height: 14px;
-}
-
-ParameterNodeView #controls EnumField > VisualElement > TextElement {
-    font-size: 10px;
-    margin-top: 0;
-}
-
-ParameterNodeView #controls EnumField > VisualElement > VisualElement {
-    margin-right: -2px;
 }
 
 #RightTitleContainer {

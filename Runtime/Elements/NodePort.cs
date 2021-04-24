@@ -93,8 +93,8 @@ namespace GraphProcessor
                 typeConstraint = attribute.TypeConstraint;
             }
 
-            if (attribute.CustomPortConnectionType != null)
-                DisplayType = attribute.CustomPortConnectionType;
+            if (AttributeCache.TryGetFieldAttribute(_fieldInfo.DeclaringType, _fieldInfo.Name, out PortTypeAttribute typeAttribute))
+                DisplayType = typeAttribute.PortType;
             else
                 DisplayType = _fieldInfo.FieldType;
         }

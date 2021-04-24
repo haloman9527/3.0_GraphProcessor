@@ -10,7 +10,7 @@ NodeSettingsView {
     padding-left: 4px;
     padding-right: 4px;
     padding-bottom: 4px;
-    background-image: resource("Settings_Flyout_9slice");
+    background-image: resource("GraphProcessor/Settings_Flyout_9slice");
 }
 
 NodeSettingsView > #mainContainer {

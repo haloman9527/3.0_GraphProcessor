@@ -17,11 +17,13 @@ namespace GraphProcessor
             public List<Type> types;
         }
 
-        [Port(PortDirection.Input, IsMulti = false, DisplayName = "In", TypeConstraint = PortTypeConstraint.None)]
+        [Port(PortDirection.Input, IsMulti = false, TypeConstraint = PortTypeConstraint.None)]
+        [DisplayName("In")]
         [PortSize(12)]
         public PackedRelayData input;
 
-        [Port(PortDirection.Output, IsMulti = false, DisplayName = "Out", TypeConstraint = PortTypeConstraint.None)]
+        [Port(PortDirection.Output, IsMulti = false, TypeConstraint = PortTypeConstraint.None)]
+        [DisplayName("Out")]
         [PortSize(12)]
         public PackedRelayData output;
 

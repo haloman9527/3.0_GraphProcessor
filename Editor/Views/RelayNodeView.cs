@@ -11,7 +11,7 @@ namespace GraphProcessor.Editors
             titleContainer.RemoveFromHierarchy();
             this.Q("divider").RemoveFromHierarchy();
 
-            styleSheets.Add(Resources.Load<StyleSheet>("GraphProcessorStyles/RelayNode"));
+            styleSheets.Add(Resources.Load<StyleSheet>("GraphProcessor/Styles/RelayNode"));
             foreach (var item in PortViews)
             {
                 item.Value.Q("type").style.display = DisplayStyle.None;

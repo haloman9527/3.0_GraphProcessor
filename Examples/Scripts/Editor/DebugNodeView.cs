@@ -5,11 +5,12 @@ namespace GraphProcessor.Editors
     [CustomNodeView(typeof(DebugNode))]
     public class DebugNodeView : BaseNodeView
     {
-        DebugNode debugNode; 
+        DebugNode debugNode;
         Label label = new Label();
 
         protected override void OnInitialized()
         {
+            base.OnInitialized();
             debugNode = NodeData as DebugNode;
             controlsContainer.Add(label);
             contentContainer.Add(new IMGUIContainer(() =>
@@ -21,15 +22,20 @@ namespace GraphProcessor.Editors
 
         private void UpdateLabel()
         {
-            if(debugNode.TryGetInputValue("input", out object value))
+            if (!debugNode.TryGetPort("input", out NodePort port) || !port.IsConnected)
+            {
+                label.text = debugNode.text;
+                return;
+            }
+
+            object value = null;
+            if (port.TryGetConnectValue(ref value))
             {
                 if (value == null)
                     label.text = "NULL";
                 else
                     label.text = value.ToString();
             }
-            else
-                label.text = debugNode.text;
         }
     }
 }

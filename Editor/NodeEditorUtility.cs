@@ -95,7 +95,7 @@ namespace GraphProcessor.Editors
             return _nodeType.Name;
         }
 
-        public static string GetPortDisplayName(string _fieldName)
+        public static string GetDisplayName(string _fieldName)
         {
             return ObjectNames.NicifyVariableName(_fieldName);
         }

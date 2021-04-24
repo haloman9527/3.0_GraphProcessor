@@ -80,30 +80,8 @@ namespace GraphProcessor
     }
 
     [AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]
-    public class ShowInInspector : Attribute
-    {
-        public bool showInNode;
-
-        public ShowInInspector(bool showInNode = false)
-        {
-            this.showInNode = showInNode;
-        }
-    }
-
-    [AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]
     public class ShowAsDrawer : Attribute
     {
         public ShowAsDrawer() { }
-    }
-
-    [AttributeUsage(AttributeTargets.Field)]
-    public class SettingAttribute : Attribute
-    {
-        public string name;
-
-        public SettingAttribute(string name = null)
-        {
-            this.name = name;
-        }
     }
 }

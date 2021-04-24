@@ -12,13 +12,13 @@ namespace GraphProcessor.Editors
 {
     public class PortView : Port
     {
-        public const int DefaultPortSize = 8;
+        const int DefaultPortSize = 8;
 
-        const string PortViewStyleFile = "GraphProcessorStyles/PortView";
-        const string UserPortStyleFile = "PortViewTypes";
+        const string PortViewStyleFile = "GraphProcessor/Styles/PortView";
+        const string PortViewTypesFile = "GraphProcessor/Styles/PortViewTypes";
 
-        public static StyleSheet portViewStyle;
-        public static StyleSheet userPortStyle;
+        static StyleSheet portViewStyle;
+        static StyleSheet portViewTypesStyle;
 
         public static StyleSheet PortViewStyle
         {
@@ -29,13 +29,13 @@ namespace GraphProcessor.Editors
                 return portViewStyle;
             }
         }
-        public static StyleSheet UserPortStyle
+        public static StyleSheet PortViewTypesStyle
         {
             get
             {
-                if (userPortStyle == null)
-                    userPortStyle = Resources.Load<StyleSheet>(UserPortStyleFile);
-                return userPortStyle;
+                if (portViewTypesStyle == null)
+                    portViewTypesStyle = Resources.Load<StyleSheet>(PortViewTypesFile);
+                return portViewTypesStyle;
             }
         }
 
@@ -109,10 +109,8 @@ namespace GraphProcessor.Editors
         PortView(Orientation _orientation, Direction _direction, NodePort _portData, BaseEdgeConnectorListener edgeConnectorListener)
             : base(_orientation, _direction, _portData.IsMulti ? Capacity.Multi : Capacity.Single, _portData.DisplayType)
         {
-            styleSheets.Add(Resources.Load<StyleSheet>(PortViewStyleFile));
-            StyleSheet userPortStyle = Resources.Load<StyleSheet>(UserPortStyleFile);
-            if (userPortStyle != null)
-                styleSheets.Add(userPortStyle);
+            styleSheets.Add(PortViewStyle);
+            //styleSheets.Add(UserPortStyle);
 
             listener = edgeConnectorListener;
             portData = _portData;
@@ -128,7 +126,7 @@ namespace GraphProcessor.Editors
             : base(_orientation, _direction, _portData.IsMulti ? Capacity.Multi : Capacity.Single, _displayType)
         {
             styleSheets.Add(Resources.Load<StyleSheet>(PortViewStyleFile));
-            StyleSheet userPortStyle = Resources.Load<StyleSheet>(UserPortStyleFile);
+            StyleSheet userPortStyle = Resources.Load<StyleSheet>(PortViewTypesFile);
             if (userPortStyle != null)
                 styleSheets.Add(userPortStyle);
 
@@ -152,12 +150,12 @@ namespace GraphProcessor.Editors
             if (AttributeCache.TryGetFieldAttribute(Owner.NodeDataType, FieldName, out TooltipAttribute toolTipAttrib))
                 tooltip = toolTipAttrib.tooltip;
             else if (vertical)
-                tooltip = NodeEditorUtility.GetPortDisplayName(FieldName);
+                tooltip = NodeEditorUtility.GetDisplayName(FieldName);
 
-            if (AttributeCache.TryGetFieldAttribute(Owner.NodeDataType, FieldName, out PortAttribute attrib) && !string.IsNullOrEmpty(attrib.DisplayName))
+            if (AttributeCache.TryGetFieldAttribute(Owner.NodeDataType, FieldName, out DisplayNameAttribute attrib))
                 portName = attrib.DisplayName;
             else
-                portName = NodeEditorUtility.GetPortDisplayName(FieldName);
+                portName = NodeEditorUtility.GetDisplayName(FieldName);
 
             AddToClassList(FieldName);
             visualClass = "Port_" + portType.Name;
@@ -222,10 +220,10 @@ namespace GraphProcessor.Editors
                 visualClass = "Port_" + portType.Name;
             }
 
-            if (AttributeCache.TryGetFieldAttribute(Owner.NodeDataType, FieldName, out PortAttribute attrib) && !string.IsNullOrEmpty(attrib.DisplayName))
+            if (AttributeCache.TryGetFieldAttribute(Owner.NodeDataType, FieldName, out DisplayNameAttribute attrib))
                 portName = attrib.DisplayName;
             else
-                portName = NodeEditorUtility.GetPortDisplayName(FieldName);
+                portName = NodeEditorUtility.GetDisplayName(FieldName);
 
             // Update the edge in case the port color have changed
             schedule.Execute(() =>

@@ -6,7 +6,7 @@ namespace GraphProcessor.Editors
 {
     public class EdgeView : Edge
     {
-        const string EdgeStylePath = "GraphProcessorStyles/EdgeView";
+        const string EdgeStylePath = "GraphProcessor/Styles/EdgeView";
         static StyleSheet edgeViewStyle;
         public static StyleSheet EdgeViewStyle
         {

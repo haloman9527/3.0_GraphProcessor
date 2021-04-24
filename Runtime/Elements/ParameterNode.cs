@@ -7,7 +7,8 @@ namespace GraphProcessor
     [NodeMenuItem("Parameter", ShowInList = false)]
     public class ParameterNode : BaseNode
     {
-        [Port(PortDirection.Output, DisplayName = "Value")]
+        [Port(PortDirection.Output)]
+        [DisplayName("Value")]
         [PortSize(12)]
         [Tooltip("接口无限制，参数提供")]
         [HideInInspector]

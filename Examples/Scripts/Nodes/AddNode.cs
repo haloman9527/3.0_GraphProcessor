@@ -1,7 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
+﻿
 namespace GraphProcessor
 {
     [NodeMenuItem("Math", "Add")]
@@ -11,7 +8,7 @@ namespace GraphProcessor
         public float a, b;
 
         [Port(PortDirection.Output, IsMulti = false)]
-        public float output;
+        float output;
 
         public override bool GetValue<T>(NodePort _port, ref T _value)
         {

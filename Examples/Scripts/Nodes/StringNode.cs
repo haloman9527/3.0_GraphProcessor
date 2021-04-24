@@ -1,11 +1,13 @@
-﻿
+﻿using UnityEngine;
+
 namespace GraphProcessor
 {
-    [NodeMenuItem("Math", "Float")]
-    public class FloatNode : BaseNode
+    [NodeMenuItem("String")]
+    public class StringNode : BaseNode
     {
+        [TextArea]
         [Port(PortDirection.Output)]
-        public float value;
+        public string value;
 
         public override bool GetValue<T>(NodePort _port, ref T _value)
         {

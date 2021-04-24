@@ -7,24 +7,11 @@ namespace GraphProcessor.Editors
 {
     public class BaseStackNodeView : StackNode
     {
-        const string styleSheet = "GraphProcessorStyles/BaseStackNodeView";
-        public static StyleSheet stackStyle;
-        public static StyleSheet StackStyle
-        {
-            get
-            {
-                if (stackStyle == null)
-                    stackStyle = Resources.Load<StyleSheet>(styleSheet);
-                return stackStyle;
-            }
-        }
-
         protected BaseGraphView owner;
         protected internal BaseStackNode stackNode;
 
         public virtual void Initialize(BaseGraphView _graphView, BaseStackNode _stackNode)
         {
-            styleSheets.Add(StackStyle);
             owner = _graphView;
             stackNode = _stackNode;
             headerContainer.Add(new Label(stackNode.title));

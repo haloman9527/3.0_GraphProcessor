@@ -11,11 +11,10 @@ namespace GraphProcessor.Editors
         public NodeSettingsView()
         {
             pickingMode = PickingMode.Ignore;
-            styleSheets.Add(Resources.Load<StyleSheet>("GraphProcessorStyles/NodeSettings"));
-            var uxml = Resources.Load<VisualTreeAsset>("UXML/NodeSettings");
+            styleSheets.Add(Resources.Load<StyleSheet>("GraphProcessor/Styles/NodeSettings"));
+            var uxml = Resources.Load<VisualTreeAsset>("GraphProcessor/UXML/NodeSettings");
             uxml.CloneTree(this);
 
-            // Get the element we want to use as content container
             m_ContentContainer = this.Q("contentContainer");
             RegisterCallback<MouseDownEvent>(OnMouseDown);
             RegisterCallback<MouseUpEvent>(OnMouseUp);
