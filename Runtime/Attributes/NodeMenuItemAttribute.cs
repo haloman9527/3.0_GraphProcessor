@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace GraphProcessor
+namespace CZToolKit.GraphProcessor
 {
     /// <summary> 节点菜单，和自定义节点名 </summary>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]

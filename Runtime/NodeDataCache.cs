@@ -5,7 +5,7 @@ using System.Linq;
 using System.Reflection;
 using UnityEngine;
 
-namespace GraphProcessor
+namespace CZToolKit.GraphProcessor
 {
     /// <summary> 节点端口数据缓存 </summary>
     public static class NodeDataCache
@@ -83,7 +83,13 @@ namespace GraphProcessor
                         }
                     }
                     else
-                        port.Value.DisplayType = cachePort.DisplayType;
+                    {
+                        Type displayType = _node.PortDynamicType(port.Value.FieldName);
+                        if (displayType != null)
+                            port.Value.DisplayType = displayType;
+                        else
+                            port.Value.DisplayType = cachePort.DisplayType;
+                    }
                 }
                 else
                 {

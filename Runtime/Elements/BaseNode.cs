@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace GraphProcessor
+namespace CZToolKit.GraphProcessor
 {
     [Serializable]
     public abstract class BaseNode
@@ -154,6 +154,6 @@ namespace GraphProcessor
         public virtual void OnDisconnected(NodePort _port, NodePort _targetPort) { }
 
         /// <summary> 接口动态类型 </summary>
-        public virtual Type PortDynamicType(NodePort _port) { return null; }
+        public virtual Type PortDynamicType(string _portName) { return null; }
     }
 }

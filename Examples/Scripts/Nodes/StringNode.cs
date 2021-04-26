@@ -1,8 +1,9 @@
 ﻿using UnityEngine;
 
-namespace GraphProcessor
+namespace CZToolKit.GraphProcessor
 {
     [NodeMenuItem("String")]
+    [NodeIcon("")]
     public class StringNode : BaseNode
     {
         [TextArea]

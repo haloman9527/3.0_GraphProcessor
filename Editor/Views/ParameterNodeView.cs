@@ -1,7 +1,7 @@
 using UnityEditor.Experimental.GraphView;
 using UnityEngine.UIElements;
 
-namespace GraphProcessor.Editors
+namespace CZToolKit.GraphProcessor.Editors
 {
     [CustomNodeView(typeof(ParameterNode))]
     public class ParameterNodeView : SimpleNodeView
@@ -13,12 +13,12 @@ namespace GraphProcessor.Editors
             ParameterNode parameterNode = NodeData as ParameterNode;
             title = parameterNode.Parameter?.Name;
 
-            PortViews[nameof(parameterNode.output)].tooltip = parameterNode.Parameter.ValueType.Name;
+            //PortViews[nameof(parameterNode.output)].tooltip = parameterNode.Parameter.ValueType.Name;
 
-            Add(new IMGUIContainer(() =>
-            {
-                tooltip = parameterNode.Parameter?.Value.ToString();
-            }));
+            //Add(new IMGUIContainer(() =>
+            //{
+            //    tooltip = parameterNode.Parameter?.Value.ToString();
+            //}));
         }
 
         protected override PortView CustomCreatePortView(Orientation _orientation, Direction _direction, NodePort _nodePort, BaseEdgeConnectorListener _listener)

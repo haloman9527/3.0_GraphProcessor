@@ -11,7 +11,7 @@ using UnityEngine.UIElements;
 using Status = UnityEngine.UIElements.DropdownMenuAction.Status;
 using NodeView = UnityEditor.Experimental.GraphView.Node;
 
-namespace GraphProcessor.Editors
+namespace CZToolKit.GraphProcessor.Editors
 {
     public class BaseNodeView : NodeView
     {
@@ -83,20 +83,11 @@ namespace GraphProcessor.Editors
         #region  Initialization
         public void Initialize(BaseGraphView _owner, BaseNode _nodeData)
         {
-            styleSheets.Add(BaseNodeViewStyle);
-            styleSheets.Add(PortView.PortViewTypesStyle);
+            if (Initialized) return;
 
             Owner = _owner;
             NodeData = _nodeData;
             NodeDataType = _nodeData.GetType();
-            Lockable = AttributeCache.TryGetTypeAttribute(NodeDataType, out LockableAttribute lockableAttribute);
-            if (AttributeCache.TryGetTypeAttribute(NodeDataType, out NodeTooltipAttribute nodeTooltipAttribute))
-                tooltip = nodeTooltipAttribute.Tooltip;
-            if (AttributeCache.TryGetTypeAttribute(NodeDataType, out NodeTitleTintAttribute nodeTitleTintAttribute))
-            {
-                titleContainer.style.backgroundColor = nodeTitleTintAttribute.BackgroundColor;
-                TitleLabel.style.color = nodeTitleTintAttribute.BackgroundColor.GetLuminance() > 0.5f && nodeTitleTintAttribute.BackgroundColor.a > 0.5f ? Color.black : Color.white * 0.9f;
-            }
 
             InitializeView();
             InitializePorts();
@@ -104,18 +95,21 @@ namespace GraphProcessor.Editors
             RefreshExpandedState();
 
             OnInitialized();
-            MarkDirtyRepaint();
+            Initialized = true;
         }
 
         protected virtual void OnInitialized()
         {
 #if !ODIN_INSPECTOR
-            PrecossorFields();
+            ProcessFields();
 #endif
         }
 
         void InitializeView()
         {
+            styleSheets.Add(BaseNodeViewStyle);
+            styleSheets.Add(PortView.PortViewTypesStyle);
+
             controlsContainer = new VisualElement { name = "Controls" };
             controlsContainer.AddToClassList("NodeControls");
             controlsContainer.style.backgroundColor = new Color(0.2f, 0.2f, 0.2f, 1);
@@ -138,14 +132,23 @@ namespace GraphProcessor.Editors
             inputContainerElement.SendToBack();
             inputContainerElement.pickingMode = PickingMode.Ignore;
 
-            base.expanded = NodeData.Expanded;
             title = NodeEditorUtility.GetNodeDisplayName(NodeDataType);
+            expanded = NodeData.Expanded;
             SetPosition(NodeData.position);
+            Lockable = AttributeCache.TryGetTypeAttribute(NodeDataType, out LockableAttribute lockableAttribute);
 
-            if (AttributeCache.TryGetTypeAttribute(NodeData.GetType(), out TooltipAttribute tooltipAttrib))
+            if (AttributeCache.TryGetTypeAttribute(NodeDataType, out NodeTooltipAttribute nodeTooltipAttribute))
+                tooltip = nodeTooltipAttribute.Tooltip;
+            if (AttributeCache.TryGetTypeAttribute(NodeDataType, out NodeTitleTintAttribute nodeTitleTintAttribute))
+            {
+                titleContainer.style.backgroundColor = nodeTitleTintAttribute.BackgroundColor;
+                TitleLabel.style.color = nodeTitleTintAttribute.BackgroundColor.GetLuminance() > 0.5f && nodeTitleTintAttribute.BackgroundColor.a > 0.5f ? Color.black : Color.white * 0.9f;
+            }
+
+            if (AttributeCache.TryGetTypeAttribute(NodeDataType, out TooltipAttribute tooltipAttrib))
                 tooltip = tooltipAttrib.tooltip;
 
-            bool showControlOnHover = AttributeCache.TryGetTypeAttribute(NodeData.GetType(), out ShowControlOnHoverAttribute showControlOnHoverAttrib);
+            bool showControlOnHover = AttributeCache.TryGetTypeAttribute(NodeDataType, out ShowControlOnHoverAttribute showControlOnHoverAttrib);
             if (showControlOnHover)
             {
                 bool mouseOverControls = false;
@@ -171,8 +174,6 @@ namespace GraphProcessor.Editors
             }
 
             //Undo.undoRedoPerformed += UpdateFieldValues;
-
-            Initialized = true;
         }
 
         protected virtual PortView CustomCreatePortView(Orientation _orientation, Direction _direction, NodePort _nodePort, BaseEdgeConnectorListener _listener)
@@ -197,22 +198,18 @@ namespace GraphProcessor.Editors
                 portView.Initialize(this);
                 PortViews[nodePort.Key] = portView;
             }
+
+            foreach (var fieldInfo in NodeDataTypeFieldInfos)
+            {
+                if (AttributeCache.TryGetFieldInfoAttribute(NodeDataType, fieldInfo, out ShowAsDrawer showAsDrawer))
+                    AddControlField(fieldInfo, "", true);
+            }
         }
 
-        
+
         #endregion
 
         #region API
-
-        public void HightlightOn()
-        {
-
-        }
-
-        public void HightlightOf()
-        {
-
-        }
 
         public void SetDeletable(bool deletable)
         {
@@ -236,6 +233,11 @@ namespace GraphProcessor.Editors
                 capabilities |= Capabilities.Selectable;
             else
                 capabilities &= ~Capabilities.Selectable;
+        }
+
+        public void AddIcon(Image _icon)
+        {
+            titleContainer.Insert(titleContainer.IndexOf(TitleLabel), _icon);
         }
 
         public void AddBadge(IconBadge badge)
@@ -292,7 +294,7 @@ namespace GraphProcessor.Editors
             BringToFront();
         }
 
-        protected virtual void ProcessorFields()
+        protected virtual void ProcessFields()
         {
             foreach (var fieldInfo in NodeDataTypeFieldInfos)
             {
@@ -300,10 +302,8 @@ namespace GraphProcessor.Editors
                 if (fieldInfo.GetCustomAttribute(typeof(System.NonSerializedAttribute)) != null || fieldInfo.GetCustomAttribute(typeof(HideInInspector)) != null)
                     continue;
 
-                // 是否是一个接口，如果是一个借口，跳过
+                // 是否是一个接口
                 bool isPort = AttributeCache.TryGetFieldInfoAttribute(NodeDataType, fieldInfo, out PortAttribute portAttrib);
-                if (isPort)
-                    continue;
                 // 是公开，或者有SerializeField特性
                 bool isDisplay = fieldInfo.IsPublic || AttributeCache.TryGetFieldInfoAttribute(NodeDataType, fieldInfo, out SerializeField serializable);
                 if (!isDisplay || (isPort && portAttrib.ShowBackValue == ShowBackingValue.Never))
@@ -315,6 +315,9 @@ namespace GraphProcessor.Editors
                 bool showInputDrawer = isInputPort && showAsDrawer;
                 // 把数组排除
                 showInputDrawer &= !typeof(IList).IsAssignableFrom(fieldInfo.FieldType);
+
+                if (showInputDrawer)
+                    continue;
 
                 var elem = AddControlField(fieldInfo, ObjectNames.NicifyVariableName(fieldInfo.Name), showInputDrawer);
                 if (isInputPort)
@@ -376,94 +379,74 @@ namespace GraphProcessor.Editors
         }
 
         static MethodInfo specificGetValue = typeof(BaseNodeView).GetMethod(nameof(GetInputFieldValueSpecific), BindingFlags.NonPublic | BindingFlags.Instance);
-        object GetInputFieldValue(FieldInfo info)
+
+        protected VisualElement AddControlField(FieldInfo _fieldInfo, string _label = null, bool _showInputDrawer = false, Action valueChangedCallback = null)
         {
-            // Warning: Keep in sync with FieldFactory CreateField
-            var fieldType = info.FieldType.IsSubclassOf(typeof(UnityEngine.Object)) ? typeof(UnityEngine.Object) : info.FieldType;
-            var genericUpdate = specificGetValue.MakeGenericMethod(fieldType);
-
-            return genericUpdate.Invoke(this, new object[] { info });
-        }
-
-        protected VisualElement AddControlField(string fieldName, string label = null, bool showInputDrawer = false, Action valueChangedCallback = null)
-            => AddControlField(NodeData.GetType().GetField(fieldName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance), label, showInputDrawer, valueChangedCallback);
-
-        protected VisualElement AddControlField(FieldInfo field, string label = null, bool showInputDrawer = false, Action valueChangedCallback = null)
-        {
-            if (field == null)
+            if (_fieldInfo == null)
                 return null;
 
-            var element = FieldFactory.CreateField(field.FieldType, field.GetValue(NodeData), (newValue) =>
-            {
-                Owner.RegisterCompleteObjectUndo("Updated " + newValue);
-                field.SetValue(NodeData, newValue);
-                NotifyNodeChanged();
-                valueChangedCallback?.Invoke();
-                UpdateFieldVisibility(field.Name, newValue);
+            var fieldDrawer = FieldFactory.CreateField(_showInputDrawer ? "" : _label, _fieldInfo.FieldType, _fieldInfo.GetValue(NodeData), (newValue) =>
+             {
+                 Owner.RegisterCompleteObjectUndo("Updated " + newValue);
+                 _fieldInfo.SetValue(NodeData, newValue);
+                 NotifyNodeChanged();
+                 valueChangedCallback?.Invoke();
+                // 更新可见性
+                UpdateFieldVisibility(_fieldInfo.Name, newValue);
                 // When you have the node inspector, it's possible to have multiple input fields pointing to the same
                 // property. We need to update those manually otherwise they still have the old value in the inspector.
-                UpdateOtherFieldValue(field, newValue);
-            }, showInputDrawer ? "" : label);
+                UpdateOtherFieldValue(_fieldInfo, newValue);
+             });
 
-            if (!fieldControlsMap.TryGetValue(field, out var inputFieldList))
-                inputFieldList = fieldControlsMap[field] = new List<VisualElement>();
-            inputFieldList.Add(element);
 
-            if (element != null)
+
+            if (!fieldControlsMap.TryGetValue(_fieldInfo, out var inputFieldList))
+                inputFieldList = fieldControlsMap[_fieldInfo] = new List<VisualElement>();
+            inputFieldList.Add(fieldDrawer);
+
+            if (fieldDrawer != null)
             {
-                if (showInputDrawer)
+                if (_showInputDrawer)
                 {
-                    var box = new VisualElement { name = field.Name };
-                    box.AddToClassList("port-input-element");
-                    box.Add(element);
-                    inputContainerElement.Add(box);
+                    if (PortViews.TryGetValue(_fieldInfo.Name, out PortView portView))
+                    {
+                        var box = new VisualElement { name = _fieldInfo.Name };
+                        box.AddToClassList("port-input-element");
+                        box.Add(fieldDrawer);
+                        inputContainerElement.Add(box);
+                    }
                 }
                 else
-                {
-                    controlsContainer.Add(element);
-                }
+                    controlsContainer.Add(fieldDrawer);
             }
 
-            return element;
+            return fieldDrawer;
         }
 
-
-        public void ForceUpdatePorts()
+        public virtual void OnPortConnected(PortView _portView, PortView _targetPortView)
         {
-            NodeDataCache.UpdateStaticPorts(NodeData);
+            if (_portView.direction == Direction.Input && inputContainerElement?.Q(_portView.FieldName) != null)
+                inputContainerElement.Q(_portView.FieldName).AddToClassList("empty");
 
-            RefreshPorts();
-        }
-
-        void UpdateFieldValues()
-        {
-            foreach (var kp in fieldControlsMap)
-                UpdateOtherFieldValue(kp.Key, kp.Key.GetValue(NodeData));
-        }
-
-        internal void OnPortConnected(PortView port)
-        {
-            if (port.direction == Direction.Input && inputContainerElement?.Q(port.FieldName) != null)
-                inputContainerElement.Q(port.FieldName).AddToClassList("empty");
-
-            if (hideElementIfConnected.TryGetValue(port.FieldName, out var elem))
+            if (hideElementIfConnected.TryGetValue(_portView.FieldName, out var elem))
                 elem.style.display = DisplayStyle.None;
         }
 
-        internal void OnPortDisconnected(PortView port)
+        public virtual void OnPortDisconnected(PortView _portView, PortView _targetPortView)
         {
-            if (port.direction == Direction.Input && inputContainerElement?.Q(port.FieldName) != null)
-                inputContainerElement.Q(port.FieldName).RemoveFromClassList("empty");
+            if (_portView.direction == Direction.Input && inputContainerElement?.Q(_portView.FieldName) != null)
+                inputContainerElement.Q(_portView.FieldName).RemoveFromClassList("empty");
 
-            if (hideElementIfConnected.TryGetValue(port.FieldName, out var elem))
+            if (hideElementIfConnected.TryGetValue(_portView.FieldName, out var elem))
                 elem.style.display = DisplayStyle.Flex;
         }
 
         public override void SetPosition(Rect newPos)
         {
-            if (Initialized || !NodeData.Locked)
+            if (!Initialized)
+                base.SetPosition(newPos);
+            else if (!NodeData.Locked)
             {
-                Initialized = false;
                 base.SetPosition(newPos);
 
                 Owner.RegisterCompleteObjectUndo("Moved graph node");
@@ -474,6 +457,7 @@ namespace GraphProcessor.Editors
         public void ChangeLockStatus()
         {
             NodeData.Locked ^= true;
+            SetMovable(!NodeData.Locked);
         }
 
         public override void BuildContextualMenu(ContextualMenuPopulateEvent evt)

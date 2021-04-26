@@ -5,7 +5,7 @@ using UnityEditor.Experimental.GraphView;
 using UnityEngine.UIElements;
 using UnityEditor;
 
-namespace GraphProcessor.Editors
+namespace CZToolKit.GraphProcessor.Editors
 {
     /// <summary> Base class to write your own edge handling connection system </summary>
     public class BaseEdgeConnectorListener : IEdgeConnectorListener
@@ -24,15 +24,16 @@ namespace GraphProcessor.Editors
 
         public virtual void OnDropOutsidePort(Edge edge, Vector2 position)
         {
-            graphView.RegisterCompleteObjectUndo("Disconnect edge");
-
             //If the edge was already existing, remove it
             if (!edge.isGhostEdge)
+            {
+                graphView.RegisterCompleteObjectUndo("Disconnect edge");
                 graphView.RemoveElement(edge as EdgeView);
+            }
 
             // when on of the port is null, then the edge was created and dropped outside of a port
-            if (edge.input == null || edge.output == null)
-                ShowNodeCreationMenuFromEdge(edge as EdgeView, position);
+            //if (edge.input == null || edge.output == null)
+            //    ShowNodeCreationMenuFromEdge(edge as EdgeView, position);
         }
 
         public virtual void OnDrop(GraphView graphView, Edge edge)
@@ -40,7 +41,7 @@ namespace GraphProcessor.Editors
             var edgeView = edge as EdgeView;
             bool wasOnTheSamePort = false;
 
-            if (edgeView?.input == null || edgeView?.output == null)
+            if (edgeView.input == null || edgeView.output == null)
                 return;
 
             //If the edge was moved to another port
@@ -59,17 +60,17 @@ namespace GraphProcessor.Editors
 
             edgeInputPorts[edge] = edge.input as PortView;
             edgeOutputPorts[edge] = edge.output as PortView;
-            try
-            {
-                this.graphView.RegisterCompleteObjectUndo("Connected " + edgeView.input.node.name + " and " + edgeView.output.node.name);
-                if (!this.graphView.Connect(edge as EdgeView))
-                    this.graphView.Disconnect(edge as EdgeView);
-            }
-            catch (System.Exception)
-            {
-                Debug.Log("GGG");
-                this.graphView.Disconnect(edge as EdgeView);
-            }
+            this.graphView.RegisterCompleteObjectUndo("Connected " + edgeView.input.node.name + " and " + edgeView.output.node.name);
+            this.graphView.Connect(edge as EdgeView);
+            //try
+            //{
+            //    //if (!this.graphView.Connect(edge as EdgeView))
+            //    //    this.graphView.Disconnect(edge as EdgeView);
+            //}
+            //catch (System.Exception)
+            //{
+            //    this.graphView.Disconnect(edge as EdgeView);
+            //}
         }
 
         void ShowNodeCreationMenuFromEdge(EdgeView edgeView, Vector2 position)

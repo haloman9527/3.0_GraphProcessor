@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace GraphProcessor
+namespace CZToolKit.GraphProcessor
 {
     [Serializable]
     public class ExposedParmetersDictionary : Dictionary<string, ExposedParameter>, ISerializationCallbackReceiver
@@ -77,11 +77,11 @@ namespace GraphProcessor
             }
         }
 
-        public ExposedParameter(string _name, object _defaultValue)
+        public ExposedParameter(string _name, object _defaultValue, Type _valueType)
         {
             name = _name;
             guid = Guid.NewGuid().ToString();
-            ValueType = _defaultValue.GetType();
+            ValueType = _valueType;
             value = _defaultValue;
         }
     }

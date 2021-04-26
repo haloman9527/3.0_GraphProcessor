@@ -6,7 +6,7 @@ using UnityEditor;
 using System.Linq;
 using System;
 
-namespace GraphProcessor.Editors
+namespace CZToolKit.GraphProcessor.Editors
 {
     public class ToolbarView : Toolbar
     {

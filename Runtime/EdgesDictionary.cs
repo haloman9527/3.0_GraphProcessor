@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace GraphProcessor
+namespace CZToolKit.GraphProcessor
 {
     [Serializable]
     public class EdgesDictionary : Dictionary<string, SerializableEdge>, ISerializationCallbackReceiver

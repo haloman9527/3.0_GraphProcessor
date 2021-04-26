@@ -5,7 +5,7 @@ using UnityEngine.UIElements;
 using UnityEditor.Callbacks;
 using CZToolKit.Core.Editors;
 
-namespace GraphProcessor.Editors
+namespace CZToolKit.GraphProcessor.Editors
 {
     [Serializable]
     public class BaseGraphWindow : BasicEditorWindow
@@ -84,7 +84,7 @@ namespace GraphProcessor.Editors
         public BaseGraphView GraphView { get { return graphView; } }
 
 
-        protected void OnEnable()
+        protected virtual void OnEnable()
         {
             graphViewElement = new VisualElement();
             graphViewElement.name = "GraphView";
@@ -93,6 +93,15 @@ namespace GraphProcessor.Editors
 
             if (graphData != null)
                 LoadGraphInternal(graphData);
+        }
+
+        protected virtual void OnGUI()
+        {
+            if (toolbar != null)
+                GUILayoutUtility.GetRect(toolbar.style.width.value.value, toolbar.style.height.value.value);
+
+            if (GraphView != null)
+                GraphView.OnGUI();
         }
 
         protected virtual void OnDisable()

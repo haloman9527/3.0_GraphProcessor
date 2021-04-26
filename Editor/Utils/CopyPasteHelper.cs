@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace GraphProcessor
+namespace CZToolKit.GraphProcessor
 {
     [Serializable]
     public class CopyPasteHelper

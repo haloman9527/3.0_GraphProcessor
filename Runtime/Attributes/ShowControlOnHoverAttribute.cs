@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace GraphProcessor
+namespace CZToolKit.GraphProcessor
 {
     /// <summary> 鼠标悬停才显示 </summary>
     public class ShowControlOnHoverAttribute : Attribute

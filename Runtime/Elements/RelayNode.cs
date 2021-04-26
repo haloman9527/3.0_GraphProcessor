@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-namespace GraphProcessor
+namespace CZToolKit.GraphProcessor
 {
     [Serializable]
     [NodeMenuItem("Utils", "Relay")]
@@ -20,12 +20,14 @@ namespace GraphProcessor
         [Port(PortDirection.Input, IsMulti = false, TypeConstraint = PortTypeConstraint.None)]
         [DisplayName("In")]
         [PortSize(12)]
-        public PackedRelayData input;
+        [PortColor(0,0.7f,0.3f)]
+        public object input;
 
         [Port(PortDirection.Output, IsMulti = false, TypeConstraint = PortTypeConstraint.None)]
         [DisplayName("Out")]
         [PortSize(12)]
-        public PackedRelayData output;
+        [PortColor(0, 0.7f, 0.3f)]
+        public object output;
 
         public override bool GetValue<T>(NodePort _port, ref T _value)
         {

@@ -5,7 +5,7 @@ using System.IO;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 
-namespace GraphProcessor.Editors
+namespace CZToolKit.GraphProcessor.Editors
 {
     public static class NodeEditorUtility
     {

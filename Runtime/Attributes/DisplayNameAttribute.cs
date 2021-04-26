@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace GraphProcessor
+namespace CZToolKit.GraphProcessor
 {
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Class, AllowMultiple = false)]
     public class DisplayNameAttribute : Attribute

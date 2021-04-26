@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace GraphProcessor.Editors
+namespace CZToolKit.GraphProcessor.Editors
 {
     public abstract class SimpleNodeView : BaseNodeView
     {
@@ -20,6 +20,8 @@ namespace GraphProcessor.Editors
 
         protected override void OnInitialized()
         {
+            base.OnInitialized();
+
             styleSheets.Add(SimpleNodeViewStyle);
             titleButtonContainer.style.display = DisplayStyle.None;
 
@@ -33,6 +35,8 @@ namespace GraphProcessor.Editors
             titleContainer.Add(outputContainer);
 
             titleContainer.Add(topContainer);
+            titleContainer.style.alignItems = Align.Stretch;
+            TitleLabel.style.alignSelf = Align.Center;
         }
     }
 }

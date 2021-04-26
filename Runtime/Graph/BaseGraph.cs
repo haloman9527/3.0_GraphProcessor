@@ -3,7 +3,7 @@ using System;
 using UnityEngine;
 using System.Linq;
 
-namespace GraphProcessor
+namespace CZToolKit.GraphProcessor
 {
     /// <summary> 若项目中安装了Odin，则继承Odin的SO基类 </summary>
     [Serializable]
@@ -263,12 +263,12 @@ namespace GraphProcessor
         #endregion
 
         #region Add
-        public ExposedParameter AddExposedParameter(string _name, object _value)
-        {
-            if (guidMap.TryGetValue(_name, out string guid) && Blackboard.TryGetValue(guid, out ExposedParameter param))
-                return null;
-            return AddExposedParameter(new ExposedParameter(_name, _value));
-        }
+        //public ExposedParameter AddExposedParameter(string _name, object _value)
+        //{
+        //    if (guidMap.TryGetValue(_name, out string guid) && Blackboard.TryGetValue(guid, out ExposedParameter param))
+        //        return null;
+        //    return AddExposedParameter(new ExposedParameter(_name, _value));
+        //}
 
         public ExposedParameter AddExposedParameter(ExposedParameter _param)
         {

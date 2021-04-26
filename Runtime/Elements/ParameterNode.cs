@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace GraphProcessor
+namespace CZToolKit.GraphProcessor
 {
     [Serializable]
     [NodeMenuItem("Parameter", ShowInList = false)]
@@ -32,9 +32,9 @@ namespace GraphProcessor
             return false;
         }
 
-        public override Type PortDynamicType(NodePort _port)
+        public override Type PortDynamicType(string _portName)
         {
-            if (_port.FieldName == nameof(output) && Parameter?.ValueType != null)
+            if (_portName == nameof(output) && Parameter?.ValueType != null)
                 return Parameter.ValueType;
             return null;
         }

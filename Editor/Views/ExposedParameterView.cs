@@ -8,7 +8,7 @@ using System;
 
 using Blackboard = UnityEditor.Experimental.GraphView.Blackboard;
 
-namespace GraphProcessor.Editors
+namespace CZToolKit.GraphProcessor.Editors
 {
     public class ExposedParameterView : Blackboard
     {
@@ -54,7 +54,7 @@ namespace GraphProcessor.Editors
                     string name = rawName;
 
                     int i = 0;
-                    while (GraphView.GraphData.TryGetExposedParameterFromName(name,out ExposedParameter param))
+                    while (GraphView.GraphData.TryGetExposedParameterFromName(name, out ExposedParameter param))
                     {
                         name = rawName + " " + i++;
                     }
@@ -68,9 +68,9 @@ namespace GraphProcessor.Editors
 
         public void AddParam(string _name, Type _valueType)
         {
-            if (FieldFactory.PropertyCreatorMap.TryGetValue(_valueType, out Func<string, ExposedParameter> creator))
+            if (FieldFactory.PropertyCreatorMap.TryGetValue(_valueType, out Func<string, Type, ExposedParameter> creator))
             {
-                ExposedParameter property = creator(_name);
+                ExposedParameter property = creator(_name, _valueType);
                 GraphView.GraphData.AddExposedParameter(property);
                 AddParamField(property);
             }
@@ -82,12 +82,12 @@ namespace GraphProcessor.Editors
             BlackboardField blackboardField = new BlackboardField() { text = _param.Name, typeText = _param.ValueType.Name, userData = _param };
             property.Add(blackboardField);
 
-            VisualElement fieldDrawer = FieldFactory.CreateField(_param.ValueType, _param.Value, _newValue =>
-            {
-                _param.Value = _newValue;
-                if (_param.Value != null)
-                    blackboardField.typeText = _param.Value.GetType().Name;
-            }, "");
+            VisualElement fieldDrawer = FieldFactory.CreateField("", _param.ValueType, _param.Value, _newValue =>
+             {
+                 _param.Value = _newValue;
+                 if (_param.Value != null)
+                     blackboardField.typeText = _param.Value.GetType().Name;
+             });
             BlackboardRow blackboardRow = new BlackboardRow(blackboardField, fieldDrawer);
             property.Add(blackboardRow);
             contentContainer.Add(property);
@@ -103,9 +103,14 @@ namespace GraphProcessor.Editors
 
         public override void SetPosition(Rect newPos)
         {
-            base.SetPosition(newPos);
-            GraphView.GraphData.blackboardPosition = newPos;
-            GraphView.RegisterCompleteObjectUndo("Modify ExposedParameterView");
+            if (!GraphView.Initialized)
+                base.SetPosition(newPos);
+            else
+            {
+                base.SetPosition(newPos);
+                GraphView.GraphData.blackboardPosition = newPos;
+                GraphView.RegisterCompleteObjectUndo("Modify ExposedParameterView");
+            }
         }
 
         protected virtual void UpdateParameterList()

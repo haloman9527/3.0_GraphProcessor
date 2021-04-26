@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace GraphProcessor
+namespace CZToolKit.GraphProcessor
 {
     /// <summary> 接口特性，标记此特性的字段将被绘制为一个接口 </summary>
     [AttributeUsage(AttributeTargets.Field)]

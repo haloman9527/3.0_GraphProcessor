@@ -4,7 +4,7 @@ using System.Reflection;
 using System;
 using CZToolKit.Core;
 
-namespace GraphProcessor
+namespace CZToolKit.GraphProcessor
 {
     [Serializable]
     /// <summary> Runtime class that stores all info about one port that is needed for the processing </summary>
@@ -107,7 +107,7 @@ namespace GraphProcessor
             isMulti = port.IsMulti;
             typeConstraint = port.typeConstraint;
 
-            DisplayType = Owner.PortDynamicType(this);
+            DisplayType = Owner.PortDynamicType(FieldName);
             if (DisplayType == null)
                 DisplayType = port.DisplayType;
         }
@@ -118,8 +118,10 @@ namespace GraphProcessor
             direction = port.direction;
             isMulti = port.isMulti;
             typeConstraint = port.typeConstraint;
-            DisplayType = Owner.PortDynamicType(this);
-            if (DisplayType == null)
+            Type tempDisplayType = Owner.PortDynamicType(FieldName);
+            if (tempDisplayType != null)
+                DisplayType = tempDisplayType;
+            else
                 DisplayType = port.DisplayType;
         }
 

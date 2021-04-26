@@ -2,7 +2,7 @@ using UnityEngine;
 using System;
 using System.Linq.Expressions;
 
-namespace GraphProcessor
+namespace CZToolKit.GraphProcessor
 {
 	public static class TypeExtension
 	{

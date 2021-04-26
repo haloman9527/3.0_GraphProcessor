@@ -8,7 +8,7 @@ using System;
 using System.Reflection;
 using CZToolKit.Core;
 
-namespace GraphProcessor.Editors
+namespace CZToolKit.GraphProcessor.Editors
 {
     public class PortView : Port
     {
@@ -39,84 +39,71 @@ namespace GraphProcessor.Editors
             }
         }
 
-        public static PortView CreatePV(Orientation orientation, Direction direction, NodePort portData, BaseEdgeConnectorListener edgeConnectorListener)
+        public static PortView CreatePV(Orientation _orientation, Direction _direction, NodePort _portData, BaseEdgeConnectorListener _edgeConnectorListener)
         {
-            var pv = new PortView(orientation, direction, portData, edgeConnectorListener);
+            var portView = new PortView(_orientation, _direction, _portData, _edgeConnectorListener);
 
-            pv.m_EdgeConnector = new BaseEdgeConnector(edgeConnectorListener);
-            pv.AddManipulator(pv.m_EdgeConnector);
+            portView.m_EdgeConnector = new BaseEdgeConnector(_edgeConnectorListener);
+            portView.AddManipulator(portView.m_EdgeConnector);
 
-            // Force picking in the port label to enlarge the edge creation zone
-            var portLabel = pv.Q("type");
+            var portLabel = portView.Q("type");
             if (portLabel != null)
             {
                 portLabel.pickingMode = PickingMode.Position;
                 portLabel.style.flexGrow = 1;
             }
-            bool vertical = orientation == Orientation.Vertical;
-            // hide label when the port is vertical
+            bool vertical = _orientation == Orientation.Vertical;
+
             if (vertical && portLabel != null)
                 portLabel.style.display = DisplayStyle.None;
 
-            // Fixup picking mode for vertical top ports
             if (vertical)
-                pv.Q("connector").pickingMode = PickingMode.Position;
+                portView.Q("connector").pickingMode = PickingMode.Position;
 
-            return pv;
+            return portView;
         }
 
-        public static PortView CreatePV(Orientation orientation, Direction direction, NodePort portData, Type displayType, BaseEdgeConnectorListener edgeConnectorListener)
+        public static PortView CreatePV(Orientation _orientation, Direction _direction, NodePort _portData, Type _displayType, BaseEdgeConnectorListener _edgeConnectorListener)
         {
-            var pv = new PortView(orientation, direction, portData, displayType, edgeConnectorListener);
+            var portView = new PortView(_orientation, _direction, _portData, _displayType, _edgeConnectorListener);
 
-            pv.m_EdgeConnector = new BaseEdgeConnector(edgeConnectorListener);
-            pv.AddManipulator(pv.m_EdgeConnector);
+            portView.m_EdgeConnector = new BaseEdgeConnector(_edgeConnectorListener);
+            portView.AddManipulator(portView.m_EdgeConnector);
 
-            // Force picking in the port label to enlarge the edge creation zone
-            var portLabel = pv.Q("type");
+            var portLabel = portView.Q("type");
             if (portLabel != null)
             {
                 portLabel.pickingMode = PickingMode.Position;
                 portLabel.style.flexGrow = 1;
             }
-            bool vertical = orientation == Orientation.Vertical;
-            // hide label when the port is vertical
+            bool vertical = _orientation == Orientation.Vertical;
+
             if (vertical && portLabel != null)
                 portLabel.style.display = DisplayStyle.None;
 
-            // Fixup picking mode for vertical top ports
             if (vertical)
-                pv.Q("connector").pickingMode = PickingMode.Position;
+                portView.Q("connector").pickingMode = PickingMode.Position;
 
-            return pv;
+            return portView;
         }
 
 
         public int size;
-        public NodePort portData;
-        public FieldInfo fieldInfo;
-
-        public PortAttribute portAttribute;
+        NodePort portData;
         protected BaseEdgeConnectorListener listener;
 
-        List<EdgeView> edges = new List<EdgeView>();
-
         public BaseNodeView Owner { get; private set; }
+        public NodePort PortData { get { return portData; } }
         public string FieldName { get { return portData.FieldName; } }
-        public List<EdgeView> Edges { get { return edges; } }
-        public int ConnectionCount { get { return edges.Count; } }
-        bool vertical;
+        public List<EdgeView> Edges { get;  } = new List<EdgeView>();
+
         PortView(Orientation _orientation, Direction _direction, NodePort _portData, BaseEdgeConnectorListener edgeConnectorListener)
             : base(_orientation, _direction, _portData.IsMulti ? Capacity.Multi : Capacity.Single, _portData.DisplayType)
         {
-            styleSheets.Add(PortViewStyle);
-            //styleSheets.Add(UserPortStyle);
-
-            listener = edgeConnectorListener;
             portData = _portData;
+            listener = edgeConnectorListener;
 
-            vertical = _orientation == Orientation.Vertical;
-            if (vertical)
+            if (_orientation == Orientation.Vertical)
                 AddToClassList("Vertical");
 
             UpdatePortSize();
@@ -125,16 +112,10 @@ namespace GraphProcessor.Editors
         PortView(Orientation _orientation, Direction _direction, NodePort _portData, Type _displayType, BaseEdgeConnectorListener edgeConnectorListener)
             : base(_orientation, _direction, _portData.IsMulti ? Capacity.Multi : Capacity.Single, _displayType)
         {
-            styleSheets.Add(Resources.Load<StyleSheet>(PortViewStyleFile));
-            StyleSheet userPortStyle = Resources.Load<StyleSheet>(PortViewTypesFile);
-            if (userPortStyle != null)
-                styleSheets.Add(userPortStyle);
-
-            listener = edgeConnectorListener;
             portData = _portData;
+            listener = edgeConnectorListener;
 
-            vertical = _orientation == Orientation.Vertical;
-            if (vertical)
+            if (_orientation == Orientation.Vertical)
                 AddToClassList("Vertical");
 
             UpdatePortSize();
@@ -142,6 +123,9 @@ namespace GraphProcessor.Editors
 
         public virtual void Initialize(BaseNodeView _nodeView)
         {
+            styleSheets.Add(PortViewStyle);
+            styleSheets.Add(PortViewTypesStyle);
+
             Owner = _nodeView;
 
             if (AttributeCache.TryGetFieldAttribute(Owner.NodeDataType, FieldName, out PortColorAttribute colorAttrib))
@@ -149,7 +133,7 @@ namespace GraphProcessor.Editors
 
             if (AttributeCache.TryGetFieldAttribute(Owner.NodeDataType, FieldName, out TooltipAttribute toolTipAttrib))
                 tooltip = toolTipAttrib.tooltip;
-            else if (vertical)
+            else if (orientation == Orientation.Vertical)
                 tooltip = NodeEditorUtility.GetDisplayName(FieldName);
 
             if (AttributeCache.TryGetFieldAttribute(Owner.NodeDataType, FieldName, out DisplayNameAttribute attrib))
@@ -164,7 +148,7 @@ namespace GraphProcessor.Editors
         /// <summary> Update the size of the port view (using the portData.sizeInPixel property) </summary>
         public void UpdatePortSize()
         {
-            if (AttributeCache.TryGetFieldAttribute(portData.Owner.GetType(), portData.FieldName, out PortSizeAttribute portSizeAttribute))
+            if (AttributeCache.TryGetFieldAttribute(PortData.Owner.GetType(), PortData.FieldName, out PortSizeAttribute portSizeAttribute))
                 size = portSizeAttribute.size;
             else
                 size = DefaultPortSize;
@@ -177,46 +161,48 @@ namespace GraphProcessor.Editors
             cap.style.height = size - 4;
 
             // Update connected edge sizes:
-            edges.ForEach(e => e.UpdateEdgeSize());
+            Edges.ForEach(e => e.UpdateEdgeSize());
         }
 
         public override void Connect(Edge edge)
         {
             base.Connect(edge);
-
+            Edges.Add(edge as EdgeView);
             var inputNode = (edge.input as PortView).Owner;
             var outputNode = (edge.output as PortView).Owner;
-
-            edges.Add(edge as EdgeView);
-
-            inputNode.OnPortConnected(edge.input as PortView);
-            outputNode.OnPortConnected(edge.output as PortView);
+            switch (direction)
+            {
+                case Direction.Input:
+                    outputNode.OnPortConnected(edge.output as PortView, edge.input as PortView);
+                    break;
+                case Direction.Output:
+                    inputNode.OnPortConnected(edge.input as PortView, edge.output as PortView);
+                    break;
+            }
         }
 
         public override void Disconnect(Edge edge)
         {
             base.Disconnect(edge);
-
             if (!(edge as EdgeView).isConnected)
                 return;
 
             var inputNode = (edge.input as PortView).Owner;
             var outputNode = (edge.output as PortView).Owner;
 
-            inputNode.OnPortDisconnected(edge.input as PortView);
-            outputNode.OnPortDisconnected(edge.output as PortView);
+            inputNode.OnPortDisconnected(edge.input as PortView, edge.output as PortView);
+            outputNode.OnPortDisconnected(edge.output as PortView, edge.input as PortView);
 
-            edges.Remove(edge as EdgeView);
+            Edges.Remove(edge as EdgeView);
         }
 
-        public void UpdatePortView(NodePort _portData)
+        public void UpdatePortView()
         {
-            portData = _portData;
+            if (PortData == null) return;
 
-            if (_portData.DisplayType != null)
+            if (PortData.DisplayType != null)
             {
-                base.portType = _portData.DisplayType;
-                portType = _portData.DisplayType;
+                portType = PortData.DisplayType;
                 visualClass = "Port_" + portType.Name;
             }
 
@@ -228,7 +214,7 @@ namespace GraphProcessor.Editors
             // Update the edge in case the port color have changed
             schedule.Execute(() =>
             {
-                foreach (var edge in edges)
+                foreach (var edge in Edges)
                 {
                     edge.UpdateEdgeControl();
                     edge.MarkDirtyRepaint();

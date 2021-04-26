@@ -1,9 +1,9 @@
-﻿using GraphProcessor.Editors;
+﻿using CZToolKit.GraphProcessor.Editors;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace GraphProcessor.Examples
+namespace CZToolKit.GraphProcessor.Examples
 {
     [CustomGraphWindow(typeof(MathGraph))]
     public class MathGraphWindow : BaseGraphWindow

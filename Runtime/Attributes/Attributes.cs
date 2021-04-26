@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-namespace GraphProcessor
+namespace CZToolKit.GraphProcessor
 {
 
     /// <summary> Set a custom drawer for a field. It can then be created using the FieldFactory </summary>
@@ -77,11 +77,5 @@ namespace GraphProcessor
         {
             this.stackNodeType = stackNodeType;
         }
-    }
-
-    [AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]
-    public class ShowAsDrawer : Attribute
-    {
-        public ShowAsDrawer() { }
     }
 }

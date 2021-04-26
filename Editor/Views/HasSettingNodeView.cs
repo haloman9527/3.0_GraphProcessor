@@ -3,7 +3,7 @@ using System.Reflection;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace GraphProcessor.Editors
+namespace CZToolKit.GraphProcessor.Editors
 {
     public interface IHasSettingNodeView
     {
@@ -19,7 +19,9 @@ namespace GraphProcessor.Editors
         protected override void OnInitialized()
         {
             base.OnInitialized();
+
             styleSheets.Add(Resources.Load<StyleSheet>("GraphProcessor/Styles/SettingsNodeView"));
+
             InitializeSettings();
             RegisterCallback<GeometryChangedEvent>(OnGeometryChanged);
             OnGeometryChanged(null);
@@ -35,10 +37,10 @@ namespace GraphProcessor.Editors
             settingsContainer.Add(settings);
             Add(settingsContainer);
 
-            foreach (var field in NodeDataTypeFieldInfos)
+            foreach (var fieldInfo in NodeDataTypeFieldInfos)
             {
-                if (AttributeCache.TryGetFieldInfoAttribute(NodeDataType, field, out SettingAttribute settingAttribute))
-                    AddSettingField(field);
+                if (AttributeCache.TryGetFieldInfoAttribute(NodeDataType, fieldInfo, out SettingAttribute settingAttribute))
+                    AddSettingField(fieldInfo);
             }
         }
 
@@ -47,15 +49,14 @@ namespace GraphProcessor.Editors
             if (_fieldInfo == null)
                 return;
 
-
             var label = AttributeCache.TryGetFieldInfoAttribute(NodeDataType, _fieldInfo, out DisplayNameAttribute displayNameAttribute)
                 ? displayNameAttribute.DisplayName : NodeEditorUtility.GetDisplayName(_fieldInfo.Name);
 
-            var element = FieldFactory.CreateField(_fieldInfo.FieldType, _fieldInfo.GetValue(NodeData), (newValue) =>
-            {
-                Owner.RegisterCompleteObjectUndo("Updated " + newValue);
-                _fieldInfo.SetValue(NodeData, newValue);
-            }, label);
+            var element = FieldFactory.CreateField(label, _fieldInfo.FieldType, _fieldInfo.GetValue(NodeData), (newValue) =>
+             {
+                 Owner.RegisterCompleteObjectUndo("Updated " + newValue);
+                 _fieldInfo.SetValue(NodeData, newValue);
+             });
 
             if (element != null)
             {

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Collections;
 using System;
 
-namespace GraphProcessor
+namespace CZToolKit.GraphProcessor
 {
     public static class AppDomainExtension
     {

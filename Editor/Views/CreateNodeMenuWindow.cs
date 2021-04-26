@@ -6,7 +6,7 @@ using UnityEditor.Experimental.GraphView;
 using UnityEngine.UIElements;
 using CZToolKit.Core;
 
-namespace GraphProcessor.Editors
+namespace CZToolKit.GraphProcessor.Editors
 {
     public class CreateNodeMenuWindow : ScriptableObject, ISearchWindowProvider
     {

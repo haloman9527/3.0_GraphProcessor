@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace GraphProcessor
+namespace CZToolKit.GraphProcessor
 {
     public class CustomPortBehaviourAttribute : Attribute
     {

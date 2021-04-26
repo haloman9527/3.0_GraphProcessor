@@ -1,5 +1,5 @@
 ﻿
-namespace GraphProcessor
+namespace CZToolKit.GraphProcessor
 {
     [NodeMenuItem("Math", "Float")]
     public class FloatNode : BaseNode

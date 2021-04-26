@@ -5,7 +5,7 @@ using UnityEngine;
 using Sirenix.OdinInspector.Editor;
 #endif
 
-namespace GraphProcessor.Editors
+namespace CZToolKit.GraphProcessor.Editors
 {
     [CustomEditor(typeof(BaseGraph), true)]
     public class BaseGraphInspector : Editor

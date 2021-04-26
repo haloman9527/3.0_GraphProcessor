@@ -1,5 +1,5 @@
 ﻿
-namespace GraphProcessor
+namespace CZToolKit.GraphProcessor
 {
     /// <summary> 接口连接类型限制 </summary>
     public enum PortTypeConstraint

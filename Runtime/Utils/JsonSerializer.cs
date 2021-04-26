@@ -7,7 +7,7 @@ using UnityEditor;
 // Warning, the current serialization code does not handle unity objects
 // in play mode outside of the editor (because of JsonUtility)
 
-namespace GraphProcessor
+namespace CZToolKit.GraphProcessor
 {
     [Serializable]
     public struct JsonElement

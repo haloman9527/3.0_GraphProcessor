@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace GraphProcessor
+namespace CZToolKit.GraphProcessor
 {
     [AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]
     public class SettingAttribute : Attribute { }

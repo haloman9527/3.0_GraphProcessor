@@ -4,7 +4,7 @@ using UnityEngine;
 using System.Linq;
 using UnityEditor.Callbacks;
 
-namespace GraphProcessor.Editors
+namespace CZToolKit.GraphProcessor.Editors
 {
     public class NodeEditorAssetModProcessor : UnityEditor.AssetModificationProcessor
     {

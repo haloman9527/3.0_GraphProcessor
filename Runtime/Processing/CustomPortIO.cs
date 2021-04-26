@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Linq.Expressions;
 
-namespace GraphProcessor
+namespace CZToolKit.GraphProcessor
 {
     public delegate void CustomPortIODelegate(BaseNode node, List<SerializableEdge> edges, NodePort outputPort = null);
 

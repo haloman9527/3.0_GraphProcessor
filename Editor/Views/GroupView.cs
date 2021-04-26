@@ -5,7 +5,7 @@ using UnityEngine.UIElements;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace GraphProcessor.Editors
+namespace CZToolKit.GraphProcessor.Editors
 {
     public class GroupView : Group
     {

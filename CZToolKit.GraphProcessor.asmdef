@@ -1,0 +1,15 @@
+{
+    "name": "CZToolKit.GraphProcessor",
+    "references": [
+        "GUID:5957643ee62fb75498d29ee03d7011ef"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -2,7 +2,7 @@ using UnityEditor.Experimental.GraphView;
 using UnityEngine.UIElements;
 using UnityEngine;
 
-namespace GraphProcessor.Editors
+namespace CZToolKit.GraphProcessor.Editors
 {
     public class EdgeView : Edge
     {
@@ -60,11 +60,9 @@ namespace GraphProcessor.Editors
 
         void OnMouseDown(MouseDownEvent e)
         {
-            //*****
             // 双击创建一个RelayNode
             if (e.clickCount == 2)
             {
-                // Empirical offset:
                 var position = e.mousePosition;
                 position += new Vector2(-10f, -28);
                 Vector2 mousePos = owner.ChangeCoordinatesTo(owner.contentViewContainer, position);

@@ -9,7 +9,7 @@ using Sirenix.OdinInspector.Editor;
 using Sirenix.OdinInspector;
 #endif
 
-namespace GraphProcessor.Editors
+namespace CZToolKit.GraphProcessor.Editors
 {
     /// <summary> Custom editor of the node inspector, you can inherit from this class to customize your node inspector. </summary>
     [CustomEditor(typeof(NodeInspectorObject))]

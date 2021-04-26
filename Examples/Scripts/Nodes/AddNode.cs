@@ -1,13 +1,14 @@
 ﻿
-namespace GraphProcessor
+namespace CZToolKit.GraphProcessor
 {
     [NodeMenuItem("Math", "Add")]
     public class AddNode : BaseNode
     {
-        [Port(PortDirection.Input, IsMulti = false)]
+        [Port(PortDirection.Input, IsMulti = false,ShowBackValue = ShowBackingValue.Always)]
+        [ShowAsDrawer]
         public float a, b;
-
-        [Port(PortDirection.Output, IsMulti = false)]
+       
+        [Port(PortDirection.Output, IsMulti = true)]
         float output;
 
         public override bool GetValue<T>(NodePort _port, ref T _value)

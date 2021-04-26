@@ -1,6 +1,6 @@
 ﻿
 
-namespace GraphProcessor
+namespace CZToolKit.GraphProcessor
 {
     public enum ShowBackingValue
     {

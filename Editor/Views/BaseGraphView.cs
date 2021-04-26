@@ -10,7 +10,7 @@ using UnityEditor.SceneManagement;
 using CZToolKit.Core;
 using Blackboard = UnityEditor.Experimental.GraphView.Blackboard;
 
-namespace GraphProcessor.Editors
+namespace CZToolKit.GraphProcessor.Editors
 {
     public class BaseGraphView : GraphView
     {
@@ -26,7 +26,7 @@ namespace GraphProcessor.Editors
             }
         }
 
-        /// <summary> Object to handle nodes that shows their UI in the inspector. </summary>
+        /// <summary> 用来绘制节点的对象 </summary>
         [NonSerialized] protected NodeInspectorObject nodeInspector;
 
         ExposedParameterView blackboard;
@@ -41,6 +41,7 @@ namespace GraphProcessor.Editors
         List<GroupView> groupViews = new List<GroupView>();
 
         Dictionary<string, BaseStackNodeView> stackNodeViews = new Dictionary<string, BaseStackNodeView>();
+        List<IOnGUIObserver> onGUIObservers = new List<IOnGUIObserver>(16);
 
         public bool Initialized { get; private set; }
         public CreateNodeMenuWindow CreateNodeMenu { get; private set; }
@@ -50,6 +51,7 @@ namespace GraphProcessor.Editors
         public List<EdgeView> EdgeViews { get { return edgeViews; } }
         public List<GroupView> GroupViews { get { return groupViews; } }
         public Dictionary<string, BaseStackNodeView> StackNodeViews { get { return stackNodeViews; } }
+        public List<IOnGUIObserver> OnGUIObservers { get { return onGUIObservers; } }
 
         protected override bool canCopySelection
         {
@@ -88,6 +90,7 @@ namespace GraphProcessor.Editors
         void InitViewAndCallbacks()
         {
             styleSheets.Add(GraphViewStyle);
+
             GridBackground gridBackground = new GridBackground();
             gridBackground.style.backgroundColor = new Color(1f, 1f, 1f);
             Insert(0, gridBackground);
@@ -154,7 +157,7 @@ namespace GraphProcessor.Editors
 
             foreach (var node in GraphData.Nodes.Values)
             {
-                var nodeView = AddNodeView(node);
+                AddNodeView(node);
             }
         }
 
@@ -178,14 +181,13 @@ namespace GraphProcessor.Editors
                 if (inputNodeView == null || outputNodeView == null)
                     continue;
 
-                var edgeView = new EdgeView()
-                {
-                    userData = serializedEdge,
-                    input = inputNodeView.PortViews[serializedEdge.InputFieldName],
-                    output = outputNodeView.PortViews[serializedEdge.OutputFieldName]
-                };
-
-                ConnectView(edgeView);
+                //var edgeView = new EdgeView()
+                //{
+                //    userData = serializedEdge,
+                //    input = inputNodeView.PortViews[serializedEdge.InputFieldName],
+                //    output = outputNodeView.PortViews[serializedEdge.OutputFieldName]
+                //};
+                ConnectView(inputNodeView.PortViews[serializedEdge.InputFieldName], outputNodeView.PortViews[serializedEdge.OutputFieldName], serializedEdge);
             }
         }
 
@@ -212,6 +214,12 @@ namespace GraphProcessor.Editors
 
         protected virtual void Reload() { }
         #endregion
+
+        public virtual void OnGUI()
+        {
+            foreach (var observer in OnGUIObservers)
+                observer.OnGUI();
+        }
 
         public override Blackboard GetBlackboard() { return blackboard; }
 
@@ -381,7 +389,7 @@ namespace GraphProcessor.Editors
                             RemoveGroup(groupView);
                             return true;
                         case BaseStackNodeView stackNodeView:
-                            RemoveStackNodeView(stackNodeView);
+                            RemoveStackNode(stackNodeView);
                             return true;
                     }
 
@@ -447,7 +455,7 @@ namespace GraphProcessor.Editors
 
             PortView startPortView = _startPortView as PortView;
 
-            ports.ForEach(_portView =>
+            ports.ForEach((Action<Port>)(_portView =>
             {
                 PortView portView = _portView as PortView;
 
@@ -460,22 +468,22 @@ namespace GraphProcessor.Editors
                 if (portView.Edges.Any(e => e.input == startPortView || e.output == startPortView))
                     return;
 
-                if (startPortView.portData.TypeConstraint == PortTypeConstraint.None || portView.portData.TypeConstraint == PortTypeConstraint.None)
+                if (startPortView.PortData.TypeConstraint == PortTypeConstraint.None || portView.PortData.TypeConstraint == PortTypeConstraint.None)
                 {
                     compatiblePorts.Add(_portView);
                     return;
                 }
-                if (startPortView.portData.TypeConstraint == PortTypeConstraint.Inherited && startPortView.portData.DisplayType.IsAssignableFrom(portView.portData.DisplayType))
+                if (startPortView.PortData.TypeConstraint == PortTypeConstraint.Inherited && startPortView.PortData.DisplayType.IsAssignableFrom((Type)portView.PortData.DisplayType))
                 {
                     compatiblePorts.Add(_portView);
                     return;
                 }
-                if (startPortView.portData.TypeConstraint == PortTypeConstraint.Strict && startPortView.portData.DisplayType == portView.portData.DisplayType)
+                if (startPortView.PortData.TypeConstraint == PortTypeConstraint.Strict && startPortView.PortData.DisplayType == portView.PortData.DisplayType)
                 {
                     compatiblePorts.Add(_portView);
                     return;
                 }
-            });
+            }));
             return compatiblePorts;
         }
 
@@ -568,6 +576,8 @@ namespace GraphProcessor.Editors
 
         void ReloadView()
         {
+            Debug.LogError(1);
+            // 记录被选中的节点
             var selectedNodeGUIDs = new List<string>();
             foreach (var e in selection)
             {
@@ -578,16 +588,14 @@ namespace GraphProcessor.Editors
             // Remove everything
             RemoveNodeViews();
             RemoveEdgeViews();
-            RemoveGroups();
             RemoveStackNodeViews();
+            RemoveGroups();
 
             // And re-add with new up to date datas
             InitializeNodeViews();
             InitializeEdgeViews();
             InitializeStackNodes();
             InitializeGroups();
-
-            Reload();
 
             // Restore selection after re-creating all views
             // selection = nodeViews.Where(v => selectedNodeGUIDs.Contains(v.nodeTarget.GUID)).Select(v => v as ISelectable).ToList();
@@ -597,14 +605,16 @@ namespace GraphProcessor.Editors
             }
 
             UpdateNodeInspectorSelection();
+
+            Reload();
         }
 
         public void ClearGraphElements()
         {
             RemoveGroups();
+            RemoveStackNodeViews();
             RemoveNodeViews();
             RemoveEdgeViews();
-            RemoveStackNodeViews();
         }
 
         /// <summary> Allow you to create your own edge connector listener </summary>
@@ -643,14 +653,22 @@ namespace GraphProcessor.Editors
         public RelayNodeView AddRelayNode(PortView _inputPortView, PortView _outputPortView, Vector2 _position)
         {
             var relayNode = BaseNode.CreateNew<RelayNode>(_position);
-            var view = AddNode(relayNode) as RelayNodeView;
+            var nodeView = AddNode(relayNode) as RelayNodeView;
 
             if (_outputPortView != null)
-                Connect(view.PortViews["input"], _outputPortView);
+                Connect(nodeView.PortViews["input"], _outputPortView);
 
             if (_inputPortView != null)
-                Connect(_inputPortView, view.PortViews["output"]);
-            return view;
+                Connect(_inputPortView, nodeView.PortViews["output"]);
+            return nodeView;
+        }
+
+        public void RemoveRelayNode(RelayNodeView _relayNodeView)
+        {
+            // 获取relayNodeViewinput侧接口
+            // 获取relayNodeViewoutput侧接口
+
+            // 如果两个接口都不为空，连接这两个接口
         }
 
         public BaseNodeView AddNode(BaseNode _nodeData)
@@ -670,6 +688,9 @@ namespace GraphProcessor.Editors
             nodeView.Initialize(this, _nodeData);
             AddElement(nodeView);
             nodeViews[_nodeData.GUID] = nodeView;
+
+            if (nodeView is IOnGUIObserver observer)
+                onGUIObservers.Add(observer);
             return nodeView;
         }
 
@@ -681,12 +702,12 @@ namespace GraphProcessor.Editors
                 Disconnect(portView);
             }
 
-            // 然后移除节点View
-            RemoveNodeView(_nodeView);
-
             // 然后移除节点Data
             nodeInspector.NodeViewRemoved(_nodeView);
             GraphData.RemoveNode(_nodeView.NodeData);
+
+            // 然后移除节点View
+            RemoveNodeView(_nodeView);
 
             // 然后更新绘制
             if (Selection.activeObject == nodeInspector)
@@ -697,6 +718,8 @@ namespace GraphProcessor.Editors
         {
             RemoveElement(_nodeView);
             nodeViews.Remove(_nodeView.NodeData.GUID);
+            if (_nodeView is IOnGUIObserver observer)
+                onGUIObservers.Remove(observer);
         }
 
         void RemoveNodeViews()
@@ -704,6 +727,7 @@ namespace GraphProcessor.Editors
             foreach (var nodeView in nodeViews.Values)
                 RemoveElement(nodeView);
             nodeViews.Clear();
+            onGUIObservers.Clear();
         }
 
         public GroupView AddGroup(BaseGroup _groupData)
@@ -717,8 +741,8 @@ namespace GraphProcessor.Editors
         {
             var groupView = new GroupView();
             groupView.Initialize(this, _groupData);
-            AddElement(groupView);
             groupViews.Add(groupView);
+            AddElement(groupView);
             return groupView;
         }
 
@@ -739,8 +763,13 @@ namespace GraphProcessor.Editors
         public void RemoveGroup(GroupView _groupView)
         {
             GraphData.RemoveGroup(_groupView.groupData);
-            RemoveElement(_groupView);
+            RemoveGroupView(_groupView);
+        }
+
+        public void RemoveGroupView(GroupView _groupView)
+        {
             groupViews.Remove(_groupView);
+            RemoveElement(_groupView);
         }
 
         public void RemoveGroups()
@@ -766,11 +795,16 @@ namespace GraphProcessor.Editors
             return stackView;
         }
 
-        public void RemoveStackNodeView(BaseStackNodeView _stackNodeView)
+        public void RemoveStackNode(BaseStackNodeView _stackNodeView)
         {
             GraphData.RemoveStackNode(_stackNodeView.stackNode);
-            stackNodeViews.Remove(_stackNodeView.stackNode.GUID);
+            Remove(_stackNodeView);
+        }
+
+        public void RemoveStackNodeView(BaseStackNodeView _stackNodeView)
+        {
             RemoveElement(_stackNodeView);
+            stackNodeViews.Remove(_stackNodeView.stackNode.GUID);
         }
 
         void RemoveStackNodeViews()
@@ -780,62 +814,71 @@ namespace GraphProcessor.Editors
             stackNodeViews.Clear();
         }
 
-        public bool ConnectView(EdgeView e)
+        public bool ConnectView(EdgeView _edgeView)
         {
-            var inputPortView = e.input as PortView;
-            var outputPortView = e.output as PortView;
+            var inputPortView = _edgeView.input as PortView;
+            var outputPortView = _edgeView.output as PortView;
             var inputNodeView = inputPortView.node as BaseNodeView;
             var outputNodeView = outputPortView.node as BaseNodeView;
 
-            if (!inputPortView.portData.IsMulti)
+            if (!inputPortView.PortData.IsMulti)
             {
-                foreach (var edge in edgeViews.Where(ev => ev.input == e.input).ToList())
+                foreach (var edge in edgeViews.Where(ev => ev.input == _edgeView.input).ToList())
                 {
                     DisconnectView(edge);
                 }
             }
-            if (!(e.output as PortView).portData.IsMulti)
+            if (!(_edgeView.output as PortView).PortData.IsMulti)
             {
-                foreach (var edge in edgeViews.Where(ev => ev.output == e.output).ToList())
+                foreach (var edge in edgeViews.Where(ev => ev.output == _edgeView.output).ToList())
                 {
                     DisconnectView(edge);
                 }
             }
 
-            e.input.Connect(e);
-            e.output.Connect(e);
+            inputPortView.Connect(_edgeView);
+            outputPortView.Connect(_edgeView);
 
 
-            AddElement(e);
-            edgeViews.Add(e);
+            AddElement(_edgeView);
+            edgeViews.Add(_edgeView);
 
             inputNodeView.RefreshPorts();
             outputNodeView.RefreshPorts();
 
             schedule.Execute(() =>
             {
-                e.UpdateEdgeControl();
+                _edgeView.UpdateEdgeControl();
             }).ExecuteLater(1);
 
-            e.isConnected = true;
+            _edgeView.isConnected = true;
             return true;
         }
 
-        public bool Connect(PortView inputPortView, PortView outputPortView)
+        public bool ConnectView(PortView _inputPortView, PortView _outputPortView, SerializableEdge _serializableEdge)
         {
-            if (inputPortView.Owner.parent == null || outputPortView.Owner.parent == null)
+            var edgeView = new EdgeView()
+            {
+                userData = _serializableEdge,
+                input = _inputPortView,
+                output = _outputPortView,
+            };
+            return ConnectView(edgeView);
+        }
+
+        public bool Connect(PortView _inputPortView, PortView _outputPortView)
+        {
+            if (_inputPortView.Owner.parent == null || _outputPortView.Owner.parent == null)
                 return false;
 
-
-            var newEdge = GraphData.Connect(inputPortView.portData, outputPortView.portData);
+            var newEdge = GraphData.Connect(_inputPortView.PortData, _outputPortView.PortData);
 
             var edgeView = new EdgeView()
             {
                 userData = newEdge,
-                input = inputPortView,
-                output = outputPortView,
+                input = _inputPortView,
+                output = _outputPortView,
             };
-
             return ConnectView(edgeView);
         }
 
@@ -851,7 +894,6 @@ namespace GraphProcessor.Editors
             _edgeView.userData = GraphData.Connect(inputPort, outputPort);
 
             ConnectView(_edgeView);
-
 
             return true;
         }
@@ -869,8 +911,9 @@ namespace GraphProcessor.Editors
         public void Disconnect(EdgeView _edgeView)
         {
             if (_edgeView == null) return;
-            DisconnectView(_edgeView);
+
             GraphData.Disconnect(_edgeView.serializedEdge);
+            DisconnectView(_edgeView);
         }
 
         public void DisconnectView(EdgeView _edgeView)

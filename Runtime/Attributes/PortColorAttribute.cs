@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace GraphProcessor
+namespace CZToolKit.GraphProcessor
 {
     public class PortColorAttribute : Attribute
     {

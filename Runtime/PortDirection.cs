@@ -1,4 +1,4 @@
-﻿namespace GraphProcessor
+﻿namespace CZToolKit.GraphProcessor
 {
     /// <summary> 接口方向(进/出) </summary>
     public enum PortDirection
