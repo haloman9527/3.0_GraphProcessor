@@ -14,6 +14,9 @@ namespace CZToolKit.GraphProcessor
         [HideInInspector]
         public object output;
 
+        [Port(PortDirection.Input)]
+        public object output1;
+
         [HideInInspector]
         public string paramGUID;
 

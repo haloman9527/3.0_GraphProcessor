@@ -24,19 +24,25 @@ namespace CZToolKit.GraphProcessor.Editors
 
             styleSheets.Add(SimpleNodeViewStyle);
             titleButtonContainer.style.display = DisplayStyle.None;
+            titleContainer.style.alignItems = Align.Stretch;
+            TitleLabel.style.alignSelf = Align.Center;
 
             inputContainer.style.alignItems = Align.Center;
             outputContainer.style.alignItems = Align.Center;
 
             inputContainer.style.flexDirection = FlexDirection.Row;
             outputContainer.style.flexDirection = FlexDirection.Row;
+        }
+
+        public override bool RefreshPorts()
+        {
+            bool result = base.RefreshPorts();
 
             titleContainer.Insert(0, inputContainer);
             titleContainer.Add(outputContainer);
 
             titleContainer.Add(topContainer);
-            titleContainer.style.alignItems = Align.Stretch;
-            TitleLabel.style.alignSelf = Align.Center;
+            return result;
         }
     }
 }

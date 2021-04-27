@@ -1,5 +1,5 @@
 #title {
-    height: 16px;
+    height: 18px;
 }
 
 #title.input {
@@ -16,6 +16,7 @@
 
 #title > Label {
     margin-left: 2px;
+    margin-right: 2px;
     font-size: 11px;
 }
 

@@ -10,13 +10,13 @@ namespace CZToolKit.GraphProcessor
     /// <summary> 节点端口数据缓存 </summary>
     public static class NodeDataCache
     {
-        private static PortDataCache PortCache;
+        private static Dictionary<Type, List<NodePort>> PortCache = null;
 
         private static bool Initialized { get { return PortCache != null; } }
 
         private static void CachePorts(Type nodeType)
         {
-            List<FieldInfo> fieldInfos = GetNodeFields(nodeType);
+            List<FieldInfo> fieldInfos = GetFields(nodeType);
 
             foreach (var fieldInfo in fieldInfos)
             {
@@ -38,7 +38,7 @@ namespace CZToolKit.GraphProcessor
 
         private static void BuildCache()
         {
-            PortCache = new PortDataCache();
+            PortCache = new Dictionary<Type, List<NodePort>>();
             foreach (var nodeType in ChildrenTypeCache.GetChildrenTypes<BaseNode>())
             {
                 CachePorts(nodeType);
@@ -60,14 +60,13 @@ namespace CZToolKit.GraphProcessor
                     staticPorts[nodePort.FieldName] = nodePort;
                 }
             }
-
             // 清理端口，移除不存在的端口
             // 通过遍历当前节点的接口实现
             foreach (var port in _node.Ports.ToList())
             {
                 if (staticPorts.TryGetValue(port.Key, out NodePort cachePort))
                 {
-                    // 如果端口特性发生了更改，则把端口清理掉
+                    // 如果端口特性发生了更改，则重载端口
                     if (port.Value.DisplayType != cachePort.DisplayType ||
                         port.Value.Direction != cachePort.Direction ||
                         port.Value.IsMulti != cachePort.IsMulti ||
@@ -108,11 +107,13 @@ namespace CZToolKit.GraphProcessor
             foreach (NodePort staticPort in staticPorts.Values)
             {
                 if (!_node.Ports.ContainsKey(staticPort.FieldName))
+                {
                     _node.Ports[staticPort.FieldName] = new NodePort(staticPort, _node);
+                }
             }
         }
 
-        public static List<FieldInfo> GetNodeFields(Type nodeType)
+        public static List<FieldInfo> GetFields(Type nodeType)
         {
             List<FieldInfo> fieldInfos =
                 new List<FieldInfo>(
@@ -145,36 +146,5 @@ namespace CZToolKit.GraphProcessor
             return methodInfos;
         }
 
-        [Serializable]
-        private class PortDataCache : Dictionary<Type, List<NodePort>>, ISerializationCallbackReceiver
-        {
-            [SerializeField] private List<Type> keys = new List<Type>();
-            [SerializeField] private List<List<NodePort>> values = new List<List<NodePort>>();
-
-            // 字典保存至List
-            public void OnBeforeSerialize()
-            {
-                keys.Clear();
-                values.Clear();
-                foreach (var pair in this)
-                {
-                    keys.Add(pair.Key);
-                    values.Add(pair.Value);
-                }
-            }
-
-            // 加载列表至字典
-            public void OnAfterDeserialize()
-            {
-                this.Clear();
-
-                if (keys.Count != values.Count)
-                    throw new Exception(
-                        $"there are {keys.Count.ToString()} keys and {values.Count.ToString()} values after deserialization. Make sure that both key and value types are serializable.");
-
-                for (int i = 0; i < keys.Count; i++)
-                    Add(keys[i], values[i]);
-            }
-        }
     }
 }

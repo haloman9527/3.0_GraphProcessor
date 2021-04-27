@@ -176,6 +176,12 @@ namespace CZToolKit.GraphProcessor
                 edgeGUIDs.Add(_edge.GUID);
         }
 
+        /// <summary> 第二个参数是中间值 </summary>
+        public void SortEdge(Func<string, string, bool> _comparison)
+        {
+            edgeGUIDs.QuickSort(_comparison);
+        }
+
         public void DisconnectEdge(string _edgeGUID)
         {
             if (edgeGUIDs.Contains(_edgeGUID))

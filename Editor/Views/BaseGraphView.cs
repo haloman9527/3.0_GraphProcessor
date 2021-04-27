@@ -122,12 +122,12 @@ namespace CZToolKit.GraphProcessor.Editors
             if (nodeInspector == null)
                 nodeInspector = CreateNodeInspectorObject();
 
-            Undo.undoRedoPerformed += ReloadView;
+            //Undo.undoRedoPerformed += ReloadView;
         }
 
         private void OnDetachPanel(DetachFromPanelEvent evt)
         {
-            Undo.undoRedoPerformed -= ReloadView;
+            //Undo.undoRedoPerformed -= ReloadView;
         }
 
         protected virtual void InitializeManipulators()
@@ -226,6 +226,11 @@ namespace CZToolKit.GraphProcessor.Editors
         protected virtual IEnumerable<Type> GetNodeTypes()
         {
             return ChildrenTypeCache.GetChildrenTypes<BaseNode>();
+        }
+
+        protected virtual Type GetDefaultNodeViewType()
+        {
+            return typeof(BaseNodeView);
         }
 
         protected virtual NodeInspectorObject CreateNodeInspectorObject()
@@ -576,7 +581,6 @@ namespace CZToolKit.GraphProcessor.Editors
 
         void ReloadView()
         {
-            Debug.LogError(1);
             // 记录被选中的节点
             var selectedNodeGUIDs = new List<string>();
             foreach (var e in selection)
@@ -683,6 +687,8 @@ namespace CZToolKit.GraphProcessor.Editors
         public BaseNodeView AddNodeView(BaseNode _nodeData)
         {
             Type nodeViewType = NodeEditorUtility.GetNodeViewType(_nodeData.GetType());
+            if (nodeViewType == null)
+                nodeViewType = GetDefaultNodeViewType();
 
             BaseNodeView nodeView = Activator.CreateInstance(nodeViewType) as BaseNodeView;
             nodeView.Initialize(this, _nodeData);

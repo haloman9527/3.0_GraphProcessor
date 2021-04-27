@@ -8,9 +8,9 @@ namespace CZToolKit.GraphProcessor
     /// <summary> 若项目中安装了Odin，则继承Odin的SO基类 </summary>
     [Serializable]
 #if ODIN_INSPECTOR
-    public class BaseGraph : Sirenix.OdinInspector.SerializedScriptableObject
+    public abstract class BaseGraph : Sirenix.OdinInspector.SerializedScriptableObject
 #else
-    public class BaseGraph : ScriptableObject, ISerializationCallbackReceiver
+    public abstract class BaseGraph : ScriptableObject, ISerializationCallbackReceiver
 #endif
     {
         /// <summary> 黑板的默认大小 </summary>

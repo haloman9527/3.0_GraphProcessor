@@ -27,21 +27,27 @@ namespace CZToolKit.GraphProcessor
         }
         #endregion
 
-        [SerializeField] BaseGraph owner;
+        [SerializeField, HideInInspector]
+        BaseGraph owner;
 
         /// <summary> 唯一标识 </summary>
-        [SerializeField, HideInInspector] string guid;
+        [SerializeField, HideInInspector] 
+        string guid;
         /// <summary> 位置坐标 </summary>
+        [SerializeField, HideInInspector]
         public Rect position;
         /// <summary> 展开状态 </summary>
-        [SerializeField] bool expanded = true;
+        [SerializeField, HideInInspector]
+        bool expanded = true;
         /// <summary> 锁定状态 </summary>
-        [SerializeField] bool locked = false;
+        [SerializeField, HideInInspector]
+        bool locked = false;
 
+        [SerializeField, HideInInspector]
 #if ODIN_INSPECTOR
-        [SerializeField] Dictionary<string, NodePort> ports = new Dictionary<string, NodePort>();
+        Dictionary<string, NodePort> ports = new Dictionary<string, NodePort>();
 #else
-        [SerializeField] NodePortsDictionary ports = new NodePortsDictionary();
+        NodePortsDictionary ports = new NodePortsDictionary();
 #endif
 
         public BaseGraph Owner { get { return owner; } }

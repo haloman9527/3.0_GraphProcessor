@@ -59,7 +59,7 @@ namespace CZToolKit.GraphProcessor.Editors
             if (NODE_VIEW_TYPE_CACHE.TryGetValue(_nodeDataType, out Type nodeViewType))
                 return nodeViewType;
 
-            return typeof(BaseNodeView);
+            return null;
         }
         #endregion
 
