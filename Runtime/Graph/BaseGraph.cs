@@ -2,6 +2,7 @@
 using System;
 using UnityEngine;
 using System.Linq;
+using CZToolKit.Core.Attributes;
 
 namespace CZToolKit.GraphProcessor
 {
@@ -35,9 +36,11 @@ namespace CZToolKit.GraphProcessor
 
         [SerializeField]
         //[SerializeReference]ExposedParmetersDictionary blackboard = new ExposedParmetersDictionary();
+#if ODIN_INSPECTOR
+        [Sirenix.OdinInspector.ReadOnly]
+#endif
         Dictionary<string, ExposedParameter> blackboard = new Dictionary<string, ExposedParameter>();
-        [SerializeField]
-        [HideInInspector]
+        [SerializeField, HideInInspector]
         GUIDMapDictionary guidMap = new GUIDMapDictionary();
 
         public Dictionary<string, BaseNode> Nodes { get { return nodes; } }

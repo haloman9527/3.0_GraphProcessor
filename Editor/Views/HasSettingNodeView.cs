@@ -39,30 +39,20 @@ namespace CZToolKit.GraphProcessor.Editors
 
             foreach (var fieldInfo in NodeDataTypeFieldInfos)
             {
-                if (AttributeCache.TryGetFieldInfoAttribute(NodeDataType, fieldInfo, out SettingAttribute settingAttribute))
+                if (Utility.TryGetFieldInfoAttribute(fieldInfo, out SettingAttribute settingAttribute))
                     AddSettingField(fieldInfo);
             }
         }
 
         protected void AddSettingField(FieldInfo _fieldInfo)
         {
-            if (_fieldInfo == null)
-                return;
-
-            var label = AttributeCache.TryGetFieldInfoAttribute(NodeDataType, _fieldInfo, out DisplayNameAttribute displayNameAttribute)
+            var label = Utility.TryGetFieldInfoAttribute(_fieldInfo, out DisplayNameAttribute displayNameAttribute)
                 ? displayNameAttribute.DisplayName : NodeEditorUtility.GetDisplayName(_fieldInfo.Name);
 
-            var element = FieldFactory.CreateField(label, _fieldInfo.FieldType, _fieldInfo.GetValue(NodeData), (newValue) =>
-             {
-                 Owner.RegisterCompleteObjectUndo("Updated " + newValue);
-                 _fieldInfo.SetValue(NodeData, newValue);
-             });
+            VisualElement fieldDrawer = CreateControlField(_fieldInfo, label);
+            if (fieldDrawer == null) return;
 
-            if (element != null)
-            {
-                settingsContainer.Add(element);
-                element.name = _fieldInfo.Name;
-            }
+            settingsContainer.Add(fieldDrawer);
         }
 
         void OnGeometryChanged(GeometryChangedEvent evt)

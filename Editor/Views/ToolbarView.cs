@@ -8,6 +8,7 @@ using System;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
+
     public class ToolbarView : Toolbar
     {
         protected enum ElementType
@@ -40,15 +41,16 @@ namespace CZToolKit.GraphProcessor.Editors
 
             leftButtonDatas.Clear();
             rightButtonDatas.Clear();
-            AddButtons();
 
-            Add(new IMGUIContainer(DrawImGUIToolbar));
+            IMGUIContainer container = new IMGUIContainer(DrawImGUIToolbar);
+            container.StretchToParentSize();
+            Add(container);
         }
 
-        protected ToolbarButtonData AddButton(string name, Action callback, bool left = true)
+        public void AddButton(string name, Action callback, bool left = true)
             => AddButton(new GUIContent(name), callback, left);
 
-        protected ToolbarButtonData AddButton(GUIContent content, Action callback, bool left = true)
+        public void AddButton(GUIContent content, Action callback, bool left = true)
         {
             var data = new ToolbarButtonData
             {
@@ -56,14 +58,13 @@ namespace CZToolKit.GraphProcessor.Editors
                 type = ElementType.Button,
                 buttonCallback = callback
             };
-            ((left) ? leftButtonDatas : rightButtonDatas).Add(data);
-            return data;
+            (left ? leftButtonDatas : rightButtonDatas).Add(data);
         }
 
-        protected ToolbarButtonData AddToggle(string name, bool defaultValue, Action<bool> callback, bool left = true)
+        public void AddToggle(string name, bool defaultValue, Action<bool> callback, bool left = true)
             => AddToggle(new GUIContent(name), defaultValue, callback, left);
 
-        protected ToolbarButtonData AddToggle(GUIContent content, bool defaultValue, Action<bool> callback, bool left = true)
+        public void AddToggle(GUIContent content, bool defaultValue, Action<bool> callback, bool left = true)
         {
             var data = new ToolbarButtonData
             {
@@ -72,14 +73,13 @@ namespace CZToolKit.GraphProcessor.Editors
                 value = defaultValue,
                 toggleCallback = callback
             };
-            ((left) ? leftButtonDatas : rightButtonDatas).Add(data);
-            return data;
+            (left ? leftButtonDatas : rightButtonDatas).Add(data);
         }
 
-        protected ToolbarButtonData AddDropDownButton(string name, Action callback, bool left = true)
+        public void AddDropDownButton(string name, Action callback, bool left = true)
             => AddDropDownButton(new GUIContent(name), callback, left);
 
-        protected ToolbarButtonData AddDropDownButton(GUIContent content, Action callback, bool left = true)
+        public void AddDropDownButton(GUIContent content, Action callback, bool left = true)
         {
             var data = new ToolbarButtonData
             {
@@ -87,14 +87,14 @@ namespace CZToolKit.GraphProcessor.Editors
                 type = ElementType.DropDownButton,
                 buttonCallback = callback
             };
-            ((left) ? leftButtonDatas : rightButtonDatas).Add(data);
-            return data;
+            (left ? leftButtonDatas : rightButtonDatas).Add(data);
+            //return data;
         }
 
         /// <summary> Also works for toggles </summary>
-        protected void RemoveButton(string name, bool left)
+        public void RemoveButton(string name, bool left)
         {
-            ((left) ? leftButtonDatas : rightButtonDatas).RemoveAll(b => b.content.text == name);
+            (left ? leftButtonDatas : rightButtonDatas).RemoveAll(b => b.content.text == name);
         }
 
         /// <summary> Hide the button </summary>
@@ -119,27 +119,6 @@ namespace CZToolKit.GraphProcessor.Editors
                     b.visible = true;
                 return true;
             });
-        }
-
-        protected virtual void AddButtons()
-        {
-            AddButton("Center", graphWindow.GraphView.ResetPositionAndZoom);
-
-            bool exposedParamsVisible = graphWindow.GraphView.GraphData.blackboardoVisible;
-            showParameters = AddToggle("Show Parameters", exposedParamsVisible, (v) =>
-            {
-                graphWindow.GraphView.GetBlackboard().style.display = v ? DisplayStyle.Flex : DisplayStyle.None;
-                graphWindow.GraphView.GraphData.blackboardoVisible = v;
-            });
-
-            AddButton("Show In Project", () => EditorGUIUtility.PingObject(graphWindow.GraphView.GraphData), false);
-        }
-
-
-        public virtual void UpdateButtonStatus()
-        {
-            if (showParameters != null)
-                showParameters.value = graphWindow.GraphView.GetBlackboard().visible;
         }
 
         void DrawImGUIButtonList(List<ToolbarButtonData> buttons)

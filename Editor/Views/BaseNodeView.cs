@@ -17,9 +17,12 @@ namespace CZToolKit.GraphProcessor.Editors
     {
         #region Static
         const string BaseNodeViewStyleFile = "GraphProcessor/Styles/BaseNodeView";
+        const string PortViewTypesFile = "GraphProcessor/Styles/PortViewTypes";
 
         static Dictionary<Type, FieldInfo[]> NodeDataTypeFieldInfoDic = new Dictionary<Type, FieldInfo[]>();
         static StyleSheet baseNodeViewStyle;
+        static StyleSheet portViewTypesStyle;
+
         public static StyleSheet BaseNodeViewStyle
         {
             get
@@ -29,18 +32,19 @@ namespace CZToolKit.GraphProcessor.Editors
                 return baseNodeViewStyle;
             }
         }
+        public static StyleSheet PortViewTypesStyle
+        {
+            get
+            {
+                if (portViewTypesStyle == null)
+                    portViewTypesStyle = Resources.Load<StyleSheet>(PortViewTypesFile);
+                return portViewTypesStyle;
+            }
+        }
         #endregion
-
-        VisualElement topPortContainer;
-        VisualElement bottomPortContainer;
         Label titleLabel;
 
-        Dictionary<string, PortView> portViews = new Dictionary<string, PortView>();
-
         [NonSerialized] List<IconBadge> badges = new List<IconBadge>();
-
-        public VisualElement controlsContainer { get; private set; }
-        protected VisualElement inputContainerElement { get; set; }
         public Label TitleLabel
         {
             get
@@ -50,13 +54,12 @@ namespace CZToolKit.GraphProcessor.Editors
                 return titleLabel;
             }
         }
-        public Dictionary<string, PortView> PortViews { get { return portViews; } }
 
+        public VisualElement topPortContainer { get; private set; }
+        public VisualElement bottomPortContainer { get; private set; }
+        public VisualElement controlsContainer { get; private set; }
+        public VisualElement inputContainerElement { get; private set; }
         public bool Initialized { get; private set; }
-        public BaseGraphView Owner { get; private set; }
-        public BaseNode NodeData { get; private set; }
-        public Type NodeDataType { get; private set; }
-        public bool Lockable { get; private set; }
         public override bool expanded
         {
             get { return base.expanded; }
@@ -67,6 +70,11 @@ namespace CZToolKit.GraphProcessor.Editors
                     NodeData.Expanded = value;
             }
         }
+        public bool Lockable { get; private set; }
+        public BaseGraphView Owner { get; private set; }
+        public BaseNode NodeData { get; private set; }
+        public Type NodeDataType { get; private set; }
+        public Dictionary<string, PortView> PortViews { get; private set; } = new Dictionary<string, PortView>();
         protected FieldInfo[] NodeDataTypeFieldInfos
         {
             get
@@ -94,6 +102,33 @@ namespace CZToolKit.GraphProcessor.Editors
             RefreshPorts();
             RefreshExpandedState();
 
+            foreach (var fieldInfo in NodeDataTypeFieldInfos)
+            {
+                // 如果是接口
+                if (PortViews.TryGetValue(fieldInfo.Name, out PortView portView)
+                && portView.orientation == Orientation.Horizontal
+                && portView.direction == Direction.Input)
+                {
+                    var box = new VisualElement { name = fieldInfo.Name };
+                    box.AddToClassList("port-input-element");
+                    VisualElement fieldDrawer;
+                    if (Utility.TryGetFieldInfoAttribute(fieldInfo, out ShowAsDrawer showAsDrawer)
+                        && (fieldDrawer = CreateControlField(fieldInfo)) != null)
+                    {
+                        box.Add(fieldDrawer);
+                        box.visible = !portView.PortData.IsConnected;
+                        portView.onConnected += () => { box.visible = false; };
+                        portView.onDisconnected += () => { if (!portView.connected) box.visible = true; };
+                    }
+                    else
+                    {
+                        box.visible = false;
+                        box.style.height = portView.style.height;
+                    }
+                    inputContainerElement.Add(box);
+                }
+            }
+
             OnInitialized();
             Initialized = true;
         }
@@ -108,7 +143,7 @@ namespace CZToolKit.GraphProcessor.Editors
         void InitializeView()
         {
             styleSheets.Add(BaseNodeViewStyle);
-            styleSheets.Add(PortView.PortViewTypesStyle);
+            styleSheets.Add(PortViewTypesStyle);
 
             controlsContainer = new VisualElement { name = "Controls" };
             controlsContainer.AddToClassList("NodeControls");
@@ -128,27 +163,27 @@ namespace CZToolKit.GraphProcessor.Editors
             Add(bottomPortContainer);
 
             inputContainerElement = new VisualElement { name = "input-container" };
-            mainContainer.parent.Add(inputContainerElement);
-            inputContainerElement.SendToBack();
             inputContainerElement.pickingMode = PickingMode.Ignore;
+            inputContainerElement.SendToBack();
+            Add(inputContainerElement);
 
             title = NodeEditorUtility.GetNodeDisplayName(NodeDataType);
             expanded = NodeData.Expanded;
             SetPosition(NodeData.position);
-            Lockable = AttributeCache.TryGetTypeAttribute(NodeDataType, out LockableAttribute lockableAttribute);
+            Lockable = Utility.TryGetTypeAttribute(NodeDataType, out LockableAttribute lockableAttribute);
 
-            if (AttributeCache.TryGetTypeAttribute(NodeDataType, out NodeTooltipAttribute nodeTooltipAttribute))
+            if (Utility.TryGetTypeAttribute(NodeDataType, out NodeTooltipAttribute nodeTooltipAttribute))
                 tooltip = nodeTooltipAttribute.Tooltip;
-            if (AttributeCache.TryGetTypeAttribute(NodeDataType, out NodeTitleTintAttribute nodeTitleTintAttribute))
+            if (Utility.TryGetTypeAttribute(NodeDataType, out NodeTitleTintAttribute nodeTitleTintAttribute))
             {
                 titleContainer.style.backgroundColor = nodeTitleTintAttribute.BackgroundColor;
                 TitleLabel.style.color = nodeTitleTintAttribute.BackgroundColor.GetLuminance() > 0.5f && nodeTitleTintAttribute.BackgroundColor.a > 0.5f ? Color.black : Color.white * 0.9f;
             }
 
-            if (AttributeCache.TryGetTypeAttribute(NodeDataType, out TooltipAttribute tooltipAttrib))
+            if (Utility.TryGetTypeAttribute(NodeDataType, out TooltipAttribute tooltipAttrib))
                 tooltip = tooltipAttrib.tooltip;
 
-            bool showControlOnHover = AttributeCache.TryGetTypeAttribute(NodeDataType, out ShowControlOnHoverAttribute showControlOnHoverAttrib);
+            bool showControlOnHover = Utility.TryGetTypeAttribute(NodeDataType, out ShowControlOnHoverAttribute showControlOnHoverAttrib);
             if (showControlOnHover)
             {
                 bool mouseOverControls = false;
@@ -189,7 +224,7 @@ namespace CZToolKit.GraphProcessor.Editors
             {
                 Direction direction = nodePort.Value.Direction == PortDirection.Input ? Direction.Input : Direction.Output;
                 Orientation orientation =
-                    AttributeCache.TryGetFieldAttribute(NodeDataType, nodePort.Value.FieldName, out VerticalAttribute vertical) ?
+                    Utility.TryGetFieldAttribute(NodeDataType, nodePort.Value.FieldName, out VerticalAttribute vertical) ?
                     Orientation.Vertical : Orientation.Horizontal;
 
                 PortView portView = CustomCreatePortView(orientation, direction, nodePort.Value, listener);
@@ -197,12 +232,6 @@ namespace CZToolKit.GraphProcessor.Editors
                     portView = PortView.CreatePV(orientation, direction, nodePort.Value, listener);
                 portView.Initialize(this);
                 PortViews[nodePort.Key] = portView;
-            }
-
-            foreach (var fieldInfo in NodeDataTypeFieldInfos)
-            {
-                if (AttributeCache.TryGetFieldInfoAttribute(NodeDataType, fieldInfo, out ShowAsDrawer showAsDrawer))
-                    AddControlField(fieldInfo, "", true);
             }
         }
 
@@ -237,6 +266,8 @@ namespace CZToolKit.GraphProcessor.Editors
 
         public void AddIcon(Image _icon)
         {
+            _icon.style.alignSelf = Align.Center;
+            _icon.style.maxWidth = _icon.style.maxHeight = titleContainer.style.height;
             titleContainer.Insert(titleContainer.IndexOf(TitleLabel), _icon);
         }
 
@@ -264,17 +295,17 @@ namespace CZToolKit.GraphProcessor.Editors
         #endregion
 
         #region Private
-        void OpenNodeViewScript()
+        void OpenNodeScript()
         {
-            var script = NodeEditorUtility.FindScriptFromType(GetType());
+            var script = NodeEditorUtility.FindScriptFromType(NodeData.GetType());
 
             if (script != null)
                 AssetDatabase.OpenAsset(script.GetInstanceID(), 0, 0);
         }
 
-        void OpenNodeScript()
+        void OpenNodeViewScript()
         {
-            var script = NodeEditorUtility.FindScriptFromType(NodeData.GetType());
+            var script = NodeEditorUtility.FindScriptFromType(GetType());
 
             if (script != null)
                 AssetDatabase.OpenAsset(script.GetInstanceID(), 0, 0);
@@ -303,9 +334,9 @@ namespace CZToolKit.GraphProcessor.Editors
                     continue;
 
                 // 是否是一个接口
-                bool isPort = AttributeCache.TryGetFieldInfoAttribute(NodeDataType, fieldInfo, out PortAttribute portAttrib);
+                bool isPort = Utility.TryGetFieldInfoAttribute(fieldInfo, out PortAttribute portAttrib);
                 // 是公开，或者有SerializeField特性
-                bool isDisplay = fieldInfo.IsPublic || AttributeCache.TryGetFieldInfoAttribute(NodeDataType, fieldInfo, out SerializeField serializable);
+                bool isDisplay = fieldInfo.IsPublic || Utility.TryGetFieldInfoAttribute(fieldInfo, out SerializeField serializable);
                 if (!isDisplay || (isPort && portAttrib.ShowBackValue == ShowBackingValue.Never))
                     continue;
 
@@ -319,7 +350,7 @@ namespace CZToolKit.GraphProcessor.Editors
                 if (showInputDrawer)
                     continue;
 
-                var elem = AddControlField(fieldInfo, ObjectNames.NicifyVariableName(fieldInfo.Name), showInputDrawer);
+                var elem = AddControlField(fieldInfo, ObjectNames.NicifyVariableName(fieldInfo.Name));
                 if (isInputPort)
                 {
                     hideElementIfConnected[fieldInfo.Name] = elem;
@@ -380,45 +411,40 @@ namespace CZToolKit.GraphProcessor.Editors
 
         static MethodInfo specificGetValue = typeof(BaseNodeView).GetMethod(nameof(GetInputFieldValueSpecific), BindingFlags.NonPublic | BindingFlags.Instance);
 
-        protected VisualElement AddControlField(FieldInfo _fieldInfo, string _label = null, bool _showInputDrawer = false, Action valueChangedCallback = null)
+        protected VisualElement CreateControlField(FieldInfo _fieldInfo, string _label = null, Action<object> valueChangedCallback = null)
         {
             if (_fieldInfo == null)
                 return null;
 
-            var fieldDrawer = FieldFactory.CreateField(_showInputDrawer ? "" : _label, _fieldInfo.FieldType, _fieldInfo.GetValue(NodeData), (newValue) =>
-             {
-                 Owner.RegisterCompleteObjectUndo("Updated " + newValue);
-                 _fieldInfo.SetValue(NodeData, newValue);
-                 NotifyNodeChanged();
-                 valueChangedCallback?.Invoke();
-                // 更新可见性
+            var fieldDrawer = FieldFactory.CreateField(_label, _fieldInfo.FieldType, _fieldInfo.GetValue(NodeData), (newValue) =>
+            {
+                Owner.RegisterCompleteObjectUndo("Updated " + newValue);
+                _fieldInfo.SetValue(NodeData, newValue);
+                valueChangedCallback?.Invoke(newValue);
+                Owner.SetDirty();
+            });
+
+            return fieldDrawer;
+        }
+
+        protected VisualElement AddControlField(FieldInfo _fieldInfo, string _label = null, Action valueChangedCallback = null)
+        {
+            if (_fieldInfo == null)
+                return null;
+
+            var fieldDrawer = CreateControlField(_fieldInfo, _label, newValue =>
+            {
+                valueChangedCallback?.Invoke();
                 UpdateFieldVisibility(_fieldInfo.Name, newValue);
-                // When you have the node inspector, it's possible to have multiple input fields pointing to the same
-                // property. We need to update those manually otherwise they still have the old value in the inspector.
                 UpdateOtherFieldValue(_fieldInfo, newValue);
-             });
-
-
+            });
 
             if (!fieldControlsMap.TryGetValue(_fieldInfo, out var inputFieldList))
                 inputFieldList = fieldControlsMap[_fieldInfo] = new List<VisualElement>();
             inputFieldList.Add(fieldDrawer);
 
             if (fieldDrawer != null)
-            {
-                if (_showInputDrawer)
-                {
-                    if (PortViews.TryGetValue(_fieldInfo.Name, out PortView portView))
-                    {
-                        var box = new VisualElement { name = _fieldInfo.Name };
-                        box.AddToClassList("port-input-element");
-                        box.Add(fieldDrawer);
-                        inputContainerElement.Add(box);
-                    }
-                }
-                else
-                    controlsContainer.Add(fieldDrawer);
-            }
+                controlsContainer.Add(fieldDrawer);
 
             return fieldDrawer;
         }
@@ -443,14 +469,14 @@ namespace CZToolKit.GraphProcessor.Editors
 
         public override void SetPosition(Rect newPos)
         {
-            if (!Initialized)
-                base.SetPosition(newPos);
-            else if (!NodeData.Locked)
-            {
-                base.SetPosition(newPos);
+            if (NodeData.Locked) return;
 
+            base.SetPosition(newPos);
+            if (Initialized)
+            {
                 Owner.RegisterCompleteObjectUndo("Moved graph node");
                 NodeData.position = newPos;
+                Owner.SetDirty();
             }
         }
 
@@ -507,12 +533,6 @@ namespace CZToolKit.GraphProcessor.Editors
                 }
             }
             return base.RefreshPorts();
-        }
-
-        /// <summary> Send an event to the graph telling that the content of this node have changed </summary>
-        public void NotifyNodeChanged()
-        {
-            //owner.graphData.NotifyNodeChanged(nodeData);
         }
 
         #endregion

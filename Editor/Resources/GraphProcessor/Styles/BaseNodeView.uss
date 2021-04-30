@@ -33,6 +33,14 @@
     --layer: -50;
 }
 
+.collapsed #input-container {
+    visibility: hidden;
+}
+
+.node:checked > #input-container {
+    opacity: 1;
+}
+
 #input-container > .port-input-element > IntegerField,
 #input-container > .port-input-element > FloatField {
     min-width: 30px;
@@ -55,6 +63,8 @@
     width: 100px;
 }
 
+#input-container > .port-input-element > Vector3IntField Label,
+#input-container > .port-input-element > Vector2IntField Label,
 #input-container > .port-input-element > Vector4Field Label,
 #input-container > .port-input-element > Vector3Field Label,
 #input-container > .port-input-element > Vector2Field Label {
@@ -65,9 +75,12 @@
     margin-right: 1px;
 }
 
+#input-container > .port-input-element > Vector3IntField IntInput,
+#input-container > .port-input-element > Vector2IntField IntInput,
 #input-container > .port-input-element > Vector4Field FloatInput,
 #input-container > .port-input-element > Vector3Field FloatInput,
 #input-container > .port-input-element > Vector2Field FloatInput {
+    
     min-width: 28px;
 }
 
@@ -121,16 +134,8 @@
     padding: 0;
 }
 
-.collapsed #input-container {
-    visibility: hidden;
-}
-
 #input-container {
     opacity: 0.6;
-}
-
-.node:checked > #input-container {
-    opacity: 1;
 }
 
 #input-container > .port-input-element IntegerInput,

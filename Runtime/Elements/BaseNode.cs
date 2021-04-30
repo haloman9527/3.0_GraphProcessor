@@ -31,7 +31,7 @@ namespace CZToolKit.GraphProcessor
         BaseGraph owner;
 
         /// <summary> 唯一标识 </summary>
-        [SerializeField, HideInInspector] 
+        [SerializeField, HideInInspector]
         string guid;
         /// <summary> 位置坐标 </summary>
         [SerializeField, HideInInspector]
@@ -108,7 +108,7 @@ namespace CZToolKit.GraphProcessor
         #endregion
 
         #region Inputs/Outputs
-        public bool TryGetInputValue<T>(string _fieldName, out T _value, T _fallback = default(T))
+        public bool TryGetInputValue<T>(string _fieldName, out T _value, T _fallback = default)
         {
             _value = _fallback;
             if (TryGetInputPort(_fieldName, out NodePort port))
@@ -116,7 +116,7 @@ namespace CZToolKit.GraphProcessor
             return false;
         }
 
-        public bool TryGetOutputValue<T>(string _fieldName, out T _value, T _fallback = default(T))
+        public bool TryGetOutputValue<T>(string _fieldName, out T _value, T _fallback = default)
         {
             _value = _fallback;
             if (TryGetOutputPort(_fieldName, out NodePort port))
@@ -124,7 +124,7 @@ namespace CZToolKit.GraphProcessor
             return false;
         }
 
-        public bool TryGetConnectValue<T>(string _fieldName, out T _value, T _fallback = default(T))
+        public bool TryGetConnectValue<T>(string _fieldName, out T _value, T _fallback = default)
         {
             _value = _fallback;
             if (TryGetPort(_fieldName, out NodePort port))

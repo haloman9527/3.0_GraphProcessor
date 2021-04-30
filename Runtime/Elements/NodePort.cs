@@ -86,14 +86,14 @@ namespace CZToolKit.GraphProcessor
         {
             fieldName = _fieldInfo.Name;
 
-            if (AttributeCache.TryGetFieldAttribute(_fieldInfo.DeclaringType, _fieldInfo.Name, out PortAttribute attribute))
+            if (Utility.TryGetFieldAttribute(_fieldInfo.DeclaringType, _fieldInfo.Name, out PortAttribute attribute))
             {
                 isMulti = attribute.IsMulti;
                 direction = attribute.Direction;
                 typeConstraint = attribute.TypeConstraint;
             }
 
-            if (AttributeCache.TryGetFieldAttribute(_fieldInfo.DeclaringType, _fieldInfo.Name, out PortTypeAttribute typeAttribute))
+            if (Utility.TryGetFieldAttribute(_fieldInfo.DeclaringType, _fieldInfo.Name, out PortTypeAttribute typeAttribute))
                 DisplayType = typeAttribute.PortType;
             else
                 DisplayType = _fieldInfo.FieldType;

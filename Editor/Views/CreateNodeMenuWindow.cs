@@ -28,7 +28,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
             foreach (Type type in nodeTypes)
             {
-                if (AttributeCache.TryGetTypeAttribute(type, out NodeMenuItemAttribute attribute))
+                if (Utility.TryGetTypeAttribute(type, out NodeMenuItemAttribute attribute))
                 {
                     if (attribute.ShowInList)
                     {

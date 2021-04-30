@@ -9,6 +9,7 @@ using System;
 using UnityEditor.SceneManagement;
 using CZToolKit.Core;
 using Blackboard = UnityEditor.Experimental.GraphView.Blackboard;
+using CZToolKit.Core.Editors;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
@@ -34,23 +35,20 @@ namespace CZToolKit.GraphProcessor.Editors
         /// <summary> Connector listener that will create the edges between ports </summary>
         public BaseEdgeConnectorListener connectorListener;
 
-        Dictionary<string, BaseNodeView> nodeViews = new Dictionary<string, BaseNodeView>();
-
-        List<EdgeView> edgeViews = new List<EdgeView>();
-
-        List<GroupView> groupViews = new List<GroupView>();
-
-        Dictionary<string, BaseStackNodeView> stackNodeViews = new Dictionary<string, BaseStackNodeView>();
         List<IOnGUIObserver> onGUIObservers = new List<IOnGUIObserver>(16);
 
+        protected virtual Type DefaultNodeViewType { get { return typeof(BaseNodeView); } }
+
         public bool Initialized { get; private set; }
+        public bool IsDirty { get; private set; }
         public CreateNodeMenuWindow CreateNodeMenu { get; private set; }
         public BaseGraphWindow GraphWindow { get; private set; }
         public BaseGraph GraphData { get; private set; }
-        public Dictionary<string, BaseNodeView> NodeViews { get { return nodeViews; } }
-        public List<EdgeView> EdgeViews { get { return edgeViews; } }
-        public List<GroupView> GroupViews { get { return groupViews; } }
-        public Dictionary<string, BaseStackNodeView> StackNodeViews { get { return stackNodeViews; } }
+        public SerializedObject SerializedObject { get; private set; }
+        public Dictionary<string, BaseNodeView> NodeViews { get; private set; } = new Dictionary<string, BaseNodeView>();
+        public List<EdgeView> EdgeViews { get; private set; } = new List<EdgeView>();
+        public List<GroupView> GroupViews { get; private set; } = new List<GroupView>();
+        public Dictionary<string, BaseStackNodeView> StackNodeViews { get; private set; } = new Dictionary<string, BaseStackNodeView>();
         public List<IOnGUIObserver> OnGUIObservers { get { return onGUIObservers; } }
 
         protected override bool canCopySelection
@@ -63,6 +61,14 @@ namespace CZToolKit.GraphProcessor.Editors
             get { return selection.Any(e => e is BaseNodeView || e is GroupView || e is BaseStackNodeView); }
         }
 
+        public void SetDirty(bool _immediately = false)
+        {
+            if (_immediately)
+                EditorUtility.SetDirty(GraphData);
+            else
+                IsDirty = true;
+        }
+
         #region Initialize
         public void Initialize(BaseGraphWindow _window, BaseGraph _graphData)
         {
@@ -70,9 +76,27 @@ namespace CZToolKit.GraphProcessor.Editors
 
             GraphWindow = _window;
             GraphData = _graphData;
+            SerializedObject = new SerializedObject(GraphData);
+            GraphWindow.Toolbar.AddButton("Center", ResetPositionAndZoom);
+            bool exposedParamsVisible = GraphData.blackboardoVisible;
+            GraphWindow.Toolbar.AddToggle("Show Parameters", exposedParamsVisible, (v) =>
+            {
+                GetBlackboard().style.display = v ? DisplayStyle.Flex : DisplayStyle.None;
+                GraphData.blackboardoVisible = v;
+            });
 
             connectorListener = CreateEdgeConnectorListener();
 
+            double time = EditorApplication.timeSinceStartup;
+            Add(new IMGUIContainer(() =>
+            {
+                if (IsDirty && EditorApplication.timeSinceStartup > time)
+                {
+                    IsDirty = false;
+                    EditorUtility.SetDirty(GraphData);
+                    time += 1;
+                }
+            }));
             InitViewAndCallbacks();
             InitializeGraphView();
             InitializeNodeViews();
@@ -175,18 +199,11 @@ namespace CZToolKit.GraphProcessor.Editors
             {
                 BaseNodeView inputNodeView = null, outputNodeView = null;
                 if (serializedEdge.InputNode != null)
-                    nodeViews.TryGetValue(serializedEdge.InputNodeGUID, out inputNodeView);
+                    NodeViews.TryGetValue(serializedEdge.InputNodeGUID, out inputNodeView);
                 if (serializedEdge.OutputNode != null)
-                    nodeViews.TryGetValue(serializedEdge.OutputNodeGUID, out outputNodeView);
+                    NodeViews.TryGetValue(serializedEdge.OutputNodeGUID, out outputNodeView);
                 if (inputNodeView == null || outputNodeView == null)
                     continue;
-
-                //var edgeView = new EdgeView()
-                //{
-                //    userData = serializedEdge,
-                //    input = inputNodeView.PortViews[serializedEdge.InputFieldName],
-                //    output = outputNodeView.PortViews[serializedEdge.OutputFieldName]
-                //};
                 ConnectView(inputNodeView.PortViews[serializedEdge.InputFieldName], outputNodeView.PortViews[serializedEdge.OutputFieldName], serializedEdge);
             }
         }
@@ -225,12 +242,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
         protected virtual IEnumerable<Type> GetNodeTypes()
         {
-            return ChildrenTypeCache.GetChildrenTypes<BaseNode>();
-        }
-
-        protected virtual Type GetDefaultNodeViewType()
-        {
-            return typeof(BaseNodeView);
+            return Utility.GetChildrenTypes<BaseNode>();
         }
 
         protected virtual NodeInspectorObject CreateNodeInspectorObject()
@@ -264,7 +276,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
                 if (element is GroupView groupView)
                 {
-                    data.copiedGroups.Add(JsonSerializer.Serialize(groupView.groupData));
+                    data.copiedGroups.Add(JsonSerializer.Serialize(groupView.GroupData));
                     continue;
                 }
 
@@ -311,7 +323,7 @@ namespace CZToolKit.GraphProcessor.Editors
                 // 新节点与旧id存入字典
                 copiedNodesMap[sourceGUID] = node;
                 AddNode(node);
-                AddToSelection(nodeViews[node.GUID]);
+                AddToSelection(NodeViews[node.GUID]);
             }
 
             foreach (var serializedGroup in data.copiedGroups)
@@ -348,12 +360,14 @@ namespace CZToolKit.GraphProcessor.Editors
                 if (!inputPort.IsMulti && inputPort.IsConnected) continue;
                 if (!outputPort.IsMulti && outputPort.IsConnected) continue;
 
-                if (nodeViews.TryGetValue(inputNode.GUID, out BaseNodeView inputNodeView)
-                    && nodeViews.TryGetValue(outputNode.GUID, out BaseNodeView outputNodeView))
+                if (NodeViews.TryGetValue(inputNode.GUID, out BaseNodeView inputNodeView)
+                    && NodeViews.TryGetValue(outputNode.GUID, out BaseNodeView outputNodeView))
                 {
                     Connect(inputNodeView.PortViews[edge.InputFieldName], outputNodeView.PortViews[edge.OutputFieldName]);
                 }
             }
+
+            this.SetDirty();
         }
 
         /// <summary> GraphView发生改变时调用 </summary>
@@ -400,6 +414,8 @@ namespace CZToolKit.GraphProcessor.Editors
 
                     return false;
                 });
+
+                this.SetDirty();
             }
 
             return changes;
@@ -421,7 +437,7 @@ namespace CZToolKit.GraphProcessor.Editors
             var groupView = elem as GroupView;
 
             if (groupView != null)
-                groupView.groupData.size = groupView.GetPosition().size;
+                groupView.GroupData.size = groupView.GetPosition().size;
         }
 
         #region 系统回调
@@ -443,7 +459,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
             evt.menu.AppendAction("Save Asset", (e) =>
             {
-                EditorUtility.SetDirty(GraphData);
+                SetDirty();
                 AssetDatabase.SaveAssets();
             }, DropdownMenuAction.AlwaysEnabled);
 
@@ -517,7 +533,7 @@ namespace CZToolKit.GraphProcessor.Editors
             // When left clicking on the graph (not a node or something else)
             if (e.button == 0)
             {
-                foreach (var nodeView in nodeViews.Values)
+                foreach (var nodeView in NodeViews.Values)
                 {
                     if (nodeView is IHasSettingNodeView settingNodeView)
                         settingNodeView.CloseSettings();
@@ -551,6 +567,7 @@ namespace CZToolKit.GraphProcessor.Editors
                     var paramNode = BaseNode.CreateNew<ParameterNode>(mousePos);
                     paramNode.paramGUID = (paramFieldView.userData as ExposedParameter).GUID;
                     AddNode(paramNode);
+                    this.SetDirty();
                 }
             }
         }
@@ -605,7 +622,7 @@ namespace CZToolKit.GraphProcessor.Editors
             // selection = nodeViews.Where(v => selectedNodeGUIDs.Contains(v.nodeTarget.GUID)).Select(v => v as ISelectable).ToList();
             foreach (var guid in selectedNodeGUIDs)
             {
-                AddToSelection(nodeViews[guid]);
+                AddToSelection(NodeViews[guid]);
             }
 
             UpdateNodeInspectorSelection();
@@ -677,10 +694,10 @@ namespace CZToolKit.GraphProcessor.Editors
 
         public BaseNodeView AddNode(BaseNode _nodeData)
         {
+            RegisterCompleteObjectUndo("AddNode " + _nodeData.GetType().Name);
             GraphData.AddNode(_nodeData);
             BaseNodeView nodeView = AddNodeView(_nodeData);
-            EditorUtility.SetDirty(GraphData);
-            RegisterCompleteObjectUndo("AddNode " + _nodeData.GetType().Name);
+            this.SetDirty();
             return nodeView;
         }
 
@@ -688,12 +705,12 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             Type nodeViewType = NodeEditorUtility.GetNodeViewType(_nodeData.GetType());
             if (nodeViewType == null)
-                nodeViewType = GetDefaultNodeViewType();
+                nodeViewType = DefaultNodeViewType;
 
             BaseNodeView nodeView = Activator.CreateInstance(nodeViewType) as BaseNodeView;
             nodeView.Initialize(this, _nodeData);
             AddElement(nodeView);
-            nodeViews[_nodeData.GUID] = nodeView;
+            NodeViews[_nodeData.GUID] = nodeView;
 
             if (nodeView is IOnGUIObserver observer)
                 onGUIObservers.Add(observer);
@@ -723,16 +740,16 @@ namespace CZToolKit.GraphProcessor.Editors
         public void RemoveNodeView(BaseNodeView _nodeView)
         {
             RemoveElement(_nodeView);
-            nodeViews.Remove(_nodeView.NodeData.GUID);
+            NodeViews.Remove(_nodeView.NodeData.GUID);
             if (_nodeView is IOnGUIObserver observer)
                 onGUIObservers.Remove(observer);
         }
 
         void RemoveNodeViews()
         {
-            foreach (var nodeView in nodeViews.Values)
+            foreach (var nodeView in NodeViews.Values)
                 RemoveElement(nodeView);
-            nodeViews.Clear();
+            NodeViews.Clear();
             onGUIObservers.Clear();
         }
 
@@ -747,7 +764,7 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             var groupView = new GroupView();
             groupView.Initialize(this, _groupData);
-            groupViews.Add(groupView);
+            GroupViews.Add(groupView);
             AddElement(groupView);
             return groupView;
         }
@@ -758,7 +775,7 @@ namespace CZToolKit.GraphProcessor.Editors
             {
                 if (selectedNode is BaseNodeView)
                 {
-                    if (groupViews.Exists(x => x.ContainsElement(selectedNode as BaseNodeView)))
+                    if (GroupViews.Exists(x => x.ContainsElement(selectedNode as BaseNodeView)))
                         continue;
 
                     _groupView.AddElement(selectedNode as BaseNodeView);
@@ -768,21 +785,21 @@ namespace CZToolKit.GraphProcessor.Editors
 
         public void RemoveGroup(GroupView _groupView)
         {
-            GraphData.RemoveGroup(_groupView.groupData);
+            GraphData.RemoveGroup(_groupView.GroupData);
             RemoveGroupView(_groupView);
         }
 
         public void RemoveGroupView(GroupView _groupView)
         {
-            groupViews.Remove(_groupView);
+            GroupViews.Remove(_groupView);
             RemoveElement(_groupView);
         }
 
         public void RemoveGroups()
         {
-            foreach (var groupView in groupViews)
+            foreach (var groupView in GroupViews)
                 RemoveElement(groupView);
-            groupViews.Clear();
+            GroupViews.Clear();
         }
 
         public BaseStackNodeView AddStackNode(BaseStackNode _stackData)
@@ -797,27 +814,27 @@ namespace CZToolKit.GraphProcessor.Editors
             var stackView = Activator.CreateInstance(stackViewType) as BaseStackNodeView;
             stackView.Initialize(this, _stackNode);
             AddElement(stackView);
-            stackNodeViews[_stackNode.GUID] = stackView;
+            StackNodeViews[_stackNode.GUID] = stackView;
             return stackView;
         }
 
         public void RemoveStackNode(BaseStackNodeView _stackNodeView)
         {
             GraphData.RemoveStackNode(_stackNodeView.stackNode);
-            Remove(_stackNodeView);
+            RemoveStackNodeView(_stackNodeView);
         }
 
         public void RemoveStackNodeView(BaseStackNodeView _stackNodeView)
         {
             RemoveElement(_stackNodeView);
-            stackNodeViews.Remove(_stackNodeView.stackNode.GUID);
+            StackNodeViews.Remove(_stackNodeView.stackNode.GUID);
         }
 
         void RemoveStackNodeViews()
         {
-            foreach (var stackView in stackNodeViews)
+            foreach (var stackView in StackNodeViews)
                 RemoveElement(stackView.Value);
-            stackNodeViews.Clear();
+            StackNodeViews.Clear();
         }
 
         public bool ConnectView(EdgeView _edgeView)
@@ -829,14 +846,14 @@ namespace CZToolKit.GraphProcessor.Editors
 
             if (!inputPortView.PortData.IsMulti)
             {
-                foreach (var edge in edgeViews.Where(ev => ev.input == _edgeView.input).ToList())
+                foreach (var edge in EdgeViews.Where(ev => ev.input == _edgeView.input).ToList())
                 {
                     DisconnectView(edge);
                 }
             }
             if (!(_edgeView.output as PortView).PortData.IsMulti)
             {
-                foreach (var edge in edgeViews.Where(ev => ev.output == _edgeView.output).ToList())
+                foreach (var edge in EdgeViews.Where(ev => ev.output == _edgeView.output).ToList())
                 {
                     DisconnectView(edge);
                 }
@@ -847,7 +864,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
 
             AddElement(_edgeView);
-            edgeViews.Add(_edgeView);
+            EdgeViews.Add(_edgeView);
 
             inputNodeView.RefreshPorts();
             outputNodeView.RefreshPorts();
@@ -940,15 +957,15 @@ namespace CZToolKit.GraphProcessor.Editors
                 _edgeView.output.Disconnect(_edgeView);
                 outputNodeView.RefreshPorts();
             }
-            edgeViews.Remove(_edgeView);
+            EdgeViews.Remove(_edgeView);
         }
 
         /// <summary> 不影响数据 </summary>
         public void RemoveEdgeViews()
         {
-            foreach (var edge in edgeViews)
+            foreach (var edge in EdgeViews)
                 RemoveElement(edge);
-            edgeViews.Clear();
+            EdgeViews.Clear();
         }
 
         public void RegisterCompleteObjectUndo(string name)
@@ -960,7 +977,7 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             if (GraphData == null) return;
 
-            EditorUtility.SetDirty(GraphData);
+            SetDirty(GraphData);
         }
 
         public void ResetPositionAndZoom()

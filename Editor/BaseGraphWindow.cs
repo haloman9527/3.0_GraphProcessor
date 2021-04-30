@@ -82,6 +82,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
         public BaseGraph GraphData { get { return graphData; } }
         public BaseGraphView GraphView { get { return graphView; } }
+        public ToolbarView Toolbar { get { return toolbar; } }
 
 
         protected virtual void OnEnable()
@@ -142,13 +143,15 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             titleContent = new GUIContent("Default Graph");
 
-            InitializeGraphView();
-            graphViewElement.Add(graphView);
-
             toolbar = new ToolbarView(this);
+            toolbar.AddButton("Show In Project", () => EditorGUIUtility.PingObject(GraphView.GraphData), false);
+            toolbar.AddButton("Reload", () => LoadGraphInternal(GraphData), false);
             rootVisualElement.Add(toolbar);
 
+            InitializeGraphView();
+            graphViewElement.Add(graphView);
             graphViewElement.style.top = 20;
+
             rootVisualElement.Add(graphViewElement);
         }
 

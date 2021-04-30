@@ -3,6 +3,7 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
+using CZToolKit.Core.Editors;
 
 #if ODIN_INSPECTOR
 using Sirenix.OdinInspector.Editor;
@@ -32,7 +33,7 @@ namespace CZToolKit.GraphProcessor.Editors
         public override void OnInspectorGUI()
         {
 #if ODIN_INSPECTOR
-            if (inspector.node != null)
+            if (tree != null)
             {
                 tree.BeginDraw(true);
                 tree.Draw(true);

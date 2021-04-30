@@ -17,10 +17,11 @@ public class SampleNode : BaseNode
     [ShowAsDrawer]
     [HideInInspector]
     public float f;
+
     [Port(PortDirection.Input)]
-    [ShowAsDrawer]
     [HideInInspector]
     public double d;
+
     [Port(PortDirection.Input)]
     [ShowAsDrawer]
     [HideInInspector]

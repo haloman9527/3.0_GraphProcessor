@@ -1,9 +1,31 @@
+
 #title {
     height: 18px;
+    align-items: stretch;
+    justify-content: center;
 }
 
-#title.input {
+#title > #title-button-container {
+    display: none;
+}
+
+#title > Label {
+    margin-left: 2px;
+    margin-right: 2px;
+    font-size: 11px;
+    align-self: center;
+}
+
+#title > #input {
     flex-direction: row-reverse;
+    align-items: center;
+    flex-direction: row;
+}
+
+#title > #output {
+    flex-direction: row-reverse;
+    align-items: center;
+    flex-direction: row;
 }
 
 #node-border {
@@ -12,23 +34,6 @@
 
 #selection-border {
     border-radius: 12px;
-}
-
-#title > Label {
-    margin-left: 2px;
-    margin-right: 2px;
-    font-size: 11px;
-}
-
-#title #top PortView {
-    padding-right: 0;
-    padding-left: 0;
-    margin-top: 2px;
-}
-
-PortView > Label {
-    visibility: hidden;
-    width: 0;
 }
 
 #controls EnumField {
@@ -51,4 +56,13 @@ PortView > Label {
 
 #controls EnumField > VisualElement > VisualElement {
     margin-right: -2px;
+}
+
+PortView > Label {
+    visibility: hidden;
+    margin-left: 0;
+    margin-right: 0;
+    padding-left: 0;
+    padding-right: 0;
+    width: 0;
 }

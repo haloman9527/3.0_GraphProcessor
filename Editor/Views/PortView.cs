@@ -1,12 +1,9 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using CZToolKit.Core;
 using UnityEngine;
-using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine.UIElements;
 using System;
-using System.Reflection;
-using CZToolKit.Core;
+using System.Collections.Generic;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
@@ -15,10 +12,8 @@ namespace CZToolKit.GraphProcessor.Editors
         const int DefaultPortSize = 8;
 
         const string PortViewStyleFile = "GraphProcessor/Styles/PortView";
-        const string PortViewTypesFile = "GraphProcessor/Styles/PortViewTypes";
 
         static StyleSheet portViewStyle;
-        static StyleSheet portViewTypesStyle;
 
         public static StyleSheet PortViewStyle
         {
@@ -27,15 +22,6 @@ namespace CZToolKit.GraphProcessor.Editors
                 if (portViewStyle == null)
                     portViewStyle = Resources.Load<StyleSheet>(PortViewStyleFile);
                 return portViewStyle;
-            }
-        }
-        public static StyleSheet PortViewTypesStyle
-        {
-            get
-            {
-                if (portViewTypesStyle == null)
-                    portViewTypesStyle = Resources.Load<StyleSheet>(PortViewTypesFile);
-                return portViewTypesStyle;
             }
         }
 
@@ -95,7 +81,9 @@ namespace CZToolKit.GraphProcessor.Editors
         public BaseNodeView Owner { get; private set; }
         public NodePort PortData { get { return portData; } }
         public string FieldName { get { return portData.FieldName; } }
-        public List<EdgeView> Edges { get;  } = new List<EdgeView>();
+        public List<EdgeView> Edges { get; } = new List<EdgeView>();
+
+        public Action onConnected, onDisconnected;
 
         PortView(Orientation _orientation, Direction _direction, NodePort _portData, BaseEdgeConnectorListener edgeConnectorListener)
             : base(_orientation, _direction, _portData.IsMulti ? Capacity.Multi : Capacity.Single, _portData.DisplayType)
@@ -124,19 +112,18 @@ namespace CZToolKit.GraphProcessor.Editors
         public virtual void Initialize(BaseNodeView _nodeView)
         {
             styleSheets.Add(PortViewStyle);
-            styleSheets.Add(PortViewTypesStyle);
 
             Owner = _nodeView;
 
-            if (AttributeCache.TryGetFieldAttribute(Owner.NodeDataType, FieldName, out PortColorAttribute colorAttrib))
+            if (Utility.TryGetFieldAttribute(Owner.NodeDataType, FieldName, out PortColorAttribute colorAttrib))
                 portColor = colorAttrib.Color;
 
-            if (AttributeCache.TryGetFieldAttribute(Owner.NodeDataType, FieldName, out TooltipAttribute toolTipAttrib))
+            if (Utility.TryGetFieldAttribute(Owner.NodeDataType, FieldName, out TooltipAttribute toolTipAttrib))
                 tooltip = toolTipAttrib.tooltip;
             else if (orientation == Orientation.Vertical)
                 tooltip = NodeEditorUtility.GetDisplayName(FieldName);
 
-            if (AttributeCache.TryGetFieldAttribute(Owner.NodeDataType, FieldName, out DisplayNameAttribute attrib))
+            if (Utility.TryGetFieldAttribute(Owner.NodeDataType, FieldName, out DisplayNameAttribute attrib))
                 portName = attrib.DisplayName;
             else
                 portName = NodeEditorUtility.GetDisplayName(FieldName);
@@ -148,7 +135,7 @@ namespace CZToolKit.GraphProcessor.Editors
         /// <summary> Update the size of the port view (using the portData.sizeInPixel property) </summary>
         public void UpdatePortSize()
         {
-            if (AttributeCache.TryGetFieldAttribute(PortData.Owner.GetType(), PortData.FieldName, out PortSizeAttribute portSizeAttribute))
+            if (Utility.TryGetFieldAttribute(PortData.Owner.GetType(), PortData.FieldName, out PortSizeAttribute portSizeAttribute))
                 size = portSizeAttribute.size;
             else
                 size = DefaultPortSize;
@@ -168,14 +155,15 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             base.Connect(edge);
             Edges.Add(edge as EdgeView);
-            var inputNode = (edge.input as PortView).Owner;
-            var outputNode = (edge.output as PortView).Owner;
+            onConnected?.Invoke();
             switch (direction)
             {
                 case Direction.Input:
+                    var outputNode = (edge.output as PortView).Owner;
                     outputNode.OnPortConnected(edge.output as PortView, edge.input as PortView);
                     break;
                 case Direction.Output:
+                    var inputNode = (edge.input as PortView).Owner;
                     inputNode.OnPortConnected(edge.input as PortView, edge.output as PortView);
                     break;
             }
@@ -186,14 +174,19 @@ namespace CZToolKit.GraphProcessor.Editors
             base.Disconnect(edge);
             if (!(edge as EdgeView).isConnected)
                 return;
-
-            var inputNode = (edge.input as PortView).Owner;
-            var outputNode = (edge.output as PortView).Owner;
-
-            inputNode.OnPortDisconnected(edge.input as PortView, edge.output as PortView);
-            outputNode.OnPortDisconnected(edge.output as PortView, edge.input as PortView);
-
             Edges.Remove(edge as EdgeView);
+            onDisconnected?.Invoke();
+            switch (direction)
+            {
+                case Direction.Input:
+                    var outputNode = (edge.output as PortView).Owner;
+                    outputNode.OnPortDisconnected(edge.output as PortView, edge.input as PortView);
+                    break;
+                case Direction.Output:
+                    var inputNode = (edge.input as PortView).Owner;
+                    inputNode.OnPortDisconnected(edge.input as PortView, edge.output as PortView);
+                    break;
+            }
         }
 
         public void UpdatePortView()
@@ -206,7 +199,7 @@ namespace CZToolKit.GraphProcessor.Editors
                 visualClass = "Port_" + portType.Name;
             }
 
-            if (AttributeCache.TryGetFieldAttribute(Owner.NodeDataType, FieldName, out DisplayNameAttribute attrib))
+            if (Utility.TryGetFieldAttribute(Owner.NodeDataType, FieldName, out DisplayNameAttribute attrib))
                 portName = attrib.DisplayName;
             else
                 portName = NodeEditorUtility.GetDisplayName(FieldName);

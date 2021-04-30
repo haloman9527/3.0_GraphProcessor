@@ -22,7 +22,7 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             foreach (var drawerType in TypeCache.GetTypesWithAttribute<FieldDrawerAttribute>())
             {
-                if (AttributeCache.TryGetTypeAttribute(drawerType, out FieldDrawerAttribute fieldDrawerAttribute))
+                if (Utility.TryGetTypeAttribute(drawerType, out FieldDrawerAttribute fieldDrawerAttribute))
                     AddDrawer(fieldDrawerAttribute.fieldType, drawerType, _ => { return Activator.CreateInstance(drawerType) as VisualElement; });
             }
 

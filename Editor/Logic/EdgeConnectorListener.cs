@@ -10,7 +10,7 @@ namespace CZToolKit.GraphProcessor.Editors
     /// <summary> Base class to write your own edge handling connection system </summary>
     public class BaseEdgeConnectorListener : IEdgeConnectorListener
     {
-        protected readonly BaseGraphView graphView;
+        protected BaseGraphView GraphView { get; private set; }
 
         Dictionary<Edge, PortView> edgeInputPorts = new Dictionary<Edge, PortView>();
         Dictionary<Edge, PortView> edgeOutputPorts = new Dictionary<Edge, PortView>();
@@ -19,7 +19,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
         public BaseEdgeConnectorListener(BaseGraphView _graphView)
         {
-            graphView = _graphView;
+            GraphView = _graphView;
         }
 
         public virtual void OnDropOutsidePort(Edge edge, Vector2 position)
@@ -27,8 +27,8 @@ namespace CZToolKit.GraphProcessor.Editors
             //If the edge was already existing, remove it
             if (!edge.isGhostEdge)
             {
-                graphView.RegisterCompleteObjectUndo("Disconnect edge");
-                graphView.RemoveElement(edge as EdgeView);
+                GraphView.RegisterCompleteObjectUndo("Disconnect edge");
+                GraphView.RemoveElement(edge as EdgeView);
             }
 
             // when on of the port is null, then the edge was created and dropped outside of a port
@@ -52,7 +52,7 @@ namespace CZToolKit.GraphProcessor.Editors
                         wasOnTheSamePort = true;
 
                 if (!wasOnTheSamePort)
-                    this.graphView.Disconnect(edgeView);
+                    this.GraphView.Disconnect(edgeView);
             }
 
             if (edgeView.input.node == null || edgeView.output.node == null)
@@ -60,8 +60,8 @@ namespace CZToolKit.GraphProcessor.Editors
 
             edgeInputPorts[edge] = edge.input as PortView;
             edgeOutputPorts[edge] = edge.output as PortView;
-            this.graphView.RegisterCompleteObjectUndo("Connected " + edgeView.input.node.name + " and " + edgeView.output.node.name);
-            this.graphView.Connect(edge as EdgeView);
+            this.GraphView.RegisterCompleteObjectUndo("Connected " + edgeView.input.node.name + " and " + edgeView.output.node.name);
+            this.GraphView.Connect(edge as EdgeView);
             //try
             //{
             //    //if (!this.graphView.Connect(edge as EdgeView))
@@ -80,7 +80,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
 
             //edgeNodeCreateMenuWindow.Initialize(graphView, edgeView);
-            SearchWindow.Open(new SearchWindowContext(position + EditorWindow.focusedWindow.position.position), graphView.CreateNodeMenu);
+            SearchWindow.Open(new SearchWindowContext(position + EditorWindow.focusedWindow.position.position), GraphView.CreateNodeMenu);
         }
     }
 }

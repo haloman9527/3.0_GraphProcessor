@@ -14,18 +14,18 @@ namespace CZToolKit.GraphProcessor
 
         private static bool Initialized { get { return PortCache != null; } }
 
-        private static void CachePorts(Type nodeType)
+        private static void CachePorts(Type _nodeType)
         {
-            List<FieldInfo> fieldInfos = GetFields(nodeType);
+            List<FieldInfo> fieldInfos = GetFields(_nodeType);
 
             foreach (var fieldInfo in fieldInfos)
             {
                 // 获取接口特性
-                if (!AttributeCache.TryGetFieldAttribute(nodeType, fieldInfo.Name, out PortAttribute portAttribute)) continue;
+                if (!Utility.TryGetFieldAttribute(_nodeType, fieldInfo.Name, out PortAttribute portAttribute)) continue;
 
-                if (!PortCache.ContainsKey(nodeType)) PortCache.Add(nodeType, new List<NodePort>());
+                if (!PortCache.ContainsKey(_nodeType)) PortCache.Add(_nodeType, new List<NodePort>());
 
-                PortCache[nodeType].Add(new NodePort(fieldInfo));
+                PortCache[_nodeType].Add(new NodePort(fieldInfo));
             }
 
             //List<MethodInfo> methodInfos = GetNodeMethods(nodeType);
@@ -39,7 +39,7 @@ namespace CZToolKit.GraphProcessor
         private static void BuildCache()
         {
             PortCache = new Dictionary<Type, List<NodePort>>();
-            foreach (var nodeType in ChildrenTypeCache.GetChildrenTypes<BaseNode>())
+            foreach (var nodeType in Utility.GetChildrenTypes<BaseNode>())
             {
                 CachePorts(nodeType);
             }
@@ -113,31 +113,30 @@ namespace CZToolKit.GraphProcessor
             }
         }
 
-        public static List<FieldInfo> GetFields(Type nodeType)
+        public static List<FieldInfo> GetFields(Type _nodeType)
         {
             List<FieldInfo> fieldInfos =
                 new List<FieldInfo>(
-                    nodeType.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance));
+                    _nodeType.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance));
 
             // 获取类包含的所有字段(包含私有)
-            Type tempType = nodeType;
+            Type tempType = _nodeType;
             while ((tempType = tempType.BaseType) != typeof(BaseNode) && tempType != null)
             {
                 fieldInfos.AddRange(tempType.GetFields(BindingFlags.NonPublic | BindingFlags.Instance));
             }
 
-
             return fieldInfos;
         }
 
-        public static List<MethodInfo> GetNodeMethods(Type nodeType)
+        public static List<MethodInfo> GetNodeMethods(Type _nodeType)
         {
             List<MethodInfo> methodInfos =
                 new List<MethodInfo>(
-                    nodeType.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance));
+                    _nodeType.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance));
 
             // 获取类包含的所有方法(包含私有)
-            Type tempType = nodeType;
+            Type tempType = _nodeType;
             while ((tempType = tempType.BaseType) != typeof(BaseNode) && tempType != null)
             {
                 methodInfos.AddRange(tempType.GetMethods(BindingFlags.NonPublic | BindingFlags.Instance));

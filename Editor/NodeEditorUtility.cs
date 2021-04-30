@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
-using UnityEditor.Experimental.GraphView;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
@@ -27,7 +26,7 @@ namespace CZToolKit.GraphProcessor.Editors
                 //foreach (var type in graphWindowTypes)
                 foreach (var type in TypeCache.GetTypesWithAttribute<CustomGraphWindowAttribute>())
                 {
-                    if (AttributeCache.TryGetTypeAttribute(type, out CustomGraphWindowAttribute attribute))
+                    if (Utility.TryGetTypeAttribute(type, out CustomGraphWindowAttribute attribute))
                         GRAPH_EDITOR_WINDOW_TYPE_CACHE[attribute.GraphType] = type;
                 }
             }
@@ -52,7 +51,7 @@ namespace CZToolKit.GraphProcessor.Editors
                 NODE_VIEW_TYPE_CACHE = new Dictionary<Type, Type>();
                 foreach (var _nodeViewType in TypeCache.GetTypesWithAttribute<CustomNodeViewAttribute>())
                 {
-                    if (AttributeCache.TryGetTypeAttribute(_nodeViewType, out CustomNodeViewAttribute attri))
+                    if (Utility.TryGetTypeAttribute(_nodeViewType, out CustomNodeViewAttribute attri))
                         NODE_VIEW_TYPE_CACHE[attri.NodeType] = _nodeViewType;
                 }
             }
@@ -74,7 +73,7 @@ namespace CZToolKit.GraphProcessor.Editors
                 StackNodeViewTypeCache = new Dictionary<Type, Type>();
                 foreach (var t in TypeCache.GetTypesWithAttribute<CustomStackNodeView>())
                 {
-                    if (AttributeCache.TryGetTypeAttribute(t, out CustomNodeViewAttribute attri))
+                    if (Utility.TryGetTypeAttribute(t, out CustomNodeViewAttribute attri))
                         StackNodeViewTypeCache[attri.NodeType] = t;
                 }
             }
@@ -87,7 +86,7 @@ namespace CZToolKit.GraphProcessor.Editors
         #region NodeNames
         public static string GetNodeDisplayName(Type _nodeType)
         {
-            if (AttributeCache.TryGetTypeAttribute(_nodeType, out NodeMenuItemAttribute attri))
+            if (Utility.TryGetTypeAttribute(_nodeType, out NodeMenuItemAttribute attri))
             {
                 if (attri.Titles != null && attri.Titles.Length != 0)
                     return attri.Titles[attri.Titles.Length - 1];
@@ -113,7 +112,7 @@ namespace CZToolKit.GraphProcessor.Editors
                 var assetPath = AssetDatabase.GUIDToAssetPath(scriptGUID);
                 var script = AssetDatabase.LoadAssetAtPath<MonoScript>(assetPath);
 
-                if (script != null && String.Equals(_type.Name, Path.GetFileNameWithoutExtension(assetPath), StringComparison.OrdinalIgnoreCase))
+                if (script != null && String.Equals(_type.Name, Path.GetFileNameWithoutExtension(assetPath), StringComparison.OrdinalIgnoreCase) && script.GetClass() == _type)
                     return script;
             }
 

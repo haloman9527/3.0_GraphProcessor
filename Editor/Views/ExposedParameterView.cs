@@ -22,7 +22,6 @@ namespace CZToolKit.GraphProcessor.Editors
             UpdateParameterList();
             addItemRequested += OnAddClicked;
             editTextRequested = Rename;
-            base.SetPosition(GraphView.GraphData.blackboardPosition);
         }
 
         private void Rename(Blackboard _blackboard, VisualElement _field, string _newName)
@@ -101,16 +100,12 @@ namespace CZToolKit.GraphProcessor.Editors
             contentContainer.Remove(fields[param.GUID]);
         }
 
-        public override void SetPosition(Rect newPos)
+        public override void UpdatePresenterPosition()
         {
-            if (!GraphView.Initialized)
-                base.SetPosition(newPos);
-            else
-            {
-                base.SetPosition(newPos);
-                GraphView.GraphData.blackboardPosition = newPos;
-                GraphView.RegisterCompleteObjectUndo("Modify ExposedParameterView");
-            }
+            base.UpdatePresenterPosition();
+            GraphView.RegisterCompleteObjectUndo("Modify ExposedParameterView");
+            GraphView.GraphData.blackboardPosition = GetPosition();
+            GraphView.SetDirty();
         }
 
         protected virtual void UpdateParameterList()
