@@ -16,8 +16,8 @@ namespace CZToolKit.GraphProcessor.Examples
 
         protected override void InitializeGraphView()
         {
-            graphView = new MathGraphView();
-            graphView.Initialize(this, GraphData);
+            GraphView = new MathGraphView();
+            GraphView.Initialize(this, GraphData);
         }
     }
 }

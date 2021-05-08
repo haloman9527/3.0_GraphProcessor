@@ -3,6 +3,9 @@ using System;
 using UnityEngine;
 using System.Linq;
 using CZToolKit.Core.Attributes;
+using System.Collections;
+using System.Reflection;
+using CZToolKit.Core;
 
 namespace CZToolKit.GraphProcessor
 {
@@ -43,6 +46,12 @@ namespace CZToolKit.GraphProcessor
         [SerializeField, HideInInspector]
         GUIDMapDictionary guidMap = new GUIDMapDictionary();
 
+        [SerializeField, SerializeReference, HideInInspector]
+        List<SharedVariable> variables = new List<SharedVariable>();
+
+        //[SerializeField, HideInInspector]
+        //VariableSerializationDatas variableSerializationDatas = new VariableSerializationDatas();
+
         public Dictionary<string, BaseNode> Nodes { get { return nodes; } }
         public Dictionary<string, SerializableEdge> Edges { get { return edges; } }
         public List<BaseGroup> Groups { get { return groups; } }
@@ -62,9 +71,33 @@ namespace CZToolKit.GraphProcessor
             {
                 serializedNodes.Add(JsonSerializer.SerializeNode(node));
             }
+            
+            if (variableSerializationDatas == null)
+                variableSerializationDatas = new VariableSerializationDatas();
+            else
+            {
+                variableSerializationDatas.types.Clear();
+                variableSerializationDatas.variableDatas.Clear();
+            }
+            foreach (var variable in variables)
+            {
+                variableSerializationDatas.types.Add(variable.GetType().FullName);
+                variableSerializationDatas.variableDatas.Add(JsonUtility.ToJson(variable));
+            }
         }
 
-        public virtual void OnAfterDeserialize() { }
+        public virtual void OnAfterDeserialize()
+        {
+            if (variables == null)
+                variables = new List<SharedVariable>();
+            else
+                variables.Clear();
+            for (int i = 0; i < variableSerializationDatas.variableDatas.Count; i++)
+            {
+                Type type = Type.GetType(variableSerializationDatas.types[i]);
+                variables.Add(JsonUtility.FromJson(variableSerializationDatas.variableDatas[i], type) as SharedVariable);
+            }
+        }
 
         public void Deserialize()
         {
@@ -81,7 +114,64 @@ namespace CZToolKit.GraphProcessor
                 AddNode(node);
             }
         }
+//#else
+//        protected override void OnBeforeSerialize()
+//        {
+//            base.OnBeforeSerialize();
+//            if (variableSerializationDatas == null)
+//                variableSerializationDatas = new VariableSerializationDatas();
+//            variableSerializationDatas.Load(variables);
+//        }
+
+//        protected override void OnAfterDeserialize()
+//        {
+//            base.OnAfterDeserialize();
+//            if (variables == null)
+//                variables = new List<SharedVariable>();
+//            else
+//                variables.Clear();
+//            foreach (var variable in variableSerializationDatas.From())
+//            {
+//                variables.Add(variable);
+//            }
+//        }
 #endif
+        public IEnumerable<SharedVariable> GetVariables()
+        {
+            foreach (var variable in variables)
+            {
+                yield return variable;
+            }
+        }
+
+        public void CollectionVariables()
+        {
+            if (variables == null)
+                variables = new List<SharedVariable>();
+            else
+                variables.Clear();
+            foreach (var node in nodes.Values)
+            {
+                variables.AddRange(CollectionNodeVariables(node));
+            }
+        }
+
+        private IEnumerable<SharedVariable> CollectionNodeVariables(BaseNode _node)
+        {
+            List<FieldInfo> fieldInfos = Utility.GetFieldInfos(_node.GetType());
+            Type t = typeof(SharedVariable);
+            foreach (var fieldInfo in fieldInfos)
+            {
+                if (!t.IsAssignableFrom(fieldInfo.FieldType)) continue;
+                SharedVariable variable = fieldInfo.GetValue(_node) as SharedVariable;
+                if (variable == null)
+                {
+                    variable = Activator.CreateInstance(fieldInfo.FieldType) as SharedVariable;
+                    fieldInfo.SetValue(_node, variable);
+                }
+                yield return variable;
+            }
+        }
 
         protected virtual void OnEnable()
         {
@@ -92,6 +182,19 @@ namespace CZToolKit.GraphProcessor
 #if UNITY_EDITOR
             Flush();
 #endif
+        }
+
+        public virtual void Initialize(GraphOwner _graphOwner)
+        {
+            InitializePropertyMapping(_graphOwner.GetBehaviorSource());
+        }
+
+        public void InitializePropertyMapping(BehaviorSource _propertyMapping)
+        {
+            foreach (var variable in GetVariables())
+            {
+                variable.InitializePropertyMapping(_propertyMapping);
+            }
         }
 
         /// <summary> 刷新及修复数据 </summary>
@@ -133,6 +236,7 @@ namespace CZToolKit.GraphProcessor
             _node.Initialize(this);
             Nodes[_node.GUID] = _node;
             NodeDataCache.UpdateStaticPorts(_node);
+            variables.AddRange(CollectionNodeVariables(_node));
         }
 
         /// <summary> 移除指定节点 </summary>

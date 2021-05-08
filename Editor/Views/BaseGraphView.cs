@@ -90,7 +90,7 @@ namespace CZToolKit.GraphProcessor.Editors
             double time = EditorApplication.timeSinceStartup;
             Add(new IMGUIContainer(() =>
             {
-                if (IsDirty && EditorApplication.timeSinceStartup > time)
+                if (IsDirty && EditorApplication.timeSinceStartup > time && GraphData != null)
                 {
                     IsDirty = false;
                     EditorUtility.SetDirty(GraphData);

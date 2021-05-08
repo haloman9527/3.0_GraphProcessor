@@ -64,3 +64,6 @@ MonoBehaviour:
   guidMap:
     keys: []
     values: []
+  variables: []
+  references:
+    version: 1

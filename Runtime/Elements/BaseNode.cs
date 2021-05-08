@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
+using CZToolKit.Core;
 
 namespace CZToolKit.GraphProcessor
 {
@@ -50,11 +52,15 @@ namespace CZToolKit.GraphProcessor
         NodePortsDictionary ports = new NodePortsDictionary();
 #endif
 
+        //[SerializeField, SerializeReference, HideInInspector]
+        //List<SharedVariable> variables = new List<SharedVariable>();
+
         public BaseGraph Owner { get { return owner; } }
         public string GUID { get { return guid; } }
         public bool Expanded { get { return expanded; } set { expanded = value; } }
         public bool Locked { get { return locked; } set { locked = value; } }
         public Dictionary<string, NodePort> Ports { get { return ports; } }
+
 
         /// <summary> 创建时调用，请不要在其它任何地方调用，因为这会重置GUID </summary>
         public virtual void OnCreated()
@@ -64,7 +70,7 @@ namespace CZToolKit.GraphProcessor
         }
 
         /// <summary> 请不要在其它任何地方调用 </summary>
-        public void Initialize(BaseGraph _graph)
+        internal void Initialize(BaseGraph _graph)
         {
             owner = _graph;
             foreach (var port in Ports.Values)
@@ -72,6 +78,8 @@ namespace CZToolKit.GraphProcessor
                 port.Owner = this;
             }
         }
+
+        public virtual void Initialize(GraphOwner _graphOwner) { }
 
         #region Ports
         /// <summary> 通过名字获取一个Input接口 </summary>
@@ -161,5 +169,7 @@ namespace CZToolKit.GraphProcessor
 
         /// <summary> 接口动态类型 </summary>
         public virtual Type PortDynamicType(string _portName) { return null; }
+
+        public virtual void DrawGizmos(GraphOwner _graphOwner) { }
     }
 }

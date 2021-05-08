@@ -4,6 +4,7 @@ using UnityEditor;
 using UnityEngine.UIElements;
 using UnityEditor.Callbacks;
 using CZToolKit.Core.Editors;
+using UnityEditor.UIElements;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
@@ -11,8 +12,16 @@ namespace CZToolKit.GraphProcessor.Editors
     public class BaseGraphWindow : BasicEditorWindow
     {
         #region 静态
+        public static void Open(GraphOwner _graphOwner)
+        {
+            BaseGraphWindow window = LoadGraph(_graphOwner.Graph);
+            if (window != null)
+                window.GraphOwner = _graphOwner;
+            _graphOwner.Graph.Initialize(_graphOwner);
+        }
+
         [OnOpenAsset(0)]
-        public static bool OnBaseGraphOpened(int instanceID, int line)
+        public static bool OnGraphOpened(int instanceID, int line)
         {
             var asset = EditorUtility.InstanceIDToObject(instanceID) as BaseGraph;
 
@@ -25,26 +34,9 @@ namespace CZToolKit.GraphProcessor.Editors
             return false;
         }
 
-        public static BaseGraphWindow GetWindow(BaseGraph _graphData)
+        public static BaseGraphWindow LoadGraph(BaseGraph _graphData)
         {
-            Type type = NodeEditorUtility.GetGraphWindowType(_graphData.GetType());
-
-            UnityEngine.Object[] objs = Resources.FindObjectsOfTypeAll(type);
-            BaseGraphWindow window = null;
-            foreach (var obj in objs)
-            {
-                if (obj.GetType() == type)
-                {
-                    window = obj as BaseGraphWindow;
-                    if (window.graphData == _graphData)
-                        return window;
-                }
-            }
-            return null;
-        }
-
-        public static void LoadGraph(BaseGraph _graphData)
-        {
+            if (_graphData == null) return null;
             Type type = NodeEditorUtility.GetGraphWindowType(_graphData.GetType());
 
             UnityEngine.Object[] objs = Resources.FindObjectsOfTypeAll(type);
@@ -70,20 +62,43 @@ namespace CZToolKit.GraphProcessor.Editors
                 if (window.GraphData != _graphData)
                     window.LoadGraphInternal(_graphData);
             }
+            return window;
+        }
+
+        public static BaseGraphWindow GetWindow(BaseGraph _graphData)
+        {
+            Type type = NodeEditorUtility.GetGraphWindowType(_graphData.GetType());
+
+            UnityEngine.Object[] objs = Resources.FindObjectsOfTypeAll(type);
+            BaseGraphWindow window = null;
+            foreach (var obj in objs)
+            {
+                if (obj.GetType() == type)
+                {
+                    window = obj as BaseGraphWindow;
+                    if (window.graphData == _graphData)
+                        return window;
+                }
+            }
+            return null;
         }
 
         #endregion
 
-        protected ToolbarView toolbar;
-        protected VisualElement graphViewElement;
-        protected BaseGraphView graphView;
+        ToolbarView toolbar;
+        VisualElement graphViewElement;
+        BaseGraphView graphView;
         [SerializeField]
-        protected BaseGraph graphData;
+        GraphOwner graphOwner;
+        [SerializeField]
+        int graphOwnerInstanceID;
+        [SerializeField]
+        BaseGraph graphData;
 
+        public GraphOwner GraphOwner { get { return graphOwner; } private set { graphOwner = value; if (graphOwner != null) graphOwnerInstanceID = graphOwner.GetInstanceID(); } }
         public BaseGraph GraphData { get { return graphData; } }
-        public BaseGraphView GraphView { get { return graphView; } }
+        public BaseGraphView GraphView { get { return graphView; } protected set { graphView = value; } }
         public ToolbarView Toolbar { get { return toolbar; } }
-
 
         protected virtual void OnEnable()
         {
@@ -91,9 +106,32 @@ namespace CZToolKit.GraphProcessor.Editors
             graphViewElement.name = "GraphView";
             graphViewElement.StretchToParentSize();
             rootVisualElement.Add(graphViewElement);
-
+            EditorApplication.playModeStateChanged += OnPlayModeChanged;
             if (graphData != null)
+            {
                 LoadGraphInternal(graphData);
+            }
+            GraphOwner = EditorUtility.InstanceIDToObject(graphOwnerInstanceID) as GraphOwner;
+            if (GraphOwner != null)
+                GraphData.InitializePropertyMapping(GraphOwner.GetBehaviorSource());
+        }
+
+        void OnPlayModeChanged(PlayModeStateChange obj)
+        {
+            switch (obj)
+            {
+                case PlayModeStateChange.EnteredEditMode:
+                    GraphOwner tempPlayable = EditorUtility.InstanceIDToObject(graphOwnerInstanceID) as GraphOwner;
+                    if (tempPlayable != null)
+                        graphOwnerInstanceID = tempPlayable.gameObject.GetInstanceID();
+                    GraphOwner = tempPlayable;
+                    break;
+                case PlayModeStateChange.EnteredPlayMode:
+                    GraphOwner = (EditorUtility.InstanceIDToObject(graphOwnerInstanceID) as GraphOwner);
+                    break;
+                default:
+                    break;
+            }
         }
 
         protected virtual void OnGUI()
@@ -137,6 +175,8 @@ namespace CZToolKit.GraphProcessor.Editors
             if (toolbar != null)
                 rootVisualElement.Remove(toolbar);
             toolbar = null;
+
+            graphOwner = null;
         }
 
         protected virtual void InitializeWindow(BaseGraph graph)
@@ -159,6 +199,12 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             graphView = new BaseGraphView();
             graphView.Initialize(this, graphData);
+        }
+
+        protected virtual void OnDestroy()
+        {
+            if (Selection.activeObject is NodeInspectorObject)
+                Selection.activeObject = null;
         }
     }
 }

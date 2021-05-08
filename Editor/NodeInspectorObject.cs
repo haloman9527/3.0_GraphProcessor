@@ -40,7 +40,7 @@ namespace CZToolKit.GraphProcessor.Editors
                 tree.EndDraw();
             }
 #else
-            base.OnInspectorGUI();
+            EditorGUILayoutExtension.DrawFields(inspector.Node);
 #endif
         }
     }
@@ -64,7 +64,9 @@ namespace CZToolKit.GraphProcessor.Editors
         [SerializeReference]
 #endif
         [SerializeField]
-        public BaseNode node;
+        BaseNode node;
+
+        public BaseNode Node { get { return node; } }
 
         public virtual void UpdateSelectedNodes(HashSet<BaseNodeView> views)
         {
