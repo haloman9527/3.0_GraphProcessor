@@ -7,9 +7,9 @@ namespace CZToolKit.GraphProcessor
     [Serializable]
     public class SharedGameObjectList : SharedVariable<List<GameObject>>
     {
-        public SharedGameObjectList() : base() { }
+        public SharedGameObjectList() : base() { value = new List<GameObject>(); }
 
-        public SharedGameObjectList(string _guid) : base(_guid) { }
+        public SharedGameObjectList(string _guid) : base(_guid) { value = new List<GameObject>(); }
 
         public SharedGameObjectList(List<GameObject> _value) : base(_value) { }
 

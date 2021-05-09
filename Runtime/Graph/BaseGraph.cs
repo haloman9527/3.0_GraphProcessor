@@ -71,33 +71,9 @@ namespace CZToolKit.GraphProcessor
             {
                 serializedNodes.Add(JsonSerializer.SerializeNode(node));
             }
-            
-            if (variableSerializationDatas == null)
-                variableSerializationDatas = new VariableSerializationDatas();
-            else
-            {
-                variableSerializationDatas.types.Clear();
-                variableSerializationDatas.variableDatas.Clear();
-            }
-            foreach (var variable in variables)
-            {
-                variableSerializationDatas.types.Add(variable.GetType().FullName);
-                variableSerializationDatas.variableDatas.Add(JsonUtility.ToJson(variable));
-            }
         }
 
-        public virtual void OnAfterDeserialize()
-        {
-            if (variables == null)
-                variables = new List<SharedVariable>();
-            else
-                variables.Clear();
-            for (int i = 0; i < variableSerializationDatas.variableDatas.Count; i++)
-            {
-                Type type = Type.GetType(variableSerializationDatas.types[i]);
-                variables.Add(JsonUtility.FromJson(variableSerializationDatas.variableDatas[i], type) as SharedVariable);
-            }
-        }
+        public virtual void OnAfterDeserialize()        {        }
 
         public void Deserialize()
         {
@@ -114,27 +90,6 @@ namespace CZToolKit.GraphProcessor
                 AddNode(node);
             }
         }
-//#else
-//        protected override void OnBeforeSerialize()
-//        {
-//            base.OnBeforeSerialize();
-//            if (variableSerializationDatas == null)
-//                variableSerializationDatas = new VariableSerializationDatas();
-//            variableSerializationDatas.Load(variables);
-//        }
-
-//        protected override void OnAfterDeserialize()
-//        {
-//            base.OnAfterDeserialize();
-//            if (variables == null)
-//                variables = new List<SharedVariable>();
-//            else
-//                variables.Clear();
-//            foreach (var variable in variableSerializationDatas.From())
-//            {
-//                variables.Add(variable);
-//            }
-//        }
 #endif
         public IEnumerable<SharedVariable> GetVariables()
         {
@@ -182,6 +137,7 @@ namespace CZToolKit.GraphProcessor
 #if UNITY_EDITOR
             Flush();
 #endif
+            CollectionVariables();
         }
 
         public virtual void Initialize(GraphOwner _graphOwner)

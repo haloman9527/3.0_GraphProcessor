@@ -17,12 +17,13 @@ using UnityEngine;
 namespace CZToolKit.GraphProcessor
 {
     [Serializable]
+    [SharedVariable]
 #if ODIN_INSPECTOR
     [Sirenix.OdinInspector.HideReferenceObjectPicker]
 #endif
     public abstract class SharedVariable : ICloneable
     {
-        [SerializeField]
+        [SerializeField, HideInInspector]
         string guid;
 
         public string GUID
@@ -52,9 +53,7 @@ namespace CZToolKit.GraphProcessor
         [SerializeField]
         protected T value;
 
-        [NonSerialized]
         Func<T> getter;
-        [NonSerialized]
         Action<T> setter;
 
         public T Value
@@ -81,12 +80,11 @@ namespace CZToolKit.GraphProcessor
         public override void InitializePropertyMapping(BehaviorSource _behaviorSource)
         {
             if (!(_behaviorSource.Owner.GetObject() is GraphOwner)) return;
-
             getter = () =>
             {
                 SharedVariable variable = _behaviorSource.GetVariable(GUID);
                 if (variable != null) return (T)variable.GetValue();
-                return (T)GetValue();
+                return value;
             };
             setter = _value =>
             {

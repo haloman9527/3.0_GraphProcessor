@@ -27,9 +27,6 @@ namespace CZToolKit.GraphProcessor.Editors
             }
         }
 
-        /// <summary> 用来绘制节点的对象 </summary>
-        [NonSerialized] protected NodeInspectorObject nodeInspector;
-
         ExposedParameterView blackboard;
 
         /// <summary> Connector listener that will create the edges between ports </summary>
@@ -143,9 +140,6 @@ namespace CZToolKit.GraphProcessor.Editors
             CreateNodeMenu = ScriptableObject.CreateInstance<CreateNodeMenuWindow>();
             CreateNodeMenu.Initialize(this, GetNodeTypes());
 
-            if (nodeInspector == null)
-                nodeInspector = CreateNodeInspectorObject();
-
             //Undo.undoRedoPerformed += ReloadView;
         }
 
@@ -243,15 +237,6 @@ namespace CZToolKit.GraphProcessor.Editors
         protected virtual IEnumerable<Type> GetNodeTypes()
         {
             return Utility.GetChildrenTypes<BaseNode>();
-        }
-
-        protected virtual NodeInspectorObject CreateNodeInspectorObject()
-        {
-            var inspector = ScriptableObject.CreateInstance<NodeInspectorObject>();
-            inspector.name = "Node Inspector";
-            inspector.hideFlags = HideFlags.HideAndDontSave ^ HideFlags.NotEditable;
-
-            return inspector;
         }
 
         #region Callbacks
@@ -647,23 +632,24 @@ namespace CZToolKit.GraphProcessor.Editors
 
         public void UpdateNodeInspectorSelection()
         {
-            if (nodeInspector.previouslySelectedObject != Selection.activeObject)
-                nodeInspector.previouslySelectedObject = Selection.activeObject;
+            //if (NodeInspectorObject.Instance.previouslySelectedObject != Selection.activeObject)
+            //    NodeInspectorObject.Instance.previouslySelectedObject = Selection.activeObject;
 
             HashSet<BaseNodeView> selectedNodeViews = new HashSet<BaseNodeView>();
-            nodeInspector.selectedNodes.Clear();
+            NodeInspectorObject.Instance.selectedNodes.Clear();
             foreach (var e in selection)
             {
                 if (e is BaseNodeView v && this.Contains(v))
                     selectedNodeViews.Add(v);
             }
 
-            nodeInspector.UpdateSelectedNodes(selectedNodeViews);
+            NodeInspectorObject.Instance.UpdateSelectedNodes(selectedNodeViews);
 
             if (selectedNodeViews.Count > 0)
             {
-                if (Selection.activeObject != nodeInspector)
-                    Selection.activeObject = nodeInspector;
+                EditorGUILayoutExtension.DrawFieldsInInspector("Node Inspector", selectedNodeViews.First().NodeData);
+                //if (Selection.activeObject != NodeInspectorObject.Instance)
+                //    Selection.activeObject = NodeInspectorObject.Instance;
             }
             else
             {
@@ -726,14 +712,14 @@ namespace CZToolKit.GraphProcessor.Editors
             }
 
             // 然后移除节点Data
-            nodeInspector.NodeViewRemoved(_nodeView);
+            NodeInspectorObject.Instance.NodeViewRemoved(_nodeView);
             GraphData.RemoveNode(_nodeView.NodeData);
 
             // 然后移除节点View
             RemoveNodeView(_nodeView);
 
             // 然后更新绘制
-            if (Selection.activeObject == nodeInspector)
+            if (Selection.activeObject == NodeInspectorObject.Instance)
                 UpdateNodeInspectorSelection();
         }
 

@@ -11,9 +11,10 @@
  *
  */
 #endregion
+using CZToolKit.Core;
 using UnityEngine;
 
 namespace CZToolKit.GraphProcessor
 {
-    public class SharedVariableAttribute : PropertyAttribute { }
+    public class SharedVariableAttribute : FieldAttribute { }
 }

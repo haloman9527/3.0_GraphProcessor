@@ -318,7 +318,6 @@ namespace CZToolKit.GraphProcessor.Editors
         Dictionary<string, VisualElement> hideElementIfConnected = new Dictionary<string, VisualElement>();
         Dictionary<FieldInfo, List<VisualElement>> fieldControlsMap = new Dictionary<FieldInfo, List<VisualElement>>();
 
-
         public override void OnSelected()
         {
             base.OnSelected();

@@ -1,8 +1,6 @@
 ﻿using UnityEngine;
 using System;
 using System.Collections.Generic;
-using System.Reflection;
-using CZToolKit.Core;
 
 namespace CZToolKit.GraphProcessor
 {
@@ -11,9 +9,9 @@ namespace CZToolKit.GraphProcessor
     {
         #region 静态
         /// <summary> Creates a node of type T at a certain position </summary>
-        public static T CreateNew<T>(Vector2 position) where T : BaseNode
+        public static T CreateNew<T>(Vector2 _position) where T : BaseNode
         {
-            return CreateNew(typeof(T), position) as T;
+            return CreateNew(typeof(T), _position) as T;
         }
 
         /// <summary> Creates a node of type nodeType at a certain position </summary>
@@ -24,7 +22,6 @@ namespace CZToolKit.GraphProcessor
             var node = Activator.CreateInstance(nodeType) as BaseNode;
             node.position = new Rect(position, new Vector2(100, 100));
             node.OnCreated();
-
             return node;
         }
         #endregion
@@ -61,6 +58,7 @@ namespace CZToolKit.GraphProcessor
         public bool Locked { get { return locked; } set { locked = value; } }
         public Dictionary<string, NodePort> Ports { get { return ports; } }
 
+        protected BaseNode() { }
 
         /// <summary> 创建时调用，请不要在其它任何地方调用，因为这会重置GUID </summary>
         public virtual void OnCreated()

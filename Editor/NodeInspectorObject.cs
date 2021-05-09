@@ -4,6 +4,7 @@ using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
 using CZToolKit.Core.Editors;
+using CZToolKit.Core.Singletons;
 
 #if ODIN_INSPECTOR
 using Sirenix.OdinInspector.Editor;
@@ -12,7 +13,6 @@ using Sirenix.OdinInspector;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
-    /// <summary> Custom editor of the node inspector, you can inherit from this class to customize your node inspector. </summary>
     [CustomEditor(typeof(NodeInspectorObject))]
     public class NodeInspectorObjectEditor : Editor
     {
@@ -45,12 +45,7 @@ namespace CZToolKit.GraphProcessor.Editors
         }
     }
 
-    /// <summary> Node inspector object, you can inherit from this class to customize your node inspector. </summary>
-#if ODIN_INSPECTOR
-    public class NodeInspectorObject : SerializedScriptableObject
-#else
-    public class NodeInspectorObject : ScriptableObject
-#endif
+    public class NodeInspectorObject : CZScriptableSingleton<NodeInspectorObject>
     {
         [HideInInspector]
         /// <summary>Previously selected object by the inspector</summary>
@@ -67,6 +62,12 @@ namespace CZToolKit.GraphProcessor.Editors
         BaseNode node;
 
         public BaseNode Node { get { return node; } }
+
+        protected override void OnInitialize()
+        {
+            name = "Node Inspector";
+            hideFlags = HideFlags.HideAndDontSave ^ HideFlags.NotEditable;
+        }
 
         public virtual void UpdateSelectedNodes(HashSet<BaseNodeView> views)
         {

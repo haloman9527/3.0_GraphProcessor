@@ -185,7 +185,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
             toolbar = new ToolbarView(this);
             toolbar.AddButton("Show In Project", () => EditorGUIUtility.PingObject(GraphView.GraphData), false);
-            toolbar.AddButton("Reload", () => LoadGraphInternal(GraphData), false);
+            toolbar.AddButton("Reload", () => { GraphOwner g = GraphOwner; LoadGraphInternal(GraphData); GraphOwner = g; }, false);
             rootVisualElement.Add(toolbar);
 
             InitializeGraphView();
