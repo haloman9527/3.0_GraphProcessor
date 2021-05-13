@@ -3,7 +3,7 @@ using UnityEngine.UIElements;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
-    public abstract class SimpleNodeView : BaseNodeView
+    public class SimpleNodeView : BaseNodeView
     {
         const string SimpleNodeViewStyleFile = "GraphProcessor/Styles/SimpleNodeView";
 

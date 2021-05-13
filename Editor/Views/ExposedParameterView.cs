@@ -111,9 +111,9 @@ namespace CZToolKit.GraphProcessor.Editors
         protected virtual void UpdateParameterList()
         {
             contentContainer.Clear();
-            foreach (var param in GraphView.GraphData.GetExposedParameters())
+            foreach (var param in GraphView.GraphData.Blackboard)
             {
-                AddParamField(param);
+                AddParamField(param.Value);
             }
         }
     }

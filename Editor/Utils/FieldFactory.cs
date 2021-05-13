@@ -20,11 +20,11 @@ namespace CZToolKit.GraphProcessor.Editors
 
         static FieldFactory()
         {
-            foreach (var drawerType in TypeCache.GetTypesWithAttribute<FieldDrawerAttribute>())
-            {
-                if (Utility.TryGetTypeAttribute(drawerType, out FieldDrawerAttribute fieldDrawerAttribute))
-                    AddDrawer(fieldDrawerAttribute.fieldType, drawerType, _ => { return Activator.CreateInstance(drawerType) as VisualElement; });
-            }
+            //foreach (var drawerType in TypeCache.GetTypesWithAttribute<FieldDrawerAttribute>())
+            //{
+            //    if (Utility.TryGetTypeAttribute(drawerType, out FieldDrawerAttribute fieldDrawerAttribute))
+            //        AddDrawer(fieldDrawerAttribute.fieldType, drawerType, _ => { return Activator.CreateInstance(drawerType) as VisualElement; });
+            //}
 
             AddDrawer(typeof(Enum), typeof(EnumField), realType => { return new EnumField(Activator.CreateInstance(realType) as Enum); });
 

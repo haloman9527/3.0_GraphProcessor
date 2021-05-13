@@ -1,8 +1,8 @@
-using System.Collections.Generic;
-using UnityEngine;
-using System.Reflection;
-using System;
 using CZToolKit.Core;
+using UnityEngine;
+using System;
+using System.Reflection;
+using System.Collections.Generic;
 
 namespace CZToolKit.GraphProcessor
 {
@@ -43,7 +43,7 @@ namespace CZToolKit.GraphProcessor
         [SerializeField] PortTypeConstraint typeConstraint = PortTypeConstraint.Inherited;
         [SerializeField] List<string> edgeGUIDs = new List<string>();
 
-        public BaseNode Owner { get { graph.Nodes.TryGetValue(ownerGUID, out BaseNode node); return node; } set { graph = value.Owner; ownerGUID = value.GUID; } }
+        public BaseNode Owner { get { graph.NodesGUIDMapping.TryGetValue(ownerGUID, out BaseNode node); return node; } set { graph = value.Owner; ownerGUID = value.GUID; } }
         public string FieldName { get { return fieldName; } set { fieldName = value; } }
         public bool IsMulti { get { return isMulti; } set { isMulti = value; } }
         public PortDirection Direction { get { return direction; } set { direction = value; } }
@@ -160,13 +160,13 @@ namespace CZToolKit.GraphProcessor
 
         public SerializableEdge GetEdge(int i)
         {
-            if (graph.Edges.TryGetValue(edgeGUIDs[i], out SerializableEdge edge)) return edge;
+            if (graph.EdgesGUIDMapping.TryGetValue(edgeGUIDs[i], out SerializableEdge edge)) return edge;
             return null;
         }
 
         public SerializableEdge GetEdge(string edgeGUID)
         {
-            if (graph.Edges.TryGetValue(edgeGUID, out SerializableEdge edge)) return edge;
+            if (graph.EdgesGUIDMapping.TryGetValue(edgeGUID, out SerializableEdge edge)) return edge;
             return null;
         }
 

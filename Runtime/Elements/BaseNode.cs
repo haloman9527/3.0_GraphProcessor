@@ -21,12 +21,13 @@ namespace CZToolKit.GraphProcessor
                 return null;
             var node = Activator.CreateInstance(nodeType) as BaseNode;
             node.position = new Rect(position, new Vector2(100, 100));
+            node.guid = Guid.NewGuid().ToString();
+            node.Ports.Clear();
             node.OnCreated();
             return node;
         }
         #endregion
 
-        [SerializeField, HideInInspector]
         BaseGraph owner;
 
         /// <summary> 唯一标识 </summary>
@@ -41,16 +42,8 @@ namespace CZToolKit.GraphProcessor
         /// <summary> 锁定状态 </summary>
         [SerializeField, HideInInspector]
         bool locked = false;
-
         [SerializeField, HideInInspector]
-#if ODIN_INSPECTOR
-        Dictionary<string, NodePort> ports = new Dictionary<string, NodePort>();
-#else
         NodePortsDictionary ports = new NodePortsDictionary();
-#endif
-
-        //[SerializeField, SerializeReference, HideInInspector]
-        //List<SharedVariable> variables = new List<SharedVariable>();
 
         public BaseGraph Owner { get { return owner; } }
         public string GUID { get { return guid; } }
@@ -60,12 +53,7 @@ namespace CZToolKit.GraphProcessor
 
         protected BaseNode() { }
 
-        /// <summary> 创建时调用，请不要在其它任何地方调用，因为这会重置GUID </summary>
-        public virtual void OnCreated()
-        {
-            guid = Guid.NewGuid().ToString();
-            Ports.Clear();
-        }
+        public virtual void OnCreated() { }
 
         /// <summary> 请不要在其它任何地方调用 </summary>
         internal void Initialize(BaseGraph _graph)
@@ -152,11 +140,14 @@ namespace CZToolKit.GraphProcessor
         public void ExecuteConnections(string _portName, params object[] _params)
         {
             if (TryGetPort(_portName, out NodePort port))
+                ExecuteConnections(port, _params);
+        }
+
+        public void ExecuteConnections(NodePort _port, params object[] _params)
+        {
+            foreach (var targetPort in _port.GetConnections())
             {
-                foreach (var targetPort in port.GetConnections())
-                {
-                    targetPort.Execute(_params);
-                }
+                targetPort.Execute(_params);
             }
         }
         #endregion

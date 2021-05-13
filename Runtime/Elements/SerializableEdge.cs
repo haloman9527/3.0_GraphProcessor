@@ -28,8 +28,8 @@ namespace CZToolKit.GraphProcessor
         public string InputNodeGUID { get { return inputNodeGUID; } }
         public string OutputNodeGUID { get { return outputNodeGUID; } }
 
-        public BaseNode InputNode { get { owner.Nodes.TryGetValue(InputNodeGUID, out BaseNode node); return node; } }
-        public BaseNode OutputNode { get { owner.Nodes.TryGetValue(OutputNodeGUID, out BaseNode node); return node; } }
+        public BaseNode InputNode { get { Owner.NodesGUIDMapping.TryGetValue(InputNodeGUID, out BaseNode node); return node; } }
+        public BaseNode OutputNode { get { Owner.NodesGUIDMapping.TryGetValue(OutputNodeGUID, out BaseNode node); return node; } }
         public string InputFieldName { get { return inputFieldName; } }
         public string OutputFieldName { get { return outputFieldName; } }
         public NodePort InputPort
@@ -52,6 +52,11 @@ namespace CZToolKit.GraphProcessor
         }
 
         public SerializableEdge() { }
+
+        public void Initialize(BaseGraph _owner)
+        {
+            owner = _owner;
+        }
 
         public static SerializableEdge CreateNewEdge(BaseGraph graph, NodePort inputPort, NodePort outputPort)
         {

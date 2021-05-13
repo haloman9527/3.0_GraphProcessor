@@ -135,9 +135,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
         protected virtual void OnInitialized()
         {
-#if !ODIN_INSPECTOR
-            ProcessFields();
-#endif
+            //ProcessFields();
         }
 
         void InitializeView()
@@ -171,6 +169,13 @@ namespace CZToolKit.GraphProcessor.Editors
             expanded = NodeData.Expanded;
             SetPosition(NodeData.position);
             Lockable = Utility.TryGetTypeAttribute(NodeDataType, out LockableAttribute lockableAttribute);
+
+            if (Utility.TryGetTypeAttribute(NodeDataType, out NodeIconAttribute iconAttribute))
+            {
+                Texture icon = AssetDatabase.LoadAssetAtPath<Texture>(iconAttribute.iconPath);
+                if (icon != null)
+                    AddIcon(new Image() { image = icon, style = { width = iconAttribute.width, height = iconAttribute.height } });
+            }
 
             if (Utility.TryGetTypeAttribute(NodeDataType, out NodeTooltipAttribute nodeTooltipAttribute))
                 tooltip = nodeTooltipAttribute.Tooltip;
@@ -267,7 +272,6 @@ namespace CZToolKit.GraphProcessor.Editors
         public void AddIcon(Image _icon)
         {
             _icon.style.alignSelf = Align.Center;
-            _icon.style.maxWidth = _icon.style.maxHeight = titleContainer.style.height;
             titleContainer.Insert(titleContainer.IndexOf(TitleLabel), _icon);
         }
 
@@ -336,7 +340,9 @@ namespace CZToolKit.GraphProcessor.Editors
                 bool isPort = Utility.TryGetFieldInfoAttribute(fieldInfo, out PortAttribute portAttrib);
                 // 是公开，或者有SerializeField特性
                 bool isDisplay = fieldInfo.IsPublic || Utility.TryGetFieldInfoAttribute(fieldInfo, out SerializeField serializable);
-                if (!isDisplay || (isPort && portAttrib.ShowBackValue == ShowBackingValue.Never))
+                if (!isDisplay)
+                    continue;
+                if (isPort && portAttrib.ShowBackValue == ShowBackingValue.Never)
                     continue;
 
                 // 是否是入方向的接口

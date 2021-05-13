@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -8,8 +7,8 @@ namespace CZToolKit.GraphProcessor
     [Serializable]
     public class GUIDMapDictionary : Dictionary<string, string>, ISerializationCallbackReceiver
     {
-        [SerializeField] private List<string> keys = new List<string>();
-        [SerializeField] private List<string> values = new List<string>();
+        [SerializeField] List<string> keys = new List<string>();
+        [SerializeField] List<string> values = new List<string>();
 
         public void OnBeforeSerialize()
         {

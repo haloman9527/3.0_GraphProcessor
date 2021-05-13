@@ -9,7 +9,7 @@ namespace CZToolKit.GraphProcessor
         [TextArea]
         public string input;
 
-        [Setting()]
+        [ShowInSetting()]
         public LayerMask layer;
     }
 }

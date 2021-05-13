@@ -1,6 +1,4 @@
 ﻿using CZToolKit.GraphProcessor.Editors;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace CZToolKit.GraphProcessor.Examples
@@ -8,16 +6,16 @@ namespace CZToolKit.GraphProcessor.Examples
     [CustomGraphWindow(typeof(MathGraph))]
     public class MathGraphWindow : BaseGraphWindow
     {
-        protected override void InitializeWindow(BaseGraph graph)
+        protected override void OnInitializedWindow()
         {
-            base.InitializeWindow(graph);
             titleContent = new GUIContent("Examples.Math");
         }
 
-        protected override void InitializeGraphView()
+        protected override BaseGraphView InitializeGraphView(BaseGraph _graphData)
         {
-            GraphView = new MathGraphView();
-            GraphView.Initialize(this, GraphData);
+            MathGraphView graphView = new MathGraphView();
+            graphView.Initialize(this, _graphData);
+            return graphView;
         }
     }
 }

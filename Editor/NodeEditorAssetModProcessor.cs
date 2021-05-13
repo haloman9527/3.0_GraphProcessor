@@ -27,7 +27,7 @@ namespace CZToolKit.GraphProcessor.Editors
                     {
                         string graphPath = AssetDatabase.GUIDToAssetPath(graphGUID);
                         BaseGraph graphData = AssetDatabase.LoadAssetAtPath<BaseGraph>(graphPath);
-                        foreach (var item in graphData.Nodes.Values.ToArray())
+                        foreach (var item in graphData.NodesGUIDMapping.Values.ToArray())
                         {
                             if (item != null && scriptType == item.GetType())
                                 graphData.RemoveNode(item);

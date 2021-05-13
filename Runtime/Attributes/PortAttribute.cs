@@ -3,7 +3,7 @@
 namespace CZToolKit.GraphProcessor
 {
     /// <summary> 接口特性，标记此特性的字段将被绘制为一个接口 </summary>
-    [AttributeUsage(AttributeTargets.Field)]
+    [AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]
     public class PortAttribute : Attribute
     {
         /// <summary> 接口方向 </summary>

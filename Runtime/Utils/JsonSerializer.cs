@@ -1,11 +1,9 @@
 ﻿using System;
+using UnityEngine;
 
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
-
-// Warning, the current serialization code does not handle unity objects
-// in play mode outside of the editor (because of JsonUtility)
 
 namespace CZToolKit.GraphProcessor
 {
@@ -13,66 +11,52 @@ namespace CZToolKit.GraphProcessor
     public struct JsonElement
     {
         public string type;
-        public string jsonDatas;
+        public string json;
     }
 
     public static class JsonSerializer
     {
-        public static JsonElement Serialize(object obj)
+        public static JsonElement Serialize(object _targetObject)
         {
-            JsonElement elem = new JsonElement();
-
-            elem.type = obj.GetType().AssemblyQualifiedName;
+            JsonElement serializedData = new JsonElement();
+            serializedData.type = _targetObject.GetType().AssemblyQualifiedName;
 #if UNITY_EDITOR
-            elem.jsonDatas = EditorJsonUtility.ToJson(obj);
+            serializedData.json = EditorJsonUtility.ToJson(_targetObject);
 #else
-			elem.jsonDatas = JsonUtility.ToJson(obj);
+			serializedData.json = JsonUtility.ToJson(_targetObject);
 #endif
-
-            return elem;
+            return serializedData;
         }
 
-        public static T Deserialize<T>(JsonElement e)
+        public static T Deserialize<T>(JsonElement _serializedData)
         {
-            if (typeof(T) != Type.GetType(e.type))
-                throw new ArgumentException("Deserializing type is not the same than Json element type");
+            if (string.IsNullOrEmpty(_serializedData.type) || string.IsNullOrEmpty(_serializedData.json))
+                throw new ArgumentException("数据为空");
+            if (typeof(T) != Type.GetType(_serializedData.type))
+                throw new ArgumentException("类型不匹配");
 
-            var obj = Activator.CreateInstance<T>();
+            var targetObject = Activator.CreateInstance<T>();
 #if UNITY_EDITOR
-            EditorJsonUtility.FromJsonOverwrite(e.jsonDatas, obj);
+            EditorJsonUtility.FromJsonOverwrite(_serializedData.json, targetObject);
 #else
-			JsonUtility.FromJsonOverwrite(e.jsonDatas, obj);
+			JsonUtility.FromJsonOverwrite(_serializedData.json, targetObject);
 #endif
-
-            return obj;
+            return targetObject;
         }
 
-        public static JsonElement SerializeNode(BaseNode node)
+        public static object Deserialize(JsonElement _serializeData)
         {
-            return Serialize(node);
-        }
-
-        public static BaseNode DeserializeNode(JsonElement e)
-        {
-            try
-            {
-                var baseNodeType = Type.GetType(e.type);
-
-                if (e.jsonDatas == null)
-                    return null;
-
-                var node = Activator.CreateInstance(baseNodeType) as BaseNode;
-#if UNITY_EDITOR
-                EditorJsonUtility.FromJsonOverwrite(e.jsonDatas, node);
-#else
-				JsonUtility.FromJsonOverwrite(e.jsonDatas, node);
-#endif
-                return node;
-            }
-            catch
-            {
+            if (string.IsNullOrEmpty(_serializeData.type) || string.IsNullOrEmpty(_serializeData.json))
                 return null;
-            }
+            Type type = Type.GetType(_serializeData.type);
+            if (type == null) return null;
+            var targetObject = Activator.CreateInstance(type);
+#if UNITY_EDITOR
+            EditorJsonUtility.FromJsonOverwrite(_serializeData.json, targetObject);
+#else
+			JsonUtility.FromJsonOverwrite(_serializeData.json, targetObject);
+#endif
+            return targetObject;
         }
     }
 }

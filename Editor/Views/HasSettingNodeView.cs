@@ -39,7 +39,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
             foreach (var fieldInfo in NodeDataTypeFieldInfos)
             {
-                if (Utility.TryGetFieldInfoAttribute(fieldInfo, out SettingAttribute settingAttribute))
+                if (Utility.TryGetFieldInfoAttribute(fieldInfo, out ShowInSettingAttribute settingAttribute))
                     AddSettingField(fieldInfo);
             }
         }

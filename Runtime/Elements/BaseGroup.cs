@@ -11,7 +11,6 @@ namespace CZToolKit.GraphProcessor
         public string title;
         public Color color = new Color(0, 0, 0, 0.7f);
         public Rect position;
-        public Vector2 size;
 
         public List<string> innerNodeGUIDs = new List<string>();
         public List<string> innerStackGUIDs = new List<string>();
@@ -20,14 +19,9 @@ namespace CZToolKit.GraphProcessor
 
         public BaseGroup(string _title, Vector2 _position)
         {
-            this.title = _title;
-            this.position.position = _position;
-        }
-
-        public virtual void OnCreated()
-        {
-            size = new Vector2(400, 200);
-            position.size = size;
+            title = _title;
+            position.position = _position;
+            position.size = Vector2.one * 300;
         }
     }
 }

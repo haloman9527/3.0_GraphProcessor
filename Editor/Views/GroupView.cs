@@ -27,10 +27,13 @@ namespace CZToolKit.GraphProcessor.Editors
         public Label titleLabel { get; private set; }
         public ColorField colorField { get; private set; }
 
-        public void Initialize(BaseGraphView _owner, BaseGroup _groupData)
+        public GroupView()
         {
             styleSheets.Add(GroupViewStyle);
+        }
 
+        public void Initialize(BaseGraphView _owner, BaseGroup _groupData)
+        {
             Owner = _owner;
             GroupData = _groupData;
             title = _groupData.title;
@@ -53,7 +56,7 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             foreach (var nodeGUID in GroupData.innerNodeGUIDs.ToList())
             {
-                if (!Owner.GraphData.Nodes.ContainsKey(nodeGUID)) continue;
+                if (!Owner.GraphData.NodesGUIDMapping.ContainsKey(nodeGUID)) continue;
 
                 BaseNodeView nodeView = Owner.NodeViews[nodeGUID];
                 AddElement(nodeView);
@@ -61,7 +64,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
             foreach (var stackGUID in GroupData.innerStackGUIDs.ToList())
             {
-                if (!Owner.GraphData.StackNodes.ContainsKey(stackGUID)) continue;
+                if (!Owner.GraphData.StackNodesGUIDMapping.ContainsKey(stackGUID)) continue;
 
                 var stackView = Owner.StackNodeViews[stackGUID];
                 AddElement(stackView);

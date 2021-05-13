@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -8,8 +7,8 @@ namespace CZToolKit.GraphProcessor
     [Serializable]
     public class ExposedParmetersDictionary : Dictionary<string, ExposedParameter>, ISerializationCallbackReceiver
     {
-        [SerializeField] private List<string> keys = new List<string>();
-        [SerializeField] private List<ExposedParameter> values = new List<ExposedParameter>();
+        [SerializeField] List<string> keys = new List<string>();
+        [SerializeField] List<ExposedParameter> values = new List<ExposedParameter>();
 
         public void OnBeforeSerialize()
         {
@@ -38,16 +37,15 @@ namespace CZToolKit.GraphProcessor
     [Serializable]
     public class ExposedParameter
     {
-        [SerializeField] string name;
-        [SerializeField] string typeQualifiedName;
+        [SerializeField] 
+        string name;
+        [SerializeField] 
+        string guid;
+        [SerializeField]
+        string typeQualifiedName;
         Type valueType;
-        [SerializeField] string guid;
-#if ODIN_INSPECTOR
-        [Sirenix.OdinInspector.HideReferenceObjectPicker]
-#endif
-        [SerializeField,SerializeReference]
+        [SerializeField, SerializeReference]
         object value;
-
 
         public string Name { get { return name; } set { name = value; } }
         public string GUID { get { return guid; } }
