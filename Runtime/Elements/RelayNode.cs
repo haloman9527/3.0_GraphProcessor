@@ -19,15 +19,13 @@ namespace CZToolKit.GraphProcessor
 
         [Port(PortDirection.Input, IsMulti = false, TypeConstraint = PortTypeConstraint.None)]
         [DisplayName("In")]
-        [PortSize(12)]
-        [PortColor(0,0.7f,0.3f)]
-        public object input;
+        [PortSize(12),PortColor(0, 0.7f, 0.3f)]
+        object input;
 
         [Port(PortDirection.Output, IsMulti = false, TypeConstraint = PortTypeConstraint.None)]
         [DisplayName("Out")]
-        [PortSize(12)]
-        [PortColor(0, 0.7f, 0.3f)]
-        public object output;
+        [PortSize(12), PortColor(0, 0.7f, 0.3f)]
+        object output;
 
         public override bool GetValue<T>(NodePort _port, ref T _value)
         {

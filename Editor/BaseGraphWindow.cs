@@ -16,7 +16,7 @@ namespace CZToolKit.GraphProcessor.Editors
             BaseGraphWindow window = LoadGraph(_graphOwner.Graph);
             if (window != null)
                 window.GraphOwner = _graphOwner;
-            _graphOwner.Graph.Initialize(_graphOwner);
+            _graphOwner.Graph.InitializePropertyMapping(_graphOwner);
         }
 
         [OnOpenAsset(0)]
@@ -111,12 +111,11 @@ namespace CZToolKit.GraphProcessor.Editors
             graphViewElement.StretchToParentSize();
             rootVisualElement.Add(graphViewElement);
             EditorApplication.playModeStateChanged += OnPlayModeChanged;
-            if (GraphView == null && GraphData != null)
-                EditorApplication.delayCall += ReloadGraph;
 
             GraphOwner = EditorUtility.InstanceIDToObject(graphOwnerInstanceID) as GraphOwner;
-            if (GraphOwner != null)
-                GraphData.InitializePropertyMapping(GraphOwner);
+
+            if (GraphView == null && GraphData != null)
+                EditorApplication.delayCall += ReloadGraph;
         }
 
         void OnPlayModeChanged(PlayModeStateChange obj)
@@ -124,13 +123,6 @@ namespace CZToolKit.GraphProcessor.Editors
             switch (obj)
             {
                 case PlayModeStateChange.EnteredEditMode:
-                    GraphOwner tempPlayable = EditorUtility.InstanceIDToObject(graphOwnerInstanceID) as GraphOwner;
-                    if (tempPlayable != null)
-                        graphOwnerInstanceID = tempPlayable.gameObject.GetInstanceID();
-                    GraphOwner = tempPlayable;
-                    if (GraphOwner != null)
-                        GraphData.InitializePropertyMapping(GraphOwner);
-                    break;
                 case PlayModeStateChange.EnteredPlayMode:
                     GraphOwner = EditorUtility.InstanceIDToObject(graphOwnerInstanceID) as GraphOwner;
                     break;
@@ -216,7 +208,7 @@ namespace CZToolKit.GraphProcessor.Editors
             GraphOwner owner = GraphOwner;
             LoadGraphInternal(GraphData);
             GraphOwner = owner;
-            if (GraphOwner != null)
+            if (GraphData != null && GraphOwner != null)
                 GraphData.InitializePropertyMapping(GraphOwner);
         }
 

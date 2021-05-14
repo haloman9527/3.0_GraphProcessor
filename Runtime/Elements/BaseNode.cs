@@ -21,8 +21,6 @@ namespace CZToolKit.GraphProcessor
                 return null;
             var node = Activator.CreateInstance(nodeType) as BaseNode;
             node.position = new Rect(position, new Vector2(100, 100));
-            node.guid = Guid.NewGuid().ToString();
-            node.Ports.Clear();
             node.OnCreated();
             return node;
         }
@@ -53,7 +51,10 @@ namespace CZToolKit.GraphProcessor
 
         protected BaseNode() { }
 
-        public virtual void OnCreated() { }
+        public virtual void OnCreated()
+        {
+            guid = Guid.NewGuid().ToString();
+        }
 
         /// <summary> 请不要在其它任何地方调用 </summary>
         internal void Initialize(BaseGraph _graph)

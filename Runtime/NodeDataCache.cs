@@ -48,7 +48,7 @@ namespace CZToolKit.GraphProcessor
         public static void UpdateStaticPorts(BaseNode _node)
         {
             if (!Initialized) BuildCache();
-
+            // Ports.Clear();
             Type nodeType = _node.GetType();
 
             Dictionary<string, NodePort> staticPorts = new Dictionary<string, NodePort>();

@@ -177,6 +177,12 @@ namespace CZToolKit.GraphProcessor.Editors
                     AddIcon(new Image() { image = icon, style = { width = iconAttribute.width, height = iconAttribute.height } });
             }
 
+            if (Utility.TryGetTypeAttribute(NodeDataType, out NodeDescriptionAttribute descriptionAttribute))
+            {
+                if (!string.IsNullOrEmpty(descriptionAttribute.description))
+                    AddBadge(IconBadge.CreateComment(descriptionAttribute.description));
+            }
+
             if (Utility.TryGetTypeAttribute(NodeDataType, out NodeTooltipAttribute nodeTooltipAttribute))
                 tooltip = nodeTooltipAttribute.Tooltip;
             if (Utility.TryGetTypeAttribute(NodeDataType, out NodeTitleTintAttribute nodeTitleTintAttribute))
@@ -279,7 +285,7 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             Add(badge);
             badges.Add(badge);
-            badge.AttachTo(topContainer, SpriteAlignment.TopRight);
+            badge.AttachTo(topContainer, SpriteAlignment.RightCenter);
         }
 
         public void RemoveBadge(Func<IconBadge, bool> callback)
