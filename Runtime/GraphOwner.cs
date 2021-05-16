@@ -2,34 +2,71 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-
 using Object = UnityEngine.Object;
 
 namespace CZToolKit.GraphProcessor
 {
-    public abstract class GraphOwner : MonoBehaviour, IVariableOwner
+    public abstract class GraphOwner : MonoBehaviour, IVariableOwner/*, ISerializationCallbackReceiver*/
     {
         [SerializeField, SerializeReference, HideInInspector]
-        List<SharedVariable> variables;
+        List<SharedVariable> variables = new List<SharedVariable>();
         Dictionary<string, int> sharedVariableIndex;
-
-        public List<SharedVariable> Variables
-        {
-            get { return this.variables; }
-            set
-            {
-                this.variables = value;
-                this.UpdateVariablesIndex();
-            }
-        }
 
         public abstract BaseGraph Graph { get; set; }
         public abstract Type GraphType { get; }
 
-        public GraphOwner()
-        {
-            variables = new List<SharedVariable>();
-        }
+        #region Serialize
+        //bool initializedVariables;
+
+        //[SerializeField]
+        //List<JsonElement> serializedVariables = new List<JsonElement>();
+
+        //public virtual void OnBeforeSerialize()
+        //{
+        //    Serialize();
+        //}
+
+        //public virtual void OnAfterDeserialize() { }
+
+        //void Serialize()
+        //{
+        //    if (variables == null) return;
+        //    serializedVariables.Clear();
+        //    foreach (var variable in variables)
+        //    {
+        //        if (variable == null) continue;
+        //        if (variable is SharedGameObject)
+        //        {
+        //            Debug.Log((variable as SharedGameObject).Value == null);
+        //        }
+        //        serializedVariables.Add(JsonSerializer.Serialize(variable));
+        //    }
+        //}
+
+        //void Deserialize()
+        //{
+        //    if (variables == null)
+        //        variables = new List<SharedVariable>();
+        //    else
+        //        variables.Clear();
+        //    foreach (var serializedVariable in serializedVariables)
+        //    {
+        //        SharedVariable variable = JsonSerializer.Deserialize(serializedVariable) as SharedVariable;
+        //        if (variable == null) continue;
+        //        variables.Add(variable);
+        //    }
+        //    UpdateVariablesIndex();
+        //}
+
+        //void CheckSerialization()
+        //{
+        //    if (!initializedVariables)
+        //    {
+        //        Deserialize();
+        //        initializedVariables = true;
+        //    }
+        //}
+        #endregion
 
         public Object GetObject()
         {
@@ -40,50 +77,49 @@ namespace CZToolKit.GraphProcessor
         {
             return name;
         }
+
         public SharedVariable GetVariable(string _guid)
         {
             if (string.IsNullOrEmpty(_guid)) return null;
-            if (this.variables != null)
+            //CheckSerialization();
+            if (variables != null)
             {
-                if (this.sharedVariableIndex == null || this.sharedVariableIndex.Count != this.variables.Count)
-                    this.UpdateVariablesIndex();
+                if (sharedVariableIndex == null || sharedVariableIndex.Count != variables.Count)
+                    UpdateVariablesIndex();
                 int index;
-                if (this.sharedVariableIndex.TryGetValue(_guid, out index))
-                    return this.variables[index];
+                if (sharedVariableIndex.TryGetValue(_guid, out index))
+                    return variables[index];
             }
             return null;
         }
 
         public List<SharedVariable> GetAllVariables()
         {
-            return this.variables;
+            //CheckSerialization();
+            return variables;
         }
 
         public void SetVariable(SharedVariable sharedVariable)
         {
             if (sharedVariable == null) return;
+            //CheckSerialization();
 
             if (variables == null)
                 variables = new List<SharedVariable>();
             else if (sharedVariableIndex == null)
                 UpdateVariablesIndex();
             int index;
-            if (sharedVariableIndex != null && this.sharedVariableIndex.TryGetValue(sharedVariable.GUID, out index))
+            if (sharedVariableIndex != null && sharedVariableIndex.TryGetValue(sharedVariable.GUID, out index))
             {
-                SharedVariable sharedVariable2 = this.variables[index];
+                SharedVariable sharedVariable2 = variables[index];
                 if (!sharedVariable2.GetType().Equals(typeof(SharedVariable)) && !sharedVariable2.GetType().Equals(sharedVariable.GetType()))
-                {
                     Debug.LogError(string.Format("Error: Unable to set SharedVariable {0} - the variable type {1} does not match the existing type {2}", sharedVariable.GUID, sharedVariable2.GetType(), sharedVariable.GetType()));
-                }
                 else
-                {
                     sharedVariable2.SetValue(sharedVariable.GetValue());
-                }
             }
             else
             {
                 variables.Add(sharedVariable);
-                //sharedVariable.InitializePropertyMapping(this);
                 UpdateVariablesIndex();
             }
         }
@@ -95,48 +131,34 @@ namespace CZToolKit.GraphProcessor
 
         private void UpdateVariablesIndex()
         {
-            if (this.variables == null)
+            if (variables == null)
             {
-                if (this.sharedVariableIndex != null)
-                    this.sharedVariableIndex = null;
+                if (sharedVariableIndex != null)
+                    sharedVariableIndex = null;
                 return;
             }
-            if (this.sharedVariableIndex == null)
-                this.sharedVariableIndex = new Dictionary<string, int>(this.variables.Count);
+            if (sharedVariableIndex == null)
+                sharedVariableIndex = new Dictionary<string, int>(variables.Count);
             else
-                this.sharedVariableIndex.Clear();
-            for (int i = 0; i < this.variables.Count; i++)
+                sharedVariableIndex.Clear();
+            for (int i = 0; i < variables.Count; i++)
             {
-                if (this.variables[i] != null)
-                    this.sharedVariableIndex.Add(this.variables[i].GUID, i);
+                if (variables[i] != null)
+                    sharedVariableIndex.Add(variables[i].GUID, i);
             }
         }
 
-        //[SerializeField, HideInInspector]
-        //VariableSerializationDatas variableSerializationDatas = new VariableSerializationDatas();
+        public IList<SharedVariable> GetVariables()
+        {
+            //CheckSerialization();
+            return variables;
+        }
 
-        //public void OnBeforeSerialize()
-        //{
-        //    if (variableSerializationDatas == null)
-        //        variableSerializationDatas = new VariableSerializationDatas();
-        //    variableSerializationDatas.Load(variables);
-        //}
-
-        //public void OnAfterDeserialize()
-        //{
-        //    SetAllVariables(variableSerializationDatas.From());
-
-        //    if (Owner == null) return;
-        //    if (Owner.Graph == null) return;
-        //    foreach (var variable in Owner.Graph.GetVariables())
-        //    {
-        //        if (GetVariable(variable.GUID) == null)
-        //        {
-        //            SharedVariable v = variable.Clone() as SharedVariable;
-        //            SetVariable(v.GUID, v);
-        //        }
-        //    }
-        //}
+        public void SetVariables(List<SharedVariable> _variables)
+        {
+            variables = _variables;
+            //UpdateVariablesIndex();
+        }
     }
 
     public abstract class GraphOwner<T> : GraphOwner where T : BaseGraph

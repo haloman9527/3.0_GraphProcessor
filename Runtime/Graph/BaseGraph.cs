@@ -436,7 +436,6 @@ using UnityEngine;
 
 namespace CZToolKit.GraphProcessor
 {
-
     [Serializable]
     public abstract class BaseGraph : ScriptableObject, IVariableSource, ISerializationCallbackReceiver
     {

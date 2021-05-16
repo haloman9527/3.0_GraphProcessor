@@ -14,87 +14,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   position: {x: -2090, y: -645, z: 0}
   scale: {x: 1.3225, y: 1.3225, z: 1}
-  blackboardoVisible: 0
+  blackboardoVisible: 1
   blackboardPosition:
     serializedVersion: 2
     x: 16
     y: 15
     width: 317
     height: 405
-  nodes:
-  - id: 0
-  - id: 1
-  edges:
-  - guid: 012693ae-e63b-473e-ae55-98927f73d3bc
-    owner: {fileID: 11400000}
-    inputNodeGUID: 20d69d17-e538-4632-97ff-faf8012ccb9a
-    inputFieldName: input
-    outputNodeGUID: bca9059c-86ce-48f1-8a1f-bc810386c5f6
-    outputFieldName: value
-  stacks: []
-  groups: []
   blackboard:
     keys: []
     values: []
   guidMap:
     keys: []
     values: []
+  serializedNodes: []
+  serializedEdges: []
+  serializedStacks: []
+  serializedGroups: []
   references:
     version: 1
-    00000000:
-      type: {class: StringNode, ns: CZToolKit.GraphProcessor, asm: Assembly-CSharp}
-      data:
-        guid: bca9059c-86ce-48f1-8a1f-bc810386c5f6
-        position:
-          serializedVersion: 2
-          x: 1759.5464
-          y: 635.1607
-          width: 100
-          height: 100
-        expanded: 1
-        locked: 0
-        ports:
-          keys:
-          - value
-          values:
-          - graph: {fileID: 11400000}
-            ownerGUID: bca9059c-86ce-48f1-8a1f-bc810386c5f6
-            fieldName: value
-            typeQualifiedName: System.String, mscorlib, Version=4.0.0.0, Culture=neutral,
-              PublicKeyToken=b77a5c561934e089
-            isMulti: 1
-            direction: 1
-            typeConstraint: 1
-            edgeGUIDs:
-            - 012693ae-e63b-473e-ae55-98927f73d3bc
-        value: 123
-    00000001:
-      type: {class: DebugNode, ns: CZToolKit.GraphProcessor, asm: Assembly-CSharp}
-      data:
-        guid: 20d69d17-e538-4632-97ff-faf8012ccb9a
-        position:
-          serializedVersion: 2
-          x: 1928.2363
-          y: 618.1928
-          width: 146
-          height: 77
-        expanded: 1
-        locked: 0
-        ports:
-          keys:
-          - input
-          values:
-          - graph: {fileID: 11400000}
-            ownerGUID: 20d69d17-e538-4632-97ff-faf8012ccb9a
-            fieldName: input
-            typeQualifiedName: System.String, mscorlib, Version=4.0.0.0, Culture=neutral,
-              PublicKeyToken=b77a5c561934e089
-            isMulti: 0
-            direction: 0
-            typeConstraint: 0
-            edgeGUIDs:
-            - 012693ae-e63b-473e-ae55-98927f73d3bc
-        input: 
-        layer:
-          serializedVersion: 2
-          m_Bits: 0

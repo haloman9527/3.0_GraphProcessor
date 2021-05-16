@@ -37,9 +37,9 @@ namespace CZToolKit.GraphProcessor
     [Serializable]
     public class ExposedParameter
     {
-        [SerializeField] 
+        [SerializeField]
         string name;
-        [SerializeField] 
+        [SerializeField]
         string guid;
         [SerializeField]
         string typeQualifiedName;

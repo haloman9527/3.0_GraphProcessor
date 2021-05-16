@@ -177,22 +177,14 @@ namespace CZToolKit.GraphProcessor.Editors
                     AddIcon(new Image() { image = icon, style = { width = iconAttribute.width, height = iconAttribute.height } });
             }
 
-            if (Utility.TryGetTypeAttribute(NodeDataType, out NodeDescriptionAttribute descriptionAttribute))
-            {
-                if (!string.IsNullOrEmpty(descriptionAttribute.description))
-                    AddBadge(IconBadge.CreateComment(descriptionAttribute.description));
-            }
-
             if (Utility.TryGetTypeAttribute(NodeDataType, out NodeTooltipAttribute nodeTooltipAttribute))
                 tooltip = nodeTooltipAttribute.Tooltip;
+
             if (Utility.TryGetTypeAttribute(NodeDataType, out NodeTitleTintAttribute nodeTitleTintAttribute))
             {
                 titleContainer.style.backgroundColor = nodeTitleTintAttribute.BackgroundColor;
                 TitleLabel.style.color = nodeTitleTintAttribute.BackgroundColor.GetLuminance() > 0.5f && nodeTitleTintAttribute.BackgroundColor.a > 0.5f ? Color.black : Color.white * 0.9f;
             }
-
-            if (Utility.TryGetTypeAttribute(NodeDataType, out TooltipAttribute tooltipAttrib))
-                tooltip = tooltipAttrib.tooltip;
 
             bool showControlOnHover = Utility.TryGetTypeAttribute(NodeDataType, out ShowControlOnHoverAttribute showControlOnHoverAttrib);
             if (showControlOnHover)
