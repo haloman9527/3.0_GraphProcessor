@@ -1,14 +1,16 @@
 ﻿using CZToolKit.Core.SharedVariable;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
 namespace CZToolKit.GraphProcessor
 {
-    public abstract class GraphOwner : MonoBehaviour, IVariableOwner/*, ISerializationCallbackReceiver*/
+
+    public abstract class GraphOwner : MonoBehaviour, IVariableOwner, ISerializationCallbackReceiver
     {
-        [SerializeField, SerializeReference, HideInInspector]
+        //[SerializeField, HideInInspector]
         List<SharedVariable> variables = new List<SharedVariable>();
         Dictionary<string, int> sharedVariableIndex;
 
@@ -16,56 +18,91 @@ namespace CZToolKit.GraphProcessor
         public abstract Type GraphType { get; }
 
         #region Serialize
-        //bool initializedVariables;
 
-        //[SerializeField]
-        //List<JsonElement> serializedVariables = new List<JsonElement>();
+        [Serializable]
+        public struct ObjectKV
+        {
+            public string guid;
+            public Object single;
+            public List<Object> multi;
+        }
 
-        //public virtual void OnBeforeSerialize()
-        //{
-        //    Serialize();
-        //}
+        bool initializedVariables;
+        [SerializeField, HideInInspector]
+        List<JsonElement> serializedVariables = new List<JsonElement>();
+        [SerializeField, HideInInspector]
+        List<ObjectKV> objectsCache = new List<ObjectKV>();
 
-        //public virtual void OnAfterDeserialize() { }
+        public virtual void OnBeforeSerialize()
+        {
+            Serialize();
+        }
 
-        //void Serialize()
-        //{
-        //    if (variables == null) return;
-        //    serializedVariables.Clear();
-        //    foreach (var variable in variables)
-        //    {
-        //        if (variable == null) continue;
-        //        if (variable is SharedGameObject)
-        //        {
-        //            Debug.Log((variable as SharedGameObject).Value == null);
-        //        }
-        //        serializedVariables.Add(JsonSerializer.Serialize(variable));
-        //    }
-        //}
+        public virtual void OnAfterDeserialize() { }
 
-        //void Deserialize()
-        //{
-        //    if (variables == null)
-        //        variables = new List<SharedVariable>();
-        //    else
-        //        variables.Clear();
-        //    foreach (var serializedVariable in serializedVariables)
-        //    {
-        //        SharedVariable variable = JsonSerializer.Deserialize(serializedVariable) as SharedVariable;
-        //        if (variable == null) continue;
-        //        variables.Add(variable);
-        //    }
-        //    UpdateVariablesIndex();
-        //}
+        void Serialize()
+        {
+            if (variables.Count == 0) return;
+            if (Application.isPlaying) return;
+            serializedVariables.Clear();
+            objectsCache.Clear();
+            for (int i = 0; i < variables.Count; i++)
+            {
+                SharedVariable variable = variables[i];
+                if (variable == null) continue;
+                serializedVariables.Add(JsonSerializer.Serialize(variable));
+                if (variable is ISharedObject sharedObject)
+                {
+                    ObjectKV kv = new ObjectKV() { guid = variable.GUID, single = sharedObject.GetObject() };
+                    objectsCache.Add(kv);
+                }
+                else if (variable is ISharedObjectList sharedList && typeof(Object).IsAssignableFrom(sharedList.GetElementType()))
+                {
+                    List<Object> objs = new List<Object>();
+                    foreach (var item in sharedList.GetList())
+                    {
+                        objs.Add(item as Object);
+                    }
+                    ObjectKV kv = new ObjectKV() { guid = variable.GUID, multi = objs };
+                    objectsCache.Add(kv);
+                }
+            }
+        }
 
-        //void CheckSerialization()
-        //{
-        //    if (!initializedVariables)
-        //    {
-        //        Deserialize();
-        //        initializedVariables = true;
-        //    }
-        //}
+        void Deserialize()
+        {
+            if (variables == null)
+                variables = new List<SharedVariable>();
+            else
+                variables.Clear();
+            foreach (var serializedVariable in serializedVariables)
+            {
+                SharedVariable variable = JsonSerializer.Deserialize(serializedVariable) as SharedVariable;
+                if (variable == null) continue;
+                variables.Add(variable);
+            }
+            UpdateVariablesIndex();
+            foreach (var item in objectsCache)
+            {
+                SharedVariable variable = GetVariable(item.guid);
+                if (variable == null) continue;
+                if (variable is ISharedObject sharedObject)
+                {
+                    sharedObject.SetObject(item.single);
+                }
+                else if (variable is ISharedObjectList sharedList)
+                {
+                    sharedList.FillList(item.multi);
+                }
+            }
+        }
+
+        void CheckSerialization()
+        {
+            if (initializedVariables) return;
+            initializedVariables = true;
+            Deserialize();
+        }
         #endregion
 
         public Object GetObject()
@@ -81,7 +118,7 @@ namespace CZToolKit.GraphProcessor
         public SharedVariable GetVariable(string _guid)
         {
             if (string.IsNullOrEmpty(_guid)) return null;
-            //CheckSerialization();
+            CheckSerialization();
             if (variables != null)
             {
                 if (sharedVariableIndex == null || sharedVariableIndex.Count != variables.Count)
@@ -95,14 +132,14 @@ namespace CZToolKit.GraphProcessor
 
         public List<SharedVariable> GetAllVariables()
         {
-            //CheckSerialization();
+            CheckSerialization();
             return variables;
         }
 
         public void SetVariable(SharedVariable sharedVariable)
         {
             if (sharedVariable == null) return;
-            //CheckSerialization();
+            CheckSerialization();
 
             if (variables == null)
                 variables = new List<SharedVariable>();
@@ -150,14 +187,14 @@ namespace CZToolKit.GraphProcessor
 
         public IList<SharedVariable> GetVariables()
         {
-            //CheckSerialization();
+            CheckSerialization();
             return variables;
         }
 
         public void SetVariables(List<SharedVariable> _variables)
         {
             variables = _variables;
-            //UpdateVariablesIndex();
+            UpdateVariablesIndex();
         }
     }
 
