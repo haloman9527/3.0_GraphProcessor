@@ -16,16 +16,43 @@ namespace CZToolKit.GraphProcessor
 
     public static class JsonSerializer
     {
-        public static JsonElement Serialize(object _targetObject)
+        public static string SerializeToJson(object _targetObject)
+        {
+#if UNITY_EDITOR
+            return EditorJsonUtility.ToJson(_targetObject);
+#else
+			return JsonUtility.ToJson(_targetObject);
+#endif
+        }
+
+        public static JsonElement SerializeToJsonElement(object _targetObject)
         {
             JsonElement serializedData = new JsonElement();
             serializedData.type = _targetObject.GetType().AssemblyQualifiedName;
-#if UNITY_EDITOR
-            serializedData.json = EditorJsonUtility.ToJson(_targetObject);
-#else
-			serializedData.json = JsonUtility.ToJson(_targetObject);
-#endif
+            serializedData.json = SerializeToJson(_targetObject);
             return serializedData;
+        }
+
+        public static T Deserialize<T>(string _json)
+        {
+            var targetObject = Activator.CreateInstance<T>();
+#if UNITY_EDITOR
+            EditorJsonUtility.FromJsonOverwrite(_json, targetObject);
+#else
+			JsonUtility.FromJsonOverwrite(_json, targetObject);
+#endif
+            return targetObject;
+        }
+
+        public static object Deserialize(string _json, Type _type)
+        {
+            var targetObject = Activator.CreateInstance(_type);
+#if UNITY_EDITOR
+            EditorJsonUtility.FromJsonOverwrite(_json, targetObject);
+#else
+			JsonUtility.FromJsonOverwrite(_json, targetObject);
+#endif
+            return targetObject;
         }
 
         public static T Deserialize<T>(JsonElement _serializedData)
@@ -34,14 +61,7 @@ namespace CZToolKit.GraphProcessor
                 throw new ArgumentException("数据为空");
             if (typeof(T) != Type.GetType(_serializedData.type))
                 throw new ArgumentException("类型不匹配");
-
-            var targetObject = Activator.CreateInstance<T>();
-#if UNITY_EDITOR
-            EditorJsonUtility.FromJsonOverwrite(_serializedData.json, targetObject);
-#else
-			JsonUtility.FromJsonOverwrite(_serializedData.json, targetObject);
-#endif
-            return targetObject;
+            return Deserialize<T>(_serializedData.json);
         }
 
         public static object Deserialize(JsonElement _serializeData)
@@ -50,13 +70,7 @@ namespace CZToolKit.GraphProcessor
                 return null;
             Type type = Type.GetType(_serializeData.type);
             if (type == null) return null;
-            var targetObject = Activator.CreateInstance(type);
-#if UNITY_EDITOR
-            EditorJsonUtility.FromJsonOverwrite(_serializeData.json, targetObject);
-#else
-			JsonUtility.FromJsonOverwrite(_serializeData.json, targetObject);
-#endif
-            return targetObject;
+            return Deserialize(_serializeData.json, type);
         }
     }
 }

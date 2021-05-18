@@ -99,9 +99,9 @@ namespace CZToolKit.GraphProcessor.Editors
             get { return graphOwner; }
             private set { graphOwner = value; if (graphOwner != null) graphOwnerInstanceID = graphOwner.GetInstanceID(); }
         }
-        public BaseGraph GraphData { get { return graphData; } }
+        public BaseGraph GraphData { get { return graphData; } private set { graphData = value; } }
         public BaseGraphView GraphView { get { return graphView; } private set { graphView = value; } }
-        public ToolbarView Toolbar { get { return toolbar; } }
+        public ToolbarView Toolbar { get { return toolbar; } private set { toolbar = value; } }
 
         protected virtual void OnEnable()
         {
@@ -118,6 +118,7 @@ namespace CZToolKit.GraphProcessor.Editors
                 EditorApplication.delayCall += ReloadGraph;
         }
 
+
         void OnPlayModeChanged(PlayModeStateChange obj)
         {
             switch (obj)
@@ -133,8 +134,8 @@ namespace CZToolKit.GraphProcessor.Editors
 
         protected virtual void OnGUI()
         {
-            if (toolbar != null)
-                GUILayoutUtility.GetRect(toolbar.style.width.value.value, toolbar.style.height.value.value);
+            if (Toolbar != null)
+                GUILayoutUtility.GetRect(Toolbar.style.width.value.value, Toolbar.style.height.value.value);
 
             if (GraphView != null)
                 GraphView.OnGUI();
@@ -142,8 +143,8 @@ namespace CZToolKit.GraphProcessor.Editors
 
         protected virtual void OnDisable()
         {
-            if (graphView != null)
-                graphView.SaveGraphToDisk();
+            if (GraphView != null)
+                GraphView.SaveGraphToDisk();
             EditorApplication.playModeStateChanged -= OnPlayModeChanged;
         }
 
@@ -162,29 +163,29 @@ namespace CZToolKit.GraphProcessor.Editors
 
         protected virtual void ClearWindow()
         {
-            if (graphView != null)
-                graphView.RemoveFromHierarchy();
-            graphView = null;
+            if (GraphView != null)
+                GraphView.RemoveFromHierarchy();
+            GraphView = null;
 
-            if (toolbar != null)
-                toolbar.RemoveFromHierarchy();
-            toolbar = null;
+            if (Toolbar != null)
+                Toolbar.RemoveFromHierarchy();
+            Toolbar = null;
 
-            graphOwner = null;
+            GraphOwner = null;
         }
 
         void InitializeWindow(BaseGraph _graphData)
         {
-            graphData = _graphData;
-            toolbar = new ToolbarView(this);
+            GraphData = _graphData;
+            Toolbar = new ToolbarView(this);
             rootVisualElement.Add(toolbar);
             if (GraphData == null) return;
             GraphView = InitializeGraphView(_graphData);
             if (GraphView == null) return;
 
-            toolbar.AddButton("Show In Project", () => EditorGUIUtility.PingObject(GraphView.GraphData), false);
-            toolbar.AddButton("Save Assets", () => { GraphView.SaveGraphToDisk(true); }, false);
-            toolbar.AddButton("Reload", ReloadGraph, false);
+            Toolbar.AddButton("Show In Project", () => EditorGUIUtility.PingObject(GraphView.GraphData), false);
+            Toolbar.AddButton("Save Assets", () => { GraphView.SaveGraphToDisk(true); }, false);
+            Toolbar.AddButton("Reload", ReloadGraph, false);
 
             Undo.undoRedoPerformed += ReloadGraph;
             graphViewElement.Add(GraphView);

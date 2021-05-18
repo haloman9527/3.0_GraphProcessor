@@ -1,16 +1,13 @@
 ﻿using CZToolKit.Core.SharedVariable;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
 namespace CZToolKit.GraphProcessor
 {
-
     public abstract class GraphOwner : MonoBehaviour, IVariableOwner, ISerializationCallbackReceiver
     {
-        //[SerializeField, HideInInspector]
         List<SharedVariable> variables = new List<SharedVariable>();
         Dictionary<string, int> sharedVariableIndex;
 
@@ -27,6 +24,7 @@ namespace CZToolKit.GraphProcessor
             public List<Object> multi;
         }
 
+        [NonSerialized]
         bool initializedVariables;
         [SerializeField, HideInInspector]
         List<JsonElement> serializedVariables = new List<JsonElement>();
@@ -50,7 +48,7 @@ namespace CZToolKit.GraphProcessor
             {
                 SharedVariable variable = variables[i];
                 if (variable == null) continue;
-                serializedVariables.Add(JsonSerializer.Serialize(variable));
+                serializedVariables.Add(JsonSerializer.SerializeToJsonElement(variable));
                 if (variable is ISharedObject sharedObject)
                 {
                     ObjectKV kv = new ObjectKV() { guid = variable.GUID, single = sharedObject.GetObject() };
@@ -82,6 +80,7 @@ namespace CZToolKit.GraphProcessor
                 variables.Add(variable);
             }
             UpdateVariablesIndex();
+
             foreach (var item in objectsCache)
             {
                 SharedVariable variable = GetVariable(item.guid);
@@ -185,7 +184,7 @@ namespace CZToolKit.GraphProcessor
             }
         }
 
-        public IList<SharedVariable> GetVariables()
+        public IReadOnlyList<SharedVariable> GetVariables()
         {
             CheckSerialization();
             return variables;

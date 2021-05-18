@@ -475,28 +475,28 @@ namespace CZToolKit.GraphProcessor
             foreach (var node in nodes.Values)
             {
                 if (node == null) continue;
-                serializedNodes.Add(JsonSerializer.Serialize(node));
+                serializedNodes.Add(JsonSerializer.SerializeToJsonElement(node));
             }
 
             serializedEdges.Clear();
             foreach (var edge in edges.Values)
             {
                 if (edge == null) continue;
-                serializedEdges.Add(JsonSerializer.Serialize(edge));
+                serializedEdges.Add(JsonSerializer.SerializeToJsonElement(edge));
             }
 
             serializedStacks.Clear();
             foreach (var stack in stacks.Values)
             {
                 if (stack == null) continue;
-                serializedStacks.Add(JsonSerializer.Serialize(stack));
+                serializedStacks.Add(JsonSerializer.SerializeToJsonElement(stack));
             }
 
             serializedGroups.Clear();
             foreach (var group in groups)
             {
                 if (group == null) continue;
-                serializedGroups.Add(JsonSerializer.Serialize(group));
+                serializedGroups.Add(JsonSerializer.SerializeToJsonElement(group));
             }
         }
 
@@ -566,24 +566,7 @@ namespace CZToolKit.GraphProcessor
                 variables.Clear();
             foreach (var node in nodes.Values)
             {
-                variables.AddRange(CollectionNodeVariables(node));
-            }
-        }
-
-        private IEnumerable<SharedVariable> CollectionNodeVariables(BaseNode _node)
-        {
-            List<FieldInfo> fieldInfos = Utility.GetFieldInfos(_node.GetType());
-            Type t = typeof(SharedVariable);
-            foreach (var fieldInfo in fieldInfos)
-            {
-                if (!t.IsAssignableFrom(fieldInfo.FieldType)) continue;
-                SharedVariable variable = fieldInfo.GetValue(_node) as SharedVariable;
-                if (variable == null)
-                {
-                    variable = Activator.CreateInstance(fieldInfo.FieldType) as SharedVariable;
-                    fieldInfo.SetValue(_node, variable);
-                }
-                yield return variable;
+                variables.AddRange(SharedVariableUtility.CollectionObjectSharedVariables(node));
             }
         }
 
@@ -707,7 +690,7 @@ namespace CZToolKit.GraphProcessor
             _node.Initialize(this);
             nodes[_node.GUID] = _node;
             NodeDataCache.UpdateStaticPorts(_node);
-            IEnumerable<SharedVariable> nodeVariables = CollectionNodeVariables(_node);
+            IEnumerable<SharedVariable> nodeVariables = SharedVariableUtility.CollectionObjectSharedVariables(_node);
             if (VarialbeOwner != null)
             {
                 foreach (var variable in nodeVariables)

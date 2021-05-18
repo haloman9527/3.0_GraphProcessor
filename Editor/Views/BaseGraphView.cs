@@ -290,25 +290,25 @@ namespace CZToolKit.GraphProcessor.Editors
             {
                 if (element is BaseNodeView nodeView)
                 {
-                    data.copiedNodes.Add(JsonSerializer.Serialize(nodeView.NodeData));
+                    data.copiedNodes.Add(JsonSerializer.SerializeToJsonElement(nodeView.NodeData));
                     continue;
                 }
 
                 if (element is EdgeView edgeView)
                 {
-                    data.copiedEdges.Add(JsonSerializer.Serialize(edgeView.serializedEdge));
+                    data.copiedEdges.Add(JsonSerializer.SerializeToJsonElement(edgeView.serializedEdge));
                     continue;
                 }
 
                 if (element is BaseStackNodeView stackNodeView)
                 {
-                    data.copiedStacks.Add(JsonSerializer.Serialize(stackNodeView.stackNode));
+                    data.copiedStacks.Add(JsonSerializer.SerializeToJsonElement(stackNodeView.stackNode));
                     continue;
                 }
 
                 if (element is GroupView groupView)
                 {
-                    data.copiedGroups.Add(JsonSerializer.Serialize(groupView.GroupData));
+                    data.copiedGroups.Add(JsonSerializer.SerializeToJsonElement(groupView.GroupData));
                     continue;
                 }
             }
