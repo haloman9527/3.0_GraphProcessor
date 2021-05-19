@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using Object = UnityEngine.Object;
+using UnityObject = UnityEngine.Object;
 
 namespace CZToolKit.GraphProcessor
 {
@@ -20,8 +20,8 @@ namespace CZToolKit.GraphProcessor
         public struct ObjectKV
         {
             public string guid;
-            public Object single;
-            public List<Object> multi;
+            public UnityObject single;
+            public List<UnityObject> multi;
         }
 
         [NonSerialized]
@@ -54,12 +54,12 @@ namespace CZToolKit.GraphProcessor
                     ObjectKV kv = new ObjectKV() { guid = variable.GUID, single = sharedObject.GetObject() };
                     objectsCache.Add(kv);
                 }
-                else if (variable is ISharedObjectList sharedList && typeof(Object).IsAssignableFrom(sharedList.GetElementType()))
+                else if (variable is ISharedObjectList sharedList && typeof(UnityObject).IsAssignableFrom(sharedList.GetElementType()))
                 {
-                    List<Object> objs = new List<Object>();
+                    List<UnityObject> objs = new List<UnityObject>();
                     foreach (var item in sharedList.GetList())
                     {
-                        objs.Add(item as Object);
+                        objs.Add(item as UnityObject);
                     }
                     ObjectKV kv = new ObjectKV() { guid = variable.GUID, multi = objs };
                     objectsCache.Add(kv);
@@ -104,7 +104,7 @@ namespace CZToolKit.GraphProcessor
         }
         #endregion
 
-        public Object GetObject()
+        public UnityObject GetObject()
         {
             return this;
         }

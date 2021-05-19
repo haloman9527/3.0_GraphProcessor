@@ -216,7 +216,7 @@ namespace CZToolKit.GraphProcessor.Editors
         protected virtual void OnDestroy()
         {
             if (Selection.activeObject is ObjectInspector objectInspector
-                && objectInspector.targetObject is BaseNode node
+                && objectInspector.TargetObject is BaseNode node
                 && node.Owner == GraphData)
             {
                 Selection.activeObject = null;
