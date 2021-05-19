@@ -15,7 +15,7 @@ namespace CZToolKit.GraphProcessor
 
         private static void CachePorts(Type _nodeType)
         {
-            List<FieldInfo> fieldInfos = GetFields(_nodeType);
+            List<FieldInfo> fieldInfos = Utility.GetFieldInfos(_nodeType);
 
             foreach (var fieldInfo in fieldInfos)
             {
@@ -24,7 +24,7 @@ namespace CZToolKit.GraphProcessor
 
                 if (!PortCache.ContainsKey(_nodeType)) PortCache.Add(_nodeType, new List<NodePort>());
 
-                PortCache[_nodeType].Add(new NodePort(fieldInfo));
+                PortCache[_nodeType].Add(new NodePort(fieldInfo, portAttribute));
             }
 
             //List<MethodInfo> methodInfos = GetNodeMethods(nodeType);
@@ -106,26 +106,8 @@ namespace CZToolKit.GraphProcessor
             foreach (NodePort staticPort in staticPorts.Values)
             {
                 if (!_node.Ports.ContainsKey(staticPort.FieldName))
-                {
                     _node.Ports[staticPort.FieldName] = new NodePort(staticPort, _node);
-                }
             }
-        }
-
-        public static List<FieldInfo> GetFields(Type _nodeType)
-        {
-            List<FieldInfo> fieldInfos =
-                new List<FieldInfo>(
-                    _nodeType.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance));
-
-            // 获取类包含的所有字段(包含私有)
-            Type tempType = _nodeType;
-            while ((tempType = tempType.BaseType) != typeof(BaseNode) && tempType != null)
-            {
-                fieldInfos.AddRange(tempType.GetFields(BindingFlags.NonPublic | BindingFlags.Instance));
-            }
-
-            return fieldInfos;
         }
 
         public static List<MethodInfo> GetNodeMethods(Type _nodeType)

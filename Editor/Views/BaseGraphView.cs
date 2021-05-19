@@ -27,8 +27,6 @@ namespace CZToolKit.GraphProcessor.Editors
             }
         }
 
-        ExposedParameterView blackboard;
-
         public BaseEdgeConnectorListener connectorListener;
 
         List<IOnGUIObserver> onGUIObservers = new List<IOnGUIObserver>(16);
@@ -37,6 +35,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
         public bool Initialized { get; private set; }
         public bool IsDirty { get; private set; }
+        private ExposedParameterView Blackboard { get; set; }
         public CreateNodeMenuWindow CreateNodeMenu { get; private set; }
         public BaseGraphWindow GraphWindow { get; private set; }
         public BaseGraph GraphData { get; private set; }
@@ -80,11 +79,11 @@ namespace CZToolKit.GraphProcessor.Editors
             GraphData = _graphData;
             SerializedObject = new SerializedObject(GraphData);
             GraphWindow.Toolbar.AddButton("Center", ResetPositionAndZoom);
-            GraphWindow.Toolbar.AddToggle("Show Parameters", GraphData.blackboardoVisible, (v) =>
-            {
-                GetBlackboard().style.display = v ? DisplayStyle.Flex : DisplayStyle.None;
-                GraphData.blackboardoVisible = v;
-            });
+            //GraphWindow.Toolbar.AddToggle("Show Parameters", GraphData.blackboardoVisible, (v) =>
+            //{
+            //    GetBlackboard().style.display = v ? DisplayStyle.Flex : DisplayStyle.None;
+            //    GraphData.blackboardoVisible = v;
+            //});
 
             connectorListener = CreateEdgeConnectorListener();
 
@@ -104,7 +103,7 @@ namespace CZToolKit.GraphProcessor.Editors
             InitializeEdgeViews();
             InitializeStackNodes();
             InitializeGroups();
-            InitializeBlackboard();
+            //InitializeBlackboard();
 
             OnInitialized();
             Initialized = true;
@@ -190,10 +189,10 @@ namespace CZToolKit.GraphProcessor.Editors
 
         void InitializeBlackboard()
         {
-            blackboard = new ExposedParameterView(this);
-            blackboard.SetPosition(GraphData.blackboardPosition);
-            blackboard.style.display = GraphData.blackboardoVisible ? DisplayStyle.Flex : DisplayStyle.None;
-            Add(blackboard);
+            Blackboard = new ExposedParameterView(this);
+            Blackboard.SetPosition(GraphData.blackboardPosition);
+            Blackboard.style.display = GraphData.blackboardoVisible ? DisplayStyle.Flex : DisplayStyle.None;
+            Add(Blackboard);
         }
 
         #endregion
@@ -204,7 +203,10 @@ namespace CZToolKit.GraphProcessor.Editors
                 observer.OnGUI();
         }
 
-        public override Blackboard GetBlackboard() { return blackboard; }
+        public override Blackboard GetBlackboard()
+        {
+            return Blackboard;
+        }
 
         protected virtual IEnumerable<Type> GetNodeTypes()
         {
@@ -238,7 +240,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
             evt.menu.AppendAction("Help/Reset Blackboard Windows", e =>
             {
-                blackboard.SetPosition(new Rect(Vector2.zero, BaseGraph.DefaultBlackboardSize));
+                Blackboard.SetPosition(new Rect(Vector2.zero, BaseGraph.DefaultBlackboardSize));
             });
         }
 
@@ -256,7 +258,7 @@ namespace CZToolKit.GraphProcessor.Editors
                 if (portView.Owner == startPortView.Owner)
                     return;
 
-                if (portView.direction == startPortView.direction)
+                if (portView.PortData.Direction == startPortView.PortData.Direction)
                     return;
 
                 if (portView.Edges.Any(e => e.input == startPortView || e.output == startPortView))
@@ -416,7 +418,7 @@ namespace CZToolKit.GraphProcessor.Editors
                             return true;
                         case BlackboardField blackboardField:
                             if (GraphData.RemoveExposedParameter(blackboardField.userData as ExposedParameter))
-                                blackboard.RemoveField(blackboardField);
+                                Blackboard.RemoveField(blackboardField);
                             return true;
                         case GroupView groupView:
                             RemoveGroup(groupView);
@@ -550,7 +552,7 @@ namespace CZToolKit.GraphProcessor.Editors
             {
                 if (element is BaseNodeView nodeView && Contains(nodeView))
                 {
-                    EditorGUILayoutExtension.DrawFieldsInInspector("Node Inspector", nodeView.NodeData);
+                    EditorGUILayoutExtension.DrawFieldsInInspector(nodeView.title, nodeView.NodeData);
                     drawnNode = true;
                 }
             }

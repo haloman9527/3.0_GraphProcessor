@@ -82,16 +82,12 @@ namespace CZToolKit.GraphProcessor
 
         public NodePort() { }
 
-        public NodePort(FieldInfo _fieldInfo)
+        public NodePort(FieldInfo _fieldInfo, PortAttribute _portAttribute)
         {
             fieldName = _fieldInfo.Name;
-
-            if (Utility.TryGetFieldAttribute(_fieldInfo.DeclaringType, _fieldInfo.Name, out PortAttribute attribute))
-            {
-                isMulti = attribute.IsMulti;
-                direction = attribute.Direction;
-                typeConstraint = attribute.TypeConstraint;
-            }
+            isMulti = _portAttribute.IsMulti;
+            direction = _portAttribute.Direction;
+            typeConstraint = _portAttribute.TypeConstraint;
 
             if (Utility.TryGetFieldAttribute(_fieldInfo.DeclaringType, _fieldInfo.Name, out PortTypeAttribute typeAttribute))
                 DisplayType = typeAttribute.PortType;
