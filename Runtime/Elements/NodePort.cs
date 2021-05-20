@@ -189,5 +189,10 @@ namespace CZToolKit.GraphProcessor
         {
             DisconnectEdge(_edge.GUID);
         }
+
+        public void ClearConnections()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

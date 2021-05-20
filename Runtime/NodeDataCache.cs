@@ -94,10 +94,7 @@ namespace CZToolKit.GraphProcessor
                     // 如果端口特性已被移除，则把端口清理掉
                     // 先断开所有连接
                     // 移除端口
-                    foreach (SerializableEdge edge in port.Value.GetEdges().ToList())
-                    {
-                        _node.Owner.Disconnect(edge);
-                    }
+                    _node.Owner.Disconnect(port.Value);
                     _node.Ports.Remove(port.Key);
                 }
             }

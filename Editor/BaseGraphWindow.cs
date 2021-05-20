@@ -15,8 +15,10 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             BaseGraphWindow window = LoadGraph(_graphOwner.Graph);
             if (window != null)
+            {
                 window.GraphOwner = _graphOwner;
-            _graphOwner.Graph.InitializePropertyMapping(_graphOwner);
+                window.GraphOwner.Graph.InitializePropertyMapping(_graphOwner);
+            }
         }
 
         [OnOpenAsset(0)]

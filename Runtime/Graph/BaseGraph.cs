@@ -597,7 +597,7 @@ namespace CZToolKit.GraphProcessor
             foreach (var kv in nodes.ToArray())
             {
                 if (kv.Value == null) { nodes.Remove(kv.Key); continue; }
-                kv.Value.Initialize(this);
+                kv.Value.InitializeOwner(this);
             }
 
             foreach (var kv in edges.ToArray())
@@ -687,7 +687,7 @@ namespace CZToolKit.GraphProcessor
         public void AddNode(BaseNode _node)
         {
             if (_node == null) return;
-            _node.Initialize(this);
+            _node.InitializeOwner(this);
             nodes[_node.GUID] = _node;
             NodeDataCache.UpdateStaticPorts(_node);
             IEnumerable<SharedVariable> nodeVariables = SharedVariableUtility.CollectionObjectSharedVariables(_node);
@@ -768,9 +768,9 @@ namespace CZToolKit.GraphProcessor
         /// <summary> 断开指定端口的所有连接 </summary>
         public void Disconnect(NodePort _nodePort)
         {
-            while (_nodePort.IsConnected)
+            for (int i = 0; i < _nodePort.EdgeGUIDS.Count; i++)
             {
-                Disconnect(_nodePort.GetEdge(0));
+                Disconnect(_nodePort.EdgeGUIDS[i]);
             }
         }
 

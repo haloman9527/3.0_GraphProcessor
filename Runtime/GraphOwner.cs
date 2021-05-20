@@ -28,7 +28,7 @@ namespace CZToolKit.GraphProcessor
         bool initializedVariables;
         [SerializeField, HideInInspector]
         List<JsonElement> serializedVariables = new List<JsonElement>();
-        [SerializeField]
+        [SerializeField, HideInInspector]
         List<ObjectKV> objectsCache = new List<ObjectKV>();
 
         public virtual void OnBeforeSerialize()

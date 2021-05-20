@@ -8,21 +8,28 @@ namespace CZToolKit.GraphProcessor
     public abstract class BaseNode
     {
         #region 静态
-        /// <summary> Creates a node of type T at a certain position </summary>
+        /// <summary> 根据T创建一个节点，并设置位置 </summary>
         public static T CreateNew<T>(Vector2 _position) where T : BaseNode
         {
             return CreateNew(typeof(T), _position) as T;
         }
 
-        /// <summary> Creates a node of type nodeType at a certain position </summary>
-        public static BaseNode CreateNew(Type nodeType, Vector2 position)
+        /// <summary> 根据_type创建一个节点，并设置位置 </summary>
+        public static BaseNode CreateNew(Type _type, Vector2 _position)
         {
-            if (!nodeType.IsSubclassOf(typeof(BaseNode)))
+            if (!_type.IsSubclassOf(typeof(BaseNode)))
                 return null;
-            var node = Activator.CreateInstance(nodeType) as BaseNode;
-            node.position = new Rect(position, new Vector2(100, 100));
+            var node = Activator.CreateInstance(_type) as BaseNode;
+            node.position = new Rect(_position, new Vector2(100, 100));
+            IDAllocation(node);
             node.OnCreated();
             return node;
+        }
+
+        /// <summary> 给节点分配一个GUID，这将会覆盖已有GUID </summary>
+        public static void IDAllocation(BaseNode _node)
+        {
+            _node.guid = Guid.NewGuid().ToString();
         }
         #endregion
 
@@ -51,13 +58,11 @@ namespace CZToolKit.GraphProcessor
 
         protected BaseNode() { }
 
-        public virtual void OnCreated()
-        {
-            guid = Guid.NewGuid().ToString();
-        }
+        /// <summary> 在节点被创建出来后调用，调用优先级最高 </summary>
+        public virtual void OnCreated() { }
 
         /// <summary> 请不要在其它任何地方调用 </summary>
-        internal void Initialize(BaseGraph _graph)
+        internal void InitializeOwner(BaseGraph _graph)
         {
             owner = _graph;
             foreach (var port in Ports.Values)
@@ -66,7 +71,7 @@ namespace CZToolKit.GraphProcessor
             }
         }
 
-        public virtual void Initialize(GraphOwner _graphOwner) { }
+        public virtual void InitializeGraphOwner(GraphOwner _graphOwner) { }
 
         #region Ports
         /// <summary> 通过名字获取一个Input接口 </summary>
@@ -161,5 +166,13 @@ namespace CZToolKit.GraphProcessor
         public virtual Type PortDynamicType(string _portName) { return null; }
 
         public virtual void DrawGizmos(GraphOwner _graphOwner) { }
+
+        public void ClearConnections()
+        {
+            foreach (var port in Ports.Values)
+            {
+                port.EdgeGUIDS.Clear();
+            }
+        }
     }
 }

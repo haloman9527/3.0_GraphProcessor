@@ -337,9 +337,11 @@ namespace CZToolKit.GraphProcessor.Editors
                 node.position.position += new Vector2(20, 20);
                 string sourceGUID = node.GUID;
                 // 新节点重置id
+                BaseNode.IDAllocation(node);
                 node.OnCreated();
                 // 新节点与旧id存入字典
                 copiedNodesMap[sourceGUID] = node;
+                node.ClearConnections();
                 AddNode(node);
                 AddToSelection(NodeViews[node.GUID]);
             }
@@ -623,10 +625,10 @@ namespace CZToolKit.GraphProcessor.Editors
 
         public void RemoveNodeView(BaseNodeView _nodeView)
         {
-            RemoveElement(_nodeView);
             NodeViews.Remove(_nodeView.NodeData.GUID);
             if (_nodeView is IOnGUIObserver observer)
                 onGUIObservers.Remove(observer);
+            RemoveElement(_nodeView);
             UpdateNodeInspectorSelection();
         }
 

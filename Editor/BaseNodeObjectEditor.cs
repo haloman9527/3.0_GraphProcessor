@@ -12,7 +12,7 @@
  */
 #endregion
 using CZToolKit.Core.Editors;
-using UnityEngine;
+using UnityEditor;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
@@ -21,7 +21,10 @@ namespace CZToolKit.GraphProcessor.Editors
     {
         public override void OnInspectorGUI()
         {
+            EditorGUI.BeginChangeCheck();
             base.OnInspectorGUI();
+            if (EditorGUI.EndChangeCheck())
+                EditorUtility.SetDirty((Target as BaseNode).Owner);
         }
     }
 }
