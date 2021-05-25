@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: af700593b667b8441897ad9b61a253ec, type: 3}
   m_Name: New Math Graph
   m_EditorClassIdentifier: 
-  position: {x: -2090, y: -645, z: 0}
-  scale: {x: 1.3225, y: 1.3225, z: 1}
+  position: {x: 106, y: -98, z: 0}
+  scale: {x: 0.8695652, y: 0.8695652, z: 1}
   blackboardoVisible: 1
   blackboardPosition:
     serializedVersion: 2
@@ -27,9 +27,37 @@ MonoBehaviour:
   guidMap:
     keys: []
     values: []
-  serializedNodes: []
-  serializedEdges: []
+  serializedNodes:
+  - type: CZToolKit.GraphProcessor.StringNode, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+    json: '{"guid":"df181bbc-6399-422d-9edc-e7a4c1732e6a","position":{"serializedVersion":"2","x":380.6500244140625,"y":485.2791442871094,"width":83.0,"height":77.0},"expanded":true,"locked":false,"ports":{"keys":["value"],"values":[{"graph":{"fileID":11400000,"guid":"27c336eb6756a1c46af86a6073cf6568","type":2},"ownerGUID":"df181bbc-6399-422d-9edc-e7a4c1732e6a","fieldName":"value","typeQualifiedName":"System.String,
+      mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089","isMulti":true,"direction":1,"typeConstraint":1,"edgeGUIDs":["61c72417-5585-4945-b656-884ae86e5544","2a739361-49b5-473e-9a7f-15c95df72852","5ba57215-43eb-4ef6-9cc0-ba06bc71da0c"]}]},"value":"sdfsf"}'
+  - type: CZToolKit.GraphProcessor.DebugNode, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+    json: '{"guid":"28b7fdea-79ca-4389-85b2-bf4f3fda50d1","position":{"serializedVersion":"2","x":579.6499633789063,"y":478.2791442871094,"width":146.0,"height":91.00000762939453},"expanded":true,"locked":false,"ports":{"keys":["input"],"values":[{"graph":{"fileID":11400000,"guid":"27c336eb6756a1c46af86a6073cf6568","type":2},"ownerGUID":"28b7fdea-79ca-4389-85b2-bf4f3fda50d1","fieldName":"input","typeQualifiedName":"System.String,
+      mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089","isMulti":false,"direction":0,"typeConstraint":0,"edgeGUIDs":["61c72417-5585-4945-b656-884ae86e5544"]}]},"input":"","layer":{"serializedVersion":"2","m_Bits":0}}'
+  - type: CZToolKit.GraphProcessor.DebugNode, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+    json: '{"guid":"2b46d274-9f41-4763-a3d3-05bebb8c6e73","position":{"serializedVersion":"2","x":581.6499633789063,"y":681.2792358398438,"width":147.0,"height":91.00000762939453},"expanded":true,"locked":false,"ports":{"keys":["input"],"values":[{"graph":{"fileID":11400000,"guid":"27c336eb6756a1c46af86a6073cf6568","type":2},"ownerGUID":"2b46d274-9f41-4763-a3d3-05bebb8c6e73","fieldName":"input","typeQualifiedName":"System.String,
+      mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089","isMulti":false,"direction":0,"typeConstraint":0,"edgeGUIDs":["2a739361-49b5-473e-9a7f-15c95df72852"]}]},"input":"","layer":{"serializedVersion":"2","m_Bits":0}}'
+  - type: CZToolKit.GraphProcessor.DebugNode, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+    json: '{"guid":"7cb68f32-e4c1-499f-924c-27a8a78d68cb","position":{"serializedVersion":"2","x":578.6500244140625,"y":581.2791748046875,"width":147.0,"height":91.00000762939453},"expanded":true,"locked":false,"ports":{"keys":["input"],"values":[{"graph":{"fileID":11400000,"guid":"27c336eb6756a1c46af86a6073cf6568","type":2},"ownerGUID":"7cb68f32-e4c1-499f-924c-27a8a78d68cb","fieldName":"input","typeQualifiedName":"System.String,
+      mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089","isMulti":false,"direction":0,"typeConstraint":0,"edgeGUIDs":["5ba57215-43eb-4ef6-9cc0-ba06bc71da0c"]}]},"input":"","layer":{"serializedVersion":"2","m_Bits":0}}'
+  serializedEdges:
+  - type: CZToolKit.GraphProcessor.SerializableEdge, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+    json: '{"guid":"61c72417-5585-4945-b656-884ae86e5544","owner":{"fileID":11400000,"guid":"27c336eb6756a1c46af86a6073cf6568","type":2},"inputNodeGUID":"28b7fdea-79ca-4389-85b2-bf4f3fda50d1","inputFieldName":"input","outputNodeGUID":"df181bbc-6399-422d-9edc-e7a4c1732e6a","outputFieldName":"value"}'
+  - type: CZToolKit.GraphProcessor.SerializableEdge, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+    json: '{"guid":"2a739361-49b5-473e-9a7f-15c95df72852","owner":{"fileID":11400000,"guid":"27c336eb6756a1c46af86a6073cf6568","type":2},"inputNodeGUID":"2b46d274-9f41-4763-a3d3-05bebb8c6e73","inputFieldName":"input","outputNodeGUID":"df181bbc-6399-422d-9edc-e7a4c1732e6a","outputFieldName":"value"}'
+  - type: CZToolKit.GraphProcessor.SerializableEdge, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+    json: '{"guid":"5ba57215-43eb-4ef6-9cc0-ba06bc71da0c","owner":{"fileID":11400000,"guid":"27c336eb6756a1c46af86a6073cf6568","type":2},"inputNodeGUID":"7cb68f32-e4c1-499f-924c-27a8a78d68cb","inputFieldName":"input","outputNodeGUID":"df181bbc-6399-422d-9edc-e7a4c1732e6a","outputFieldName":"value"}'
   serializedStacks: []
-  serializedGroups: []
+  serializedGroups:
+  - type: CZToolKit.GraphProcessor.BaseGroup, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+    json: '{"title":"New Group","color":{"r":0.0,"g":0.0,"b":0.0,"a":0.699999988079071},"position":{"serializedVersion":"2","x":640.550048828125,"y":509.4500427246094,"width":300.0,"height":300.0},"innerNodeGUIDs":["df181bbc-6399-422d-9edc-e7a4c1732e6a","28b7fdea-79ca-4389-85b2-bf4f3fda50d1","2b46d274-9f41-4763-a3d3-05bebb8c6e73","7cb68f32-e4c1-499f-924c-27a8a78d68cb"],"innerStackGUIDs":[]}'
   references:
     version: 1
