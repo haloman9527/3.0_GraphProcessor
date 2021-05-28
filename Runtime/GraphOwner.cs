@@ -24,7 +24,7 @@ namespace CZToolKit.GraphProcessor
         [SerializeField]
         string serializedVariables;
         [SerializeField]
-        List<UnityObject> unityReference;
+        List<UnityObject> unityReferences;
         [NonSerialized]
         bool initializedVariables;
 
@@ -41,13 +41,13 @@ namespace CZToolKit.GraphProcessor
         void Serialize()
         {
             //if (variables.Count == 0) return;
-            serializedVariables = Encoding.UTF8.GetString(SerializationUtility.SerializeValue(variables, DataFormat.JSON, out unityReference));
+            serializedVariables = Encoding.UTF8.GetString(SerializationUtility.SerializeValue(variables, DataFormat.JSON, out unityReferences));
         }
 
         void Deserialize()
         {
             //if (string.IsNullOrEmpty(serializedVariables)) return;
-            variables = SerializationUtility.DeserializeValue<List<SharedVariable>>(Encoding.UTF8.GetBytes(serializedVariables), DataFormat.JSON, unityReference);
+            variables = SerializationUtility.DeserializeValue<List<SharedVariable>>(Encoding.UTF8.GetBytes(serializedVariables), DataFormat.JSON, unityReferences);
             UpdateVariablesIndex();
         }
 

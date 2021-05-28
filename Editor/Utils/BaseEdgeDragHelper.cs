@@ -9,7 +9,6 @@ namespace CZToolKit.GraphProcessor.Editors
 {
     public class BaseEdgeDragHelper : EdgeDragHelper
     {
-        // https://github.com/Unity-Technologies/UnityCsReference/blob/master/Modules/GraphViewEditor/Manipulators/EdgeDragHelper.cs#L21
         internal const int k_PanAreaWidth = 30;
         internal const int k_PanSpeed = 4;
         internal const int k_PanInterval = 10;

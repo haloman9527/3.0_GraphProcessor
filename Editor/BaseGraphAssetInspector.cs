@@ -11,17 +11,21 @@ namespace CZToolKit.GraphProcessor.Editors
         protected override void RegisterDrawers()
         {
             base.RegisterDrawers();
-            RegisterDrawer("serializedGraph", DrawTest);
+            RegisterDrawer("serializedGraph", DrawSerializedGraph);
+            RegisterDrawer("unityReferences", property=>{
+                EditorGUI.BeginDisabledGroup(true);
+                EditorGUILayout.PropertyField(property);
+                EditorGUI.EndDisabledGroup();
+            });
         }
 
-        private void DrawTest(SerializedProperty property)
+        private void DrawSerializedGraph(SerializedProperty property)
         {
             EditorGUIExtension.SetFoldoutBool("SerializedGraphPreview", 
                 EditorGUILayout.BeginFoldoutHeaderGroup(EditorGUIExtension.GetFoldoutBool("SerializedGraphPreview", false), property.displayName));
             if (EditorGUIExtension.GetFoldoutBool("SerializedGraphPreview"))
                 GUILayout.TextArea(property.stringValue, EditorStyles.wordWrappedLabel);
             EditorGUILayout.EndFoldoutHeaderGroup();
-
         }
 
         public override void OnInspectorGUI()
