@@ -7,7 +7,6 @@ using System.Collections.Generic;
 namespace CZToolKit.GraphProcessor
 {
     [Serializable]
-    /// <summary> Runtime class that stores all info about one port that is needed for the processing </summary>
     public class NodePort
     {
         #region ¾²Ì¬·½·¨
@@ -76,9 +75,9 @@ namespace CZToolKit.GraphProcessor
                 return null;
             }
         }
+        public List<string> EdgeGUIDS { get { return edgeGUIDs; } }
         public int ConnectionCount { get { return edgeGUIDs.Count; } }
         public bool IsConnected { get { return ConnectionCount != 0; } }
-        public List<string> EdgeGUIDS { get { return edgeGUIDs; } }
 
         public NodePort() { }
 

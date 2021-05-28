@@ -11,7 +11,7 @@ namespace CZToolKit.GraphProcessor.Editors
             base.OnInitialized();
 
             ParameterNode parameterNode = NodeData as ParameterNode;
-            title = parameterNode.Parameter?.Name;
+            title = parameterNode.name;
 
             //PortViews[nameof(parameterNode.output)].tooltip = parameterNode.Parameter.ValueType.Name;
 

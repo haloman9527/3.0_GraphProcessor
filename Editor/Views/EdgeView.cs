@@ -19,10 +19,8 @@ namespace CZToolKit.GraphProcessor.Editors
         }
 
         public bool isConnected = false;
-
-        public SerializableEdge serializedEdge { get { return userData as SerializableEdge; } }
-
-        protected BaseGraphView owner => ((input ?? output) as PortView).Owner.Owner;
+        protected BaseGraphView Owner { get { return ((input ?? output) as PortView).Owner.Owner; } }
+        public SerializableEdge EdgeData { get { return userData as SerializableEdge; } }
 
         public EdgeView() : base()
         {
@@ -65,9 +63,9 @@ namespace CZToolKit.GraphProcessor.Editors
             {
                 var position = e.mousePosition;
                 position += new Vector2(-10f, -28);
-                Vector2 mousePos = owner.ChangeCoordinatesTo(owner.contentViewContainer, position);
-                owner.Disconnect(this);
-                owner.AddRelayNode(input as PortView, output as PortView, mousePos);
+                Vector2 mousePos = Owner.ChangeCoordinatesTo(Owner.contentViewContainer, position);
+                Owner.Disconnect(this);
+                Owner.AddRelayNode(input as PortView, output as PortView, mousePos);
             }
         }
     }

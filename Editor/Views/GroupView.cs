@@ -56,7 +56,7 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             foreach (var nodeGUID in GroupData.innerNodeGUIDs.ToList())
             {
-                if (!Owner.GraphData.NodesGUIDMapping.ContainsKey(nodeGUID)) continue;
+                if (!Owner.Graph.NodesGUIDMapping.ContainsKey(nodeGUID)) continue;
 
                 BaseNodeView nodeView = Owner.NodeViews[nodeGUID];
                 AddElement(nodeView);
@@ -64,7 +64,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
             foreach (var stackGUID in GroupData.innerStackGUIDs.ToList())
             {
-                if (!Owner.GraphData.StackNodesGUIDMapping.ContainsKey(stackGUID)) continue;
+                if (!Owner.Graph.StackNodesGUIDMapping.ContainsKey(stackGUID)) continue;
 
                 var stackView = Owner.StackNodeViews[stackGUID];
                 AddElement(stackView);

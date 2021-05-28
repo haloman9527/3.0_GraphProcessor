@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace CZToolKit.GraphProcessor.Examples
 {
-    [CustomGraphWindow(typeof(MathGraph))]
+    [CustomGraphWindow(typeof(MathGraphAsset))]
     public class MathGraphWindow : BaseGraphWindow
     {
         protected override void OnInitializedWindow()
@@ -11,7 +11,7 @@ namespace CZToolKit.GraphProcessor.Examples
             titleContent = new GUIContent("Examples.Math");
         }
 
-        protected override BaseGraphView InitializeGraphView(BaseGraph _graphData)
+        protected override BaseGraphView InitializeGraphView(BaseGraphAsset _graphData)
         {
             MathGraphView graphView = new MathGraphView();
             graphView.Initialize(this, _graphData);

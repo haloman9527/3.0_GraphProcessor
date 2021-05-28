@@ -25,7 +25,7 @@ namespace CZToolKit.GraphProcessor.Editors
             int i = 0;
             foreach (var nodeGUID in stackNode.nodeGUIDs.ToArray())
             {
-                if (owner.GraphData.NodesGUIDMapping.TryGetValue(nodeGUID, out BaseNode node))
+                if (owner.GraphAsset.Graph.NodesGUIDMapping.TryGetValue(nodeGUID, out BaseNode node))
                 {
                     BaseNodeView nodeView = owner.NodeViews[nodeGUID];
                     nodeView.AddToClassList("stack-child__" + i);

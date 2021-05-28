@@ -22,15 +22,15 @@ namespace CZToolKit.GraphProcessor.Editors
                 if (scriptType != null && (scriptType == typeof(BaseNode) || scriptType.IsSubclassOf(typeof(BaseNode))))
                 {
 
-                    string[] graphGUIDs = AssetDatabase.FindAssets("t:" + typeof(BaseGraph));
+                    string[] graphGUIDs = AssetDatabase.FindAssets("t:" + typeof(BaseGraphAsset));
                     foreach (string graphGUID in graphGUIDs)
                     {
                         string graphPath = AssetDatabase.GUIDToAssetPath(graphGUID);
-                        BaseGraph graphData = AssetDatabase.LoadAssetAtPath<BaseGraph>(graphPath);
-                        foreach (var item in graphData.NodesGUIDMapping.Values.ToArray())
+                        BaseGraphAsset graphAsset = AssetDatabase.LoadAssetAtPath<BaseGraphAsset>(graphPath);
+                        foreach (var item in graphAsset.Graph.NodesGUIDMapping.Values.ToArray())
                         {
                             if (item != null && scriptType == item.GetType())
-                                graphData.RemoveNode(item);
+                                graphAsset.Graph.RemoveNode(item);
                         }
                     }
 
@@ -38,11 +38,11 @@ namespace CZToolKit.GraphProcessor.Editors
                     AssetDatabase.Refresh();
                 }
             }
-            else if (obj is BaseGraph)
+            else if (obj is BaseGraphAsset)
             {
                 if (obj != null)
                 {
-                    foreach (var graphWindow in Resources.FindObjectsOfTypeAll<BaseGraphWindow>().Where(w => w.GraphData == obj))
+                    foreach (var graphWindow in Resources.FindObjectsOfTypeAll<BaseGraphWindow>().Where(w => w.GraphAsset == obj))
                         graphWindow.OnGraphDeleted();
                 }
             }

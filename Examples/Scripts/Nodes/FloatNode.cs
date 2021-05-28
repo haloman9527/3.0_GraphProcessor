@@ -1,6 +1,8 @@
-﻿
+﻿using System;
+
 namespace CZToolKit.GraphProcessor
 {
+    [Serializable]
     [NodeMenuItem("Math", "Float")]
     public class FloatNode : BaseNode
     {

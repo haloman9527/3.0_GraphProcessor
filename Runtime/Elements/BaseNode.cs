@@ -1,6 +1,6 @@
-﻿using UnityEngine;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace CZToolKit.GraphProcessor
 {
@@ -33,6 +33,7 @@ namespace CZToolKit.GraphProcessor
         }
         #endregion
 
+        [NonSerialized]
         BaseGraph owner;
 
         /// <summary> 唯一标识 </summary>
@@ -48,8 +49,9 @@ namespace CZToolKit.GraphProcessor
         [SerializeField, HideInInspector]
         bool locked = false;
         [SerializeField, HideInInspector]
-        NodePortsDictionary ports = new NodePortsDictionary();
+        Dictionary<string, NodePort> ports = new Dictionary<string, NodePort>();
 
+        /// <summary> 节点对象的所有者，即图 </summary>
         public BaseGraph Owner { get { return owner; } }
         public string GUID { get { return guid; } }
         public bool Expanded { get { return expanded; } set { expanded = value; } }
@@ -62,7 +64,7 @@ namespace CZToolKit.GraphProcessor
         public virtual void OnCreated() { }
 
         /// <summary> 请不要在其它任何地方调用 </summary>
-        internal void InitializeOwner(BaseGraph _graph)
+        internal void Initialize(BaseGraph _graph)
         {
             owner = _graph;
             foreach (var port in Ports.Values)

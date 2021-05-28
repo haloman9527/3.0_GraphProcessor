@@ -1,7 +1,10 @@
 ﻿using CZToolKit.Core.SharedVariable;
+using OdinSerializer;
 using System;
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
+
 using UnityObject = UnityEngine.Object;
 
 namespace CZToolKit.GraphProcessor
@@ -11,89 +14,41 @@ namespace CZToolKit.GraphProcessor
         List<SharedVariable> variables = new List<SharedVariable>();
         Dictionary<string, int> sharedVariableIndex;
 
-        public abstract BaseGraph Graph { get; set; }
+        public abstract BaseGraphAsset GraphAsset { get; set; }
+        public abstract BaseGraph Graph { get; }
+        public abstract Type GraphAssetType { get; }
         public abstract Type GraphType { get; }
 
         #region Serialize
 
-        [Serializable]
-        public struct ObjectKV
-        {
-            public string guid;
-            public UnityObject single;
-            public List<UnityObject> multi;
-        }
-
+        [SerializeField]
+        string serializedVariables;
+        [SerializeField]
+        List<UnityObject> unityReference;
         [NonSerialized]
         bool initializedVariables;
-        [SerializeField, HideInInspector]
-        List<JsonElement> serializedVariables = new List<JsonElement>();
-        [SerializeField, HideInInspector]
-        List<ObjectKV> objectsCache = new List<ObjectKV>();
 
         public virtual void OnBeforeSerialize()
         {
             Serialize();
         }
 
-        public virtual void OnAfterDeserialize() { }
+        public virtual void OnAfterDeserialize()
+        {
+            CheckSerialization();
+        }
 
         void Serialize()
         {
-            if (variables.Count == 0) return;
-            if (Application.isPlaying) return;
-            serializedVariables.Clear();
-            objectsCache.Clear();
-            for (int i = 0; i < variables.Count; i++)
-            {
-                SharedVariable variable = variables[i];
-                if (variable == null) continue;
-                serializedVariables.Add(JsonSerializer.SerializeToJsonElement(variable));
-                if (variable is ISharedObject sharedObject)
-                {
-                    ObjectKV kv = new ObjectKV() { guid = variable.GUID, single = sharedObject.GetObject() };
-                    objectsCache.Add(kv);
-                }
-                else if (variable is ISharedObjectList sharedList && typeof(UnityObject).IsAssignableFrom(sharedList.GetElementType()))
-                {
-                    List<UnityObject> objs = new List<UnityObject>();
-                    foreach (var item in sharedList.GetList())
-                    {
-                        objs.Add(item as UnityObject);
-                    }
-                    ObjectKV kv = new ObjectKV() { guid = variable.GUID, multi = objs };
-                    objectsCache.Add(kv);
-                }
-            }
+            //if (variables.Count == 0) return;
+            serializedVariables = Encoding.UTF8.GetString(SerializationUtility.SerializeValue(variables, DataFormat.JSON, out unityReference));
         }
 
         void Deserialize()
         {
-            if (variables == null)
-                variables = new List<SharedVariable>();
-            else
-                variables.Clear();
-            foreach (var serializedVariable in serializedVariables)
-            {
-                SharedVariable variable = JsonSerializer.Deserialize(serializedVariable) as SharedVariable;
-                if (variable == null) continue;
-                variables.Add(variable);
-            }
+            //if (string.IsNullOrEmpty(serializedVariables)) return;
+            variables = SerializationUtility.DeserializeValue<List<SharedVariable>>(Encoding.UTF8.GetBytes(serializedVariables), DataFormat.JSON, unityReference);
             UpdateVariablesIndex();
-
-            foreach (var item in objectsCache)
-            {
-                SharedVariable variable = GetVariable(item.guid);
-                if (variable == null) continue;
-                if (variable is ISharedObject sharedObject)
-                {
-                    sharedObject.SetObject(item.single);
-                }
-                else if (variable is ISharedObjectList sharedList)
-                {
-                    sharedList.FillList(item.multi);
-                }
-            }
         }
 
         void CheckSerialization()
@@ -102,6 +57,7 @@ namespace CZToolKit.GraphProcessor
             initializedVariables = true;
             Deserialize();
         }
+
         #endregion
 
         public UnityObject GetObject()
@@ -184,6 +140,8 @@ namespace CZToolKit.GraphProcessor
             }
         }
 
+
+
         public IReadOnlyList<SharedVariable> GetVariables()
         {
             CheckSerialization();
@@ -197,23 +155,22 @@ namespace CZToolKit.GraphProcessor
         }
     }
 
-    public abstract class GraphOwner<T> : GraphOwner where T : BaseGraph
+    public abstract class GraphOwner<GraphAssetClass, GraphClass> : GraphOwner where GraphAssetClass : BaseGraphAsset<GraphClass> where GraphClass : BaseGraph, new()
     {
         [SerializeField]
-        T graph;
+        GraphAssetClass graphAsset;
 
-        public T TGraph { get { return graph; } set { Graph = value; } }
-        public override BaseGraph Graph
+        public override BaseGraphAsset GraphAsset
         {
-            get { return graph; }
+            get { return graphAsset; }
             set
             {
-                if (graph != value)
+                if (graphAsset != value)
                 {
-                    graph = value as T;
-                    if (graph != null)
+                    graphAsset = value as GraphAssetClass;
+                    if (graphAsset != null)
                     {
-                        foreach (var variable in graph.Variables)
+                        foreach (var variable in graphAsset.Graph.Variables)
                         {
                             if (GetVariable(variable.GUID) == null)
                                 SetVariable(variable.Clone() as SharedVariable);
@@ -222,6 +179,38 @@ namespace CZToolKit.GraphProcessor
                 }
             }
         }
-        public override Type GraphType { get { return typeof(T); } }
+
+        public GraphAssetClass TGraphAsset
+        {
+            get { return graphAsset; }
+            set
+            {
+                GraphAsset = value;
+                if (graphAsset != value)
+                {
+                    graphAsset = value;
+                    if (graphAsset != null)
+                    {
+                        foreach (var variable in GraphAsset.Graph.Variables)
+                        {
+                            if (GetVariable(variable.GUID) == null)
+                                SetVariable(variable.Clone() as SharedVariable);
+                        }
+                    }
+                }
+            }
+        }
+        public override BaseGraph Graph
+        {
+            get { return GraphAsset.Graph; }
+        }
+
+        public GraphClass TGraph
+        {
+            get { return TGraphAsset.TGraph; }
+        }
+
+        public override Type GraphAssetType { get { return typeof(GraphAssetClass); } }
+        public override Type GraphType { get { return typeof(GraphClass); } }
     }
 }

@@ -14,9 +14,10 @@ namespace CZToolKit.GraphProcessor.Editors
     {
         static readonly MethodInfo createFieldMethod = typeof(FieldFactory).GetMethod("CreateFieldSpecific", BindingFlags.Static | BindingFlags.Public);
 
-        public static readonly Dictionary<Type, Func<string, Type, ExposedParameter>> PropertyCreatorMap = new Dictionary<Type, Func<string, Type, ExposedParameter>>();
-        static readonly Dictionary<Type, Type> FieldDrawersCache = new Dictionary<Type, Type>();
-        static readonly Dictionary<Type, Func<Type, VisualElement>> FieldDrawerCreatorMap = new Dictionary<Type, Func<Type, VisualElement>>();
+        static readonly Dictionary<Type, Type> fieldDrawersCache = new Dictionary<Type, Type>();
+        static readonly Dictionary<Type, Func<Type, VisualElement>> fieldDrawerCreatorMap = new Dictionary<Type, Func<Type, VisualElement>>();
+
+        public static IReadOnlyDictionary<Type, Func<Type, VisualElement>> FieldDrawerCreatorMap { get { return fieldDrawerCreatorMap; } }
 
         static FieldFactory()
         {
@@ -82,8 +83,8 @@ namespace CZToolKit.GraphProcessor.Editors
                 return;
             }
 
-            FieldDrawersCache[_fieldType] = _drawerType;
-            FieldDrawerCreatorMap[_fieldType] = _fieldDrawerCreator;
+            fieldDrawersCache[_fieldType] = _drawerType;
+            fieldDrawerCreatorMap[_fieldType] = _fieldDrawerCreator;
         }
 
         static void AddDrawer<F, D>(Func<Type, F> _defaultValueGetter, Func<Type, VisualElement> _fieldDrawerCreator) where D : VisualElement, new()
@@ -91,19 +92,14 @@ namespace CZToolKit.GraphProcessor.Editors
             Type fieldType = typeof(F);
             Type drawerType = typeof(D);
 
-            PropertyCreatorMap[fieldType] = (name, realType) =>
-            {
-                return new ExposedParameter(name, _defaultValueGetter(realType), fieldType);
-            };
-
-            FieldDrawersCache[fieldType] = drawerType;
-            FieldDrawerCreatorMap[fieldType] = _fieldDrawerCreator;
+            fieldDrawersCache[fieldType] = drawerType;
+            fieldDrawerCreatorMap[fieldType] = _fieldDrawerCreator;
         }
 
         public static INotifyValueChanged<F> CreateFieldSpecific<F>(string _label, F _value, Type _realFieldType, Action<object> _onValueChanged)
         {
             INotifyValueChanged<F> fieldDrawer = null;
-            if (FieldDrawerCreatorMap.TryGetValue(typeof(F), out Func<Type, VisualElement> drawerCreator))
+            if (fieldDrawerCreatorMap.TryGetValue(typeof(F), out Func<Type, VisualElement> drawerCreator))
                 fieldDrawer = drawerCreator(_realFieldType) as INotifyValueChanged<F>;
 
             if (fieldDrawer == null)
@@ -130,11 +126,11 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             Type realFieldType = _fieldType;
 
-            if (!FieldDrawerCreatorMap.ContainsKey(_fieldType))
+            if (!fieldDrawerCreatorMap.ContainsKey(_fieldType))
             {
                 if (typeof(UnityEngine.Object).IsAssignableFrom(_fieldType))
                     _fieldType = typeof(UnityEngine.Object);
-                else if (typeof(Enum).IsAssignableFrom(_fieldType) && !FieldDrawerCreatorMap.ContainsKey(_fieldType))
+                else if (typeof(Enum).IsAssignableFrom(_fieldType) && !fieldDrawerCreatorMap.ContainsKey(_fieldType))
                     _fieldType = typeof(Enum);
             }
 

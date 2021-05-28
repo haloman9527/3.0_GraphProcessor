@@ -1,3 +1,5 @@
+using CZToolKit.Core;
+using CZToolKit.Core.Blackboards;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
@@ -28,92 +30,99 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             if (string.IsNullOrEmpty(_newName)) return;
             BlackboardField blackboardField = _field as BlackboardField;
-            string oldParamName = blackboardField.text;
-            if (!GraphView.GraphData.RenameExposeParameter(oldParamName, _newName))
+            string oldName = blackboardField.text;
+            if (!GraphView.Graph.Blackboard.Rename(oldName, _newName))
                 return;
             blackboardField.text = _newName;
 
-            GraphView.GraphData.TryGetExposedParameterFromName(_newName, out ExposedParameter param);
+            //GraphView.Graph.Blackboard.GUIDMap.TryGetValue(_newName, out string guid);
             foreach (var item in GraphView.NodeViews.Values.OfType<ParameterNodeView>())
             {
-                if ((item.NodeData as ParameterNode).paramGUID == param.GUID)
-                    item.title = param.Name;
+                if ((item.NodeData as ParameterNode).name == oldName)
+                {
+                    (item.NodeData as ParameterNode).name = _newName;
+                    item.title = _newName;
+                }
             }
         }
 
         protected virtual void OnAddClicked(Blackboard t)
         {
-            GenericMenu parameterTypes = new GenericMenu();
+            GenericMenu menu = new GenericMenu();
 
-            foreach (var valueType in FieldFactory.PropertyCreatorMap.Keys)
+            foreach (var dataType in CZTypeFactory.TypeCreator.Keys)
             {
-                parameterTypes.AddItem(new GUIContent(valueType.Name), false, () =>
+                Type valueType = Utility.GetFieldInfo(dataType, "value").FieldType;
+                if (!typeof(UnityEngine.Object).IsAssignableFrom(valueType) && !FieldFactory.FieldDrawerCreatorMap.ContainsKey(valueType))
+                    continue;
+                menu.AddItem(new GUIContent(dataType.Name), false, () =>
                 {
-                    string rawName = "New " + valueType.Name + "Param";
+                    string rawName = "New " + dataType.Name + "Param";
                     string name = rawName;
 
                     int i = 0;
-                    while (GraphView.GraphData.TryGetExposedParameterFromName(name, out ExposedParameter param))
+                    while (GraphView.Graph.Blackboard.TryGetData(name, out ICZType param))
                     {
                         name = rawName + " " + i++;
                     }
-                    AddParam(name, valueType);
+                    AddParam(name, dataType);
                 });
             }
 
-            parameterTypes.ShowAsContext();
+            menu.ShowAsContext();
         }
 
 
-        public void AddParam(string _name, Type _valueType)
+        public void AddParam(string _name, Type _dataType)
         {
-            if (FieldFactory.PropertyCreatorMap.TryGetValue(_valueType, out Func<string, Type, ExposedParameter> creator))
+            if (CZTypeFactory.TypeCreator.TryGetValue(_dataType, out Func<ICZType> creator))
             {
-                ExposedParameter property = creator(_name, _valueType);
-                GraphView.GraphData.AddExposedParameter(property);
-                AddParamField(property);
+                ICZType data = creator();
+                GraphView.Graph.Blackboard.SetData(_name, data);
+                fields[_name] = AddParamField(_name, data);
             }
         }
 
-        public VisualElement AddParamField(ExposedParameter _param)
+        public VisualElement AddParamField(string _name, ICZType _data)
         {
             VisualElement property = new VisualElement();
-            BlackboardField blackboardField = new BlackboardField() { text = _param.Name, typeText = _param.ValueType.Name, userData = _param };
+            BlackboardField blackboardField = new BlackboardField() { text = _name, typeText = _data.ValueType.Name, userData = _data };
             property.Add(blackboardField);
 
-            VisualElement fieldDrawer = FieldFactory.CreateField("", _param.ValueType, _param.Value, _newValue =>
+            VisualElement fieldDrawer = FieldFactory.CreateField("", _data.ValueType, _data.GetValue(), _newValue =>
              {
-                 _param.Value = _newValue;
-                 if (_param.Value != null)
-                     blackboardField.typeText = _param.Value.GetType().Name;
+                 _data.SetValue(_newValue);
+                 if (_data.GetValue() != null)
+                     blackboardField.typeText = _data.ValueType.Name;
              });
             BlackboardRow blackboardRow = new BlackboardRow(blackboardField, fieldDrawer);
             property.Add(blackboardRow);
             contentContainer.Add(property);
-            fields[_param.GUID] = property;
             return property;
         }
 
         public void RemoveField(BlackboardField blackboardField)
         {
-            ExposedParameter param = blackboardField.userData as ExposedParameter;
-            contentContainer.Remove(fields[param.GUID]);
+            //ICZType param = blackboardField.userData as ExposedParameter;
+            contentContainer.Remove(fields[blackboardField.text]);
+            fields.Remove(blackboardField.text);
         }
 
         public override void UpdatePresenterPosition()
         {
             base.UpdatePresenterPosition();
             GraphView.RegisterCompleteObjectUndo("Modify ExposedParameterView");
-            GraphView.GraphData.blackboardPosition = GetPosition();
+            GraphView.Graph.blackboardPosition = GetPosition();
             GraphView.SetDirty();
         }
 
         protected virtual void UpdateParameterList()
         {
             contentContainer.Clear();
-            foreach (var param in GraphView.GraphData.Blackboard)
+            foreach (var kv in GraphView.Graph.Blackboard.GUIDMap)
             {
-                AddParamField(param.Value);
+                if (GraphView.Graph.Blackboard.TryGetData(kv.Key, out ICZType data))
+                    fields[kv.Key] = AddParamField(kv.Key, data);
             }
         }
     }

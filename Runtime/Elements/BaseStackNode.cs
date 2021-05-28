@@ -7,7 +7,8 @@ namespace CZToolKit.GraphProcessor
     [Serializable]
     public class BaseStackNode
     {
-        [SerializeField] string guid;
+        [SerializeField] 
+        string guid;
         public Vector2 position;
         public string title = "New Stack";
         public List<string> nodeGUIDs = new List<string>();

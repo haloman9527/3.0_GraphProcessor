@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CZToolKit.Core.Blackboards;
+using System;
 using UnityEngine;
 
 namespace CZToolKit.GraphProcessor
@@ -15,16 +16,16 @@ namespace CZToolKit.GraphProcessor
         public object output;
 
         [HideInInspector]
-        public string paramGUID;
+        public string name;
 
-        public ExposedParameter Parameter
+        public ICZType Parameter
         {
-            get { return Owner.TryGetExposedParameterFromGUID(paramGUID, out ExposedParameter param) ? param : null; }
+            get { return Owner.Blackboard.TryGetData(name, out ICZType param) ? param : null; }
         }
 
         public override bool GetValue<T>(NodePort _port, ref T _value)
         {
-            if (Parameter.Value is T tValue)
+            if (Parameter.GetValue() is T tValue)
             {
                 _value = tValue;
                 return true;
@@ -34,7 +35,7 @@ namespace CZToolKit.GraphProcessor
 
         public override Type PortDynamicType(string _portName)
         {
-            if (_portName == nameof(output) && Parameter?.ValueType != null)
+            if (_portName == nameof(output) && Parameter != null)
                 return Parameter.ValueType;
             return null;
         }

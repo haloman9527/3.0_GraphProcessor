@@ -13,18 +13,18 @@ namespace CZToolKit.GraphProcessor.Editors
         #region 静态
         public static void Open(GraphOwner _graphOwner)
         {
-            BaseGraphWindow window = LoadGraph(_graphOwner.Graph);
+            BaseGraphWindow window = LoadGraph(_graphOwner.GraphAsset);
             if (window != null)
             {
                 window.GraphOwner = _graphOwner;
-                window.GraphOwner.Graph.InitializePropertyMapping(_graphOwner);
+                window.GraphOwner.GraphAsset.Graph.InitializePropertyMapping(_graphOwner);
             }
         }
 
         [OnOpenAsset(0)]
         public static bool OnGraphOpened(int instanceID, int line)
         {
-            var graph = EditorUtility.InstanceIDToObject(instanceID) as BaseGraph;
+            var graph = EditorUtility.InstanceIDToObject(instanceID) as BaseGraphAsset;
 
             if (graph != null)
             {
@@ -35,10 +35,10 @@ namespace CZToolKit.GraphProcessor.Editors
             return false;
         }
 
-        public static BaseGraphWindow LoadGraph(BaseGraph _graphData)
+        public static BaseGraphWindow LoadGraph(BaseGraphAsset _graphAsset)
         {
-            if (_graphData == null) return null;
-            Type type = NodeEditorUtility.GetGraphWindowType(_graphData.GetType());
+            if (_graphAsset == null) return null;
+            Type type = NodeEditorUtility.GetGraphWindowType(_graphAsset.GetType());
 
             UnityEngine.Object[] objs = Resources.FindObjectsOfTypeAll(type);
             BaseGraphWindow window = null;
@@ -55,18 +55,18 @@ namespace CZToolKit.GraphProcessor.Editors
             {
                 window = CreateInstance(type) as BaseGraphWindow;
                 window.Show();
-                window.LoadGraphInternal(_graphData);
+                window.LoadGraphInternal(_graphAsset);
             }
             else
             {
                 window.Focus();
-                if (window.GraphData != _graphData)
-                    window.LoadGraphInternal(_graphData);
+                if (window.GraphAsset != _graphAsset)
+                    window.LoadGraphInternal(_graphAsset);
             }
             return window;
         }
 
-        public static BaseGraphWindow GetWindow(BaseGraph _graphData)
+        public static BaseGraphWindow GetWindow(BaseGraphAsset _graphData)
         {
             Type type = NodeEditorUtility.GetGraphWindowType(_graphData.GetType());
 
@@ -94,14 +94,15 @@ namespace CZToolKit.GraphProcessor.Editors
         [SerializeField]
         int graphOwnerInstanceID;
         [SerializeField]
-        BaseGraph graphData;
+        BaseGraphAsset graphData;
 
         public GraphOwner GraphOwner
         {
             get { return graphOwner; }
             private set { graphOwner = value; if (graphOwner != null) graphOwnerInstanceID = graphOwner.GetInstanceID(); }
         }
-        public BaseGraph GraphData { get { return graphData; } private set { graphData = value; } }
+        public BaseGraphAsset GraphAsset { get { return graphData; } private set { graphData = value; } }
+        public BaseGraph Graph { get { return GraphAsset.Graph; } }
         public BaseGraphView GraphView { get { return graphView; } private set { graphView = value; } }
         public ToolbarView Toolbar { get { return toolbar; } private set { toolbar = value; } }
 
@@ -116,7 +117,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
             GraphOwner = EditorUtility.InstanceIDToObject(graphOwnerInstanceID) as GraphOwner;
 
-            if (GraphView == null && GraphData != null)
+            if (GraphView == null && GraphAsset != null)
                 EditorApplication.delayCall += ReloadGraph;
         }
 
@@ -150,7 +151,7 @@ namespace CZToolKit.GraphProcessor.Editors
             EditorApplication.playModeStateChanged -= OnPlayModeChanged;
         }
 
-        void LoadGraphInternal(BaseGraph _graphData)
+        void LoadGraphInternal(BaseGraphAsset _graphData)
         {
             if (GraphView != null)
                 GraphView.SaveGraphToDisk();
@@ -176,16 +177,16 @@ namespace CZToolKit.GraphProcessor.Editors
             GraphOwner = null;
         }
 
-        void InitializeWindow(BaseGraph _graphData)
+        void InitializeWindow(BaseGraphAsset _graphData)
         {
-            GraphData = _graphData;
+            GraphAsset = _graphData;
             Toolbar = new ToolbarView(this);
             rootVisualElement.Add(toolbar);
-            if (GraphData == null) return;
+            if (GraphAsset == null) return;
             GraphView = InitializeGraphView(_graphData);
             if (GraphView == null) return;
 
-            Toolbar.AddButton("Show In Project", () => EditorGUIUtility.PingObject(GraphView.GraphData), false);
+            Toolbar.AddButton("Show In Project", () => EditorGUIUtility.PingObject(GraphView.GraphAsset), false);
             Toolbar.AddButton("Save Assets", () => { GraphView.SaveGraphToDisk(true); }, false);
             Toolbar.AddButton("Reload", ReloadGraph, false);
 
@@ -197,10 +198,10 @@ namespace CZToolKit.GraphProcessor.Editors
             OnInitializedWindow();
         }
 
-        protected virtual BaseGraphView InitializeGraphView(BaseGraph _graphData)
+        protected virtual BaseGraphView InitializeGraphView(BaseGraphAsset _graphAsset)
         {
             BaseGraphView graphView = new BaseGraphView();
-            GraphView.Initialize(this, _graphData);
+            GraphView.Initialize(this, _graphAsset);
             return graphView;
         }
 
@@ -209,17 +210,17 @@ namespace CZToolKit.GraphProcessor.Editors
         void ReloadGraph()
         {
             GraphOwner owner = GraphOwner;
-            LoadGraphInternal(GraphData);
+            LoadGraphInternal(GraphAsset);
             GraphOwner = owner;
-            if (GraphData != null && GraphOwner != null)
-                GraphData.InitializePropertyMapping(GraphOwner);
+            if (Graph != null && GraphOwner != null)
+                Graph.InitializePropertyMapping(GraphOwner);
         }
 
         protected virtual void OnDestroy()
         {
             if (Selection.activeObject is ObjectInspector objectInspector
                 && objectInspector.TargetObject is BaseNode node
-                && node.Owner == GraphData)
+                && node.Owner.Owner == GraphAsset)
             {
                 Selection.activeObject = null;
             }
