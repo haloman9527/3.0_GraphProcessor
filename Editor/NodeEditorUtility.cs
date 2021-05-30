@@ -66,7 +66,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
         static Dictionary<Type, Type> StackNodeViewTypeCache;
 
-        public static Type GetStackNodeCustomViewType(Type stackNodeType)
+        public static Type GetStackNodeCustomViewType(Type _stackNodeType)
         {
             if (StackNodeViewTypeCache == null)
             {
@@ -77,10 +77,32 @@ namespace CZToolKit.GraphProcessor.Editors
                         StackNodeViewTypeCache[attri.NodeType] = t;
                 }
             }
-            if (StackNodeViewTypeCache.TryGetValue(stackNodeType, out Type stackNodeViewType))
+            if (StackNodeViewTypeCache.TryGetValue(_stackNodeType, out Type stackNodeViewType))
                 return stackNodeViewType;
             return typeof(BaseStackNodeView);
         }
+        #endregion
+
+        #region ParameterNodeViewCache
+
+        static Dictionary<Type, Type> ParameterNodeViewCache;
+
+        public static Type GetParameterNodeCustomViewType(Type _parameterType)
+        {
+            if (ParameterNodeViewCache == null)
+            {
+                ParameterNodeViewCache = new Dictionary<Type, Type>();
+                foreach (var t in TypeCache.GetTypesWithAttribute<CustomParameterNodeViewAttribute>())
+                {
+                    if (Utility.TryGetTypeAttribute(t, out CustomParameterNodeViewAttribute attri))
+                        ParameterNodeViewCache[attri.targetType] = t;
+                }
+            }
+            if (ParameterNodeViewCache.TryGetValue(_parameterType, out Type parameterNodeViewType))
+                return parameterNodeViewType;
+            return typeof(ParameterNodeView);
+        }
+
         #endregion
 
         #region NodeNames
@@ -99,6 +121,8 @@ namespace CZToolKit.GraphProcessor.Editors
             return ObjectNames.NicifyVariableName(_fieldName);
         }
         #endregion
+
+
 
         public static MonoScript FindScriptFromType(Type _type)
         {

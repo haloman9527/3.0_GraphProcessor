@@ -127,7 +127,7 @@ namespace CZToolKit.GraphProcessor
 
         public void Execute(params object[] _params)
         {
-            Owner.Execute(this);
+            Owner.Execute(this, _params);
         }
 
         public IEnumerable<NodePort> GetConnections()

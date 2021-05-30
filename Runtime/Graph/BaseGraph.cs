@@ -75,12 +75,16 @@ namespace CZToolKit.GraphProcessor
         {
             // 保存_owner的引用
             owner = _owner;
+            if (blackboard == null)
+                blackboard = new CZBlackboard();
+            else
+                blackboard.Fixed();
             // 初始化所有Node
             Flush();
             CollectionVariables();
         }
 
-        public virtual void Initialize(GraphOwner _graphOwner)
+        public virtual void Initialize(GraphAssetOwner _graphOwner)
         {
             InitializePropertyMapping(_graphOwner);
         }

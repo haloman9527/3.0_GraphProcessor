@@ -5,8 +5,8 @@ using UnityEngine;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
-    [CustomEditor(typeof(GraphOwner), true)]
-    public class GraphOwnerEditor : BasicEditor
+    [CustomEditor(typeof(GraphAssetOwner), true)]
+    public class GraphAssetOwnerEditor : BasicEditor
     {
         GUIContent graphContent;
         protected override void OnEnable()
@@ -28,10 +28,10 @@ namespace CZToolKit.GraphProcessor.Editors
             RegisterDrawer("graphAsset", property =>
             {
                 EditorGUILayout.BeginHorizontal();
-                GraphOwner owner = target as GraphOwner;
-                owner.GraphAsset = EditorGUILayout.ObjectField(graphContent, (target as GraphOwner).GraphAsset, owner.GraphAssetType, false) as BaseGraphAsset;
+                GraphAssetOwner owner = target as GraphAssetOwner;
+                owner.GraphAsset = EditorGUILayout.ObjectField(graphContent, (target as GraphAssetOwner).GraphAsset, owner.GraphAssetType, false) as BaseGraphAsset;
                 if (GUILayout.Button("Open", GUILayout.Width(50)))
-                    BaseGraphWindow.Open(target as GraphOwner);
+                    BaseGraphWindow.Open(target as GraphAssetOwner);
                 EditorGUILayout.EndHorizontal();
             });
         }

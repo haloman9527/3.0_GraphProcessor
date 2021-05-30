@@ -62,6 +62,10 @@ PortView.Port_Gradient {
 	--port-color: #FFFF99;
 }
 
+PortView.Port_Texture2D {
+	--port-color: #FF006B;
+}
+
 PortView.Port_LayerMask {
 	--port-color: #FFDD77;
 }

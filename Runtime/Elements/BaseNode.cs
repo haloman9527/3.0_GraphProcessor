@@ -73,10 +73,10 @@ namespace CZToolKit.GraphProcessor
             }
         }
 
-        public virtual void InitializeGraphOwner(GraphOwner _graphOwner) { }
+        public virtual void InitializeGraphOwner(GraphAssetOwner _graphOwner) { }
 
         #region Ports
-        /// <summary> 通过名字获取一个Input接口 </summary>
+        /// <summary> 通过字段名获取一个本地Input接口 </summary>
         public bool TryGetInputPort(string _fieldName, out NodePort _nodePort)
         {
             if (TryGetPort(_fieldName, out _nodePort) && _nodePort.Direction == PortDirection.Input)
@@ -85,7 +85,7 @@ namespace CZToolKit.GraphProcessor
             return false;
         }
 
-        /// <summary> 通过名字获取一个Output接口 </summary>
+        /// <summary> 通过字段名获取一个本地Output接口 </summary>
         public bool TryGetOutputPort(string _fieldName, out NodePort _nodePort)
         {
             if (TryGetPort(_fieldName, out _nodePort) && _nodePort.Direction == PortDirection.Output)
@@ -94,14 +94,14 @@ namespace CZToolKit.GraphProcessor
             return false;
         }
 
-        /// <summary> 通过名字获取一个接口 </summary>
+        /// <summary> 通过字段名获取一个本地接口 </summary>
         public bool TryGetPort(string _fieldName, out NodePort _nodePort)
         {
             if (Ports.TryGetValue(_fieldName, out _nodePort)) return true;
             else return false;
         }
 
-        /// <summary> 接口是否存在 </summary>
+        /// <summary> 本地接口是否存在 </summary>
         public bool HasPort(string _fieldName)
         {
             return Ports.ContainsKey(_fieldName);
@@ -110,6 +110,12 @@ namespace CZToolKit.GraphProcessor
         #endregion
 
         #region Inputs/Outputs
+        /// <summary> 通过字段名获取本地Input接口连接的远程接口的返回值 </summary>
+        /// <typeparam name="T"> 目标返回值类型 </typeparam>
+        /// <param name="_fieldName"></param>
+        /// <param name="_value"></param>
+        /// <param name="_fallback"></param>
+        /// <returns></returns>
         public bool TryGetInputValue<T>(string _fieldName, out T _value, T _fallback = default)
         {
             _value = _fallback;
@@ -118,6 +124,12 @@ namespace CZToolKit.GraphProcessor
             return false;
         }
 
+        /// <summary> 通过字段名获取本地Output接口连接的远程接口的返回值 </summary>
+        /// <typeparam name="T"> 目标返回值类型 </typeparam>
+        /// <param name="_fieldName"></param>
+        /// <param name="_value"></param>
+        /// <param name="_fallback"></param>
+        /// <returns></returns>
         public bool TryGetOutputValue<T>(string _fieldName, out T _value, T _fallback = default)
         {
             _value = _fallback;
@@ -126,6 +138,12 @@ namespace CZToolKit.GraphProcessor
             return false;
         }
 
+        /// <summary> 通过字段名获取本地接口连接的远程接口的返回值 </summary>
+        /// <typeparam name="T"> 目标返回值类型 </typeparam>
+        /// <param name="_fieldName"></param>
+        /// <param name="_value"></param>
+        /// <param name="_fallback"></param>
+        /// <returns></returns>
         public bool TryGetConnectValue<T>(string _fieldName, out T _value, T _fallback = default)
         {
             _value = _fallback;
@@ -134,23 +152,24 @@ namespace CZToolKit.GraphProcessor
             return false;
         }
 
-        /// <summary> 通过input或output接口返回相应的值(此方法从外部调用，不在内部使用，仅重写) </summary>
+        /// <summary> 向本地接口连接的远程接口返回一个值(override) </summary>
         public virtual bool GetValue<T>(NodePort _port, ref T _value)
         {
             Debug.LogWarning("No GetValue(NodePort port) override defined for " + GetType());
             return false;
         }
 
-        /// <summary> 从外部调用 </summary>
+        /// <summary> 执行节点逻辑，指定接口和参数(可判断接口执行相应逻辑) </summary>
         public virtual void Execute(NodePort _port, params object[] _params) { }
 
-        /// <summary> 调用端口连接的Execute方法 </summary>
+        /// <summary> 通过字段名执行本地接口连接的远程接口的<see cref="Execute(NodePort, object[])"/>方法 </summary>
         public void ExecuteConnections(string _portName, params object[] _params)
         {
             if (TryGetPort(_portName, out NodePort port))
                 ExecuteConnections(port, _params);
         }
 
+        /// <summary> 执行本地接口连接的远程接口的<see cref="Execute(NodePort, object[])"/>方法 </summary>
         public void ExecuteConnections(NodePort _port, params object[] _params)
         {
             foreach (var targetPort in _port.GetConnections())
@@ -158,23 +177,30 @@ namespace CZToolKit.GraphProcessor
                 targetPort.Execute(_params);
             }
         }
-        #endregion
 
+        #endregion
+        /// <summary> 在接口连接时触发 </summary>
+        /// <param name="_port"> 本地接口 </param>
+        /// <param name="_targetPort"> 目标接口 </param>
         public virtual void OnConnected(NodePort _port, NodePort _targetPort) { }
 
+        /// <summary> 在接口断开连接时触发 </summary>
+        /// <param name="_port"> 本地接口 </param>
+        /// <param name="_targetPort"> 目标接口 </param>
         public virtual void OnDisconnected(NodePort _port, NodePort _targetPort) { }
 
-        /// <summary> 接口动态类型 </summary>
+        /// <summary> 动态返回接口类型 </summary>
         public virtual Type PortDynamicType(string _portName) { return null; }
 
-        public virtual void DrawGizmos(GraphOwner _graphOwner) { }
-
-        public void ClearConnections()
+        /// <summary> 清理连接(不通知) </summary>
+        public void ClearConnectionsWithoutNotification()
         {
             foreach (var port in Ports.Values)
             {
                 port.EdgeGUIDS.Clear();
             }
         }
+
+        public virtual void DrawGizmos(GraphAssetOwner _graphOwner) { }
     }
 }

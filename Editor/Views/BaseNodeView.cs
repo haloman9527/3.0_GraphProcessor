@@ -19,7 +19,6 @@ namespace CZToolKit.GraphProcessor.Editors
         const string BaseNodeViewStyleFile = "GraphProcessor/Styles/BaseNodeView";
         const string PortViewTypesFile = "GraphProcessor/Styles/PortViewTypes";
 
-        static Dictionary<Type, FieldInfo[]> NodeDataTypeFieldInfoDic = new Dictionary<Type, FieldInfo[]>();
         static StyleSheet baseNodeViewStyle;
         static StyleSheet portViewTypesStyle;
 
@@ -42,6 +41,7 @@ namespace CZToolKit.GraphProcessor.Editors
             }
         }
         #endregion
+
         Label titleLabel;
 
         [NonSerialized] List<IconBadge> badges = new List<IconBadge>();
@@ -75,17 +75,9 @@ namespace CZToolKit.GraphProcessor.Editors
         public BaseNode NodeData { get; private set; }
         public Type NodeDataType { get; private set; }
         public Dictionary<string, PortView> PortViews { get; private set; } = new Dictionary<string, PortView>();
-        protected FieldInfo[] NodeDataTypeFieldInfos
+        protected List<FieldInfo> NodeDataTypeFieldInfos
         {
-            get
-            {
-                if (!NodeDataTypeFieldInfoDic.TryGetValue(NodeDataType, out FieldInfo[] fieldInfos))
-                {
-                    fieldInfos = NodeDataType.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly);
-                    NodeDataTypeFieldInfoDic[NodeDataType] = fieldInfos;
-                }
-                return fieldInfos;
-            }
+            get { return Utility.GetFieldInfos(NodeDataType); }
         }
 
         #region  Initialization
@@ -128,8 +120,10 @@ namespace CZToolKit.GraphProcessor.Editors
                     inputContainerElement.Add(box);
                 }
             }
-
-            OnInitialized();
+            if (!Owner.Initialized)
+                Owner.OnInitializeCompleted += OnInitialized;
+            else
+                OnInitialized();
             Initialized = true;
         }
 
@@ -237,11 +231,121 @@ namespace CZToolKit.GraphProcessor.Editors
                 PortViews[nodePort.Key] = portView;
             }
         }
-
-
         #endregion
 
         #region API
+
+        #region Ports
+        /// <summary> 通过名字获取一个Input接口 </summary>
+        public bool TryGetInputPort(string _fieldName, out PortView _portView)
+        {
+            if (TryGetPort(_fieldName, out _portView) && _portView.PortData.Direction == PortDirection.Input)
+                return true;
+            _portView = null;
+            return false;
+        }
+
+        /// <summary> 通过名字获取一个Output接口 </summary>
+        public bool TryGetOutputPort(string _fieldName, out PortView _portView)
+        {
+            if (TryGetPort(_fieldName, out _portView) && _portView.PortData.Direction == PortDirection.Output)
+                return true;
+            _portView = null;
+            return false;
+        }
+
+        /// <summary> 通过名字获取一个接口 </summary>
+        public bool TryGetPort(string _fieldName, out PortView _portView)
+        {
+            if (PortViews.TryGetValue(_fieldName, out _portView)) return true;
+            else return false;
+        }
+
+        /// <summary> 接口是否存在 </summary>
+        public bool HasPort(string _fieldName)
+        {
+            return PortViews.ContainsKey(_fieldName);
+        }
+
+        #endregion
+
+        /// <summary> 调用端口连接的Execute方法 </summary>
+        public void ExecuteConnections(string _portName, params object[] _params)
+        {
+            if (TryGetPort(_portName, out PortView _portView))
+                ExecuteConnections(_portView, _params);
+        }
+
+        public void ExecuteConnections(PortView _portView, params object[] _params)
+        {
+            foreach (var targetPort in _portView.GetConnections())
+            {
+                targetPort.Execute(_params);
+            }
+        }
+
+        /// <summary> 通过字段名获取本地Input接口连接的远程接口的返回值 </summary>
+        /// <typeparam name="T"> 目标返回值类型 </typeparam>
+        /// <param name="_fieldName"></param>
+        /// <param name="_value"></param>
+        /// <param name="_fallback"></param>
+        /// <returns></returns>
+        public bool TryGetInputValue<T>(string _fieldName, out T _value, T _fallback = default)
+        {
+            _value = _fallback;
+            if (TryGetInputPort(_fieldName, out PortView portView))
+                return portView.TryGetConnectValue(ref _value);
+            return false;
+        }
+
+        /// <summary> 通过字段名获取本地Output接口连接的远程接口的返回值 </summary>
+        /// <typeparam name="T"> 目标返回值类型 </typeparam>
+        /// <param name="_fieldName"></param>
+        /// <param name="_value"></param>
+        /// <param name="_fallback"></param>
+        /// <returns></returns>
+        public bool TryGetOutputValue<T>(string _fieldName, out T _value, T _fallback = default)
+        {
+            _value = _fallback;
+            if (TryGetOutputPort(_fieldName, out PortView portView))
+                return portView.TryGetConnectValue(ref _value);
+            return false;
+        }
+
+        /// <summary> 通过字段名获取本地接口连接的远程接口的返回值 </summary>
+        /// <typeparam name="T"> 目标返回值类型 </typeparam>
+        /// <param name="_fieldName"></param>
+        /// <param name="_value"></param>
+        /// <param name="_fallback"></param>
+        /// <returns></returns>
+        public bool TryGetConnectValue<T>(string _fieldName, out T _value, T _fallback = default)
+        {
+            _value = _fallback;
+            if (TryGetPort(_fieldName, out PortView portView))
+                return portView.TryGetConnectValue(ref _value);
+            return false;
+        }
+
+        /// <summary> 通过input或output接口返回相应的值(此方法从外部调用，不在内部使用，仅重写) </summary>
+        public bool GetValue<T>(PortView _portView, ref T _value)
+        {
+            bool result = NodeData.GetValue(_portView.PortData, ref _value);
+            AfterGetValue(_portView);
+            return result;
+        }
+
+        /// <summary> 返回数据之后触发 </summary>
+        protected virtual void AfterGetValue(PortView _portView) { }
+
+        /// <summary> 执行节点逻辑 </summary>
+        public void Execute(PortView _portView, params object[] _params)
+        {
+            NodeData.Execute(_portView.PortData, _params);
+            AfterExecuted(_portView, _params);
+        }
+
+        /// <summary> 执行节点逻辑之后触发 </summary>
+        protected virtual void AfterExecuted(PortView _portView, params object[] _params) { }
 
         public void SetDeletable(bool deletable)
         {
@@ -357,9 +461,8 @@ namespace CZToolKit.GraphProcessor.Editors
                 if (isInputPort)
                 {
                     hideElementIfConnected[fieldInfo.Name] = elem;
-
                     if (PortViews.TryGetValue(fieldInfo.Name, out var pv))
-                        if (pv.Edges.Count > 0)
+                        if (pv.connected)
                             elem.style.display = DisplayStyle.None;
                 }
             }

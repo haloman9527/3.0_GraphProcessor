@@ -31,7 +31,6 @@ namespace CZToolKit.GraphProcessor.Editors
 
             portView.m_EdgeConnector = new BaseEdgeConnector(_edgeConnectorListener);
             portView.AddManipulator(portView.m_EdgeConnector);
-
             var portLabel = portView.Q("type");
             if (portLabel != null)
             {
@@ -73,23 +72,31 @@ namespace CZToolKit.GraphProcessor.Editors
             return portView;
         }
 
-
         public int size;
-        NodePort portData;
-        protected BaseEdgeConnectorListener listener;
-
         public BaseNodeView Owner { get; private set; }
-        public NodePort PortData { get { return portData; } }
-        public string FieldName { get { return portData.FieldName; } }
-        public List<EdgeView> Edges { get; } = new List<EdgeView>();
+        public NodePort PortData { get; private set; }
+        public string FieldName { get { return PortData.FieldName; } }
+        protected BaseEdgeConnectorListener Listener { get; set; }
+        public PortView Connection
+        {
+            get
+            {
+                foreach (var edgeView in connections)
+                {
+                    return (direction == Direction.Input ? edgeView.output : edgeView.input) as PortView;
+                }
+                return null;
+            }
+        }
 
         public Action onConnected, onDisconnected;
 
         PortView(Orientation _orientation, Direction _direction, NodePort _portData, BaseEdgeConnectorListener edgeConnectorListener)
             : base(_orientation, _direction, _portData.IsMulti ? Capacity.Multi : Capacity.Single, _portData.DisplayType)
         {
-            portData = _portData;
-            listener = edgeConnectorListener;
+            PortData = _portData;
+            Listener = edgeConnectorListener;
+            portName = PortData.FieldName;
 
             if (_orientation == Orientation.Vertical)
                 AddToClassList("Vertical");
@@ -100,8 +107,9 @@ namespace CZToolKit.GraphProcessor.Editors
         PortView(Orientation _orientation, Direction _direction, NodePort _portData, Type _displayType, BaseEdgeConnectorListener edgeConnectorListener)
             : base(_orientation, _direction, _portData.IsMulti ? Capacity.Multi : Capacity.Single, _displayType)
         {
-            portData = _portData;
-            listener = edgeConnectorListener;
+            PortData = _portData;
+            Listener = edgeConnectorListener;
+            portName = PortData.FieldName;
 
             if (_orientation == Orientation.Vertical)
                 AddToClassList("Vertical");
@@ -109,7 +117,7 @@ namespace CZToolKit.GraphProcessor.Editors
             UpdatePortSize();
         }
 
-        public virtual void Initialize(BaseNodeView _nodeView)
+        public void Initialize(BaseNodeView _nodeView)
         {
             styleSheets.Add(PortViewStyle);
 
@@ -130,31 +138,53 @@ namespace CZToolKit.GraphProcessor.Editors
 
             AddToClassList(FieldName);
             visualClass = "Port_" + portType.Name;
+            if (Owner.Owner.Initialized)
+                OnInitialized();
+            else
+                Owner.Owner.OnInitializeCompleted += OnInitialized;
         }
 
-        /// <summary> Update the size of the port view (using the portData.sizeInPixel property) </summary>
-        public void UpdatePortSize()
+        protected virtual void OnInitialized() { }
+
+        #region API
+        public IEnumerable<PortView> GetConnections()
         {
-            if (Utility.TryGetFieldAttribute(PortData.Owner.GetType(), PortData.FieldName, out PortSizeAttribute portSizeAttribute))
-                size = portSizeAttribute.size;
+            if (direction == Direction.Input)
+            {
+                foreach (Edge edgeView in connections)
+                {
+                    yield return edgeView.output as PortView;
+                }
+            }
             else
-                size = DefaultPortSize;
+            {
+                foreach (Edge edgeView in connections)
+                {
+                    yield return edgeView.input as PortView;
+                }
+            }
+        }
 
-            var connector = this.Q("connector");
-            var cap = connector.Q("cap");
-            connector.style.width = size;
-            connector.style.height = size;
-            cap.style.width = size - 4;
-            cap.style.height = size - 4;
+        public bool TryGetValue<T>(ref T _value)
+        {
+            return Owner.GetValue(this, ref _value);
+        }
 
-            // Update connected edge sizes:
-            Edges.ForEach(e => e.UpdateEdgeSize());
+        public void Execute(params object[] _params)
+        {
+            Owner.Execute(this, _params);
+        }
+
+        public bool TryGetConnectValue<T>(ref T _value)
+        {
+            PortView portView = Connection;
+            if (portView == null) return false;
+            return portView.TryGetValue(ref _value);
         }
 
         public override void Connect(Edge edge)
         {
             base.Connect(edge);
-            Edges.Add(edge as EdgeView);
             onConnected?.Invoke();
             switch (direction)
             {
@@ -174,7 +204,6 @@ namespace CZToolKit.GraphProcessor.Editors
             base.Disconnect(edge);
             if (!(edge as EdgeView).isConnected)
                 return;
-            Edges.Remove(edge as EdgeView);
             onDisconnected?.Invoke();
             switch (direction)
             {
@@ -207,7 +236,7 @@ namespace CZToolKit.GraphProcessor.Editors
             // Update the edge in case the port color have changed
             schedule.Execute(() =>
             {
-                foreach (var edge in Edges)
+                foreach (var edge in connections)
                 {
                     edge.UpdateEdgeControl();
                     edge.MarkDirtyRepaint();
@@ -215,6 +244,28 @@ namespace CZToolKit.GraphProcessor.Editors
             }).ExecuteLater(50); // Hummm
 
             UpdatePortSize();
+        }
+        #endregion
+
+        public void UpdatePortSize()
+        {
+            if (Utility.TryGetFieldAttribute(PortData.Owner.GetType(), PortData.FieldName, out PortSizeAttribute portSizeAttribute))
+                size = portSizeAttribute.size;
+            else
+                size = DefaultPortSize;
+
+            var connector = this.Q("connector");
+            var cap = connector.Q("cap");
+            connector.style.width = size;
+            connector.style.height = size;
+            cap.style.width = size - 4;
+            cap.style.height = size - 4;
+
+            // Update connected edge sizes:
+            foreach (EdgeView edgeView in connections)
+            {
+                edgeView.UpdateEdgeSize();
+            }
         }
     }
 }

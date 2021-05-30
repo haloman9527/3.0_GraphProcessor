@@ -1,4 +1,4 @@
-using CZToolKit.Core.SharedVariable;
+﻿using CZToolKit.Core.SharedVariable;
 using OdinSerializer;
 using System;
 using System.Collections.Generic;
@@ -9,15 +9,18 @@ using UnityObject = UnityEngine.Object;
 
 namespace CZToolKit.GraphProcessor
 {
-    public abstract class GraphOwner : MonoBehaviour, IVariableOwner, ISerializationCallbackReceiver
+    public abstract class GraphAssetOwner : MonoBehaviour, IVariableOwner, ISerializationCallbackReceiver
     {
         List<SharedVariable> variables = new List<SharedVariable>();
         Dictionary<string, int> sharedVariableIndex;
 
+        public abstract BaseGraphAsset GraphAsset { get; set; }
         public abstract BaseGraph Graph { get; }
+        public abstract Type GraphAssetType { get; }
         public abstract Type GraphType { get; }
 
         #region Serialize
+
         [SerializeField]
         string serializedVariables;
         [SerializeField]
@@ -53,7 +56,6 @@ namespace CZToolKit.GraphProcessor
             if (initializedVariables) return;
             initializedVariables = true;
             Deserialize();
-            Graph.InitializePropertyMapping(this);
         }
 
         #endregion
@@ -153,41 +155,62 @@ namespace CZToolKit.GraphProcessor
         }
     }
 
-    public abstract class GraphOwner<GraphClass> : GraphOwner where GraphClass : BaseGraph, new()
+    public abstract class GraphAssetOwner<GraphAssetClass, GraphClass> : GraphAssetOwner where GraphAssetClass : BaseGraphAsset<GraphClass> where GraphClass : BaseGraph, new()
     {
         [SerializeField]
-        GraphClass graph = new GraphClass();
+        GraphAssetClass graphAsset;
 
+        public override BaseGraphAsset GraphAsset
+        {
+            get { return graphAsset; }
+            set
+            {
+                if (graphAsset != value)
+                {
+                    graphAsset = value as GraphAssetClass;
+                    if (graphAsset != null)
+                    {
+                        foreach (var variable in graphAsset.Graph.Variables)
+                        {
+                            if (GetVariable(variable.GUID) == null)
+                                SetVariable(variable.Clone() as SharedVariable);
+                        }
+                    }
+                }
+            }
+        }
+
+        public GraphAssetClass TGraphAsset
+        {
+            get { return graphAsset; }
+            set
+            {
+                GraphAsset = value;
+                if (graphAsset != value)
+                {
+                    graphAsset = value;
+                    if (graphAsset != null)
+                    {
+                        foreach (var variable in GraphAsset.Graph.Variables)
+                        {
+                            if (GetVariable(variable.GUID) == null)
+                                SetVariable(variable.Clone() as SharedVariable);
+                        }
+                    }
+                }
+            }
+        }
         public override BaseGraph Graph
         {
-            get { return Graph; }
+            get { return GraphAsset.Graph; }
         }
 
         public GraphClass TGraph
         {
-            get { return graph; }
+            get { return TGraphAsset.TGraph; }
         }
 
-        #region Serialize
-        [SerializeField]
-        string serializedGraph;
-        [SerializeField]
-        List<UnityObject> graphUnityReferences;
-
-        public override void OnBeforeSerialize()
-        {
-            serializedGraph = Encoding.UTF8.GetString(SerializationUtility.SerializeValue(Graph, DataFormat.JSON, out graphUnityReferences));
-            base.OnBeforeSerialize();
-        }
-
-        public override void OnAfterDeserialize()
-        {
-            graph = SerializationUtility.DeserializeValue<GraphClass>(Encoding.UTF8.GetBytes(serializedGraph), DataFormat.JSON, graphUnityReferences);
-            base.OnAfterDeserialize();
-        }
-
-        #endregion
-
+        public override Type GraphAssetType { get { return typeof(GraphAssetClass); } }
         public override Type GraphType { get { return typeof(GraphClass); } }
     }
 }

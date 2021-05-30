@@ -1,9 +1,6 @@
-﻿using CZToolKit.Core;
-using CZToolKit.GraphProcessor.Editors;
+﻿using CZToolKit.GraphProcessor.Editors;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace CZToolKit.GraphProcessor.Examples
 {

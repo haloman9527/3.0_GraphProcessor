@@ -11,7 +11,7 @@ namespace CZToolKit.GraphProcessor.Editors
     public class BaseGraphWindow : BasicEditorWindow
     {
         #region 静态
-        public static void Open(GraphOwner _graphOwner)
+        public static void Open(GraphAssetOwner _graphOwner)
         {
             BaseGraphWindow window = LoadGraph(_graphOwner.GraphAsset);
             if (window != null)
@@ -90,13 +90,13 @@ namespace CZToolKit.GraphProcessor.Editors
         VisualElement graphViewElement;
         BaseGraphView graphView;
         [SerializeField]
-        GraphOwner graphOwner;
+        GraphAssetOwner graphOwner;
         [SerializeField]
         int graphOwnerInstanceID;
         [SerializeField]
         BaseGraphAsset graphData;
 
-        public GraphOwner GraphOwner
+        public GraphAssetOwner GraphOwner
         {
             get { return graphOwner; }
             private set { graphOwner = value; if (graphOwner != null) graphOwnerInstanceID = graphOwner.GetInstanceID(); }
@@ -115,7 +115,7 @@ namespace CZToolKit.GraphProcessor.Editors
             rootVisualElement.Add(graphViewElement);
             EditorApplication.playModeStateChanged += OnPlayModeChanged;
 
-            GraphOwner = EditorUtility.InstanceIDToObject(graphOwnerInstanceID) as GraphOwner;
+            GraphOwner = EditorUtility.InstanceIDToObject(graphOwnerInstanceID) as GraphAssetOwner;
 
             if (GraphView == null && GraphAsset != null)
                 EditorApplication.delayCall += ReloadGraph;
@@ -128,7 +128,7 @@ namespace CZToolKit.GraphProcessor.Editors
             {
                 case PlayModeStateChange.EnteredEditMode:
                 case PlayModeStateChange.EnteredPlayMode:
-                    GraphOwner = EditorUtility.InstanceIDToObject(graphOwnerInstanceID) as GraphOwner;
+                    GraphOwner = EditorUtility.InstanceIDToObject(graphOwnerInstanceID) as GraphAssetOwner;
                     break;
                 default:
                     break;
@@ -195,6 +195,7 @@ namespace CZToolKit.GraphProcessor.Editors
             graphViewElement.style.top = 20;
             rootVisualElement.Add(graphViewElement);
 
+            GraphView.OnInitializeCompleted?.Invoke();
             OnInitializedWindow();
         }
 
@@ -209,7 +210,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
         void ReloadGraph()
         {
-            GraphOwner owner = GraphOwner;
+            GraphAssetOwner owner = GraphOwner;
             LoadGraphInternal(GraphAsset);
             GraphOwner = owner;
             if (Graph != null && GraphOwner != null)
