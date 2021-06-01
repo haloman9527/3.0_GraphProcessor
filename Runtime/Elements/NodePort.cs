@@ -32,7 +32,7 @@ namespace CZToolKit.GraphProcessor
         }
         #endregion
 
-        [SerializeField] BaseGraph graph;
+        [NonSerialized] IBaseGraph graph;
         [SerializeField] string ownerGUID;
         [SerializeField] string fieldName;
         [SerializeField] string typeQualifiedName;
@@ -88,7 +88,7 @@ namespace CZToolKit.GraphProcessor
             direction = _portAttribute.Direction;
             typeConstraint = _portAttribute.TypeConstraint;
 
-            if (Utility.TryGetFieldAttribute(_fieldInfo.DeclaringType, _fieldInfo.Name, out PortTypeAttribute typeAttribute))
+            if (Utility_Attribute.TryGetFieldAttribute(_fieldInfo.DeclaringType, _fieldInfo.Name, out PortTypeAttribute typeAttribute))
                 DisplayType = typeAttribute.PortType;
             else
                 DisplayType = _fieldInfo.FieldType;

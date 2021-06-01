@@ -37,13 +37,11 @@ namespace CZToolKit.GraphProcessor
 
         void Serialize()
         {
-            //if (variables.Count == 0) return;
             serializedVariables = Encoding.UTF8.GetString(SerializationUtility.SerializeValue(variables, DataFormat.JSON, out unityReferences));
         }
 
         void Deserialize()
         {
-            //if (string.IsNullOrEmpty(serializedVariables)) return;
             variables = SerializationUtility.DeserializeValue<List<SharedVariable>>(Encoding.UTF8.GetBytes(serializedVariables), DataFormat.JSON, unityReferences);
             UpdateVariablesIndex();
         }
@@ -53,12 +51,14 @@ namespace CZToolKit.GraphProcessor
             if (initializedVariables) return;
             initializedVariables = true;
             Deserialize();
+            Graph.SetFrom(this);
+            Graph.Flush();
             Graph.InitializePropertyMapping(this);
         }
 
         #endregion
 
-        public UnityObject GetObject()
+        public UnityObject Self()
         {
             return this;
         }
@@ -138,8 +138,6 @@ namespace CZToolKit.GraphProcessor
             }
         }
 
-
-
         public IReadOnlyList<SharedVariable> GetVariables()
         {
             CheckSerialization();
@@ -153,7 +151,8 @@ namespace CZToolKit.GraphProcessor
         }
     }
 
-    public abstract class GraphOwner<GraphClass> : GraphOwner where GraphClass : BaseGraph, new()
+    public abstract class GraphOwner<GraphClass> : GraphOwner
+        where GraphClass : IBaseGraph, new()
     {
         [SerializeField]
         GraphClass graph = new GraphClass();

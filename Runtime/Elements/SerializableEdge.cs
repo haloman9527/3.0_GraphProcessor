@@ -7,7 +7,7 @@ namespace CZToolKit.GraphProcessor
     public class SerializableEdge
     {
         [NonSerialized]
-        BaseGraph owner;
+        IBaseGraph owner;
 
         /// <summary> 自身GUID </summary>
         [SerializeField]
@@ -23,7 +23,7 @@ namespace CZToolKit.GraphProcessor
         [SerializeField]
         string outputFieldName;
 
-        public BaseGraph Owner { get { return owner; } }
+        public IBaseGraph Owner { get { return owner; } }
         public string GUID { get { return guid; } }
         public string InputNodeGUID { get { return inputNodeGUID; } }
         public string OutputNodeGUID { get { return outputNodeGUID; } }
@@ -53,12 +53,12 @@ namespace CZToolKit.GraphProcessor
 
         public SerializableEdge() { }
 
-        public void Initialize(BaseGraph _graph)
+        public void Initialize(IBaseGraph _graph)
         {
             owner = _graph;
         }
 
-        public static SerializableEdge CreateNewEdge(BaseGraph _graph, NodePort _inputPort, NodePort _outputPort)
+        public static SerializableEdge CreateNewEdge(IBaseGraph _graph, NodePort _inputPort, NodePort _outputPort)
         {
             SerializableEdge edge = new SerializableEdge();
 

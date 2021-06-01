@@ -42,7 +42,7 @@ namespace CZToolKit.GraphProcessor.Editors
         public CreateNodeMenuWindow CreateNodeMenu { get; private set; }
         public BaseGraphWindow GraphWindow { get; private set; }
         public BaseGraphAsset GraphAsset { get; private set; }
-        public BaseGraph Graph { get { return GraphAsset.Graph; } }
+        public IBaseGraph Graph { get { return GraphAsset.Graph; } }
         public SerializedObject SerializedObject { get; private set; }
         public Dictionary<string, BaseNodeView> NodeViews { get; private set; } = new Dictionary<string, BaseNodeView>();
         public List<EdgeView> EdgeViews { get; private set; } = new List<EdgeView>();
@@ -85,12 +85,12 @@ namespace CZToolKit.GraphProcessor.Editors
             GraphWindow.Toolbar.AddButton("Center", () =>
             {
                 ResetPositionAndZoom();
-                UpdateViewTransform(Graph.position, Graph.scale);
+                UpdateViewTransform(Graph.Position, Graph.Scale);
             });
-            GraphWindow.Toolbar.AddToggle("Show Parameters", Graph.blackboardoVisible, (v) =>
+            GraphWindow.Toolbar.AddToggle("Show Parameters", Graph.BlackboardVisible, (v) =>
             {
                 GetBlackboard().style.display = v ? DisplayStyle.Flex : DisplayStyle.None;
-                Graph.blackboardoVisible = v;
+                Graph.BlackboardVisible = v;
             });
 
             connectorListener = CreateEdgeConnectorListener();
@@ -150,8 +150,8 @@ namespace CZToolKit.GraphProcessor.Editors
 
         void InitializeGraphView()
         {
-            viewTransform.position = Graph.position;
-            viewTransform.scale = Graph.scale;
+            viewTransform.position = Graph.Position;
+            viewTransform.scale = Graph.Scale;
             nodeCreationRequest = (c) => SearchWindow.Open(new SearchWindowContext(c.screenMousePosition), CreateNodeMenu);
         }
 
@@ -198,8 +198,8 @@ namespace CZToolKit.GraphProcessor.Editors
         void InitializeBlackboard()
         {
             Blackboard = new ExposedParameterView(this);
-            Blackboard.SetPosition(Graph.blackboardPosition);
-            Blackboard.style.display = Graph.blackboardoVisible ? DisplayStyle.Flex : DisplayStyle.None;
+            Blackboard.SetPosition(Graph.BlackboardPosition);
+            Blackboard.style.display = Graph.BlackboardVisible ? DisplayStyle.Flex : DisplayStyle.None;
             Add(Blackboard);
         }
 
@@ -218,7 +218,11 @@ namespace CZToolKit.GraphProcessor.Editors
 
         protected virtual IEnumerable<Type> GetNodeTypes()
         {
-            return Utility.GetChildrenTypes<BaseNode>();
+            foreach (var type in Utility_Refelection.GetChildrenTypes<BaseNode>())
+            {
+                if (type.IsAbstract) continue;
+                yield return type;
+            }
         }
 
         #region Callbacks
@@ -230,7 +234,7 @@ namespace CZToolKit.GraphProcessor.Editors
             Vector2 position = (evt.currentTarget as VisualElement).ChangeCoordinatesTo(contentViewContainer, evt.localMousePosition);
             evt.menu.AppendAction("New Stack", (e) =>
             {
-                BaseStackNode stackNode = new BaseStackNode(position);
+                BaseStack stackNode = new BaseStack(position);
                 stackNode.OnCreated();
                 AddStackNode(stackNode);
             }, DropdownMenuAction.AlwaysEnabled);
@@ -257,37 +261,32 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             List<Port> compatiblePorts = new List<Port>();
 
-            PortView startPortView = _startPortView as PortView;
-
-            ports.ForEach((Action<Port>)(_portView =>
+            IBasePortView startPortView = _startPortView as IBasePortView;
+            ports.ForEach(_portView =>
             {
-                PortView portView = _portView as PortView;
+                IBasePortView portView = _portView as IBasePortView;
 
                 if (portView.Owner == startPortView.Owner)
                     return;
 
-                if (portView.PortData.Direction == startPortView.PortData.Direction)
+                if (portView == null)
                     return;
 
-                if (portView.connections.Any(e => e.input == startPortView || e.output == startPortView))
+                if (_portView.direction == _startPortView.direction)
                     return;
 
-                if (startPortView.PortData.TypeConstraint == PortTypeConstraint.None || portView.PortData.TypeConstraint == PortTypeConstraint.None)
+                if (_portView.connections.Any(edge => edge.input == _startPortView || edge.output == _startPortView))
+                    return;
+
+
+                if ((startPortView.TypeConstraint == PortTypeConstraint.None || portView.TypeConstraint == PortTypeConstraint.None)
+                || (startPortView.TypeConstraint == PortTypeConstraint.Inherited && startPortView.DisplayType.IsAssignableFrom((Type)portView.DisplayType))
+                || (startPortView.TypeConstraint == PortTypeConstraint.Strict && startPortView.DisplayType == portView.DisplayType))
                 {
                     compatiblePorts.Add(_portView);
                     return;
                 }
-                if (startPortView.PortData.TypeConstraint == PortTypeConstraint.Inherited && startPortView.PortData.DisplayType.IsAssignableFrom((Type)portView.PortData.DisplayType))
-                {
-                    compatiblePorts.Add(_portView);
-                    return;
-                }
-                if (startPortView.PortData.TypeConstraint == PortTypeConstraint.Strict && startPortView.PortData.DisplayType == portView.PortData.DisplayType)
-                {
-                    compatiblePorts.Add(_portView);
-                    return;
-                }
-            }));
+            });
             return compatiblePorts;
         }
         #endregion
@@ -458,8 +457,8 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             if (GraphAsset != null)
             {
-                Graph.position = viewTransform.position;
-                Graph.scale = viewTransform.scale;
+                Graph.Position = viewTransform.position;
+                Graph.Scale = viewTransform.scale;
             }
         }
 
@@ -715,13 +714,13 @@ namespace CZToolKit.GraphProcessor.Editors
             GroupViews.Clear();
         }
 
-        public BaseStackNodeView AddStackNode(BaseStackNode _stackData)
+        public BaseStackNodeView AddStackNode(BaseStack _stackData)
         {
             Graph.AddStackNode(_stackData);
             return AddStackNodeView(_stackData);
         }
 
-        public BaseStackNodeView AddStackNodeView(BaseStackNode _stackNode)
+        public BaseStackNodeView AddStackNodeView(BaseStack _stackNode)
         {
             var stackViewType = NodeEditorUtility.GetStackNodeCustomViewType(_stackNode.GetType());
             var stackView = Activator.CreateInstance(stackViewType) as BaseStackNodeView;
@@ -820,10 +819,10 @@ namespace CZToolKit.GraphProcessor.Editors
 
         public bool Connect(EdgeView _edgeView)
         {
-            var inputPortView = _edgeView.input as PortView;
-            var outputPortView = _edgeView.output as PortView;
-            var inputNodeView = inputPortView.node as BaseNodeView;
-            var outputNodeView = outputPortView.node as BaseNodeView;
+            var inputPortView = _edgeView.input as IBasePortView;
+            var outputPortView = _edgeView.output as IBasePortView;
+            var inputNodeView = inputPortView.Owner;
+            var outputNodeView = outputPortView.Owner;
             inputNodeView.NodeData.TryGetPort(inputPortView.FieldName, out NodePort inputPort);
             outputNodeView.NodeData.TryGetPort(outputPortView.FieldName, out NodePort outputPort);
 
@@ -896,8 +895,8 @@ namespace CZToolKit.GraphProcessor.Editors
 
         public virtual void ResetPositionAndZoom()
         {
-            Graph.position = Vector3.zero;
-            Graph.scale = Vector3.one;
+            Graph.Position = Vector3.zero;
+            Graph.Scale = Vector3.one;
         }
 
         /// <summary> Deletes the selected content, can be called form an IMGUI container </summary>

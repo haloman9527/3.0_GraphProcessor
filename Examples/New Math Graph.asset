@@ -13,1080 +13,168 @@ MonoBehaviour:
   m_Name: New Math Graph
   m_EditorClassIdentifier: 
   graph:
-    position: {x: 129, y: 363, z: 0}
-    scale: {x: 0.7561437, y: 0.7561437, z: 1}
-    blackboardoVisible: 1
+    position: {x: -151, y: 689, z: 0}
+    scale: {x: 1.15, y: 1.15, z: 1}
+    blackboardVisible: 1
     blackboardPosition:
       serializedVersion: 2
-      x: 41
-      y: 20
-      width: 292
-      height: 374
-    groups:
-    - title: New Group
-      color: {r: 0.96933174, g: 0, b: 1, a: 0.7}
-      position:
-        serializedVersion: 2
-        x: 708.5751
-        y: -259.9675
-        width: 684
-        height: 674
-      innerNodeGUIDs:
-      - 1408b425-38ae-42f3-bb44-b082f628dddd
-      innerStackGUIDs:
-      - d5402595-7966-4f4a-800c-3032b1d2677e
+      x: 13
+      y: 9
+      width: 222
+      height: 260
+    groups: []
   serializedGraph: "{\r\n    \"$id\": 0,\r\n    \"$type\": \"0|CZToolKit.GraphProcessor.Examples.MathGraph,
     Assembly-CSharp\",\r\n    \"position\": {\r\n        \"$type\": \"1|UnityEngine.Vector3,
-    UnityEngine.CoreModule\",\r\n        129,\r\n        363,\r\n        0\r\n   
-    },\r\n    \"scale\": {\r\n        \"$type\": 1,\r\n        0.7561437,\r\n       
-    0.7561437,\r\n        1\r\n    },\r\n    \"blackboardoVisible\": true,\r\n   
-    \"blackboardPosition\": {\r\n        \"$type\": \"2|UnityEngine.Rect, UnityEngine.CoreModule\",\r\n       
-    41,\r\n        20,\r\n        292,\r\n        374\r\n    },\r\n    \"nodes\":
+    UnityEngine.CoreModule\",\r\n        -151,\r\n        689,\r\n        0\r\n   
+    },\r\n    \"scale\": {\r\n        \"$type\": 1,\r\n        1.15,\r\n        1.15,\r\n       
+    1\r\n    },\r\n    \"blackboardVisible\": true,\r\n    \"blackboardPosition\":
+    {\r\n        \"$type\": \"2|UnityEngine.Rect, UnityEngine.CoreModule\",\r\n       
+    13,\r\n        9,\r\n        222,\r\n        260\r\n    },\r\n    \"nodes\":
     {\r\n        \"$id\": 1,\r\n        \"$type\": \"3|System.Collections.Generic.Dictionary`2[[System.String,
     mscorlib],[CZToolKit.GraphProcessor.BaseNode, Assembly-CSharp]], mscorlib\",\r\n       
     \"comparer\": {\r\n            \"$id\": 2,\r\n            \"$type\": \"4|System.Collections.Generic.GenericEqualityComparer`1[[System.String,
-    mscorlib]], mscorlib\"\r\n        },\r\n        \"$rlength\": 8,\r\n        \"$rcontent\":
-    [\r\n            {\r\n                \"$k\": \"b612f3fb-905f-45ee-a4e0-748214bbb846\",\r\n               
+    mscorlib]], mscorlib\"\r\n        },\r\n        \"$rlength\": 3,\r\n        \"$rcontent\":
+    [\r\n            {\r\n                \"$k\": \"e5e6febc-57e7-411a-b460-bb31570ae00e\",\r\n               
     \"$v\": {\r\n                    \"$id\": 3,\r\n                    \"$type\":
-    \"5|CZToolKit.GraphProcessor.FloatNode, Assembly-CSharp\",\r\n                   
-    \"guid\": \"b612f3fb-905f-45ee-a4e0-748214bbb846\",\r\n                    \"position\":
-    {\r\n                        \"$type\": 2,\r\n                        101.280045,\r\n                       
-    -11.224967,\r\n                        77,\r\n                        77\r\n                   
-    },\r\n                    \"expanded\": true,\r\n                    \"locked\":
-    false,\r\n                    \"ports\": {\r\n                        \"$id\":
-    4,\r\n                        \"$type\": \"6|System.Collections.Generic.Dictionary`2[[System.String,
+    \"5|CZToolKit.GraphProcessor.AddNode, Assembly-CSharp\",\r\n                   
+    \"guid\": \"e5e6febc-57e7-411a-b460-bb31570ae00e\",\r\n                    \"position\":
+    {\r\n                        \"$type\": 2,\r\n                        587.4783,\r\n                       
+    -252.260849,\r\n                        120.000008,\r\n                       
+    101\r\n                    },\r\n                    \"expanded\": true,\r\n                   
+    \"locked\": false,\r\n                    \"ports\": {\r\n                       
+    \"$id\": 4,\r\n                        \"$type\": \"6|System.Collections.Generic.Dictionary`2[[System.String,
     mscorlib],[CZToolKit.GraphProcessor.NodePort, Assembly-CSharp]], mscorlib\",\r\n                       
     \"comparer\": {\r\n                            \"$id\": 5,\r\n                           
     \"$type\": 4\r\n                        },\r\n                        \"$rlength\":
-    1,\r\n                        \"$rcontent\": [\r\n                           
-    {\r\n                                \"$k\": \"value\",\r\n                               
+    3,\r\n                        \"$rcontent\": [\r\n                           
+    {\r\n                                \"$k\": \"a\",\r\n                               
     \"$v\": {\r\n                                    \"$id\": 6,\r\n                                   
     \"$type\": \"7|CZToolKit.GraphProcessor.NodePort, Assembly-CSharp\",\r\n                                   
-    \"graph\": $iref:0,\r\n                                    \"ownerGUID\": \"b612f3fb-905f-45ee-a4e0-748214bbb846\",\r\n                                   
-    \"fieldName\": \"value\",\r\n                                    \"typeQualifiedName\":
+    \"ownerGUID\": \"e5e6febc-57e7-411a-b460-bb31570ae00e\",\r\n                                   
+    \"fieldName\": \"a\",\r\n                                    \"typeQualifiedName\":
     \"System.Single, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089\",\r\n                                   
     \"dataType\": {\r\n                                        \"$id\": 7,\r\n                                       
     \"$type\": \"8|System.RuntimeType, mscorlib\",\r\n                                       
     \"System.Single, mscorlib\"\r\n                                    },\r\n                                   
-    \"isMulti\": true,\r\n                                    \"direction\": 1,\r\n                                   
+    \"isMulti\": false,\r\n                                    \"direction\": 0,\r\n                                   
     \"typeConstraint\": 1,\r\n                                    \"edgeGUIDs\":
     {\r\n                                        \"$id\": 8,\r\n                                       
     \"$type\": \"9|System.Collections.Generic.List`1[[System.String, mscorlib]],
-    mscorlib\",\r\n                                        \"$rlength\": 2,\r\n                                       
-    \"$rcontent\": [\r\n                                            \"1dfa7c22-ff74-47e4-a915-3baaa34d3f24\",\r\n                                           
-    \"6e2515e2-d673-4473-853f-3fbffea5e09a\"\r\n                                       
+    mscorlib\",\r\n                                        \"$rlength\": 1,\r\n                                       
+    \"$rcontent\": [\r\n                                            \"2d523c37-8602-43ad-bf0b-807c40331f67\"\r\n                                       
+    ]\r\n                                    }\r\n                               
+    }\r\n                            },\r\n                            {\r\n                               
+    \"$k\": \"b\",\r\n                                \"$v\": {\r\n                                   
+    \"$id\": 9,\r\n                                    \"$type\": 7,\r\n                                   
+    \"ownerGUID\": \"e5e6febc-57e7-411a-b460-bb31570ae00e\",\r\n                                   
+    \"fieldName\": \"b\",\r\n                                    \"typeQualifiedName\":
+    \"System.Single, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089\",\r\n                                   
+    \"dataType\": $iref:7,\r\n                                    \"isMulti\": false,\r\n                                   
+    \"direction\": 0,\r\n                                    \"typeConstraint\":
+    1,\r\n                                    \"edgeGUIDs\": {\r\n                                       
+    \"$id\": 10,\r\n                                        \"$type\": 9,\r\n                                       
+    \"$rlength\": 0,\r\n                                        \"$rcontent\": [\r\n                                       
+    ]\r\n                                    }\r\n                               
+    }\r\n                            },\r\n                            {\r\n                               
+    \"$k\": \"output\",\r\n                                \"$v\": {\r\n                                   
+    \"$id\": 11,\r\n                                    \"$type\": 7,\r\n                                   
+    \"ownerGUID\": \"e5e6febc-57e7-411a-b460-bb31570ae00e\",\r\n                                   
+    \"fieldName\": \"output\",\r\n                                    \"typeQualifiedName\":
+    \"System.Single, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089\",\r\n                                   
+    \"dataType\": $iref:7,\r\n                                    \"isMulti\": true,\r\n                                   
+    \"direction\": 1,\r\n                                    \"typeConstraint\":
+    1,\r\n                                    \"edgeGUIDs\": {\r\n                                       
+    \"$id\": 12,\r\n                                        \"$type\": 9,\r\n                                       
+    \"$rlength\": 1,\r\n                                        \"$rcontent\": [\r\n                                           
+    \"460c2a1f-bcdf-482c-88d0-612d1689a2f5\"\r\n                                       
     ]\r\n                                    }\r\n                               
     }\r\n                            }\r\n                        ]\r\n                   
-    },\r\n                    \"value\": 12123\r\n                }\r\n           
-    },\r\n            {\r\n                \"$k\": \"857e895d-9bd6-42ae-b019-acb05275aa1f\",\r\n               
-    \"$v\": {\r\n                    \"$id\": 9,\r\n                    \"$type\":
+    },\r\n                    \"a\": 0,\r\n                    \"b\": 30\r\n               
+    }\r\n            },\r\n            {\r\n                \"$k\": \"b94816cf-4f1d-4041-8530-78b1d25a1312\",\r\n               
+    \"$v\": {\r\n                    \"$id\": 13,\r\n                    \"$type\":
     \"10|CZToolKit.GraphProcessor.DebugNode, Assembly-CSharp\",\r\n                   
-    \"guid\": \"857e895d-9bd6-42ae-b019-acb05275aa1f\",\r\n                    \"position\":
-    {\r\n                        \"$type\": 2,\r\n                        266.280029,\r\n                       
-    -208.224991,\r\n                        147,\r\n                        91\r\n                   
-    },\r\n                    \"expanded\": true,\r\n                    \"locked\":
-    false,\r\n                    \"ports\": {\r\n                        \"$id\":
-    10,\r\n                        \"$type\": 6,\r\n                        \"comparer\":
-    $iref:5,\r\n                        \"$rlength\": 1,\r\n                       
-    \"$rcontent\": [\r\n                            {\r\n                               
-    \"$k\": \"input\",\r\n                                \"$v\": {\r\n                                   
-    \"$id\": 11,\r\n                                    \"$type\": 7,\r\n                                   
-    \"graph\": $iref:0,\r\n                                    \"ownerGUID\": \"857e895d-9bd6-42ae-b019-acb05275aa1f\",\r\n                                   
+    \"guid\": \"b94816cf-4f1d-4041-8530-78b1d25a1312\",\r\n                    \"position\":
+    {\r\n                        \"$type\": 2,\r\n                        810.1739,\r\n                       
+    -256.869568,\r\n                        147.000015,\r\n                       
+    77\r\n                    },\r\n                    \"expanded\": true,\r\n                   
+    \"locked\": false,\r\n                    \"ports\": {\r\n                       
+    \"$id\": 14,\r\n                        \"$type\": 6,\r\n                       
+    \"comparer\": {\r\n                            \"$id\": 15,\r\n                           
+    \"$type\": 4\r\n                        },\r\n                        \"$rlength\":
+    1,\r\n                        \"$rcontent\": [\r\n                           
+    {\r\n                                \"$k\": \"input\",\r\n                               
+    \"$v\": {\r\n                                    \"$id\": 16,\r\n                                   
+    \"$type\": 7,\r\n                                    \"ownerGUID\": \"b94816cf-4f1d-4041-8530-78b1d25a1312\",\r\n                                   
     \"fieldName\": \"input\",\r\n                                    \"typeQualifiedName\":
     \"System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089\",\r\n                                   
-    \"dataType\": {\r\n                                        \"$id\": 12,\r\n                                       
+    \"dataType\": {\r\n                                        \"$id\": 17,\r\n                                       
     \"$type\": 8,\r\n                                        \"System.String, mscorlib\"\r\n                                   
     },\r\n                                    \"isMulti\": false,\r\n                                   
     \"direction\": 0,\r\n                                    \"typeConstraint\":
     0,\r\n                                    \"edgeGUIDs\": {\r\n                                       
-    \"$id\": 13,\r\n                                        \"$type\": 9,\r\n                                       
+    \"$id\": 18,\r\n                                        \"$type\": 9,\r\n                                       
     \"$rlength\": 1,\r\n                                        \"$rcontent\": [\r\n                                           
-    \"1dfa7c22-ff74-47e4-a915-3baaa34d3f24\"\r\n                                       
+    \"460c2a1f-bcdf-482c-88d0-612d1689a2f5\"\r\n                                       
     ]\r\n                                    }\r\n                               
     }\r\n                            }\r\n                        ]\r\n                   
     },\r\n                    \"input\": null\r\n                }\r\n           
-    },\r\n            {\r\n                \"$k\": \"c4fac999-1a20-4ca4-bab4-84c7a87dc8d1\",\r\n               
-    \"$v\": {\r\n                    \"$id\": 14,\r\n                    \"$type\":
-    \"11|SampleNode, Assembly-CSharp\",\r\n                    \"guid\": \"c4fac999-1a20-4ca4-bab4-84c7a87dc8d1\",\r\n                   
-    \"position\": {\r\n                        \"$type\": 2,\r\n                       
-    445.2801,\r\n                        -89.22498,\r\n                        227.000015,\r\n                       
-    389\r\n                    },\r\n                    \"expanded\": true,\r\n                   
-    \"locked\": false,\r\n                    \"ports\": {\r\n                       
-    \"$id\": 15,\r\n                        \"$type\": 6,\r\n                       
-    \"comparer\": {\r\n                            \"$id\": 16,\r\n                           
-    \"$type\": 4\r\n                        },\r\n                        \"$rlength\":
-    28,\r\n                        \"$rcontent\": [\r\n                           
-    {\r\n                                \"$k\": \"i\",\r\n                               
-    \"$v\": {\r\n                                    \"$id\": 17,\r\n                                   
-    \"$type\": 7,\r\n                                    \"graph\": $iref:0,\r\n                                   
-    \"ownerGUID\": \"c4fac999-1a20-4ca4-bab4-84c7a87dc8d1\",\r\n                                   
-    \"fieldName\": \"i\",\r\n                                    \"typeQualifiedName\":
-    \"System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089\",\r\n                                   
-    \"dataType\": {\r\n                                        \"$id\": 18,\r\n                                       
-    \"$type\": 8,\r\n                                        \"System.Int32, mscorlib\"\r\n                                   
-    },\r\n                                    \"isMulti\": true,\r\n                                   
-    \"direction\": 0,\r\n                                    \"typeConstraint\":
-    1,\r\n                                    \"edgeGUIDs\": {\r\n                                       
-    \"$id\": 19,\r\n                                        \"$type\": 9,\r\n                                       
-    \"$rlength\": 0,\r\n                                        \"$rcontent\": [\r\n                                       
-    ]\r\n                                    }\r\n                               
-    }\r\n                            },\r\n                            {\r\n                               
-    \"$k\": \"l\",\r\n                                \"$v\": {\r\n                                   
-    \"$id\": 20,\r\n                                    \"$type\": 7,\r\n                                   
-    \"graph\": $iref:0,\r\n                                    \"ownerGUID\": \"c4fac999-1a20-4ca4-bab4-84c7a87dc8d1\",\r\n                                   
-    \"fieldName\": \"l\",\r\n                                    \"typeQualifiedName\":
-    \"System.Int64, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089\",\r\n                                   
-    \"dataType\": {\r\n                                        \"$id\": 21,\r\n                                       
-    \"$type\": 8,\r\n                                        \"System.Int64, mscorlib\"\r\n                                   
-    },\r\n                                    \"isMulti\": true,\r\n                                   
-    \"direction\": 0,\r\n                                    \"typeConstraint\":
-    1,\r\n                                    \"edgeGUIDs\": {\r\n                                       
-    \"$id\": 22,\r\n                                        \"$type\": 9,\r\n                                       
-    \"$rlength\": 0,\r\n                                        \"$rcontent\": [\r\n                                       
-    ]\r\n                                    }\r\n                               
-    }\r\n                            },\r\n                            {\r\n                               
-    \"$k\": \"f\",\r\n                                \"$v\": {\r\n                                   
-    \"$id\": 23,\r\n                                    \"$type\": 7,\r\n                                   
-    \"graph\": $iref:0,\r\n                                    \"ownerGUID\": \"c4fac999-1a20-4ca4-bab4-84c7a87dc8d1\",\r\n                                   
-    \"fieldName\": \"f\",\r\n                                    \"typeQualifiedName\":
-    \"System.Single, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089\",\r\n                                   
-    \"dataType\": $iref:7,\r\n                                    \"isMulti\": true,\r\n                                   
-    \"direction\": 0,\r\n                                    \"typeConstraint\":
-    1,\r\n                                    \"edgeGUIDs\": {\r\n                                       
-    \"$id\": 24,\r\n                                        \"$type\": 9,\r\n                                       
-    \"$rlength\": 1,\r\n                                        \"$rcontent\": [\r\n                                           
-    \"6e2515e2-d673-4473-853f-3fbffea5e09a\"\r\n                                       
-    ]\r\n                                    }\r\n                               
-    }\r\n                            },\r\n                            {\r\n                               
-    \"$k\": \"d\",\r\n                                \"$v\": {\r\n                                   
-    \"$id\": 25,\r\n                                    \"$type\": 7,\r\n                                   
-    \"graph\": $iref:0,\r\n                                    \"ownerGUID\": \"c4fac999-1a20-4ca4-bab4-84c7a87dc8d1\",\r\n                                   
-    \"fieldName\": \"d\",\r\n                                    \"typeQualifiedName\":
-    \"System.Double, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089\",\r\n                                   
-    \"dataType\": {\r\n                                        \"$id\": 26,\r\n                                       
-    \"$type\": 8,\r\n                                        \"System.Double, mscorlib\"\r\n                                   
-    },\r\n                                    \"isMulti\": true,\r\n                                   
-    \"direction\": 0,\r\n                                    \"typeConstraint\":
-    1,\r\n                                    \"edgeGUIDs\": {\r\n                                       
-    \"$id\": 27,\r\n                                        \"$type\": 9,\r\n                                       
-    \"$rlength\": 0,\r\n                                        \"$rcontent\": [\r\n                                       
-    ]\r\n                                    }\r\n                               
-    }\r\n                            },\r\n                            {\r\n                               
-    \"$k\": \"s\",\r\n                                \"$v\": {\r\n                                   
-    \"$id\": 28,\r\n                                    \"$type\": 7,\r\n                                   
-    \"graph\": $iref:0,\r\n                                    \"ownerGUID\": \"c4fac999-1a20-4ca4-bab4-84c7a87dc8d1\",\r\n                                   
-    \"fieldName\": \"s\",\r\n                                    \"typeQualifiedName\":
-    \"System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089\",\r\n                                   
-    \"dataType\": $iref:12,\r\n                                    \"isMulti\": true,\r\n                                   
-    \"direction\": 0,\r\n                                    \"typeConstraint\":
-    1,\r\n                                    \"edgeGUIDs\": {\r\n                                       
-    \"$id\": 29,\r\n                                        \"$type\": 9,\r\n                                       
-    \"$rlength\": 0,\r\n                                        \"$rcontent\": [\r\n                                       
-    ]\r\n                                    }\r\n                               
-    }\r\n                            },\r\n                            {\r\n                               
-    \"$k\": \"obj\",\r\n                                \"$v\": {\r\n                                   
-    \"$id\": 30,\r\n                                    \"$type\": 7,\r\n                                   
-    \"graph\": $iref:0,\r\n                                    \"ownerGUID\": \"c4fac999-1a20-4ca4-bab4-84c7a87dc8d1\",\r\n                                   
-    \"fieldName\": \"obj\",\r\n                                    \"typeQualifiedName\":
-    \"UnityEngine.Object, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral,
-    PublicKeyToken=null\",\r\n                                    \"dataType\": {\r\n                                       
-    \"$id\": 31,\r\n                                        \"$type\": 8,\r\n                                       
-    \"UnityEngine.Object, UnityEngine.CoreModule\"\r\n                                   
-    },\r\n                                    \"isMulti\": true,\r\n                                   
-    \"direction\": 0,\r\n                                    \"typeConstraint\":
-    1,\r\n                                    \"edgeGUIDs\": {\r\n                                       
-    \"$id\": 32,\r\n                                        \"$type\": 9,\r\n                                       
-    \"$rlength\": 0,\r\n                                        \"$rcontent\": [\r\n                                       
-    ]\r\n                                    }\r\n                               
-    }\r\n                            },\r\n                            {\r\n                               
-    \"$k\": \"gameObject\",\r\n                                \"$v\": {\r\n                                   
-    \"$id\": 33,\r\n                                    \"$type\": 7,\r\n                                   
-    \"graph\": $iref:0,\r\n                                    \"ownerGUID\": \"c4fac999-1a20-4ca4-bab4-84c7a87dc8d1\",\r\n                                   
-    \"fieldName\": \"gameObject\",\r\n                                    \"typeQualifiedName\":
-    \"UnityEngine.GameObject, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral,
-    PublicKeyToken=null\",\r\n                                    \"dataType\": {\r\n                                       
-    \"$id\": 34,\r\n                                        \"$type\": 8,\r\n                                       
-    \"UnityEngine.GameObject, UnityEngine.CoreModule\"\r\n                                   
-    },\r\n                                    \"isMulti\": true,\r\n                                   
-    \"direction\": 0,\r\n                                    \"typeConstraint\":
-    1,\r\n                                    \"edgeGUIDs\": {\r\n                                       
-    \"$id\": 35,\r\n                                        \"$type\": 9,\r\n                                       
-    \"$rlength\": 0,\r\n                                        \"$rcontent\": [\r\n                                       
-    ]\r\n                                    }\r\n                               
-    }\r\n                            },\r\n                            {\r\n                               
-    \"$k\": \"mat\",\r\n                                \"$v\": {\r\n                                   
-    \"$id\": 36,\r\n                                    \"$type\": 7,\r\n                                   
-    \"graph\": $iref:0,\r\n                                    \"ownerGUID\": \"c4fac999-1a20-4ca4-bab4-84c7a87dc8d1\",\r\n                                   
-    \"fieldName\": \"mat\",\r\n                                    \"typeQualifiedName\":
-    \"UnityEngine.Material, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral,
-    PublicKeyToken=null\",\r\n                                    \"dataType\": {\r\n                                       
-    \"$id\": 37,\r\n                                        \"$type\": 8,\r\n                                       
-    \"UnityEngine.Material, UnityEngine.CoreModule\"\r\n                                   
-    },\r\n                                    \"isMulti\": true,\r\n                                   
-    \"direction\": 0,\r\n                                    \"typeConstraint\":
-    1,\r\n                                    \"edgeGUIDs\": {\r\n                                       
-    \"$id\": 38,\r\n                                        \"$type\": 9,\r\n                                       
-    \"$rlength\": 0,\r\n                                        \"$rcontent\": [\r\n                                       
-    ]\r\n                                    }\r\n                               
-    }\r\n                            },\r\n                            {\r\n                               
-    \"$k\": \"color\",\r\n                                \"$v\": {\r\n                                   
-    \"$id\": 39,\r\n                                    \"$type\": 7,\r\n                                   
-    \"graph\": $iref:0,\r\n                                    \"ownerGUID\": \"c4fac999-1a20-4ca4-bab4-84c7a87dc8d1\",\r\n                                   
-    \"fieldName\": \"color\",\r\n                                    \"typeQualifiedName\":
-    \"UnityEngine.Color, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral,
-    PublicKeyToken=null\",\r\n                                    \"dataType\": {\r\n                                       
-    \"$id\": 40,\r\n                                        \"$type\": 8,\r\n                                       
-    \"UnityEngine.Color, UnityEngine.CoreModule\"\r\n                                   
-    },\r\n                                    \"isMulti\": true,\r\n                                   
-    \"direction\": 0,\r\n                                    \"typeConstraint\":
-    1,\r\n                                    \"edgeGUIDs\": {\r\n                                       
-    \"$id\": 41,\r\n                                        \"$type\": 9,\r\n                                       
-    \"$rlength\": 0,\r\n                                        \"$rcontent\": [\r\n                                       
-    ]\r\n                                    }\r\n                               
-    }\r\n                            },\r\n                            {\r\n                               
-    \"$k\": \"vector2\",\r\n                                \"$v\": {\r\n                                   
-    \"$id\": 42,\r\n                                    \"$type\": 7,\r\n                                   
-    \"graph\": $iref:0,\r\n                                    \"ownerGUID\": \"c4fac999-1a20-4ca4-bab4-84c7a87dc8d1\",\r\n                                   
-    \"fieldName\": \"vector2\",\r\n                                    \"typeQualifiedName\":
-    \"UnityEngine.Vector2, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral,
-    PublicKeyToken=null\",\r\n                                    \"dataType\": {\r\n                                       
-    \"$id\": 43,\r\n                                        \"$type\": 8,\r\n                                       
-    \"UnityEngine.Vector2, UnityEngine.CoreModule\"\r\n                                   
-    },\r\n                                    \"isMulti\": true,\r\n                                   
-    \"direction\": 0,\r\n                                    \"typeConstraint\":
-    1,\r\n                                    \"edgeGUIDs\": {\r\n                                       
-    \"$id\": 44,\r\n                                        \"$type\": 9,\r\n                                       
-    \"$rlength\": 0,\r\n                                        \"$rcontent\": [\r\n                                       
-    ]\r\n                                    }\r\n                               
-    }\r\n                            },\r\n                            {\r\n                               
-    \"$k\": \"vector2Int\",\r\n                                \"$v\": {\r\n                                   
-    \"$id\": 45,\r\n                                    \"$type\": 7,\r\n                                   
-    \"graph\": $iref:0,\r\n                                    \"ownerGUID\": \"c4fac999-1a20-4ca4-bab4-84c7a87dc8d1\",\r\n                                   
-    \"fieldName\": \"vector2Int\",\r\n                                    \"typeQualifiedName\":
-    \"UnityEngine.Vector2Int, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral,
-    PublicKeyToken=null\",\r\n                                    \"dataType\": {\r\n                                       
-    \"$id\": 46,\r\n                                        \"$type\": 8,\r\n                                       
-    \"UnityEngine.Vector2Int, UnityEngine.CoreModule\"\r\n                                   
-    },\r\n                                    \"isMulti\": true,\r\n                                   
-    \"direction\": 0,\r\n                                    \"typeConstraint\":
-    1,\r\n                                    \"edgeGUIDs\": {\r\n                                       
-    \"$id\": 47,\r\n                                        \"$type\": 9,\r\n                                       
-    \"$rlength\": 0,\r\n                                        \"$rcontent\": [\r\n                                       
-    ]\r\n                                    }\r\n                               
-    }\r\n                            },\r\n                            {\r\n                               
-    \"$k\": \"vector3\",\r\n                                \"$v\": {\r\n                                   
-    \"$id\": 48,\r\n                                    \"$type\": 7,\r\n                                   
-    \"graph\": $iref:0,\r\n                                    \"ownerGUID\": \"c4fac999-1a20-4ca4-bab4-84c7a87dc8d1\",\r\n                                   
-    \"fieldName\": \"vector3\",\r\n                                    \"typeQualifiedName\":
-    \"UnityEngine.Vector3, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral,
-    PublicKeyToken=null\",\r\n                                    \"dataType\": {\r\n                                       
-    \"$id\": 49,\r\n                                        \"$type\": 8,\r\n                                       
-    \"UnityEngine.Vector3, UnityEngine.CoreModule\"\r\n                                   
-    },\r\n                                    \"isMulti\": true,\r\n                                   
-    \"direction\": 0,\r\n                                    \"typeConstraint\":
-    1,\r\n                                    \"edgeGUIDs\": {\r\n                                       
-    \"$id\": 50,\r\n                                        \"$type\": 9,\r\n                                       
-    \"$rlength\": 0,\r\n                                        \"$rcontent\": [\r\n                                       
-    ]\r\n                                    }\r\n                               
-    }\r\n                            },\r\n                            {\r\n                               
-    \"$k\": \"vector3Int\",\r\n                                \"$v\": {\r\n                                   
-    \"$id\": 51,\r\n                                    \"$type\": 7,\r\n                                   
-    \"graph\": $iref:0,\r\n                                    \"ownerGUID\": \"c4fac999-1a20-4ca4-bab4-84c7a87dc8d1\",\r\n                                   
-    \"fieldName\": \"vector3Int\",\r\n                                    \"typeQualifiedName\":
-    \"UnityEngine.Vector3Int, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral,
-    PublicKeyToken=null\",\r\n                                    \"dataType\": {\r\n                                       
-    \"$id\": 52,\r\n                                        \"$type\": 8,\r\n                                       
-    \"UnityEngine.Vector3Int, UnityEngine.CoreModule\"\r\n                                   
-    },\r\n                                    \"isMulti\": true,\r\n                                   
-    \"direction\": 0,\r\n                                    \"typeConstraint\":
-    1,\r\n                                    \"edgeGUIDs\": {\r\n                                       
-    \"$id\": 53,\r\n                                        \"$type\": 9,\r\n                                       
-    \"$rlength\": 0,\r\n                                        \"$rcontent\": [\r\n                                       
-    ]\r\n                                    }\r\n                               
-    }\r\n                            },\r\n                            {\r\n                               
-    \"$k\": \"vector4\",\r\n                                \"$v\": {\r\n                                   
-    \"$id\": 54,\r\n                                    \"$type\": 7,\r\n                                   
-    \"graph\": $iref:0,\r\n                                    \"ownerGUID\": \"c4fac999-1a20-4ca4-bab4-84c7a87dc8d1\",\r\n                                   
-    \"fieldName\": \"vector4\",\r\n                                    \"typeQualifiedName\":
-    \"UnityEngine.Vector4, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral,
-    PublicKeyToken=null\",\r\n                                    \"dataType\": {\r\n                                       
-    \"$id\": 55,\r\n                                        \"$type\": 8,\r\n                                       
-    \"UnityEngine.Vector4, UnityEngine.CoreModule\"\r\n                                   
-    },\r\n                                    \"isMulti\": true,\r\n                                   
-    \"direction\": 0,\r\n                                    \"typeConstraint\":
-    1,\r\n                                    \"edgeGUIDs\": {\r\n                                       
-    \"$id\": 56,\r\n                                        \"$type\": 9,\r\n                                       
-    \"$rlength\": 0,\r\n                                        \"$rcontent\": [\r\n                                       
-    ]\r\n                                    }\r\n                               
-    }\r\n                            },\r\n                            {\r\n                               
-    \"$k\": \"i1\",\r\n                                \"$v\": {\r\n                                   
-    \"$id\": 57,\r\n                                    \"$type\": 7,\r\n                                   
-    \"graph\": $iref:0,\r\n                                    \"ownerGUID\": \"c4fac999-1a20-4ca4-bab4-84c7a87dc8d1\",\r\n                                   
-    \"fieldName\": \"i1\",\r\n                                    \"typeQualifiedName\":
-    \"System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089\",\r\n                                   
-    \"dataType\": $iref:18,\r\n                                    \"isMulti\": true,\r\n                                   
-    \"direction\": 1,\r\n                                    \"typeConstraint\":
-    1,\r\n                                    \"edgeGUIDs\": {\r\n                                       
-    \"$id\": 58,\r\n                                        \"$type\": 9,\r\n                                       
-    \"$rlength\": 0,\r\n                                        \"$rcontent\": [\r\n                                       
-    ]\r\n                                    }\r\n                               
-    }\r\n                            },\r\n                            {\r\n                               
-    \"$k\": \"l1\",\r\n                                \"$v\": {\r\n                                   
-    \"$id\": 59,\r\n                                    \"$type\": 7,\r\n                                   
-    \"graph\": $iref:0,\r\n                                    \"ownerGUID\": \"c4fac999-1a20-4ca4-bab4-84c7a87dc8d1\",\r\n                                   
-    \"fieldName\": \"l1\",\r\n                                    \"typeQualifiedName\":
-    \"System.Int64, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089\",\r\n                                   
-    \"dataType\": $iref:21,\r\n                                    \"isMulti\": true,\r\n                                   
-    \"direction\": 1,\r\n                                    \"typeConstraint\":
-    1,\r\n                                    \"edgeGUIDs\": {\r\n                                       
-    \"$id\": 60,\r\n                                        \"$type\": 9,\r\n                                       
-    \"$rlength\": 0,\r\n                                        \"$rcontent\": [\r\n                                       
-    ]\r\n                                    }\r\n                               
-    }\r\n                            },\r\n                            {\r\n                               
-    \"$k\": \"f1\",\r\n                                \"$v\": {\r\n                                   
-    \"$id\": 61,\r\n                                    \"$type\": 7,\r\n                                   
-    \"graph\": $iref:0,\r\n                                    \"ownerGUID\": \"c4fac999-1a20-4ca4-bab4-84c7a87dc8d1\",\r\n                                   
-    \"fieldName\": \"f1\",\r\n                                    \"typeQualifiedName\":
-    \"System.Single, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089\",\r\n                                   
-    \"dataType\": $iref:7,\r\n                                    \"isMulti\": true,\r\n                                   
-    \"direction\": 1,\r\n                                    \"typeConstraint\":
-    1,\r\n                                    \"edgeGUIDs\": {\r\n                                       
-    \"$id\": 62,\r\n                                        \"$type\": 9,\r\n                                       
-    \"$rlength\": 0,\r\n                                        \"$rcontent\": [\r\n                                       
-    ]\r\n                                    }\r\n                               
-    }\r\n                            },\r\n                            {\r\n                               
-    \"$k\": \"d1\",\r\n                                \"$v\": {\r\n                                   
-    \"$id\": 63,\r\n                                    \"$type\": 7,\r\n                                   
-    \"graph\": $iref:0,\r\n                                    \"ownerGUID\": \"c4fac999-1a20-4ca4-bab4-84c7a87dc8d1\",\r\n                                   
-    \"fieldName\": \"d1\",\r\n                                    \"typeQualifiedName\":
-    \"System.Double, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089\",\r\n                                   
-    \"dataType\": $iref:26,\r\n                                    \"isMulti\": true,\r\n                                   
-    \"direction\": 1,\r\n                                    \"typeConstraint\":
-    1,\r\n                                    \"edgeGUIDs\": {\r\n                                       
-    \"$id\": 64,\r\n                                        \"$type\": 9,\r\n                                       
-    \"$rlength\": 0,\r\n                                        \"$rcontent\": [\r\n                                       
-    ]\r\n                                    }\r\n                               
-    }\r\n                            },\r\n                            {\r\n                               
-    \"$k\": \"s1\",\r\n                                \"$v\": {\r\n                                   
-    \"$id\": 65,\r\n                                    \"$type\": 7,\r\n                                   
-    \"graph\": $iref:0,\r\n                                    \"ownerGUID\": \"c4fac999-1a20-4ca4-bab4-84c7a87dc8d1\",\r\n                                   
-    \"fieldName\": \"s1\",\r\n                                    \"typeQualifiedName\":
-    \"System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089\",\r\n                                   
-    \"dataType\": $iref:12,\r\n                                    \"isMulti\": true,\r\n                                   
-    \"direction\": 1,\r\n                                    \"typeConstraint\":
-    1,\r\n                                    \"edgeGUIDs\": {\r\n                                       
-    \"$id\": 66,\r\n                                        \"$type\": 9,\r\n                                       
-    \"$rlength\": 0,\r\n                                        \"$rcontent\": [\r\n                                       
-    ]\r\n                                    }\r\n                               
-    }\r\n                            },\r\n                            {\r\n                               
-    \"$k\": \"obj1\",\r\n                                \"$v\": {\r\n                                   
-    \"$id\": 67,\r\n                                    \"$type\": 7,\r\n                                   
-    \"graph\": $iref:0,\r\n                                    \"ownerGUID\": \"c4fac999-1a20-4ca4-bab4-84c7a87dc8d1\",\r\n                                   
-    \"fieldName\": \"obj1\",\r\n                                    \"typeQualifiedName\":
-    \"UnityEngine.Object, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral,
-    PublicKeyToken=null\",\r\n                                    \"dataType\": $iref:31,\r\n                                   
-    \"isMulti\": true,\r\n                                    \"direction\": 1,\r\n                                   
-    \"typeConstraint\": 1,\r\n                                    \"edgeGUIDs\":
-    {\r\n                                        \"$id\": 68,\r\n                                       
-    \"$type\": 9,\r\n                                        \"$rlength\": 0,\r\n                                       
-    \"$rcontent\": [\r\n                                        ]\r\n                                   
-    }\r\n                                }\r\n                            },\r\n                           
-    {\r\n                                \"$k\": \"gameObject1\",\r\n                               
-    \"$v\": {\r\n                                    \"$id\": 69,\r\n                                   
-    \"$type\": 7,\r\n                                    \"graph\": $iref:0,\r\n                                   
-    \"ownerGUID\": \"c4fac999-1a20-4ca4-bab4-84c7a87dc8d1\",\r\n                                   
-    \"fieldName\": \"gameObject1\",\r\n                                    \"typeQualifiedName\":
-    \"UnityEngine.GameObject, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral,
-    PublicKeyToken=null\",\r\n                                    \"dataType\": $iref:34,\r\n                                   
-    \"isMulti\": true,\r\n                                    \"direction\": 1,\r\n                                   
-    \"typeConstraint\": 1,\r\n                                    \"edgeGUIDs\":
-    {\r\n                                        \"$id\": 70,\r\n                                       
-    \"$type\": 9,\r\n                                        \"$rlength\": 0,\r\n                                       
-    \"$rcontent\": [\r\n                                        ]\r\n                                   
-    }\r\n                                }\r\n                            },\r\n                           
-    {\r\n                                \"$k\": \"mat1\",\r\n                               
-    \"$v\": {\r\n                                    \"$id\": 71,\r\n                                   
-    \"$type\": 7,\r\n                                    \"graph\": $iref:0,\r\n                                   
-    \"ownerGUID\": \"c4fac999-1a20-4ca4-bab4-84c7a87dc8d1\",\r\n                                   
-    \"fieldName\": \"mat1\",\r\n                                    \"typeQualifiedName\":
-    \"UnityEngine.Material, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral,
-    PublicKeyToken=null\",\r\n                                    \"dataType\": $iref:37,\r\n                                   
-    \"isMulti\": true,\r\n                                    \"direction\": 1,\r\n                                   
-    \"typeConstraint\": 1,\r\n                                    \"edgeGUIDs\":
-    {\r\n                                        \"$id\": 72,\r\n                                       
-    \"$type\": 9,\r\n                                        \"$rlength\": 0,\r\n                                       
-    \"$rcontent\": [\r\n                                        ]\r\n                                   
-    }\r\n                                }\r\n                            },\r\n                           
-    {\r\n                                \"$k\": \"color1\",\r\n                               
-    \"$v\": {\r\n                                    \"$id\": 73,\r\n                                   
-    \"$type\": 7,\r\n                                    \"graph\": $iref:0,\r\n                                   
-    \"ownerGUID\": \"c4fac999-1a20-4ca4-bab4-84c7a87dc8d1\",\r\n                                   
-    \"fieldName\": \"color1\",\r\n                                    \"typeQualifiedName\":
-    \"UnityEngine.Color, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral,
-    PublicKeyToken=null\",\r\n                                    \"dataType\": $iref:40,\r\n                                   
-    \"isMulti\": true,\r\n                                    \"direction\": 1,\r\n                                   
-    \"typeConstraint\": 1,\r\n                                    \"edgeGUIDs\":
-    {\r\n                                        \"$id\": 74,\r\n                                       
-    \"$type\": 9,\r\n                                        \"$rlength\": 0,\r\n                                       
-    \"$rcontent\": [\r\n                                        ]\r\n                                   
-    }\r\n                                }\r\n                            },\r\n                           
-    {\r\n                                \"$k\": \"vector21\",\r\n                               
-    \"$v\": {\r\n                                    \"$id\": 75,\r\n                                   
-    \"$type\": 7,\r\n                                    \"graph\": $iref:0,\r\n                                   
-    \"ownerGUID\": \"c4fac999-1a20-4ca4-bab4-84c7a87dc8d1\",\r\n                                   
-    \"fieldName\": \"vector21\",\r\n                                    \"typeQualifiedName\":
-    \"UnityEngine.Vector2, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral,
-    PublicKeyToken=null\",\r\n                                    \"dataType\": $iref:43,\r\n                                   
-    \"isMulti\": true,\r\n                                    \"direction\": 1,\r\n                                   
-    \"typeConstraint\": 1,\r\n                                    \"edgeGUIDs\":
-    {\r\n                                        \"$id\": 76,\r\n                                       
-    \"$type\": 9,\r\n                                        \"$rlength\": 0,\r\n                                       
-    \"$rcontent\": [\r\n                                        ]\r\n                                   
-    }\r\n                                }\r\n                            },\r\n                           
-    {\r\n                                \"$k\": \"vector2Int1\",\r\n                               
-    \"$v\": {\r\n                                    \"$id\": 77,\r\n                                   
-    \"$type\": 7,\r\n                                    \"graph\": $iref:0,\r\n                                   
-    \"ownerGUID\": \"c4fac999-1a20-4ca4-bab4-84c7a87dc8d1\",\r\n                                   
-    \"fieldName\": \"vector2Int1\",\r\n                                    \"typeQualifiedName\":
-    \"UnityEngine.Vector2Int, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral,
-    PublicKeyToken=null\",\r\n                                    \"dataType\": $iref:46,\r\n                                   
-    \"isMulti\": true,\r\n                                    \"direction\": 1,\r\n                                   
-    \"typeConstraint\": 1,\r\n                                    \"edgeGUIDs\":
-    {\r\n                                        \"$id\": 78,\r\n                                       
-    \"$type\": 9,\r\n                                        \"$rlength\": 0,\r\n                                       
-    \"$rcontent\": [\r\n                                        ]\r\n                                   
-    }\r\n                                }\r\n                            },\r\n                           
-    {\r\n                                \"$k\": \"vector31\",\r\n                               
-    \"$v\": {\r\n                                    \"$id\": 79,\r\n                                   
-    \"$type\": 7,\r\n                                    \"graph\": $iref:0,\r\n                                   
-    \"ownerGUID\": \"c4fac999-1a20-4ca4-bab4-84c7a87dc8d1\",\r\n                                   
-    \"fieldName\": \"vector31\",\r\n                                    \"typeQualifiedName\":
-    \"UnityEngine.Vector3, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral,
-    PublicKeyToken=null\",\r\n                                    \"dataType\": $iref:49,\r\n                                   
-    \"isMulti\": true,\r\n                                    \"direction\": 1,\r\n                                   
-    \"typeConstraint\": 1,\r\n                                    \"edgeGUIDs\":
-    {\r\n                                        \"$id\": 80,\r\n                                       
-    \"$type\": 9,\r\n                                        \"$rlength\": 0,\r\n                                       
-    \"$rcontent\": [\r\n                                        ]\r\n                                   
-    }\r\n                                }\r\n                            },\r\n                           
-    {\r\n                                \"$k\": \"vector3Int1\",\r\n                               
-    \"$v\": {\r\n                                    \"$id\": 81,\r\n                                   
-    \"$type\": 7,\r\n                                    \"graph\": $iref:0,\r\n                                   
-    \"ownerGUID\": \"c4fac999-1a20-4ca4-bab4-84c7a87dc8d1\",\r\n                                   
-    \"fieldName\": \"vector3Int1\",\r\n                                    \"typeQualifiedName\":
-    \"UnityEngine.Vector3Int, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral,
-    PublicKeyToken=null\",\r\n                                    \"dataType\": $iref:52,\r\n                                   
-    \"isMulti\": true,\r\n                                    \"direction\": 1,\r\n                                   
-    \"typeConstraint\": 1,\r\n                                    \"edgeGUIDs\":
-    {\r\n                                        \"$id\": 82,\r\n                                       
-    \"$type\": 9,\r\n                                        \"$rlength\": 0,\r\n                                       
-    \"$rcontent\": [\r\n                                        ]\r\n                                   
-    }\r\n                                }\r\n                            },\r\n                           
-    {\r\n                                \"$k\": \"vector41\",\r\n                               
-    \"$v\": {\r\n                                    \"$id\": 83,\r\n                                   
-    \"$type\": 7,\r\n                                    \"graph\": $iref:0,\r\n                                   
-    \"ownerGUID\": \"c4fac999-1a20-4ca4-bab4-84c7a87dc8d1\",\r\n                                   
-    \"fieldName\": \"vector41\",\r\n                                    \"typeQualifiedName\":
-    \"UnityEngine.Vector4, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral,
-    PublicKeyToken=null\",\r\n                                    \"dataType\": $iref:55,\r\n                                   
-    \"isMulti\": true,\r\n                                    \"direction\": 1,\r\n                                   
-    \"typeConstraint\": 1,\r\n                                    \"edgeGUIDs\":
-    {\r\n                                        \"$id\": 84,\r\n                                       
-    \"$type\": 9,\r\n                                        \"$rlength\": 0,\r\n                                       
-    \"$rcontent\": [\r\n                                        ]\r\n                                   
-    }\r\n                                }\r\n                            }\r\n                       
-    ]\r\n                    },\r\n                    \"i\": 0,\r\n                   
-    \"l\": 0,\r\n                    \"f\": 0,\r\n                    \"d\": 0,\r\n                   
-    \"s\": null,\r\n                    \"obj\": null,\r\n                    \"gameObject\":
-    $eref:0,\r\n                    \"mat\": $eref:1,\r\n                    \"color\":
-    {\r\n                        \"$type\": \"12|UnityEngine.Color, UnityEngine.CoreModule\",\r\n                       
-    0,\r\n                        0,\r\n                        0,\r\n                       
-    0\r\n                    },\r\n                    \"vector2\": {\r\n                       
-    \"$type\": \"13|UnityEngine.Vector2, UnityEngine.CoreModule\",\r\n                       
-    0,\r\n                        0\r\n                    },\r\n                   
-    \"vector2Int\": {\r\n                        \"$type\": \"14|UnityEngine.Vector2Int,
-    UnityEngine.CoreModule\"\r\n                    },\r\n                    \"vector3\":
-    {\r\n                        \"$type\": 1,\r\n                        0,\r\n                       
-    0,\r\n                        0\r\n                    },\r\n                   
-    \"vector3Int\": {\r\n                        \"$type\": \"15|UnityEngine.Vector3Int,
-    UnityEngine.CoreModule\"\r\n                    },\r\n                    \"vector4\":
-    {\r\n                        \"$type\": \"16|UnityEngine.Vector4, UnityEngine.CoreModule\",\r\n                       
-    0,\r\n                        0,\r\n                        0,\r\n                       
-    0\r\n                    },\r\n                    \"i1\": 0,\r\n                   
-    \"l1\": 0,\r\n                    \"f1\": 0,\r\n                    \"d1\": 0,\r\n                   
-    \"s1\": null,\r\n                    \"obj1\": null,\r\n                    \"gameObject1\":
-    null,\r\n                    \"mat1\": null,\r\n                    \"color1\":
-    {\r\n                        \"$type\": 12,\r\n                        0,\r\n                       
-    0,\r\n                        0,\r\n                        0\r\n                   
-    },\r\n                    \"vector21\": {\r\n                        \"$type\":
-    13,\r\n                        0,\r\n                        0\r\n                   
-    },\r\n                    \"vector2Int1\": {\r\n                        \"$type\":
-    14\r\n                    },\r\n                    \"vector31\": {\r\n                       
-    \"$type\": 1,\r\n                        0,\r\n                        0,\r\n                       
-    0\r\n                    },\r\n                    \"vector3Int1\": {\r\n                       
-    \"$type\": 15\r\n                    },\r\n                    \"vector41\":
-    {\r\n                        \"$type\": 16,\r\n                        0,\r\n                       
-    0,\r\n                        0,\r\n                        0\r\n                   
-    }\r\n                }\r\n            },\r\n            {\r\n               
-    \"$k\": \"fc44829c-db62-4450-b952-938bed7c0921\",\r\n                \"$v\":
-    {\r\n                    \"$id\": 85,\r\n                    \"$type\": \"17|CZToolKit.GraphProcessor.ParameterNode,
-    Assembly-CSharp\",\r\n                    \"guid\": \"fc44829c-db62-4450-b952-938bed7c0921\",\r\n                   
-    \"position\": {\r\n                        \"$type\": 2,\r\n                       
-    199.869553,\r\n                        120.695648,\r\n                       
-    211,\r\n                        27\r\n                    },\r\n                   
-    \"expanded\": true,\r\n                    \"locked\": false,\r\n                   
-    \"ports\": {\r\n                        \"$id\": 86,\r\n                       
-    \"$type\": 6,\r\n                        \"comparer\": {\r\n                           
-    \"$id\": 87,\r\n                            \"$type\": 4\r\n                       
-    },\r\n                        \"$rlength\": 1,\r\n                        \"$rcontent\":
-    [\r\n                            {\r\n                                \"$k\":
-    \"output\",\r\n                                \"$v\": {\r\n                                   
-    \"$id\": 88,\r\n                                    \"$type\": 7,\r\n                                   
-    \"graph\": $iref:0,\r\n                                    \"ownerGUID\": \"fc44829c-db62-4450-b952-938bed7c0921\",\r\n                                   
-    \"fieldName\": \"output\",\r\n                                    \"typeQualifiedName\":
-    \"UnityEngine.GameObject, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral,
-    PublicKeyToken=null\",\r\n                                    \"dataType\": $iref:34,\r\n                                   
-    \"isMulti\": true,\r\n                                    \"direction\": 1,\r\n                                   
-    \"typeConstraint\": 1,\r\n                                    \"edgeGUIDs\":
-    {\r\n                                        \"$id\": 89,\r\n                                       
-    \"$type\": 9,\r\n                                        \"$rlength\": 0,\r\n                                       
-    \"$rcontent\": [\r\n                                        ]\r\n                                   
-    }\r\n                                }\r\n                            }\r\n                       
-    ]\r\n                    },\r\n                    \"output\": null,\r\n                   
-    \"name\": \"right\"\r\n                }\r\n            },\r\n            {\r\n               
-    \"$k\": \"aa9014db-82db-4d80-9dec-3e21b59db0dd\",\r\n                \"$v\":
-    {\r\n                    \"$id\": 90,\r\n                    \"$type\": \"18|CZToolKit.GraphProcessor.StringNode,
-    Assembly-CSharp\",\r\n                    \"guid\": \"aa9014db-82db-4d80-9dec-3e21b59db0dd\",\r\n                   
-    \"position\": {\r\n                        \"$type\": 2,\r\n                       
-    1364.30432,\r\n                        70.9565353,\r\n                       
-    83,\r\n                        77\r\n                    },\r\n                   
-    \"expanded\": true,\r\n                    \"locked\": false,\r\n                   
-    \"ports\": {\r\n                        \"$id\": 91,\r\n                       
-    \"$type\": 6,\r\n                        \"comparer\": {\r\n                           
-    \"$id\": 92,\r\n                            \"$type\": 4\r\n                       
-    },\r\n                        \"$rlength\": 1,\r\n                        \"$rcontent\":
-    [\r\n                            {\r\n                                \"$k\":
-    \"value\",\r\n                                \"$v\": {\r\n                                   
-    \"$id\": 93,\r\n                                    \"$type\": 7,\r\n                                   
-    \"graph\": $iref:0,\r\n                                    \"ownerGUID\": \"aa9014db-82db-4d80-9dec-3e21b59db0dd\",\r\n                                   
-    \"fieldName\": \"value\",\r\n                                    \"typeQualifiedName\":
-    \"System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089\",\r\n                                   
-    \"dataType\": $iref:12,\r\n                                    \"isMulti\": true,\r\n                                   
-    \"direction\": 1,\r\n                                    \"typeConstraint\":
-    1,\r\n                                    \"edgeGUIDs\": {\r\n                                       
-    \"$id\": 94,\r\n                                        \"$type\": 9,\r\n                                       
-    \"$rlength\": 0,\r\n                                        \"$rcontent\": [\r\n                                       
-    ]\r\n                                    }\r\n                               
-    }\r\n                            }\r\n                        ]\r\n                   
-    },\r\n                    \"value\": null\r\n                }\r\n           
-    },\r\n            {\r\n                \"$k\": \"3b21fe53-d436-44e5-a668-8995c3489b85\",\r\n               
-    \"$v\": {\r\n                    \"$id\": 95,\r\n                    \"$type\":
-    18,\r\n                    \"guid\": \"3b21fe53-d436-44e5-a668-8995c3489b85\",\r\n                   
-    \"position\": {\r\n                        \"$type\": 2,\r\n                       
-    1253.56519,\r\n                        37.08696,\r\n                        83,\r\n                       
-    77\r\n                    },\r\n                    \"expanded\": true,\r\n                   
-    \"locked\": false,\r\n                    \"ports\": {\r\n                       
-    \"$id\": 96,\r\n                        \"$type\": 6,\r\n                       
-    \"comparer\": {\r\n                            \"$id\": 97,\r\n                           
-    \"$type\": 4\r\n                        },\r\n                        \"$rlength\":
-    1,\r\n                        \"$rcontent\": [\r\n                           
-    {\r\n                                \"$k\": \"value\",\r\n                               
-    \"$v\": {\r\n                                    \"$id\": 98,\r\n                                   
-    \"$type\": 7,\r\n                                    \"graph\": $iref:0,\r\n                                   
-    \"ownerGUID\": \"3b21fe53-d436-44e5-a668-8995c3489b85\",\r\n                                   
-    \"fieldName\": \"value\",\r\n                                    \"typeQualifiedName\":
-    \"System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089\",\r\n                                   
-    \"dataType\": $iref:12,\r\n                                    \"isMulti\": true,\r\n                                   
-    \"direction\": 1,\r\n                                    \"typeConstraint\":
-    1,\r\n                                    \"edgeGUIDs\": {\r\n                                       
-    \"$id\": 99,\r\n                                        \"$type\": 9,\r\n                                       
-    \"$rlength\": 0,\r\n                                        \"$rcontent\": [\r\n                                       
-    ]\r\n                                    }\r\n                               
-    }\r\n                            }\r\n                        ]\r\n                   
-    },\r\n                    \"value\": null\r\n                }\r\n           
-    },\r\n            {\r\n                \"$k\": \"aac32252-52c0-4141-97d1-fc4713fd5d29\",\r\n               
-    \"$v\": {\r\n                    \"$id\": 100,\r\n                    \"$type\":
-    11,\r\n                    \"guid\": \"aac32252-52c0-4141-97d1-fc4713fd5d29\",\r\n                   
-    \"position\": {\r\n                        \"$type\": 2,\r\n                       
-    1325.80652,\r\n                        399.941467,\r\n                       
-    220.999969,\r\n                        388.999939\r\n                    },\r\n                   
-    \"expanded\": true,\r\n                    \"locked\": false,\r\n                   
-    \"ports\": {\r\n                        \"$id\": 101,\r\n                       
-    \"$type\": 6,\r\n                        \"comparer\": $iref:92,\r\n                       
-    \"$rlength\": 28,\r\n                        \"$rcontent\": [\r\n                           
-    {\r\n                                \"$k\": \"i\",\r\n                               
-    \"$v\": {\r\n                                    \"$id\": 102,\r\n                                   
-    \"$type\": 7,\r\n                                    \"graph\": $iref:0,\r\n                                   
-    \"ownerGUID\": \"aac32252-52c0-4141-97d1-fc4713fd5d29\",\r\n                                   
-    \"fieldName\": \"i\",\r\n                                    \"typeQualifiedName\":
-    \"System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089\",\r\n                                   
-    \"dataType\": $iref:18,\r\n                                    \"isMulti\": true,\r\n                                   
-    \"direction\": 0,\r\n                                    \"typeConstraint\":
-    1,\r\n                                    \"edgeGUIDs\": {\r\n                                       
-    \"$id\": 103,\r\n                                        \"$type\": 9,\r\n                                       
-    \"$rlength\": 0,\r\n                                        \"$rcontent\": [\r\n                                       
-    ]\r\n                                    }\r\n                               
-    }\r\n                            },\r\n                            {\r\n                               
-    \"$k\": \"l\",\r\n                                \"$v\": {\r\n                                   
-    \"$id\": 104,\r\n                                    \"$type\": 7,\r\n                                   
-    \"graph\": $iref:0,\r\n                                    \"ownerGUID\": \"aac32252-52c0-4141-97d1-fc4713fd5d29\",\r\n                                   
-    \"fieldName\": \"l\",\r\n                                    \"typeQualifiedName\":
-    \"System.Int64, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089\",\r\n                                   
-    \"dataType\": $iref:21,\r\n                                    \"isMulti\": true,\r\n                                   
-    \"direction\": 0,\r\n                                    \"typeConstraint\":
-    1,\r\n                                    \"edgeGUIDs\": {\r\n                                       
-    \"$id\": 105,\r\n                                        \"$type\": 9,\r\n                                       
-    \"$rlength\": 0,\r\n                                        \"$rcontent\": [\r\n                                       
-    ]\r\n                                    }\r\n                               
-    }\r\n                            },\r\n                            {\r\n                               
-    \"$k\": \"f\",\r\n                                \"$v\": {\r\n                                   
-    \"$id\": 106,\r\n                                    \"$type\": 7,\r\n                                   
-    \"graph\": $iref:0,\r\n                                    \"ownerGUID\": \"aac32252-52c0-4141-97d1-fc4713fd5d29\",\r\n                                   
-    \"fieldName\": \"f\",\r\n                                    \"typeQualifiedName\":
-    \"System.Single, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089\",\r\n                                   
-    \"dataType\": $iref:7,\r\n                                    \"isMulti\": true,\r\n                                   
-    \"direction\": 0,\r\n                                    \"typeConstraint\":
-    1,\r\n                                    \"edgeGUIDs\": {\r\n                                       
-    \"$id\": 107,\r\n                                        \"$type\": 9,\r\n                                       
-    \"$rlength\": 0,\r\n                                        \"$rcontent\": [\r\n                                       
-    ]\r\n                                    }\r\n                               
-    }\r\n                            },\r\n                            {\r\n                               
-    \"$k\": \"d\",\r\n                                \"$v\": {\r\n                                   
-    \"$id\": 108,\r\n                                    \"$type\": 7,\r\n                                   
-    \"graph\": $iref:0,\r\n                                    \"ownerGUID\": \"aac32252-52c0-4141-97d1-fc4713fd5d29\",\r\n                                   
-    \"fieldName\": \"d\",\r\n                                    \"typeQualifiedName\":
-    \"System.Double, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089\",\r\n                                   
-    \"dataType\": $iref:26,\r\n                                    \"isMulti\": true,\r\n                                   
-    \"direction\": 0,\r\n                                    \"typeConstraint\":
-    1,\r\n                                    \"edgeGUIDs\": {\r\n                                       
-    \"$id\": 109,\r\n                                        \"$type\": 9,\r\n                                       
-    \"$rlength\": 0,\r\n                                        \"$rcontent\": [\r\n                                       
-    ]\r\n                                    }\r\n                               
-    }\r\n                            },\r\n                            {\r\n                               
-    \"$k\": \"s\",\r\n                                \"$v\": {\r\n                                   
-    \"$id\": 110,\r\n                                    \"$type\": 7,\r\n                                   
-    \"graph\": $iref:0,\r\n                                    \"ownerGUID\": \"aac32252-52c0-4141-97d1-fc4713fd5d29\",\r\n                                   
-    \"fieldName\": \"s\",\r\n                                    \"typeQualifiedName\":
-    \"System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089\",\r\n                                   
-    \"dataType\": $iref:12,\r\n                                    \"isMulti\": true,\r\n                                   
-    \"direction\": 0,\r\n                                    \"typeConstraint\":
-    1,\r\n                                    \"edgeGUIDs\": {\r\n                                       
-    \"$id\": 111,\r\n                                        \"$type\": 9,\r\n                                       
-    \"$rlength\": 0,\r\n                                        \"$rcontent\": [\r\n                                       
-    ]\r\n                                    }\r\n                               
-    }\r\n                            },\r\n                            {\r\n                               
-    \"$k\": \"obj\",\r\n                                \"$v\": {\r\n                                   
-    \"$id\": 112,\r\n                                    \"$type\": 7,\r\n                                   
-    \"graph\": $iref:0,\r\n                                    \"ownerGUID\": \"aac32252-52c0-4141-97d1-fc4713fd5d29\",\r\n                                   
-    \"fieldName\": \"obj\",\r\n                                    \"typeQualifiedName\":
-    \"UnityEngine.Object, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral,
-    PublicKeyToken=null\",\r\n                                    \"dataType\": $iref:31,\r\n                                   
-    \"isMulti\": true,\r\n                                    \"direction\": 0,\r\n                                   
-    \"typeConstraint\": 1,\r\n                                    \"edgeGUIDs\":
-    {\r\n                                        \"$id\": 113,\r\n                                       
-    \"$type\": 9,\r\n                                        \"$rlength\": 0,\r\n                                       
-    \"$rcontent\": [\r\n                                        ]\r\n                                   
-    }\r\n                                }\r\n                            },\r\n                           
-    {\r\n                                \"$k\": \"gameObject\",\r\n                               
-    \"$v\": {\r\n                                    \"$id\": 114,\r\n                                   
-    \"$type\": 7,\r\n                                    \"graph\": $iref:0,\r\n                                   
-    \"ownerGUID\": \"aac32252-52c0-4141-97d1-fc4713fd5d29\",\r\n                                   
-    \"fieldName\": \"gameObject\",\r\n                                    \"typeQualifiedName\":
-    \"UnityEngine.GameObject, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral,
-    PublicKeyToken=null\",\r\n                                    \"dataType\": $iref:34,\r\n                                   
-    \"isMulti\": true,\r\n                                    \"direction\": 0,\r\n                                   
-    \"typeConstraint\": 1,\r\n                                    \"edgeGUIDs\":
-    {\r\n                                        \"$id\": 115,\r\n                                       
-    \"$type\": 9,\r\n                                        \"$rlength\": 0,\r\n                                       
-    \"$rcontent\": [\r\n                                        ]\r\n                                   
-    }\r\n                                }\r\n                            },\r\n                           
-    {\r\n                                \"$k\": \"mat\",\r\n                               
-    \"$v\": {\r\n                                    \"$id\": 116,\r\n                                   
-    \"$type\": 7,\r\n                                    \"graph\": $iref:0,\r\n                                   
-    \"ownerGUID\": \"aac32252-52c0-4141-97d1-fc4713fd5d29\",\r\n                                   
-    \"fieldName\": \"mat\",\r\n                                    \"typeQualifiedName\":
-    \"UnityEngine.Material, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral,
-    PublicKeyToken=null\",\r\n                                    \"dataType\": $iref:37,\r\n                                   
-    \"isMulti\": true,\r\n                                    \"direction\": 0,\r\n                                   
-    \"typeConstraint\": 1,\r\n                                    \"edgeGUIDs\":
-    {\r\n                                        \"$id\": 117,\r\n                                       
-    \"$type\": 9,\r\n                                        \"$rlength\": 0,\r\n                                       
-    \"$rcontent\": [\r\n                                        ]\r\n                                   
-    }\r\n                                }\r\n                            },\r\n                           
-    {\r\n                                \"$k\": \"color\",\r\n                               
-    \"$v\": {\r\n                                    \"$id\": 118,\r\n                                   
-    \"$type\": 7,\r\n                                    \"graph\": $iref:0,\r\n                                   
-    \"ownerGUID\": \"aac32252-52c0-4141-97d1-fc4713fd5d29\",\r\n                                   
-    \"fieldName\": \"color\",\r\n                                    \"typeQualifiedName\":
-    \"UnityEngine.Color, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral,
-    PublicKeyToken=null\",\r\n                                    \"dataType\": $iref:40,\r\n                                   
-    \"isMulti\": true,\r\n                                    \"direction\": 0,\r\n                                   
-    \"typeConstraint\": 1,\r\n                                    \"edgeGUIDs\":
-    {\r\n                                        \"$id\": 119,\r\n                                       
-    \"$type\": 9,\r\n                                        \"$rlength\": 0,\r\n                                       
-    \"$rcontent\": [\r\n                                        ]\r\n                                   
-    }\r\n                                }\r\n                            },\r\n                           
-    {\r\n                                \"$k\": \"vector2\",\r\n                               
-    \"$v\": {\r\n                                    \"$id\": 120,\r\n                                   
-    \"$type\": 7,\r\n                                    \"graph\": $iref:0,\r\n                                   
-    \"ownerGUID\": \"aac32252-52c0-4141-97d1-fc4713fd5d29\",\r\n                                   
-    \"fieldName\": \"vector2\",\r\n                                    \"typeQualifiedName\":
-    \"UnityEngine.Vector2, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral,
-    PublicKeyToken=null\",\r\n                                    \"dataType\": $iref:43,\r\n                                   
-    \"isMulti\": true,\r\n                                    \"direction\": 0,\r\n                                   
-    \"typeConstraint\": 1,\r\n                                    \"edgeGUIDs\":
-    {\r\n                                        \"$id\": 121,\r\n                                       
-    \"$type\": 9,\r\n                                        \"$rlength\": 0,\r\n                                       
-    \"$rcontent\": [\r\n                                        ]\r\n                                   
-    }\r\n                                }\r\n                            },\r\n                           
-    {\r\n                                \"$k\": \"vector2Int\",\r\n                               
-    \"$v\": {\r\n                                    \"$id\": 122,\r\n                                   
-    \"$type\": 7,\r\n                                    \"graph\": $iref:0,\r\n                                   
-    \"ownerGUID\": \"aac32252-52c0-4141-97d1-fc4713fd5d29\",\r\n                                   
-    \"fieldName\": \"vector2Int\",\r\n                                    \"typeQualifiedName\":
-    \"UnityEngine.Vector2Int, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral,
-    PublicKeyToken=null\",\r\n                                    \"dataType\": $iref:46,\r\n                                   
-    \"isMulti\": true,\r\n                                    \"direction\": 0,\r\n                                   
-    \"typeConstraint\": 1,\r\n                                    \"edgeGUIDs\":
-    {\r\n                                        \"$id\": 123,\r\n                                       
-    \"$type\": 9,\r\n                                        \"$rlength\": 0,\r\n                                       
-    \"$rcontent\": [\r\n                                        ]\r\n                                   
-    }\r\n                                }\r\n                            },\r\n                           
-    {\r\n                                \"$k\": \"vector3\",\r\n                               
-    \"$v\": {\r\n                                    \"$id\": 124,\r\n                                   
-    \"$type\": 7,\r\n                                    \"graph\": $iref:0,\r\n                                   
-    \"ownerGUID\": \"aac32252-52c0-4141-97d1-fc4713fd5d29\",\r\n                                   
-    \"fieldName\": \"vector3\",\r\n                                    \"typeQualifiedName\":
-    \"UnityEngine.Vector3, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral,
-    PublicKeyToken=null\",\r\n                                    \"dataType\": $iref:49,\r\n                                   
-    \"isMulti\": true,\r\n                                    \"direction\": 0,\r\n                                   
-    \"typeConstraint\": 1,\r\n                                    \"edgeGUIDs\":
-    {\r\n                                        \"$id\": 125,\r\n                                       
-    \"$type\": 9,\r\n                                        \"$rlength\": 0,\r\n                                       
-    \"$rcontent\": [\r\n                                        ]\r\n                                   
-    }\r\n                                }\r\n                            },\r\n                           
-    {\r\n                                \"$k\": \"vector3Int\",\r\n                               
-    \"$v\": {\r\n                                    \"$id\": 126,\r\n                                   
-    \"$type\": 7,\r\n                                    \"graph\": $iref:0,\r\n                                   
-    \"ownerGUID\": \"aac32252-52c0-4141-97d1-fc4713fd5d29\",\r\n                                   
-    \"fieldName\": \"vector3Int\",\r\n                                    \"typeQualifiedName\":
-    \"UnityEngine.Vector3Int, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral,
-    PublicKeyToken=null\",\r\n                                    \"dataType\": $iref:52,\r\n                                   
-    \"isMulti\": true,\r\n                                    \"direction\": 0,\r\n                                   
-    \"typeConstraint\": 1,\r\n                                    \"edgeGUIDs\":
-    {\r\n                                        \"$id\": 127,\r\n                                       
-    \"$type\": 9,\r\n                                        \"$rlength\": 0,\r\n                                       
-    \"$rcontent\": [\r\n                                        ]\r\n                                   
-    }\r\n                                }\r\n                            },\r\n                           
-    {\r\n                                \"$k\": \"vector4\",\r\n                               
-    \"$v\": {\r\n                                    \"$id\": 128,\r\n                                   
-    \"$type\": 7,\r\n                                    \"graph\": $iref:0,\r\n                                   
-    \"ownerGUID\": \"aac32252-52c0-4141-97d1-fc4713fd5d29\",\r\n                                   
-    \"fieldName\": \"vector4\",\r\n                                    \"typeQualifiedName\":
-    \"UnityEngine.Vector4, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral,
-    PublicKeyToken=null\",\r\n                                    \"dataType\": $iref:55,\r\n                                   
-    \"isMulti\": true,\r\n                                    \"direction\": 0,\r\n                                   
-    \"typeConstraint\": 1,\r\n                                    \"edgeGUIDs\":
-    {\r\n                                        \"$id\": 129,\r\n                                       
-    \"$type\": 9,\r\n                                        \"$rlength\": 0,\r\n                                       
-    \"$rcontent\": [\r\n                                        ]\r\n                                   
-    }\r\n                                }\r\n                            },\r\n                           
-    {\r\n                                \"$k\": \"i1\",\r\n                               
-    \"$v\": {\r\n                                    \"$id\": 130,\r\n                                   
-    \"$type\": 7,\r\n                                    \"graph\": $iref:0,\r\n                                   
-    \"ownerGUID\": \"aac32252-52c0-4141-97d1-fc4713fd5d29\",\r\n                                   
-    \"fieldName\": \"i1\",\r\n                                    \"typeQualifiedName\":
-    \"System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089\",\r\n                                   
-    \"dataType\": $iref:18,\r\n                                    \"isMulti\": true,\r\n                                   
-    \"direction\": 1,\r\n                                    \"typeConstraint\":
-    1,\r\n                                    \"edgeGUIDs\": {\r\n                                       
-    \"$id\": 131,\r\n                                        \"$type\": 9,\r\n                                       
-    \"$rlength\": 0,\r\n                                        \"$rcontent\": [\r\n                                       
-    ]\r\n                                    }\r\n                               
-    }\r\n                            },\r\n                            {\r\n                               
-    \"$k\": \"l1\",\r\n                                \"$v\": {\r\n                                   
-    \"$id\": 132,\r\n                                    \"$type\": 7,\r\n                                   
-    \"graph\": $iref:0,\r\n                                    \"ownerGUID\": \"aac32252-52c0-4141-97d1-fc4713fd5d29\",\r\n                                   
-    \"fieldName\": \"l1\",\r\n                                    \"typeQualifiedName\":
-    \"System.Int64, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089\",\r\n                                   
-    \"dataType\": $iref:21,\r\n                                    \"isMulti\": true,\r\n                                   
-    \"direction\": 1,\r\n                                    \"typeConstraint\":
-    1,\r\n                                    \"edgeGUIDs\": {\r\n                                       
-    \"$id\": 133,\r\n                                        \"$type\": 9,\r\n                                       
-    \"$rlength\": 0,\r\n                                        \"$rcontent\": [\r\n                                       
-    ]\r\n                                    }\r\n                               
-    }\r\n                            },\r\n                            {\r\n                               
-    \"$k\": \"f1\",\r\n                                \"$v\": {\r\n                                   
-    \"$id\": 134,\r\n                                    \"$type\": 7,\r\n                                   
-    \"graph\": $iref:0,\r\n                                    \"ownerGUID\": \"aac32252-52c0-4141-97d1-fc4713fd5d29\",\r\n                                   
-    \"fieldName\": \"f1\",\r\n                                    \"typeQualifiedName\":
-    \"System.Single, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089\",\r\n                                   
-    \"dataType\": $iref:7,\r\n                                    \"isMulti\": true,\r\n                                   
-    \"direction\": 1,\r\n                                    \"typeConstraint\":
-    1,\r\n                                    \"edgeGUIDs\": {\r\n                                       
-    \"$id\": 135,\r\n                                        \"$type\": 9,\r\n                                       
-    \"$rlength\": 0,\r\n                                        \"$rcontent\": [\r\n                                       
-    ]\r\n                                    }\r\n                               
-    }\r\n                            },\r\n                            {\r\n                               
-    \"$k\": \"d1\",\r\n                                \"$v\": {\r\n                                   
-    \"$id\": 136,\r\n                                    \"$type\": 7,\r\n                                   
-    \"graph\": $iref:0,\r\n                                    \"ownerGUID\": \"aac32252-52c0-4141-97d1-fc4713fd5d29\",\r\n                                   
-    \"fieldName\": \"d1\",\r\n                                    \"typeQualifiedName\":
-    \"System.Double, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089\",\r\n                                   
-    \"dataType\": $iref:26,\r\n                                    \"isMulti\": true,\r\n                                   
-    \"direction\": 1,\r\n                                    \"typeConstraint\":
-    1,\r\n                                    \"edgeGUIDs\": {\r\n                                       
-    \"$id\": 137,\r\n                                        \"$type\": 9,\r\n                                       
-    \"$rlength\": 0,\r\n                                        \"$rcontent\": [\r\n                                       
-    ]\r\n                                    }\r\n                               
-    }\r\n                            },\r\n                            {\r\n                               
-    \"$k\": \"s1\",\r\n                                \"$v\": {\r\n                                   
-    \"$id\": 138,\r\n                                    \"$type\": 7,\r\n                                   
-    \"graph\": $iref:0,\r\n                                    \"ownerGUID\": \"aac32252-52c0-4141-97d1-fc4713fd5d29\",\r\n                                   
-    \"fieldName\": \"s1\",\r\n                                    \"typeQualifiedName\":
-    \"System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089\",\r\n                                   
-    \"dataType\": $iref:12,\r\n                                    \"isMulti\": true,\r\n                                   
-    \"direction\": 1,\r\n                                    \"typeConstraint\":
-    1,\r\n                                    \"edgeGUIDs\": {\r\n                                       
-    \"$id\": 139,\r\n                                        \"$type\": 9,\r\n                                       
-    \"$rlength\": 0,\r\n                                        \"$rcontent\": [\r\n                                       
-    ]\r\n                                    }\r\n                               
-    }\r\n                            },\r\n                            {\r\n                               
-    \"$k\": \"obj1\",\r\n                                \"$v\": {\r\n                                   
-    \"$id\": 140,\r\n                                    \"$type\": 7,\r\n                                   
-    \"graph\": $iref:0,\r\n                                    \"ownerGUID\": \"aac32252-52c0-4141-97d1-fc4713fd5d29\",\r\n                                   
-    \"fieldName\": \"obj1\",\r\n                                    \"typeQualifiedName\":
-    \"UnityEngine.Object, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral,
-    PublicKeyToken=null\",\r\n                                    \"dataType\": $iref:31,\r\n                                   
-    \"isMulti\": true,\r\n                                    \"direction\": 1,\r\n                                   
-    \"typeConstraint\": 1,\r\n                                    \"edgeGUIDs\":
-    {\r\n                                        \"$id\": 141,\r\n                                       
-    \"$type\": 9,\r\n                                        \"$rlength\": 0,\r\n                                       
-    \"$rcontent\": [\r\n                                        ]\r\n                                   
-    }\r\n                                }\r\n                            },\r\n                           
-    {\r\n                                \"$k\": \"gameObject1\",\r\n                               
-    \"$v\": {\r\n                                    \"$id\": 142,\r\n                                   
-    \"$type\": 7,\r\n                                    \"graph\": $iref:0,\r\n                                   
-    \"ownerGUID\": \"aac32252-52c0-4141-97d1-fc4713fd5d29\",\r\n                                   
-    \"fieldName\": \"gameObject1\",\r\n                                    \"typeQualifiedName\":
-    \"UnityEngine.GameObject, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral,
-    PublicKeyToken=null\",\r\n                                    \"dataType\": $iref:34,\r\n                                   
-    \"isMulti\": true,\r\n                                    \"direction\": 1,\r\n                                   
-    \"typeConstraint\": 1,\r\n                                    \"edgeGUIDs\":
-    {\r\n                                        \"$id\": 143,\r\n                                       
-    \"$type\": 9,\r\n                                        \"$rlength\": 0,\r\n                                       
-    \"$rcontent\": [\r\n                                        ]\r\n                                   
-    }\r\n                                }\r\n                            },\r\n                           
-    {\r\n                                \"$k\": \"mat1\",\r\n                               
-    \"$v\": {\r\n                                    \"$id\": 144,\r\n                                   
-    \"$type\": 7,\r\n                                    \"graph\": $iref:0,\r\n                                   
-    \"ownerGUID\": \"aac32252-52c0-4141-97d1-fc4713fd5d29\",\r\n                                   
-    \"fieldName\": \"mat1\",\r\n                                    \"typeQualifiedName\":
-    \"UnityEngine.Material, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral,
-    PublicKeyToken=null\",\r\n                                    \"dataType\": $iref:37,\r\n                                   
-    \"isMulti\": true,\r\n                                    \"direction\": 1,\r\n                                   
-    \"typeConstraint\": 1,\r\n                                    \"edgeGUIDs\":
-    {\r\n                                        \"$id\": 145,\r\n                                       
-    \"$type\": 9,\r\n                                        \"$rlength\": 0,\r\n                                       
-    \"$rcontent\": [\r\n                                        ]\r\n                                   
-    }\r\n                                }\r\n                            },\r\n                           
-    {\r\n                                \"$k\": \"color1\",\r\n                               
-    \"$v\": {\r\n                                    \"$id\": 146,\r\n                                   
-    \"$type\": 7,\r\n                                    \"graph\": $iref:0,\r\n                                   
-    \"ownerGUID\": \"aac32252-52c0-4141-97d1-fc4713fd5d29\",\r\n                                   
-    \"fieldName\": \"color1\",\r\n                                    \"typeQualifiedName\":
-    \"UnityEngine.Color, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral,
-    PublicKeyToken=null\",\r\n                                    \"dataType\": $iref:40,\r\n                                   
-    \"isMulti\": true,\r\n                                    \"direction\": 1,\r\n                                   
-    \"typeConstraint\": 1,\r\n                                    \"edgeGUIDs\":
-    {\r\n                                        \"$id\": 147,\r\n                                       
-    \"$type\": 9,\r\n                                        \"$rlength\": 0,\r\n                                       
-    \"$rcontent\": [\r\n                                        ]\r\n                                   
-    }\r\n                                }\r\n                            },\r\n                           
-    {\r\n                                \"$k\": \"vector21\",\r\n                               
-    \"$v\": {\r\n                                    \"$id\": 148,\r\n                                   
-    \"$type\": 7,\r\n                                    \"graph\": $iref:0,\r\n                                   
-    \"ownerGUID\": \"aac32252-52c0-4141-97d1-fc4713fd5d29\",\r\n                                   
-    \"fieldName\": \"vector21\",\r\n                                    \"typeQualifiedName\":
-    \"UnityEngine.Vector2, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral,
-    PublicKeyToken=null\",\r\n                                    \"dataType\": $iref:43,\r\n                                   
-    \"isMulti\": true,\r\n                                    \"direction\": 1,\r\n                                   
-    \"typeConstraint\": 1,\r\n                                    \"edgeGUIDs\":
-    {\r\n                                        \"$id\": 149,\r\n                                       
-    \"$type\": 9,\r\n                                        \"$rlength\": 0,\r\n                                       
-    \"$rcontent\": [\r\n                                        ]\r\n                                   
-    }\r\n                                }\r\n                            },\r\n                           
-    {\r\n                                \"$k\": \"vector2Int1\",\r\n                               
-    \"$v\": {\r\n                                    \"$id\": 150,\r\n                                   
-    \"$type\": 7,\r\n                                    \"graph\": $iref:0,\r\n                                   
-    \"ownerGUID\": \"aac32252-52c0-4141-97d1-fc4713fd5d29\",\r\n                                   
-    \"fieldName\": \"vector2Int1\",\r\n                                    \"typeQualifiedName\":
-    \"UnityEngine.Vector2Int, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral,
-    PublicKeyToken=null\",\r\n                                    \"dataType\": $iref:46,\r\n                                   
-    \"isMulti\": true,\r\n                                    \"direction\": 1,\r\n                                   
-    \"typeConstraint\": 1,\r\n                                    \"edgeGUIDs\":
-    {\r\n                                        \"$id\": 151,\r\n                                       
-    \"$type\": 9,\r\n                                        \"$rlength\": 0,\r\n                                       
-    \"$rcontent\": [\r\n                                        ]\r\n                                   
-    }\r\n                                }\r\n                            },\r\n                           
-    {\r\n                                \"$k\": \"vector31\",\r\n                               
-    \"$v\": {\r\n                                    \"$id\": 152,\r\n                                   
-    \"$type\": 7,\r\n                                    \"graph\": $iref:0,\r\n                                   
-    \"ownerGUID\": \"aac32252-52c0-4141-97d1-fc4713fd5d29\",\r\n                                   
-    \"fieldName\": \"vector31\",\r\n                                    \"typeQualifiedName\":
-    \"UnityEngine.Vector3, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral,
-    PublicKeyToken=null\",\r\n                                    \"dataType\": $iref:49,\r\n                                   
-    \"isMulti\": true,\r\n                                    \"direction\": 1,\r\n                                   
-    \"typeConstraint\": 1,\r\n                                    \"edgeGUIDs\":
-    {\r\n                                        \"$id\": 153,\r\n                                       
-    \"$type\": 9,\r\n                                        \"$rlength\": 0,\r\n                                       
-    \"$rcontent\": [\r\n                                        ]\r\n                                   
-    }\r\n                                }\r\n                            },\r\n                           
-    {\r\n                                \"$k\": \"vector3Int1\",\r\n                               
-    \"$v\": {\r\n                                    \"$id\": 154,\r\n                                   
-    \"$type\": 7,\r\n                                    \"graph\": $iref:0,\r\n                                   
-    \"ownerGUID\": \"aac32252-52c0-4141-97d1-fc4713fd5d29\",\r\n                                   
-    \"fieldName\": \"vector3Int1\",\r\n                                    \"typeQualifiedName\":
-    \"UnityEngine.Vector3Int, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral,
-    PublicKeyToken=null\",\r\n                                    \"dataType\": $iref:52,\r\n                                   
-    \"isMulti\": true,\r\n                                    \"direction\": 1,\r\n                                   
-    \"typeConstraint\": 1,\r\n                                    \"edgeGUIDs\":
-    {\r\n                                        \"$id\": 155,\r\n                                       
-    \"$type\": 9,\r\n                                        \"$rlength\": 0,\r\n                                       
-    \"$rcontent\": [\r\n                                        ]\r\n                                   
-    }\r\n                                }\r\n                            },\r\n                           
-    {\r\n                                \"$k\": \"vector41\",\r\n                               
-    \"$v\": {\r\n                                    \"$id\": 156,\r\n                                   
-    \"$type\": 7,\r\n                                    \"graph\": $iref:0,\r\n                                   
-    \"ownerGUID\": \"aac32252-52c0-4141-97d1-fc4713fd5d29\",\r\n                                   
-    \"fieldName\": \"vector41\",\r\n                                    \"typeQualifiedName\":
-    \"UnityEngine.Vector4, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral,
-    PublicKeyToken=null\",\r\n                                    \"dataType\": $iref:55,\r\n                                   
-    \"isMulti\": true,\r\n                                    \"direction\": 1,\r\n                                   
-    \"typeConstraint\": 1,\r\n                                    \"edgeGUIDs\":
-    {\r\n                                        \"$id\": 157,\r\n                                       
-    \"$type\": 9,\r\n                                        \"$rlength\": 0,\r\n                                       
-    \"$rcontent\": [\r\n                                        ]\r\n                                   
-    }\r\n                                }\r\n                            }\r\n                       
-    ]\r\n                    },\r\n                    \"i\": 0,\r\n                   
-    \"l\": 0,\r\n                    \"f\": 0,\r\n                    \"d\": 0,\r\n                   
-    \"s\": null,\r\n                    \"obj\": null,\r\n                    \"gameObject\":
-    null,\r\n                    \"mat\": null,\r\n                    \"color\":
-    {\r\n                        \"$type\": 12,\r\n                        0,\r\n                       
-    0,\r\n                        0,\r\n                        0\r\n                   
-    },\r\n                    \"vector2\": {\r\n                        \"$type\":
-    13,\r\n                        0,\r\n                        0\r\n                   
-    },\r\n                    \"vector2Int\": {\r\n                        \"$type\":
-    14\r\n                    },\r\n                    \"vector3\": {\r\n                       
-    \"$type\": 1,\r\n                        0,\r\n                        0,\r\n                       
-    0\r\n                    },\r\n                    \"vector3Int\": {\r\n                       
-    \"$type\": 15\r\n                    },\r\n                    \"vector4\": {\r\n                       
-    \"$type\": 16,\r\n                        0,\r\n                        0,\r\n                       
-    0,\r\n                        0\r\n                    },\r\n                   
-    \"i1\": 0,\r\n                    \"l1\": 0,\r\n                    \"f1\": 0,\r\n                   
-    \"d1\": 0,\r\n                    \"s1\": null,\r\n                    \"obj1\":
-    null,\r\n                    \"gameObject1\": null,\r\n                    \"mat1\":
-    null,\r\n                    \"color1\": {\r\n                        \"$type\":
-    12,\r\n                        0,\r\n                        0,\r\n                       
-    0,\r\n                        0\r\n                    },\r\n                   
-    \"vector21\": {\r\n                        \"$type\": 13,\r\n                       
-    0,\r\n                        0\r\n                    },\r\n                   
-    \"vector2Int1\": {\r\n                        \"$type\": 14\r\n                   
-    },\r\n                    \"vector31\": {\r\n                        \"$type\":
-    1,\r\n                        0,\r\n                        0,\r\n                       
-    0\r\n                    },\r\n                    \"vector3Int1\": {\r\n                       
-    \"$type\": 15\r\n                    },\r\n                    \"vector41\":
-    {\r\n                        \"$type\": 16,\r\n                        0,\r\n                       
-    0,\r\n                        0,\r\n                        0\r\n                   
-    }\r\n                }\r\n            },\r\n            {\r\n               
-    \"$k\": \"1408b425-38ae-42f3-bb44-b082f628dddd\",\r\n                \"$v\":
-    {\r\n                    \"$id\": 158,\r\n                    \"$type\": 18,\r\n                   
-    \"guid\": \"1408b425-38ae-42f3-bb44-b082f628dddd\",\r\n                    \"position\":
-    {\r\n                        \"$type\": 2,\r\n                        1284.575,\r\n                       
-    131.0325,\r\n                        83,\r\n                        77\r\n                   
+    },\r\n            {\r\n                \"$k\": \"45cda1bd-ec69-4903-9ad3-bbc2eb5262db\",\r\n               
+    \"$v\": {\r\n                    \"$id\": 19,\r\n                    \"$type\":
+    \"11|CZToolKit.GraphProcessor.FloatNode, Assembly-CSharp\",\r\n                   
+    \"guid\": \"45cda1bd-ec69-4903-9ad3-bbc2eb5262db\",\r\n                    \"position\":
+    {\r\n                        \"$type\": 2,\r\n                        415.9565,\r\n                       
+    -247.695633,\r\n                        75,\r\n                        77\r\n                   
     },\r\n                    \"expanded\": true,\r\n                    \"locked\":
     false,\r\n                    \"ports\": {\r\n                        \"$id\":
-    159,\r\n                        \"$type\": 6,\r\n                        \"comparer\":
-    {\r\n                            \"$id\": 160,\r\n                           
+    20,\r\n                        \"$type\": 6,\r\n                        \"comparer\":
+    {\r\n                            \"$id\": 21,\r\n                           
     \"$type\": 4\r\n                        },\r\n                        \"$rlength\":
     1,\r\n                        \"$rcontent\": [\r\n                           
     {\r\n                                \"$k\": \"value\",\r\n                               
-    \"$v\": {\r\n                                    \"$id\": 161,\r\n                                   
-    \"$type\": 7,\r\n                                    \"graph\": $iref:0,\r\n                                   
-    \"ownerGUID\": \"1408b425-38ae-42f3-bb44-b082f628dddd\",\r\n                                   
+    \"$v\": {\r\n                                    \"$id\": 22,\r\n                                   
+    \"$type\": 7,\r\n                                    \"ownerGUID\": \"45cda1bd-ec69-4903-9ad3-bbc2eb5262db\",\r\n                                   
     \"fieldName\": \"value\",\r\n                                    \"typeQualifiedName\":
-    \"System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089\",\r\n                                   
-    \"dataType\": $iref:12,\r\n                                    \"isMulti\": true,\r\n                                   
+    \"System.Single, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089\",\r\n                                   
+    \"dataType\": $iref:7,\r\n                                    \"isMulti\": true,\r\n                                   
     \"direction\": 1,\r\n                                    \"typeConstraint\":
     1,\r\n                                    \"edgeGUIDs\": {\r\n                                       
-    \"$id\": 162,\r\n                                        \"$type\": 9,\r\n                                       
-    \"$rlength\": 0,\r\n                                        \"$rcontent\": [\r\n                                       
+    \"$id\": 23,\r\n                                        \"$type\": 9,\r\n                                       
+    \"$rlength\": 1,\r\n                                        \"$rcontent\": [\r\n                                           
+    \"2d523c37-8602-43ad-bf0b-807c40331f67\"\r\n                                       
     ]\r\n                                    }\r\n                               
     }\r\n                            }\r\n                        ]\r\n                   
-    },\r\n                    \"value\": null\r\n                }\r\n           
-    }\r\n        ]\r\n    },\r\n    \"edges\": {\r\n        \"$id\": 163,\r\n       
-    \"$type\": \"19|System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[CZToolKit.GraphProcessor.SerializableEdge,
+    },\r\n                    \"value\": 2.77\r\n                }\r\n           
+    }\r\n        ]\r\n    },\r\n    \"edges\": {\r\n        \"$id\": 24,\r\n       
+    \"$type\": \"12|System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[CZToolKit.GraphProcessor.SerializableEdge,
     Assembly-CSharp]], mscorlib\",\r\n        \"comparer\": $iref:2,\r\n        \"$rlength\":
-    2,\r\n        \"$rcontent\": [\r\n            {\r\n                \"$k\": \"1dfa7c22-ff74-47e4-a915-3baaa34d3f24\",\r\n               
-    \"$v\": {\r\n                    \"$id\": 164,\r\n                    \"$type\":
-    \"20|CZToolKit.GraphProcessor.SerializableEdge, Assembly-CSharp\",\r\n                   
-    \"guid\": \"1dfa7c22-ff74-47e4-a915-3baaa34d3f24\",\r\n                    \"inputNodeGUID\":
-    \"857e895d-9bd6-42ae-b019-acb05275aa1f\",\r\n                    \"inputFieldName\":
-    \"input\",\r\n                    \"outputNodeGUID\": \"b612f3fb-905f-45ee-a4e0-748214bbb846\",\r\n                   
-    \"outputFieldName\": \"value\"\r\n                }\r\n            },\r\n           
-    {\r\n                \"$k\": \"6e2515e2-d673-4473-853f-3fbffea5e09a\",\r\n               
-    \"$v\": {\r\n                    \"$id\": 165,\r\n                    \"$type\":
-    20,\r\n                    \"guid\": \"6e2515e2-d673-4473-853f-3fbffea5e09a\",\r\n                   
-    \"inputNodeGUID\": \"c4fac999-1a20-4ca4-bab4-84c7a87dc8d1\",\r\n                   
-    \"inputFieldName\": \"f\",\r\n                    \"outputNodeGUID\": \"b612f3fb-905f-45ee-a4e0-748214bbb846\",\r\n                   
+    2,\r\n        \"$rcontent\": [\r\n            {\r\n                \"$k\": \"460c2a1f-bcdf-482c-88d0-612d1689a2f5\",\r\n               
+    \"$v\": {\r\n                    \"$id\": 25,\r\n                    \"$type\":
+    \"13|CZToolKit.GraphProcessor.SerializableEdge, Assembly-CSharp\",\r\n                   
+    \"guid\": \"460c2a1f-bcdf-482c-88d0-612d1689a2f5\",\r\n                    \"inputNodeGUID\":
+    \"b94816cf-4f1d-4041-8530-78b1d25a1312\",\r\n                    \"inputFieldName\":
+    \"input\",\r\n                    \"outputNodeGUID\": \"e5e6febc-57e7-411a-b460-bb31570ae00e\",\r\n                   
+    \"outputFieldName\": \"output\"\r\n                }\r\n            },\r\n           
+    {\r\n                \"$k\": \"2d523c37-8602-43ad-bf0b-807c40331f67\",\r\n               
+    \"$v\": {\r\n                    \"$id\": 26,\r\n                    \"$type\":
+    13,\r\n                    \"guid\": \"2d523c37-8602-43ad-bf0b-807c40331f67\",\r\n                   
+    \"inputNodeGUID\": \"e5e6febc-57e7-411a-b460-bb31570ae00e\",\r\n                   
+    \"inputFieldName\": \"a\",\r\n                    \"outputNodeGUID\": \"45cda1bd-ec69-4903-9ad3-bbc2eb5262db\",\r\n                   
     \"outputFieldName\": \"value\"\r\n                }\r\n            }\r\n       
-    ]\r\n    },\r\n    \"stacks\": {\r\n        \"$id\": 166,\r\n        \"$type\":
-    \"21|System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[CZToolKit.GraphProcessor.BaseStackNode,
+    ]\r\n    },\r\n    \"stacks\": {\r\n        \"$id\": 27,\r\n        \"$type\":
+    \"14|System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[CZToolKit.GraphProcessor.BaseStack,
     Assembly-CSharp]], mscorlib\",\r\n        \"comparer\": $iref:2,\r\n        \"$rlength\":
-    1,\r\n        \"$rcontent\": [\r\n            {\r\n                \"$k\": \"d5402595-7966-4f4a-800c-3032b1d2677e\",\r\n               
-    \"$v\": {\r\n                    \"$id\": 167,\r\n                    \"$type\":
-    \"22|CZToolKit.GraphProcessor.BaseStackNode, Assembly-CSharp\",\r\n                   
-    \"guid\": \"d5402595-7966-4f4a-800c-3032b1d2677e\",\r\n                    \"position\":
-    {\r\n                        \"$type\": 13,\r\n                        733.574951,\r\n                       
-    -200.9675\r\n                    },\r\n                    \"title\": \"Stack\",\r\n                   
-    \"nodeGUIDs\": {\r\n                        \"$id\": 168,\r\n                       
-    \"$type\": 9,\r\n                        \"$rlength\": 3,\r\n                       
-    \"$rcontent\": [\r\n                            \"aa9014db-82db-4d80-9dec-3e21b59db0dd\",\r\n                           
-    \"3b21fe53-d436-44e5-a668-8995c3489b85\",\r\n                            \"aac32252-52c0-4141-97d1-fc4713fd5d29\"\r\n                       
-    ]\r\n                    }\r\n                }\r\n            }\r\n        ]\r\n   
-    },\r\n    \"groups\": {\r\n        \"$id\": 169,\r\n        \"$type\": \"23|System.Collections.Generic.List`1[[CZToolKit.GraphProcessor.BaseGroup,
-    Assembly-CSharp]], mscorlib\",\r\n        \"$rlength\": 1,\r\n        \"$rcontent\":
-    [\r\n            {\r\n                \"$id\": 170,\r\n                \"$type\":
-    \"24|CZToolKit.GraphProcessor.BaseGroup, Assembly-CSharp\",\r\n               
-    \"title\": \"New Group\",\r\n                \"color\": {\r\n                   
-    \"$type\": 12,\r\n                    0.969331741,\r\n                    0,\r\n                   
-    1,\r\n                    0.7\r\n                },\r\n                \"position\":
-    {\r\n                    \"$type\": 2,\r\n                    708.5751,\r\n                   
-    -259.9675,\r\n                    684,\r\n                    674\r\n               
-    },\r\n                \"innerNodeGUIDs\": {\r\n                    \"$id\": 171,\r\n                   
-    \"$type\": 9,\r\n                    \"$rlength\": 1,\r\n                   
-    \"$rcontent\": [\r\n                        \"1408b425-38ae-42f3-bb44-b082f628dddd\"\r\n                   
-    ]\r\n                },\r\n                \"innerStackGUIDs\": {\r\n                   
-    \"$id\": 172,\r\n                    \"$type\": 9,\r\n                    \"$rlength\":
-    1,\r\n                    \"$rcontent\": [\r\n                        \"d5402595-7966-4f4a-800c-3032b1d2677e\"\r\n                   
-    ]\r\n                }\r\n            }\r\n        ]\r\n    },\r\n    \"blackboard\":
-    {\r\n        \"$id\": 173,\r\n        \"$type\": \"25|CZToolKit.Core.Blackboards.CZBlackboard,
-    CZToolKit.Core\",\r\n        \"dataMap\": {\r\n            \"$id\": 174,\r\n           
-    \"$type\": \"26|System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[CZToolKit.Core.Blackboards.ICZType,
-    CZToolKit.Core]], mscorlib\",\r\n            \"comparer\": {\r\n               
-    \"$id\": 175,\r\n                \"$type\": 4\r\n            },\r\n           
-    \"$rlength\": 1,\r\n            \"$rcontent\": [\r\n                {\r\n                   
-    \"$k\": \"fb203f01-5afa-4e30-974b-c97dfd1e934e\",\r\n                    \"$v\":
-    {\r\n                        \"$id\": 176,\r\n                        \"$type\":
-    \"27|CZToolKit.Core.Blackboards.CZGameObject, CZToolKit.Core\",\r\n                       
-    \"value\": $eref:2\r\n                    }\r\n                }\r\n           
-    ]\r\n        },\r\n        \"guidMap\": {\r\n            \"$id\": 177,\r\n           
-    \"$type\": \"28|System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.String,
-    mscorlib]], mscorlib\",\r\n            \"comparer\": $iref:175,\r\n           
-    \"$rlength\": 1,\r\n            \"$rcontent\": [\r\n                {\r\n                   
-    \"$k\": \"right\",\r\n                    \"$v\": \"fb203f01-5afa-4e30-974b-c97dfd1e934e\"\r\n               
-    }\r\n            ]\r\n        }\r\n    }\r\n}"
-  unityReferences:
-  - {fileID: 2329607313326204662, guid: 9e69e9e37cd24b344b574f452df10782, type: 3}
-  - {fileID: 10308, guid: 0000000000000000f000000000000000, type: 0}
-  - {fileID: 919132149155446097, guid: 03940c1e146539d418bb3ba15405b2c4, type: 3}
+    0,\r\n        \"$rcontent\": [\r\n        ]\r\n    },\r\n    \"groups\": {\r\n       
+    \"$id\": 28,\r\n        \"$type\": \"15|System.Collections.Generic.List`1[[CZToolKit.GraphProcessor.BaseGroup,
+    Assembly-CSharp]], mscorlib\",\r\n        \"$rlength\": 0,\r\n        \"$rcontent\":
+    [\r\n        ]\r\n    },\r\n    \"blackboard\": {\r\n        \"$id\": 29,\r\n       
+    \"$type\": \"16|CZToolKit.Core.Blackboards.CZBlackboard, CZToolKit.Core\",\r\n       
+    \"dataMap\": {\r\n            \"$id\": 30,\r\n            \"$type\": \"17|System.Collections.Generic.Dictionary`2[[System.String,
+    mscorlib],[CZToolKit.Core.Blackboards.ICZType, CZToolKit.Core]], mscorlib\",\r\n           
+    \"comparer\": {\r\n                \"$id\": 31,\r\n                \"$type\":
+    4\r\n            },\r\n            \"$rlength\": 0,\r\n            \"$rcontent\":
+    [\r\n            ]\r\n        },\r\n        \"guidMap\": {\r\n            \"$id\":
+    32,\r\n            \"$type\": \"18|System.Collections.Generic.Dictionary`2[[System.String,
+    mscorlib],[System.String, mscorlib]], mscorlib\",\r\n            \"comparer\":
+    $iref:31,\r\n            \"$rlength\": 0,\r\n            \"$rcontent\": [\r\n           
+    ]\r\n        }\r\n    }\r\n}"
+  unityReferences: []

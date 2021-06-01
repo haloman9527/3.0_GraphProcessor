@@ -1,9 +1,38 @@
-﻿using UnityEditor;
+﻿using System;
+using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine.UIElements;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
+    public class PV : Port, IBasePortView
+    {
+        public static PV Create(Orientation portOrientation, Direction portDirection, Capacity portCapacity, Type type)
+        {
+            PV pv = new PV(portOrientation, portDirection, portCapacity, type);
+            return pv;
+        }
+
+        protected PV(Orientation portOrientation, Direction portDirection, Capacity portCapacity, Type type) : base(portOrientation, portDirection, portCapacity, type)
+        {
+        }
+
+        public Port Self { get { return this; } }
+
+        public BaseNodeView Owner { get; private set; }
+
+        public PortTypeConstraint TypeConstraint { get { return PortTypeConstraint.Inherited; } }
+
+        public Type DisplayType { get { return portType; } }
+
+        public string FieldName { get { return portName; } }
+
+        public void Initialize(BaseNodeView _owner)
+        {
+            Owner = _owner;
+        }
+    }
+
     [CustomNodeView(typeof(DebugNode))]
     public class DebugNodeView : HasSettingNodeView, IOnGUIObserver
     {

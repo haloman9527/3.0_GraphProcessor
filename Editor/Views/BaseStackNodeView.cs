@@ -8,9 +8,9 @@ namespace CZToolKit.GraphProcessor.Editors
     public class BaseStackNodeView : StackNode
     {
         protected BaseGraphView owner;
-        protected internal BaseStackNode stackNode;
+        protected internal BaseStack stackNode;
 
-        public virtual void Initialize(BaseGraphView _graphView, BaseStackNode _stackNode)
+        public virtual void Initialize(BaseGraphView _graphView, BaseStack _stackNode)
         {
             owner = _graphView;
             stackNode = _stackNode;

@@ -15,12 +15,12 @@ namespace CZToolKit.GraphProcessor
 
         private static void CachePorts(Type _nodeType)
         {
-            List<FieldInfo> fieldInfos = Utility.GetFieldInfos(_nodeType);
+            List<FieldInfo> fieldInfos = Utility_Refelection.GetFieldInfos(_nodeType);
 
             foreach (var fieldInfo in fieldInfos)
             {
                 // 获取接口特性
-                if (!Utility.TryGetFieldAttribute(_nodeType, fieldInfo.Name, out PortAttribute portAttribute)) continue;
+                if (!Utility_Attribute.TryGetFieldAttribute(_nodeType, fieldInfo.Name, out PortAttribute portAttribute)) continue;
 
                 if (!PortCache.ContainsKey(_nodeType)) PortCache.Add(_nodeType, new List<NodePort>());
 
@@ -38,8 +38,9 @@ namespace CZToolKit.GraphProcessor
         private static void BuildCache()
         {
             PortCache = new Dictionary<Type, List<NodePort>>();
-            foreach (var nodeType in Utility.GetChildrenTypes<BaseNode>())
+            foreach (var nodeType in Utility_Refelection.GetChildrenTypes<BaseNode>())
             {
+                if (nodeType.IsAbstract) continue;
                 CachePorts(nodeType);
             }
         }

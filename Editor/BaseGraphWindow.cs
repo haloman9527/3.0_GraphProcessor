@@ -7,8 +7,18 @@ using UnityEditor.Callbacks;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
+    public interface IGraphWindow
+    {
+        IBaseGraph Graph { get; }
+    }
+
+    public interface IGraphAssetWindow
+    {
+        BaseGraphAsset GraphAsset { get; }
+    }
+
     [Serializable]
-    public class BaseGraphWindow : BasicEditorWindow
+    public class BaseGraphWindow : BasicEditorWindow, IGraphAssetWindow, IGraphWindow
     {
         #region 静态
         public static void Open(GraphAssetOwner _graphOwner)
@@ -17,7 +27,7 @@ namespace CZToolKit.GraphProcessor.Editors
             if (window != null)
             {
                 window.GraphOwner = _graphOwner;
-                window.GraphOwner.GraphAsset.Graph.InitializePropertyMapping(_graphOwner);
+                window.GraphOwner.Graph.InitializePropertyMapping(_graphOwner);
             }
         }
 
@@ -77,7 +87,7 @@ namespace CZToolKit.GraphProcessor.Editors
                 if (obj.GetType() == type)
                 {
                     window = obj as BaseGraphWindow;
-                    if (window.graphData == _graphData)
+                    if (window.graphAsset == _graphData)
                         return window;
                 }
             }
@@ -94,15 +104,15 @@ namespace CZToolKit.GraphProcessor.Editors
         [SerializeField]
         int graphOwnerInstanceID;
         [SerializeField]
-        BaseGraphAsset graphData;
+        BaseGraphAsset graphAsset;
 
         public GraphAssetOwner GraphOwner
         {
             get { return graphOwner; }
             private set { graphOwner = value; if (graphOwner != null) graphOwnerInstanceID = graphOwner.GetInstanceID(); }
         }
-        public BaseGraphAsset GraphAsset { get { return graphData; } private set { graphData = value; } }
-        public BaseGraph Graph { get { return GraphAsset.Graph; } }
+        public BaseGraphAsset GraphAsset { get { return graphAsset; } private set { graphAsset = value; } }
+        public IBaseGraph Graph { get { return GraphAsset.Graph; } }
         public BaseGraphView GraphView { get { return graphView; } private set { graphView = value; } }
         public ToolbarView Toolbar { get { return toolbar; } private set { toolbar = value; } }
 
@@ -221,7 +231,7 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             if (Selection.activeObject is ObjectInspector objectInspector
                 && objectInspector.TargetObject is BaseNode node
-                && node.Owner.Owner == GraphAsset)
+                && node.Owner == Graph)
             {
                 Selection.activeObject = null;
             }

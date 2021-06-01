@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
-    public class PortView : Port
+    public class PortView : Port, IBasePortView
     {
         const int DefaultPortSize = 8;
 
@@ -73,10 +73,15 @@ namespace CZToolKit.GraphProcessor.Editors
         }
 
         public int size;
+        public Port Self { get { return this; } }
         public BaseNodeView Owner { get; private set; }
         public NodePort PortData { get; private set; }
         public string FieldName { get { return PortData.FieldName; } }
-        protected BaseEdgeConnectorListener Listener { get; set; }
+
+        public PortTypeConstraint TypeConstraint { get { return PortData.TypeConstraint; } }
+
+        public Type DisplayType { get { return PortData.DisplayType; } }
+
         public PortView Connection
         {
             get
@@ -89,13 +94,13 @@ namespace CZToolKit.GraphProcessor.Editors
             }
         }
 
+
         public Action onConnected, onDisconnected;
 
         PortView(Orientation _orientation, Direction _direction, NodePort _portData, BaseEdgeConnectorListener edgeConnectorListener)
             : base(_orientation, _direction, _portData.IsMulti ? Capacity.Multi : Capacity.Single, _portData.DisplayType)
         {
             PortData = _portData;
-            Listener = edgeConnectorListener;
             portName = PortData.FieldName;
 
             if (_orientation == Orientation.Vertical)
@@ -108,7 +113,6 @@ namespace CZToolKit.GraphProcessor.Editors
             : base(_orientation, _direction, _portData.IsMulti ? Capacity.Multi : Capacity.Single, _displayType)
         {
             PortData = _portData;
-            Listener = edgeConnectorListener;
             portName = PortData.FieldName;
 
             if (_orientation == Orientation.Vertical)
@@ -123,15 +127,15 @@ namespace CZToolKit.GraphProcessor.Editors
 
             Owner = _nodeView;
 
-            if (Utility.TryGetFieldAttribute(Owner.NodeDataType, FieldName, out PortColorAttribute colorAttrib))
+            if (Utility_Attribute.TryGetFieldAttribute(Owner.NodeDataType, FieldName, out PortColorAttribute colorAttrib))
                 portColor = colorAttrib.Color;
 
-            if (Utility.TryGetFieldAttribute(Owner.NodeDataType, FieldName, out TooltipAttribute toolTipAttrib))
+            if (Utility_Attribute.TryGetFieldAttribute(Owner.NodeDataType, FieldName, out TooltipAttribute toolTipAttrib))
                 tooltip = toolTipAttrib.tooltip;
             else if (orientation == Orientation.Vertical)
                 tooltip = NodeEditorUtility.GetDisplayName(FieldName);
 
-            if (Utility.TryGetFieldAttribute(Owner.NodeDataType, FieldName, out DisplayNameAttribute attrib))
+            if (Utility_Attribute.TryGetFieldAttribute(Owner.NodeDataType, FieldName, out DisplayNameAttribute attrib))
                 portName = attrib.DisplayName;
             else
                 portName = NodeEditorUtility.GetDisplayName(FieldName);
@@ -228,7 +232,7 @@ namespace CZToolKit.GraphProcessor.Editors
                 visualClass = "Port_" + portType.Name;
             }
 
-            if (Utility.TryGetFieldAttribute(Owner.NodeDataType, FieldName, out DisplayNameAttribute attrib))
+            if (Utility_Attribute.TryGetFieldAttribute(Owner.NodeDataType, FieldName, out DisplayNameAttribute attrib))
                 portName = attrib.DisplayName;
             else
                 portName = NodeEditorUtility.GetDisplayName(FieldName);
@@ -249,7 +253,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
         public void UpdatePortSize()
         {
-            if (Utility.TryGetFieldAttribute(PortData.Owner.GetType(), PortData.FieldName, out PortSizeAttribute portSizeAttribute))
+            if (Utility_Attribute.TryGetFieldAttribute(PortData.Owner.GetType(), PortData.FieldName, out PortSizeAttribute portSizeAttribute))
                 size = portSizeAttribute.size;
             else
                 size = DefaultPortSize;

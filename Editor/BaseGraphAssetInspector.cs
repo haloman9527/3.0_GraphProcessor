@@ -43,11 +43,5 @@ namespace CZToolKit.GraphProcessor.Editors
             }
             EditorGUILayout.EndHorizontal();
         }
-
-        public override bool HasPreviewGUI()
-        {
-            return true;
-        }
-        Vector2 scrollView;
     }
 }

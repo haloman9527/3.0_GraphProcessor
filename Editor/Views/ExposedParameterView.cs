@@ -52,7 +52,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
             foreach (var dataType in CZTypeFactory.TypeCreator.Keys)
             {
-                Type valueType = Utility.GetFieldInfo(dataType, "value").FieldType;
+                Type valueType = Utility_Refelection.GetFieldInfo(dataType, "value").FieldType;
                 if (!typeof(UnityEngine.Object).IsAssignableFrom(valueType) && !FieldFactory.FieldDrawerCreatorMap.ContainsKey(valueType))
                     continue;
                 menu.AddItem(new GUIContent(dataType.Name), false, () =>
@@ -112,7 +112,7 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             base.UpdatePresenterPosition();
             GraphView.RegisterCompleteObjectUndo("Modify ExposedParameterView");
-            GraphView.Graph.blackboardPosition = GetPosition();
+            GraphView.Graph.BlackboardPosition = GetPosition();
             GraphView.SetDirty();
         }
 

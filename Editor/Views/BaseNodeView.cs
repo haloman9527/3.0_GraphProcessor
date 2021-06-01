@@ -77,7 +77,7 @@ namespace CZToolKit.GraphProcessor.Editors
         public Dictionary<string, PortView> PortViews { get; private set; } = new Dictionary<string, PortView>();
         protected List<FieldInfo> NodeDataTypeFieldInfos
         {
-            get { return Utility.GetFieldInfos(NodeDataType); }
+            get { return Utility_Refelection.GetFieldInfos(NodeDataType); }
         }
 
         #region  Initialization
@@ -104,7 +104,7 @@ namespace CZToolKit.GraphProcessor.Editors
                     var box = new VisualElement { name = fieldInfo.Name };
                     box.AddToClassList("port-input-element");
                     VisualElement fieldDrawer;
-                    if (Utility.TryGetFieldInfoAttribute(fieldInfo, out ShowAsDrawer showAsDrawer)
+                    if (Utility_Attribute.TryGetFieldInfoAttribute(fieldInfo, out ShowAsDrawer showAsDrawer)
                         && (fieldDrawer = CreateControlField(fieldInfo)) != null)
                     {
                         box.Add(fieldDrawer);
@@ -162,25 +162,25 @@ namespace CZToolKit.GraphProcessor.Editors
             title = NodeEditorUtility.GetNodeDisplayName(NodeDataType);
             expanded = NodeData.Expanded;
             SetPosition(NodeData.position);
-            Lockable = Utility.TryGetTypeAttribute(NodeDataType, out LockableAttribute lockableAttribute);
+            Lockable = Utility_Attribute.TryGetTypeAttribute(NodeDataType, out LockableAttribute lockableAttribute);
 
-            if (Utility.TryGetTypeAttribute(NodeDataType, out NodeIconAttribute iconAttribute))
+            if (Utility_Attribute.TryGetTypeAttribute(NodeDataType, out NodeIconAttribute iconAttribute))
             {
                 Texture icon = AssetDatabase.LoadAssetAtPath<Texture>(iconAttribute.iconPath);
                 if (icon != null)
                     AddIcon(new Image() { image = icon, style = { width = iconAttribute.width, height = iconAttribute.height } });
             }
 
-            if (Utility.TryGetTypeAttribute(NodeDataType, out NodeTooltipAttribute nodeTooltipAttribute))
+            if (Utility_Attribute.TryGetTypeAttribute(NodeDataType, out NodeTooltipAttribute nodeTooltipAttribute))
                 tooltip = nodeTooltipAttribute.Tooltip;
 
-            if (Utility.TryGetTypeAttribute(NodeDataType, out NodeTitleTintAttribute nodeTitleTintAttribute))
+            if (Utility_Attribute.TryGetTypeAttribute(NodeDataType, out NodeTitleTintAttribute nodeTitleTintAttribute))
             {
                 titleContainer.style.backgroundColor = nodeTitleTintAttribute.BackgroundColor;
                 TitleLabel.style.color = nodeTitleTintAttribute.BackgroundColor.GetLuminance() > 0.5f && nodeTitleTintAttribute.BackgroundColor.a > 0.5f ? Color.black : Color.white * 0.9f;
             }
 
-            bool showControlOnHover = Utility.TryGetTypeAttribute(NodeDataType, out ShowControlOnHoverAttribute showControlOnHoverAttrib);
+            bool showControlOnHover = Utility_Attribute.TryGetTypeAttribute(NodeDataType, out ShowControlOnHoverAttribute showControlOnHoverAttrib);
             if (showControlOnHover)
             {
                 bool mouseOverControls = false;
@@ -221,7 +221,7 @@ namespace CZToolKit.GraphProcessor.Editors
             {
                 Direction direction = nodePort.Value.Direction == PortDirection.Input ? Direction.Input : Direction.Output;
                 Orientation orientation =
-                    Utility.TryGetFieldAttribute(NodeDataType, nodePort.Value.FieldName, out VerticalAttribute vertical) ?
+                    Utility_Attribute.TryGetFieldAttribute(NodeDataType, nodePort.Value.FieldName, out VerticalAttribute vertical) ?
                     Orientation.Vertical : Orientation.Horizontal;
 
                 PortView portView = CustomCreatePortView(orientation, direction, nodePort.Value, listener);
@@ -439,9 +439,9 @@ namespace CZToolKit.GraphProcessor.Editors
                     continue;
 
                 // 是否是一个接口
-                bool isPort = Utility.TryGetFieldInfoAttribute(fieldInfo, out PortAttribute portAttrib);
+                bool isPort = Utility_Attribute.TryGetFieldInfoAttribute(fieldInfo, out PortAttribute portAttrib);
                 // 是公开，或者有SerializeField特性
-                bool isDisplay = fieldInfo.IsPublic || Utility.TryGetFieldInfoAttribute(fieldInfo, out SerializeField serializable);
+                bool isDisplay = fieldInfo.IsPublic || Utility_Attribute.TryGetFieldInfoAttribute(fieldInfo, out SerializeField serializable);
                 if (!isDisplay)
                     continue;
                 if (isPort && portAttrib.ShowBackValue == ShowBackingValue.Never)

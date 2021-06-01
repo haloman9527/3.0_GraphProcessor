@@ -5,7 +5,7 @@ using System;
 namespace CZToolKit.GraphProcessor
 {
     [Serializable]
-    public class BaseStackNode
+    public class BaseStack
     {
         [SerializeField] 
         string guid;
@@ -15,7 +15,7 @@ namespace CZToolKit.GraphProcessor
 
         public string GUID { get { return guid; } }
 
-        public BaseStackNode(Vector2 position, string title = "Stack", bool acceptDrop = true, bool acceptNewNode = true)
+        public BaseStack(Vector2 position, string title = "Stack", bool acceptDrop = true, bool acceptNewNode = true)
         {
             this.position = position;
             this.title = title;

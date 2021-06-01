@@ -1,10 +1,10 @@
 ﻿using OdinSerializer;
 using System;
+using System.Text;
 using System.Collections.Generic;
 using UnityEngine;
 
 using UnityObject = UnityEngine.Object;
-using System.Text;
 
 namespace CZToolKit.GraphProcessor
 {
@@ -12,26 +12,27 @@ namespace CZToolKit.GraphProcessor
     {
         public BaseGraphAsset() { }
 
-        public abstract BaseGraph Graph { get; }
+        public abstract IBaseGraph Graph { get; }
 
         public object Clone() { return Instantiate(this); }
     }
 
     [Serializable]
-    public abstract class BaseGraphAsset<T> : BaseGraphAsset, ISerializationCallbackReceiver where T : BaseGraph, new()
+    public abstract class BaseGraphAsset<T> : BaseGraphAsset, ISerializationCallbackReceiver where T : IBaseGraph, IBaseGraphFromUnityObject, new()
     {
         [SerializeField, HideInInspector]
         T graph = new T();
 
         public T TGraph { get { return graph; } }
-        public override BaseGraph Graph { get { return graph; } }
+        public override IBaseGraph Graph { get { return graph; } }
 
         public BaseGraphAsset() { }
 
         protected virtual void OnEnable()
         {
             CheckSerialization();
-            graph.OnEnable(this);
+            graph.SetFrom(this);
+            graph.Flush();
         }
 
         [NonSerialized]
@@ -70,7 +71,5 @@ namespace CZToolKit.GraphProcessor
             initializedVariables = true;
             Deserialize();
         }
-
-        public static implicit operator BaseGraph(BaseGraphAsset<T> _other) { return _other.Graph; }
     }
 }

@@ -9,13 +9,14 @@ using UnityObject = UnityEngine.Object;
 
 namespace CZToolKit.GraphProcessor
 {
-    public abstract class GraphAssetOwner : MonoBehaviour, IVariableOwner, ISerializationCallbackReceiver
+
+    public abstract class GraphAssetOwner : MonoBehaviour, IGraphAssetOwner, ISerializationCallbackReceiver
     {
         List<SharedVariable> variables = new List<SharedVariable>();
         Dictionary<string, int> sharedVariableIndex;
 
         public abstract BaseGraphAsset GraphAsset { get; set; }
-        public abstract BaseGraph Graph { get; }
+        public abstract IBaseGraph Graph { get; }
         public abstract Type GraphAssetType { get; }
         public abstract Type GraphType { get; }
 
@@ -40,13 +41,11 @@ namespace CZToolKit.GraphProcessor
 
         void Serialize()
         {
-            //if (variables.Count == 0) return;
             serializedVariables = Encoding.UTF8.GetString(SerializationUtility.SerializeValue(variables, DataFormat.JSON, out unityReferences));
         }
 
         void Deserialize()
         {
-            //if (string.IsNullOrEmpty(serializedVariables)) return;
             variables = SerializationUtility.DeserializeValue<List<SharedVariable>>(Encoding.UTF8.GetBytes(serializedVariables), DataFormat.JSON, unityReferences);
             UpdateVariablesIndex();
         }
@@ -60,7 +59,7 @@ namespace CZToolKit.GraphProcessor
 
         #endregion
 
-        public UnityObject GetObject()
+        public UnityObject Self()
         {
             return this;
         }
@@ -155,7 +154,9 @@ namespace CZToolKit.GraphProcessor
         }
     }
 
-    public abstract class GraphAssetOwner<GraphAssetClass, GraphClass> : GraphAssetOwner where GraphAssetClass : BaseGraphAsset<GraphClass> where GraphClass : BaseGraph, new()
+    public abstract class GraphAssetOwner<GraphAssetClass, GraphClass> : GraphAssetOwner
+        where GraphAssetClass : BaseGraphAsset<GraphClass>
+        where GraphClass : IBaseGraph, IBaseGraphFromUnityObject, new()
     {
         [SerializeField]
         GraphAssetClass graphAsset;
@@ -200,7 +201,7 @@ namespace CZToolKit.GraphProcessor
                 }
             }
         }
-        public override BaseGraph Graph
+        public override IBaseGraph Graph
         {
             get { return GraphAsset.Graph; }
         }

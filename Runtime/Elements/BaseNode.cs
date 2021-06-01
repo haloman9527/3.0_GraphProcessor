@@ -5,7 +5,7 @@ using UnityEngine;
 namespace CZToolKit.GraphProcessor
 {
     [Serializable]
-    public abstract class BaseNode
+    public abstract class BaseNode : IBaseNode
     {
         #region 静态
         /// <summary> 根据T创建一个节点，并设置位置 </summary>
@@ -34,7 +34,7 @@ namespace CZToolKit.GraphProcessor
         #endregion
 
         [NonSerialized]
-        BaseGraph owner;
+        IBaseGraph owner;
 
         /// <summary> 唯一标识 </summary>
         [SerializeField, HideInInspector]
@@ -52,7 +52,7 @@ namespace CZToolKit.GraphProcessor
         Dictionary<string, NodePort> ports = new Dictionary<string, NodePort>();
 
         /// <summary> 节点对象的所有者，即图 </summary>
-        public BaseGraph Owner { get { return owner; } }
+        public IBaseGraph Owner { get { return owner; } }
         public string GUID { get { return guid; } }
         public bool Expanded { get { return expanded; } set { expanded = value; } }
         public bool Locked { get { return locked; } set { locked = value; } }
@@ -64,7 +64,7 @@ namespace CZToolKit.GraphProcessor
         public virtual void OnCreated() { }
 
         /// <summary> 请不要在其它任何地方调用 </summary>
-        internal void Initialize(BaseGraph _graph)
+        public void Initialize(IBaseGraph _graph)
         {
             owner = _graph;
             foreach (var port in Ports.Values)
@@ -73,7 +73,7 @@ namespace CZToolKit.GraphProcessor
             }
         }
 
-        public virtual void InitializeGraphOwner(GraphAssetOwner _graphOwner) { }
+        public virtual void InitializeGraphOwner(IGraphAssetOwner _graphOwner) { }
 
         #region Ports
         /// <summary> 通过字段名获取一个本地Input接口 </summary>

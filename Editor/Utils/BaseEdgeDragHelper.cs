@@ -17,7 +17,7 @@ namespace CZToolKit.GraphProcessor.Editors
         internal const float k_MaxPanSpeed = k_MaxSpeedFactor * k_PanSpeed;
         internal const float kPortDetectionWidth = 30;
 
-        protected Dictionary<BaseNodeView, List<PortView>> compatiblePorts = new Dictionary<BaseNodeView, List<PortView>>();
+        protected Dictionary<BaseNodeView, List<Port>> compatiblePorts = new Dictionary<BaseNodeView, List<Port>>();
         private Edge ghostEdge;
         protected GraphView graphView;
         protected static NodeAdapter nodeAdapter = new NodeAdapter();
@@ -141,12 +141,12 @@ namespace CZToolKit.GraphProcessor.Editors
 
             compatiblePorts.Clear();
 
-            foreach (PortView port in graphView.GetCompatiblePorts(draggedPort, nodeAdapter))
+            foreach (IBasePortView port in graphView.GetCompatiblePorts(draggedPort, nodeAdapter))
             {
                 compatiblePorts.TryGetValue(port.Owner, out var portList);
                 if (portList == null)
-                    portList = compatiblePorts[port.Owner] = new List<PortView>();
-                portList.Add(port);
+                    portList = compatiblePorts[port.Owner] = new List<Port>();
+                portList.Add(port.Self);
             }
 
             // Sort ports by position in the node
@@ -357,7 +357,7 @@ namespace CZToolKit.GraphProcessor.Editors
             Reset(didConnect);
         }
 
-        Rect GetPortBounds(BaseNodeView nodeView, int index, List<PortView> portList)
+        Rect GetPortBounds(BaseNodeView nodeView, int index, List<Port> portList)
         {
             var port = portList[index];
             var bounds = port.worldBound;

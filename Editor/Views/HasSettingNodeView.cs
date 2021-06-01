@@ -39,14 +39,14 @@ namespace CZToolKit.GraphProcessor.Editors
 
             foreach (var fieldInfo in NodeDataTypeFieldInfos)
             {
-                if (Utility.TryGetFieldInfoAttribute(fieldInfo, out ShowInSettingAttribute settingAttribute))
+                if (Utility_Attribute.TryGetFieldInfoAttribute(fieldInfo, out ShowInSettingAttribute settingAttribute))
                     AddSettingField(fieldInfo);
             }
         }
 
         protected void AddSettingField(FieldInfo _fieldInfo)
         {
-            var label = Utility.TryGetFieldInfoAttribute(_fieldInfo, out DisplayNameAttribute displayNameAttribute)
+            var label = Utility_Attribute.TryGetFieldInfoAttribute(_fieldInfo, out DisplayNameAttribute displayNameAttribute)
                 ? displayNameAttribute.DisplayName : NodeEditorUtility.GetDisplayName(_fieldInfo.Name);
 
             VisualElement fieldDrawer = CreateControlField(_fieldInfo, label);
