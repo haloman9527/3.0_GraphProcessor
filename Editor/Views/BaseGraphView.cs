@@ -115,7 +115,7 @@ namespace CZToolKit.GraphProcessor.Editors
             InitializeGroups();
             InitializeBlackboard();
 
-            OnInitialized();
+            OnInitializeCompleted += OnInitialized;
             Initialized = true;
         }
 
@@ -572,7 +572,9 @@ namespace CZToolKit.GraphProcessor.Editors
                 }
             }
             if (!drawnNode)
-                Selection.activeObject = GraphAsset;
+                Selection.activeObject = null;
+            //if (!drawnNode)
+            //    Selection.activeObject = GraphAsset;
         }
 
         public RelayNodeView AddRelayNode(PortView _inputPortView, PortView _outputPortView, Vector2 _position)

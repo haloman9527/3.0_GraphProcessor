@@ -20,5 +20,9 @@ namespace CZToolKit.GraphProcessor
     public interface IGraphAsset
     {
         IBaseGraph Graph { get; }
+
+        void SaveGraph();
+
+        void CheckGraphSerialization();
     }
 }

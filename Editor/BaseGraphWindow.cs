@@ -6,8 +6,6 @@ using UnityEngine.UIElements;
 using UnityEditor.Callbacks;
 
 using UnityObject = UnityEngine.Object;
-using UnityEditor.SceneManagement;
-using UnityEngine.SceneManagement;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
@@ -139,8 +137,8 @@ namespace CZToolKit.GraphProcessor.Editors
             if (Toolbar != null)
                 GUILayoutUtility.GetRect(Toolbar.style.width.value.value, Toolbar.style.height.value.value);
 
-            if (GraphView != null)
-                GraphView.OnGUI();
+            //if (GraphView != null)
+            //    GraphView.OnGUI();
         }
 
         protected virtual void OnDisable()

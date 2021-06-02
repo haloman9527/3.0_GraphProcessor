@@ -14,6 +14,10 @@ namespace CZToolKit.GraphProcessor
 
         public abstract IBaseGraph Graph { get; }
 
+        public abstract void SaveGraph();
+
+        public abstract void CheckGraphSerialization();
+
         public virtual object Clone() { return Instantiate(this); }
     }
 
@@ -32,48 +36,50 @@ namespace CZToolKit.GraphProcessor
 
         protected virtual void OnEnable()
         {
-            CheckSerialization();
-            graph.SetFrom(this);
-            graph.Flush();
+            CheckGraphSerialization();
         }
 
+        #region Serialize
         [NonSerialized]
-        bool initializedVariables;
+        bool initializedGraph;
         [HideInInspector]
         [SerializeField]
         [TextArea(20, 20)]
         string serializedGraph = String.Empty;
         [HideInInspector]
         [SerializeField]
-        List<UnityObject> variablesUnityReference = new List<UnityObject>();
+        List<UnityObject> graphUnityReferences = new List<UnityObject>();
 
-        void Serialize()
+        public override void SaveGraph()
         {
-            serializedGraph = Encoding.UTF8.GetString(SerializationUtility.SerializeValue(graph, DataFormat.JSON, out variablesUnityReference));
+            serializedGraph = Encoding.UTF8.GetString(SerializationUtility.SerializeValue(graph, DataFormat.JSON, out graphUnityReferences));
         }
 
-        void Deserialize()
+        void DeserializeGraph()
         {
-            graph = SerializationUtility.DeserializeValue<GraphClass>(Encoding.UTF8.GetBytes(serializedGraph), DataFormat.JSON, variablesUnityReference);
+            graph = SerializationUtility.DeserializeValue<GraphClass>(Encoding.UTF8.GetBytes(serializedGraph), DataFormat.JSON, graphUnityReferences);
             if (graph == null)
                 graph = new GraphClass();
+            graph.SetFrom(this);
+            graph.Flush();
         }
 
         public void OnBeforeSerialize()
         {
-            Serialize();
+            SaveGraph();
         }
 
         public void OnAfterDeserialize()
         {
-            CheckSerialization();
+            CheckGraphSerialization();
         }
 
-        public void CheckSerialization()
+        public override void CheckGraphSerialization()
         {
-            if (initializedVariables) return;
-            initializedVariables = true;
-            Deserialize();
+            if (initializedGraph) return;
+            initializedGraph = true;
+            DeserializeGraph();
         }
+        #endregion
     }
 }

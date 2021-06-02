@@ -9,52 +9,21 @@ using UnityObject = UnityEngine.Object;
 
 namespace CZToolKit.GraphProcessor
 {
-    public abstract class GraphOwner : MonoBehaviour, IGraphAsset, IVariableOwner, ISerializationCallbackReceiver
+    public abstract class GraphOwner : MonoBehaviour, IGraphAsset, IVariableOwner
     {
-        List<SharedVariable> variables = new List<SharedVariable>();
-        Dictionary<string, int> sharedVariableIndex;
+        protected List<SharedVariable> variables = new List<SharedVariable>();
+        protected Dictionary<string, int> sharedVariableIndex;
 
         public abstract IBaseGraph Graph { get; }
         public abstract Type GraphType { get; }
 
         #region Serialize
-        [HideInInspector]
-        [SerializeField]
-        string serializedVariables;
-        [HideInInspector]
-        [SerializeField]
-        List<UnityObject> variablesUnityReference;
-        [NonSerialized]
-        bool initializedVariables;
 
-        public virtual void OnBeforeSerialize()
-        {
-            Serialize();
-        }
+        public abstract void SaveGraph();
 
-        public virtual void OnAfterDeserialize()
-        {
-            CheckSerialization();
-        }
+        public abstract void CheckGraphSerialization();
 
-        void Serialize()
-        {
-            serializedVariables = Encoding.UTF8.GetString(SerializationUtility.SerializeValue(variables, DataFormat.JSON, out variablesUnityReference));
-        }
-
-        void Deserialize()
-        {
-            variables = SerializationUtility.DeserializeValue<List<SharedVariable>>(Encoding.UTF8.GetBytes(serializedVariables), DataFormat.JSON, variablesUnityReference);
-            UpdateVariablesIndex();
-        }
-
-        void CheckSerialization()
-        {
-            if (initializedVariables) return;
-            initializedVariables = true;
-            Deserialize();
-        }
-
+        protected abstract void CheckVaraiblesSerialization();
         #endregion
 
         public UnityObject Self()
@@ -70,7 +39,7 @@ namespace CZToolKit.GraphProcessor
         public SharedVariable GetVariable(string _guid)
         {
             if (string.IsNullOrEmpty(_guid)) return null;
-            CheckSerialization();
+            CheckVaraiblesSerialization();
             if (variables != null)
             {
                 if (sharedVariableIndex == null || sharedVariableIndex.Count != variables.Count)
@@ -84,14 +53,14 @@ namespace CZToolKit.GraphProcessor
 
         public List<SharedVariable> GetAllVariables()
         {
-            CheckSerialization();
+            CheckVaraiblesSerialization();
             return variables;
         }
 
         public void SetVariable(SharedVariable sharedVariable)
         {
             if (sharedVariable == null) return;
-            CheckSerialization();
+            CheckVaraiblesSerialization();
 
             if (variables == null)
                 variables = new List<SharedVariable>();
@@ -118,7 +87,7 @@ namespace CZToolKit.GraphProcessor
             GetVariable(_guid)?.SetValue(_value);
         }
 
-        private void UpdateVariablesIndex()
+        protected void UpdateVariablesIndex()
         {
             if (variables == null)
             {
@@ -139,7 +108,7 @@ namespace CZToolKit.GraphProcessor
 
         public IReadOnlyList<SharedVariable> GetVariables()
         {
-            CheckSerialization();
+            CheckVaraiblesSerialization();
             return variables;
         }
 
@@ -150,7 +119,7 @@ namespace CZToolKit.GraphProcessor
         }
     }
 
-    public abstract class GraphOwner<GraphClass> : GraphOwner
+    public abstract class GraphOwner<GraphClass> : GraphOwner, ISerializationCallbackReceiver
         where GraphClass : IBaseGraph, IBaseGraphFromAsset, new()
     {
         [HideInInspector]
@@ -168,6 +137,9 @@ namespace CZToolKit.GraphProcessor
         }
 
         #region Serialize
+        #region Graph
+        [NonSerialized]
+        bool initializedGraph;
         [HideInInspector]
         [SerializeField]
         string serializedGraph;
@@ -175,19 +147,66 @@ namespace CZToolKit.GraphProcessor
         [SerializeField]
         List<UnityObject> graphUnityReferences;
 
-        public override void OnBeforeSerialize()
+        public override void SaveGraph()
         {
             serializedGraph = Encoding.UTF8.GetString(SerializationUtility.SerializeValue(graph, DataFormat.JSON, out graphUnityReferences));
-            base.OnBeforeSerialize();
         }
 
-        public override void OnAfterDeserialize()
+        void DeserializeGraph()
         {
             graph = SerializationUtility.DeserializeValue<GraphClass>(Encoding.UTF8.GetBytes(serializedGraph), DataFormat.JSON, graphUnityReferences);
             graph.SetFrom(this);
             graph.Flush();
             graph.InitializePropertyMapping(this);
-            base.OnAfterDeserialize();
+        }
+
+        public override void CheckGraphSerialization()
+        {
+            if (initializedGraph) return;
+            initializedGraph = true;
+            DeserializeGraph();
+        }
+        #endregion
+
+        #region Variables
+        [NonSerialized]
+        bool initializedVariables;
+        [HideInInspector]
+        [SerializeField]
+        string serializedVariables;
+        [HideInInspector]
+        [SerializeField]
+        List<UnityObject> variablesUnityReferences;
+
+        public void SaveVariables()
+        {
+            serializedVariables = Encoding.UTF8.GetString(SerializationUtility.SerializeValue(variables, DataFormat.JSON, out variablesUnityReferences));
+        }
+
+        void DeserializeVariables()
+        {
+            variables = SerializationUtility.DeserializeValue<List<SharedVariable>>(Encoding.UTF8.GetBytes(serializedVariables), DataFormat.JSON, variablesUnityReferences);
+            UpdateVariablesIndex();
+        }
+
+        protected override void CheckVaraiblesSerialization()
+        {
+            if (initializedVariables) return;
+            initializedVariables = true;
+            DeserializeVariables();
+        }
+        #endregion
+
+        public void OnBeforeSerialize()
+        {
+            SaveGraph();
+            SaveVariables();
+        }
+
+        public void OnAfterDeserialize()
+        {
+            CheckGraphSerialization();
+            CheckVaraiblesSerialization();
         }
 
         #endregion
@@ -196,7 +215,7 @@ namespace CZToolKit.GraphProcessor
 
         private void Reset()
         {
-            graph = new GraphClass(); 
+            graph = new GraphClass();
             graph.SetFrom(this);
             graph.Flush();
             graph.InitializePropertyMapping(this);

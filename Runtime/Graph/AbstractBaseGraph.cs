@@ -70,6 +70,14 @@ namespace CZToolKit.GraphProcessor
                 return variables;
             }
         }
+        List<SharedVariable> InternalVariables
+        {
+            get
+            {
+                if (variables == null) CollectionVariables();
+                return variables;
+            }
+        }
         #endregion
 
         public virtual void Initialize(IGraphAssetOwner _graphOwner)
@@ -222,7 +230,7 @@ namespace CZToolKit.GraphProcessor
                 }
             }
             if (nodeVariables != null)
-                variables.AddRange(nodeVariables);
+                InternalVariables.AddRange(nodeVariables);
         }
 
         public void RemoveNode(BaseNode _node)
