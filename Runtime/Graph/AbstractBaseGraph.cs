@@ -62,12 +62,18 @@ namespace CZToolKit.GraphProcessor
         public IReadOnlyDictionary<string, BaseNode> NodesGUIDMapping { get { return nodes; } }
         public IReadOnlyDictionary<string, SerializableEdge> EdgesGUIDMapping { get { return edges; } }
         public IReadOnlyDictionary<string, BaseStack> StackNodesGUIDMapping { get { return stacks; } }
-        public IReadOnlyList<SharedVariable> Variables { get { return variables; } }
+        public IReadOnlyList<SharedVariable> Variables
+        {
+            get
+            {
+                if (variables == null) CollectionVariables();
+                return variables;
+            }
+        }
         #endregion
 
         public virtual void Initialize(IGraphAssetOwner _graphOwner)
         {
-            CollectionVariables();
             InitializePropertyMapping(_graphOwner);
         }
 

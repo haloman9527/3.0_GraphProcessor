@@ -12,6 +12,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 
 using Blackboard = UnityEditor.Experimental.GraphView.Blackboard;
+using UnityObject = UnityEngine.Object;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
@@ -37,12 +38,12 @@ namespace CZToolKit.GraphProcessor.Editors
 
         public bool Initialized { get; private set; }
         public Action OnInitializeCompleted { get; set; }
-        public bool IsDirty { get; private set; }
+        public bool IsDirty { get; private set; } = false;
         private ExposedParameterView Blackboard { get; set; }
         public CreateNodeMenuWindow CreateNodeMenu { get; private set; }
         public BaseGraphWindow GraphWindow { get; private set; }
-        public BaseGraphAsset GraphAsset { get; private set; }
-        public IBaseGraph Graph { get { return GraphAsset.Graph; } }
+        public UnityObject GraphAsset { get; private set; }
+        public IBaseGraph Graph { get; private set; }
         public SerializedObject SerializedObject { get; private set; }
         public Dictionary<string, BaseNodeView> NodeViews { get; private set; } = new Dictionary<string, BaseNodeView>();
         public List<EdgeView> EdgeViews { get; private set; } = new List<EdgeView>();
@@ -76,11 +77,12 @@ namespace CZToolKit.GraphProcessor.Editors
             return new BaseEdgeConnectorListener(this);
         }
 
-        public void Initialize(BaseGraphWindow _window, BaseGraphAsset _graphAsset)
+        public void Initialize(BaseGraphWindow _window, IBaseGraph _graph)
         {
             if (Initialized) return;
             GraphWindow = _window;
-            GraphAsset = _graphAsset;
+            Graph = _graph;
+            GraphAsset = (_graph as IBaseGraphFromAsset)?.From;
             SerializedObject = new SerializedObject(GraphAsset);
             GraphWindow.Toolbar.AddButton("Center", () =>
             {
@@ -126,8 +128,6 @@ namespace CZToolKit.GraphProcessor.Editors
             unserializeAndPaste = DeserializeAndPasteCallback;
             graphViewChanged = GraphViewChangedCallback;
             viewTransformChanged = ViewTransformChangedCallback;
-
-            EditorSceneManager.sceneSaved += _ => SaveGraphToDisk();
 
             RegisterCallback<KeyDownEvent>(KeyDownCallback);
             RegisterCallback<DragPerformEvent>(DragPerformedCallback);

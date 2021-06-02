@@ -19,18 +19,19 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             base.RegisterDrawers();
             RegisterDrawer("serializedVariables", DrawSerialziedVaraibles);
-            RegisterDrawer("unityReference", property =>
+            RegisterDrawer("variablesUnityReference", property =>
             {
                 EditorGUI.BeginDisabledGroup(true);
                 EditorGUILayout.PropertyField(property);
                 EditorGUI.EndDisabledGroup();
             });
+
             RegisterDrawer("graphAsset", property =>
             {
                 EditorGUILayout.BeginHorizontal();
                 GraphAssetOwner owner = target as GraphAssetOwner;
                 owner.GraphAsset = EditorGUILayout.ObjectField(graphContent, (target as GraphAssetOwner).GraphAsset, owner.GraphAssetType, false) as BaseGraphAsset;
-                if (GUILayout.Button("Open", GUILayout.Width(50)))
+                if (GUILayout.Button("Edit", GUILayout.Width(50)))
                     BaseGraphWindow.Open(target as GraphAssetOwner);
                 EditorGUILayout.EndHorizontal();
             });

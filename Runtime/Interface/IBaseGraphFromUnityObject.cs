@@ -15,7 +15,7 @@ using UnityObject = UnityEngine.Object;
 
 namespace CZToolKit.GraphProcessor
 {
-    public interface IBaseGraphFromUnityObject
+    public interface IBaseGraphFromAsset
     {
         UnityObject From { get; }
 

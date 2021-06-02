@@ -22,10 +22,12 @@ namespace CZToolKit.GraphProcessor
 
         #region Serialize
 
+        [HideInInspector]
         [SerializeField]
         string serializedVariables;
+        [HideInInspector]
         [SerializeField]
-        List<UnityObject> unityReferences;
+        List<UnityObject> variablesUnityReference;
         [NonSerialized]
         bool initializedVariables;
 
@@ -41,12 +43,12 @@ namespace CZToolKit.GraphProcessor
 
         void Serialize()
         {
-            serializedVariables = Encoding.UTF8.GetString(SerializationUtility.SerializeValue(variables, DataFormat.JSON, out unityReferences));
+            serializedVariables = Encoding.UTF8.GetString(SerializationUtility.SerializeValue(variables, DataFormat.JSON, out variablesUnityReference));
         }
 
         void Deserialize()
         {
-            variables = SerializationUtility.DeserializeValue<List<SharedVariable>>(Encoding.UTF8.GetBytes(serializedVariables), DataFormat.JSON, unityReferences);
+            variables = SerializationUtility.DeserializeValue<List<SharedVariable>>(Encoding.UTF8.GetBytes(serializedVariables), DataFormat.JSON, variablesUnityReference);
             UpdateVariablesIndex();
         }
 
@@ -156,7 +158,7 @@ namespace CZToolKit.GraphProcessor
 
     public abstract class GraphAssetOwner<GraphAssetClass, GraphClass> : GraphAssetOwner
         where GraphAssetClass : BaseGraphAsset<GraphClass>
-        where GraphClass : IBaseGraph, IBaseGraphFromUnityObject, new()
+        where GraphClass : IBaseGraph, IBaseGraphFromAsset, new()
     {
         [SerializeField]
         GraphAssetClass graphAsset;

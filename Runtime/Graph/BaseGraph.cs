@@ -18,7 +18,7 @@ using UnityObject = UnityEngine.Object;
 namespace CZToolKit.GraphProcessor
 {
     [Serializable]
-    public class BaseGraph : AbstrackBaseGraph, IBaseGraphFromUnityObject
+    public class BaseGraph : AbstrackBaseGraph, IBaseGraphFromAsset
     {
         #region 变量
         [NonSerialized]

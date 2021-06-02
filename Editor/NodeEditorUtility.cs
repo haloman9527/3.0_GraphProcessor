@@ -14,9 +14,9 @@ namespace CZToolKit.GraphProcessor.Editors
         static Dictionary<Type, Type> GRAPH_EDITOR_WINDOW_TYPE_CACHE;
 
         /// <summary> 根据Graph类型返回对应窗口类型 </summary>
-        /// <param name="_graphDataType"> Graph类型 </param>
+        /// <param name="_graphType"> Graph类型 </param>
         /// <returns> 窗口类型 </returns>
-        public static Type GetGraphWindowType(Type _graphDataType)
+        public static Type GetGraphWindowType(Type _graphType)
         {
             if (GRAPH_EDITOR_WINDOW_TYPE_CACHE == null)
             {
@@ -30,7 +30,7 @@ namespace CZToolKit.GraphProcessor.Editors
                         GRAPH_EDITOR_WINDOW_TYPE_CACHE[attribute.GraphType] = type;
                 }
             }
-            if (GRAPH_EDITOR_WINDOW_TYPE_CACHE.TryGetValue(_graphDataType, out Type graphWindowType))
+            if (GRAPH_EDITOR_WINDOW_TYPE_CACHE.TryGetValue(_graphType, out Type graphWindowType))
                 return graphWindowType;
 
             return typeof(BaseGraphWindow);

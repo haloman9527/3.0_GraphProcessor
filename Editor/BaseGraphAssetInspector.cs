@@ -12,7 +12,8 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             base.RegisterDrawers();
             RegisterDrawer("serializedGraph", DrawSerializedGraph);
-            RegisterDrawer("unityReferences", property=>{
+            RegisterDrawer("variablesUnityReference", property =>
+            {
                 EditorGUI.BeginDisabledGroup(true);
                 EditorGUILayout.PropertyField(property);
                 EditorGUI.EndDisabledGroup();
@@ -21,7 +22,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
         private void DrawSerializedGraph(SerializedProperty property)
         {
-            EditorGUIExtension.SetFoldoutBool("SerializedGraphPreview", 
+            EditorGUIExtension.SetFoldoutBool("SerializedGraphPreview",
                 EditorGUILayout.BeginFoldoutHeaderGroup(EditorGUIExtension.GetFoldoutBool("SerializedGraphPreview", false), property.displayName));
             if (EditorGUIExtension.GetFoldoutBool("SerializedGraphPreview"))
                 GUILayout.TextArea(property.stringValue, EditorStyles.wordWrappedLabel);
@@ -39,7 +40,7 @@ namespace CZToolKit.GraphProcessor.Editors
             }
             if (GUILayout.Button("Open", GUILayout.Height(30)))
             {
-                BaseGraphWindow.LoadGraph(target as BaseGraphAsset);
+                BaseGraphWindow.OpenGraph(target as BaseGraphAsset);
             }
             EditorGUILayout.EndHorizontal();
         }

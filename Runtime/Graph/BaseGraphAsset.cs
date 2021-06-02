@@ -8,22 +8,24 @@ using UnityObject = UnityEngine.Object;
 
 namespace CZToolKit.GraphProcessor
 {
-    public abstract class BaseGraphAsset : ScriptableObject, ICloneable
+    public abstract class BaseGraphAsset : ScriptableObject, IGraphAsset, ICloneable
     {
         public BaseGraphAsset() { }
 
         public abstract IBaseGraph Graph { get; }
 
-        public object Clone() { return Instantiate(this); }
+        public virtual object Clone() { return Instantiate(this); }
     }
 
     [Serializable]
-    public abstract class BaseGraphAsset<T> : BaseGraphAsset, ISerializationCallbackReceiver where T : IBaseGraph, IBaseGraphFromUnityObject, new()
+    public abstract class BaseGraphAsset<GraphClass> : BaseGraphAsset, ISerializationCallbackReceiver
+        where GraphClass : IBaseGraph, IBaseGraphFromAsset, new()
     {
-        [SerializeField, HideInInspector]
-        T graph = new T();
+        [HideInInspector]
+        [SerializeField]
+        GraphClass graph = new GraphClass();
 
-        public T TGraph { get { return graph; } }
+        public GraphClass TGraph { get { return graph; } }
         public override IBaseGraph Graph { get { return graph; } }
 
         public BaseGraphAsset() { }
@@ -37,22 +39,24 @@ namespace CZToolKit.GraphProcessor
 
         [NonSerialized]
         bool initializedVariables;
+        [HideInInspector]
         [SerializeField]
         [TextArea(20, 20)]
         string serializedGraph = String.Empty;
+        [HideInInspector]
         [SerializeField]
-        List<UnityObject> unityReferences = new List<UnityObject>();
+        List<UnityObject> variablesUnityReference = new List<UnityObject>();
 
         void Serialize()
         {
-            serializedGraph = Encoding.UTF8.GetString(SerializationUtility.SerializeValue(graph, DataFormat.JSON, out unityReferences));
+            serializedGraph = Encoding.UTF8.GetString(SerializationUtility.SerializeValue(graph, DataFormat.JSON, out variablesUnityReference));
         }
 
         void Deserialize()
         {
-            graph = SerializationUtility.DeserializeValue<T>(Encoding.UTF8.GetBytes(serializedGraph), DataFormat.JSON, unityReferences);
+            graph = SerializationUtility.DeserializeValue<GraphClass>(Encoding.UTF8.GetBytes(serializedGraph), DataFormat.JSON, variablesUnityReference);
             if (graph == null)
-                graph = new T();
+                graph = new GraphClass();
         }
 
         public void OnBeforeSerialize()

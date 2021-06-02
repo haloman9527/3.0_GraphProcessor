@@ -9,19 +9,21 @@ using UnityObject = UnityEngine.Object;
 
 namespace CZToolKit.GraphProcessor
 {
-    public abstract class GraphOwner : MonoBehaviour, IVariableOwner, ISerializationCallbackReceiver
+    public abstract class GraphOwner : MonoBehaviour, IGraphAsset, IVariableOwner, ISerializationCallbackReceiver
     {
         List<SharedVariable> variables = new List<SharedVariable>();
         Dictionary<string, int> sharedVariableIndex;
 
-        public abstract BaseGraph Graph { get; }
+        public abstract IBaseGraph Graph { get; }
         public abstract Type GraphType { get; }
 
         #region Serialize
+        [HideInInspector]
         [SerializeField]
         string serializedVariables;
+        [HideInInspector]
         [SerializeField]
-        List<UnityObject> unityReferences;
+        List<UnityObject> variablesUnityReference;
         [NonSerialized]
         bool initializedVariables;
 
@@ -37,12 +39,12 @@ namespace CZToolKit.GraphProcessor
 
         void Serialize()
         {
-            serializedVariables = Encoding.UTF8.GetString(SerializationUtility.SerializeValue(variables, DataFormat.JSON, out unityReferences));
+            serializedVariables = Encoding.UTF8.GetString(SerializationUtility.SerializeValue(variables, DataFormat.JSON, out variablesUnityReference));
         }
 
         void Deserialize()
         {
-            variables = SerializationUtility.DeserializeValue<List<SharedVariable>>(Encoding.UTF8.GetBytes(serializedVariables), DataFormat.JSON, unityReferences);
+            variables = SerializationUtility.DeserializeValue<List<SharedVariable>>(Encoding.UTF8.GetBytes(serializedVariables), DataFormat.JSON, variablesUnityReference);
             UpdateVariablesIndex();
         }
 
@@ -51,9 +53,6 @@ namespace CZToolKit.GraphProcessor
             if (initializedVariables) return;
             initializedVariables = true;
             Deserialize();
-            Graph.SetFrom(this);
-            Graph.Flush();
-            Graph.InitializePropertyMapping(this);
         }
 
         #endregion
@@ -152,14 +151,15 @@ namespace CZToolKit.GraphProcessor
     }
 
     public abstract class GraphOwner<GraphClass> : GraphOwner
-        where GraphClass : IBaseGraph, new()
+        where GraphClass : IBaseGraph, IBaseGraphFromAsset, new()
     {
+        [HideInInspector]
         [SerializeField]
         GraphClass graph = new GraphClass();
 
-        public override BaseGraph Graph
+        public override IBaseGraph Graph
         {
-            get { return Graph; }
+            get { return graph; }
         }
 
         public GraphClass TGraph
@@ -168,25 +168,38 @@ namespace CZToolKit.GraphProcessor
         }
 
         #region Serialize
+        [HideInInspector]
         [SerializeField]
         string serializedGraph;
+        [HideInInspector]
         [SerializeField]
         List<UnityObject> graphUnityReferences;
 
         public override void OnBeforeSerialize()
         {
-            serializedGraph = Encoding.UTF8.GetString(SerializationUtility.SerializeValue(Graph, DataFormat.JSON, out graphUnityReferences));
+            serializedGraph = Encoding.UTF8.GetString(SerializationUtility.SerializeValue(graph, DataFormat.JSON, out graphUnityReferences));
             base.OnBeforeSerialize();
         }
 
         public override void OnAfterDeserialize()
         {
             graph = SerializationUtility.DeserializeValue<GraphClass>(Encoding.UTF8.GetBytes(serializedGraph), DataFormat.JSON, graphUnityReferences);
+            graph.SetFrom(this);
+            graph.Flush();
+            graph.InitializePropertyMapping(this);
             base.OnAfterDeserialize();
         }
 
         #endregion
 
         public override Type GraphType { get { return typeof(GraphClass); } }
+
+        private void Reset()
+        {
+            graph = new GraphClass(); 
+            graph.SetFrom(this);
+            graph.Flush();
+            graph.InitializePropertyMapping(this);
+        }
     }
 }
