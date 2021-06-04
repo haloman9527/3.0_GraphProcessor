@@ -32,7 +32,7 @@ namespace CZToolKit.GraphProcessor
         IReadOnlyDictionary<string, BaseStack> StackNodesGUIDMapping { get; }
         IReadOnlyList<SharedVariable> Variables { get; }
 
-        void Initialize(IGraphAssetOwner _graphOwner);
+        void Initialize(IGraphOwner _graphOwner);
 
         void InitializePropertyMapping(IVariableOwner _variableOwner);
 

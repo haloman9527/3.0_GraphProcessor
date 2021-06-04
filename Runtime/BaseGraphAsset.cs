@@ -60,13 +60,13 @@ namespace CZToolKit.GraphProcessor
             graph = SerializationUtility.DeserializeValue<GraphClass>(Encoding.UTF8.GetBytes(serializedGraph), DataFormat.JSON, graphUnityReferences);
             if (graph == null)
                 graph = new GraphClass();
-            graph.SetFrom(this);
+            graph.Enable(this);
             graph.Flush();
         }
 
         public void OnBeforeSerialize()
         {
-            SaveGraph();
+            //SaveGraph();
         }
 
         public void OnAfterDeserialize()

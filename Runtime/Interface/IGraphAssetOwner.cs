@@ -15,7 +15,7 @@ using CZToolKit.Core.SharedVariable;
 
 namespace CZToolKit.GraphProcessor
 {
-    public interface IGraphAssetOwner : IVariableOwner
+    public interface IGraphAssetOwner 
     {
         BaseGraphAsset GraphAsset { get; }
     }

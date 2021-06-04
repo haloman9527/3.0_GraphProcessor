@@ -10,6 +10,7 @@ using UnityEngine.UIElements;
 
 using Status = UnityEngine.UIElements.DropdownMenuAction.Status;
 using NodeView = UnityEditor.Experimental.GraphView.Node;
+using CZToolKit.Core.Editors;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
@@ -403,7 +404,7 @@ namespace CZToolKit.GraphProcessor.Editors
         #region Private
         void OpenNodeScript()
         {
-            var script = NodeEditorUtility.FindScriptFromType(NodeData.GetType());
+            var script = EditorUtilityExtension.FindScriptFromType(NodeData.GetType());
 
             if (script != null)
                 AssetDatabase.OpenAsset(script.GetInstanceID(), 0, 0);
@@ -411,7 +412,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
         void OpenNodeViewScript()
         {
-            var script = NodeEditorUtility.FindScriptFromType(GetType());
+            var script = EditorUtilityExtension.FindScriptFromType(GetType());
 
             if (script != null)
                 AssetDatabase.OpenAsset(script.GetInstanceID(), 0, 0);
@@ -443,8 +444,6 @@ namespace CZToolKit.GraphProcessor.Editors
                 // 是公开，或者有SerializeField特性
                 bool isDisplay = fieldInfo.IsPublic || Utility_Attribute.TryGetFieldInfoAttribute(fieldInfo, out SerializeField serializable);
                 if (!isDisplay)
-                    continue;
-                if (isPort && portAttrib.ShowBackValue == ShowBackingValue.Never)
                     continue;
 
                 // 是否是入方向的接口
@@ -603,7 +602,7 @@ namespace CZToolKit.GraphProcessor.Editors
         // 按钮状态
         Status OpenNodeScriptStatus(DropdownMenuAction action)
         {
-            if (NodeEditorUtility.FindScriptFromType(NodeData.GetType()) != null)
+            if (EditorUtilityExtension.FindScriptFromType(NodeData.GetType()) != null)
                 return Status.Normal;
             return Status.Disabled;
         }
@@ -611,7 +610,7 @@ namespace CZToolKit.GraphProcessor.Editors
         // 按钮状态
         Status OpenNodeViewScriptStatus(DropdownMenuAction action)
         {
-            if (NodeEditorUtility.FindScriptFromType(GetType()) != null)
+            if (EditorUtilityExtension.FindScriptFromType(GetType()) != null)
                 return Status.Normal;
             return Status.Disabled;
         }

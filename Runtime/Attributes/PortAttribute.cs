@@ -15,9 +15,6 @@ namespace CZToolKit.GraphProcessor
         /// <summary> 接口类型匹配规则 </summary>
         public PortTypeConstraint TypeConstraint = PortTypeConstraint.Inherited;
 
-        /// <summary> 是否绘制字段 </summary>
-        public ShowBackingValue ShowBackValue = ShowBackingValue.Never;
-
         public PortAttribute(PortDirection _direction, bool _isMulti = true, PortTypeConstraint _typeConstraint = PortTypeConstraint.Inherited)
         {
             Direction = _direction;

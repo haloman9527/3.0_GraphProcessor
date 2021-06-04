@@ -22,18 +22,20 @@ namespace CZToolKit.GraphProcessor
     {
         #region 变量
         [NonSerialized]
-        UnityObject owner;
+        UnityObject asset;
         #endregion
 
         #region 属性
         /// <summary> 图的所有者，即SO对象 </summary>
-        public UnityObject From { get { return owner; } }
+        public UnityObject Asset { get { return asset; } }
         #endregion
 
-        public virtual void SetFrom(UnityObject _owner)
+        public void Enable(UnityObject _asset)
         {
             // 保存_owner的引用
-            owner = _owner;
+            asset = _asset;
         }
+
+        protected virtual void OnEnable() { }
     }
 }

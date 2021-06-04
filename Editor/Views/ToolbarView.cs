@@ -37,6 +37,7 @@ namespace CZToolKit.GraphProcessor.Editors
         public ToolbarView(BaseGraphWindow _graphWindow)
         {
             name = "ToolbarView";
+            style.backgroundColor = new Color(0, 0, 0, 0);
             graphWindow = _graphWindow;
 
             leftButtonDatas.Clear();

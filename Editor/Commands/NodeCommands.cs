@@ -15,14 +15,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace CZToolKit.GraphProcessor
+namespace CZToolKit.GraphProcessor.Editors
 {
-    public interface IBaseNode
-    {
-        IBaseGraph Owner { get; }
 
-        string GUID { get; }
-
-        void Enable(IBaseGraph baseGraph);
-    }
 }

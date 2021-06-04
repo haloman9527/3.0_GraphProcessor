@@ -17,8 +17,8 @@ namespace CZToolKit.GraphProcessor
 {
     public interface IBaseGraphFromAsset
     {
-        UnityObject From { get; }
+        UnityObject Asset { get; }
 
-        void SetFrom(UnityObject _from);
+        void Enable(UnityObject _from);
     }
 }

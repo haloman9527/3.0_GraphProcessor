@@ -19,7 +19,6 @@ namespace CZToolKit.GraphProcessor.Editors
                 System.Type scriptType = script.GetClass();
                 if (scriptType != null && (scriptType == typeof(BaseNode) || scriptType.IsSubclassOf(typeof(BaseNode))))
                 {
-
                     string[] graphGUIDs = AssetDatabase.FindAssets("t:" + typeof(BaseGraphAsset));
                     foreach (string graphGUID in graphGUIDs)
                     {

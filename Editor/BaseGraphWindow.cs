@@ -89,7 +89,6 @@ namespace CZToolKit.GraphProcessor.Editors
 
         [SerializeField] int graphOwnerInstanceID;
         [SerializeField] GraphAssetOwner graphOwner;
-
         [SerializeField] UnityObject graphAsset;
 
         public GraphAssetOwner GraphAssetOwner
@@ -111,7 +110,6 @@ namespace CZToolKit.GraphProcessor.Editors
             GraphViewElement.StretchToParentSize();
             rootVisualElement.Add(GraphViewElement);
             EditorApplication.playModeStateChanged += OnPlayModeChanged;
-
             GraphAssetOwner = EditorUtility.InstanceIDToObject(graphOwnerInstanceID) as GraphAssetOwner;
 
             if (GraphView == null && GraphAsset != null)
@@ -137,8 +135,8 @@ namespace CZToolKit.GraphProcessor.Editors
             if (Toolbar != null)
                 GUILayoutUtility.GetRect(Toolbar.style.width.value.value, Toolbar.style.height.value.value);
 
-            //if (GraphView != null)
-            //    GraphView.OnGUI();
+            if (GraphView != null)
+                GraphView.OnGUI();
         }
 
         protected virtual void OnDisable()
@@ -177,15 +175,16 @@ namespace CZToolKit.GraphProcessor.Editors
         void InitializeWindow(IBaseGraph _graph)
         {
             Graph = _graph;
-            GraphAsset = (Graph as IBaseGraphFromAsset)?.From;
+            GraphAsset = (Graph as IBaseGraphFromAsset)?.Asset;
             Toolbar = new ToolbarView(this);
+            
             rootVisualElement.Add(Toolbar);
             if (GraphAsset == null) return;
             GraphView = InitializeGraphView(Graph);
             if (GraphView == null) return;
 
             Toolbar.AddButton("Show In Project", () => EditorGUIUtility.PingObject(GraphView.GraphAsset), false);
-            Toolbar.AddButton("Save Assets", () => { GraphView.SaveGraphToDisk(true); }, false);
+            Toolbar.AddButton("Save Assets", () => { GraphView.SaveGraphToDisk(); }, false);
             Toolbar.AddButton("Reload", ReloadGraph, false);
 
             Undo.undoRedoPerformed += ReloadGraph;

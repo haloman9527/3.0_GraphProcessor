@@ -9,7 +9,7 @@ using UnityObject = UnityEngine.Object;
 
 namespace CZToolKit.GraphProcessor
 {
-    public abstract class GraphOwner : MonoBehaviour, IGraphAsset, IVariableOwner
+    public abstract class GraphOwner : MonoBehaviour, IGraphOwner, IGraphAsset, IVariableOwner
     {
         protected List<SharedVariable> variables = new List<SharedVariable>();
         protected Dictionary<string, int> sharedVariableIndex;
@@ -119,19 +119,19 @@ namespace CZToolKit.GraphProcessor
         }
     }
 
-    public abstract class GraphOwner<GraphClass> : GraphOwner, ISerializationCallbackReceiver
-        where GraphClass : IBaseGraph, IBaseGraphFromAsset, new()
+    public abstract class GraphOwner<TGraph> : GraphOwner, ISerializationCallbackReceiver
+        where TGraph : IBaseGraph, IBaseGraphFromAsset, new()
     {
         [HideInInspector]
         [SerializeField]
-        GraphClass graph = new GraphClass();
+        TGraph graph = new TGraph();
 
         public override IBaseGraph Graph
         {
             get { return graph; }
         }
 
-        public GraphClass TGraph
+        public TGraph T_Graph
         {
             get { return graph; }
         }
@@ -154,8 +154,8 @@ namespace CZToolKit.GraphProcessor
 
         void DeserializeGraph()
         {
-            graph = SerializationUtility.DeserializeValue<GraphClass>(Encoding.UTF8.GetBytes(serializedGraph), DataFormat.JSON, graphUnityReferences);
-            graph.SetFrom(this);
+            graph = SerializationUtility.DeserializeValue<TGraph>(Encoding.UTF8.GetBytes(serializedGraph), DataFormat.JSON, graphUnityReferences);
+            graph.Enable(this);
             graph.Flush();
             graph.InitializePropertyMapping(this);
         }
@@ -199,8 +199,8 @@ namespace CZToolKit.GraphProcessor
 
         public void OnBeforeSerialize()
         {
-            SaveGraph();
-            SaveVariables();
+            //SaveGraph();
+            //SaveVariables();
         }
 
         public void OnAfterDeserialize()
@@ -211,12 +211,12 @@ namespace CZToolKit.GraphProcessor
 
         #endregion
 
-        public override Type GraphType { get { return typeof(GraphClass); } }
+        public override Type GraphType { get { return typeof(TGraph); } }
 
         private void Reset()
         {
-            graph = new GraphClass();
-            graph.SetFrom(this);
+            graph = new TGraph();
+            graph.Enable(this);
             graph.Flush();
             graph.InitializePropertyMapping(this);
         }

@@ -183,7 +183,6 @@ namespace CZToolKit.GraphProcessor
                 edgeGUIDs.Remove(_edgeGUID);
         }
 
-
         public void DisconnectEdge(SerializableEdge _edge)
         {
             DisconnectEdge(_edge.GUID);

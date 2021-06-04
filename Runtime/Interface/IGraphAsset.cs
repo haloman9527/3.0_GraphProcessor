@@ -11,12 +11,18 @@
  *
  */
 #endregion
+
 using System;
+using UnityObject = UnityEngine.Object;
 
 namespace CZToolKit.GraphProcessor
 {
-    public class CustomPortBehaviourAttribute : Attribute
+    public interface IGraphAsset
     {
+        IBaseGraph Graph { get; }
 
+        void SaveGraph();
+
+        void CheckGraphSerialization();
     }
 }

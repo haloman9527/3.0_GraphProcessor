@@ -70,17 +70,32 @@ namespace CZToolKit.GraphProcessor
                 return variables;
             }
         }
-        List<SharedVariable> InternalVariables
-        {
-            get
-            {
-                if (variables == null) CollectionVariables();
-                return variables;
-            }
-        }
         #endregion
 
-        public virtual void Initialize(IGraphAssetOwner _graphOwner)
+        public virtual void Enable()
+        {
+            foreach (var node in nodes.Values)
+            {
+                node.Enable(this);
+            }
+
+            foreach (var edge in edges.Values)
+            {
+                edge.Enable(this);
+            }
+
+            foreach (var node in nodes.Values)
+            {
+                node.OnEnabled();
+            }
+
+            foreach (var edge in edges.Values)
+            {
+                edge.OnEnabled();
+            }
+        }
+
+        public virtual void Initialize(IGraphOwner _graphOwner)
         {
             InitializePropertyMapping(_graphOwner);
         }
@@ -99,8 +114,10 @@ namespace CZToolKit.GraphProcessor
 
         public void InitializePropertyMapping(IVariableOwner _variableOwner)
         {
+            if (variables == null)
+                CollectionVariables();
             VarialbeOwner = _variableOwner;
-            foreach (var variable in Variables)
+            foreach (var variable in variables)
             {
                 variable.InitializePropertyMapping(_variableOwner);
             }
@@ -131,7 +148,7 @@ namespace CZToolKit.GraphProcessor
                     nodes.Remove(kv.Key);
                     continue;
                 }
-                kv.Value.Initialize(this);
+                kv.Value.Enable(this);
             }
 
             foreach (var kv in edges.ToArray())
@@ -141,7 +158,7 @@ namespace CZToolKit.GraphProcessor
                     nodes.Remove(kv.Key);
                     continue;
                 }
-                kv.Value.Initialize(this);
+                kv.Value.Enable(this);
             }
 
             foreach (var kv in stacks.ToArray())
@@ -218,7 +235,7 @@ namespace CZToolKit.GraphProcessor
         public void AddNode(BaseNode _node)
         {
             if (_node == null) return;
-            _node.Initialize(this);
+            _node.Enable(this);
             nodes[_node.GUID] = _node;
             NodeDataCache.UpdateStaticPorts(_node);
             IEnumerable<SharedVariable> nodeVariables = SharedVariableUtility.CollectionObjectSharedVariables(_node);
@@ -229,8 +246,9 @@ namespace CZToolKit.GraphProcessor
                     variable.InitializePropertyMapping(VarialbeOwner);
                 }
             }
-            if (nodeVariables != null)
-                InternalVariables.AddRange(nodeVariables);
+            if (variables == null)
+                CollectionVariables();
+            variables.AddRange(nodeVariables);
         }
 
         public void RemoveNode(BaseNode _node)
@@ -264,7 +282,7 @@ namespace CZToolKit.GraphProcessor
 
         private void AddEdge(SerializableEdge _edge)
         {
-            _edge.Initialize(this);
+            _edge.Enable(this);
             edges[_edge.GUID] = _edge;
         }
 

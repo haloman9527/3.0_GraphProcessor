@@ -34,7 +34,7 @@ namespace CZToolKit.GraphProcessor.Editors
     }
 
     [CustomNodeView(typeof(DebugNode))]
-    public class DebugNodeView : HasSettingNodeView, IOnGUIObserver
+    public class DebugNodeView : BaseNodeView, IOnGUIObserver
     {
         DebugNode debugNode;
         Label label = new Label();
@@ -51,8 +51,6 @@ namespace CZToolKit.GraphProcessor.Editors
             icon.style.left = 5;
             icon.style.alignSelf = Align.Center;
             AddIcon(icon);
-
-            AddBadge(new IconBadge() { badgeText = "Debug" });
         }
 
         public void OnGUI()
@@ -71,7 +69,7 @@ namespace CZToolKit.GraphProcessor.Editors
             object value = null;
             if (port.TryGetConnectValue(ref value))
             {
-                if (value == null)
+                if (value == null || value.Equals(null))
                     label.text = "NULL";
                 else
                     label.text = value.ToString();

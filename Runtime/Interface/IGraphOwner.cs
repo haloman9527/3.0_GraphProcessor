@@ -4,7 +4,7 @@
  *  Title:
  *  
  *  Description:
- *  
+ *  提供GraphOwner的相关接口
  *  Date:
  *  Version:
  *  Writer: 
@@ -12,17 +12,12 @@
  */
 #endregion
 
-using System;
-using UnityObject = UnityEngine.Object;
+using CZToolKit.Core.SharedVariable;
 
 namespace CZToolKit.GraphProcessor
 {
-    public interface IGraphAsset
+    public interface IGraphOwner : IVariableOwner
     {
         IBaseGraph Graph { get; }
-
-        void SaveGraph();
-
-        void CheckGraphSerialization();
     }
 }

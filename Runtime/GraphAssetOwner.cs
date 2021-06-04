@@ -10,7 +10,7 @@ using UnityObject = UnityEngine.Object;
 namespace CZToolKit.GraphProcessor
 {
 
-    public abstract class GraphAssetOwner : MonoBehaviour, IGraphAssetOwner, ISerializationCallbackReceiver
+    public abstract class GraphAssetOwner : MonoBehaviour, IGraphAssetOwner, IGraphOwner, ISerializationCallbackReceiver
     {
         List<SharedVariable> variables = new List<SharedVariable>();
         Dictionary<string, int> sharedVariableIndex;
@@ -33,7 +33,7 @@ namespace CZToolKit.GraphProcessor
 
         public virtual void OnBeforeSerialize()
         {
-            Serialize();
+            //SaveVariables();
         }
 
         public virtual void OnAfterDeserialize()
@@ -41,12 +41,12 @@ namespace CZToolKit.GraphProcessor
             CheckSerialization();
         }
 
-        void Serialize()
+        public void SaveVariables()
         {
             serializedVariables = Encoding.UTF8.GetString(SerializationUtility.SerializeValue(variables, DataFormat.JSON, out variablesUnityReference));
         }
 
-        void Deserialize()
+        void DeserializeVariables()
         {
             variables = SerializationUtility.DeserializeValue<List<SharedVariable>>(Encoding.UTF8.GetBytes(serializedVariables), DataFormat.JSON, variablesUnityReference);
             UpdateVariablesIndex();
@@ -56,7 +56,7 @@ namespace CZToolKit.GraphProcessor
         {
             if (initializedVariables) return;
             initializedVariables = true;
-            Deserialize();
+            DeserializeVariables();
         }
 
         #endregion
@@ -156,12 +156,12 @@ namespace CZToolKit.GraphProcessor
         }
     }
 
-    public abstract class GraphAssetOwner<GraphAssetClass, GraphClass> : GraphAssetOwner
-        where GraphAssetClass : BaseGraphAsset<GraphClass>
-        where GraphClass : IBaseGraph, IBaseGraphFromAsset, new()
+    public abstract class GraphAssetOwner<TGraphAsset, TGraph> : GraphAssetOwner
+        where TGraphAsset : BaseGraphAsset<TGraph>
+        where TGraph : IBaseGraph, IBaseGraphFromAsset, new()
     {
         [SerializeField]
-        GraphAssetClass graphAsset;
+        TGraphAsset graphAsset;
 
         public override BaseGraphAsset GraphAsset
         {
@@ -170,7 +170,7 @@ namespace CZToolKit.GraphProcessor
             {
                 if (graphAsset != value)
                 {
-                    graphAsset = value as GraphAssetClass;
+                    graphAsset = value as TGraphAsset;
                     if (graphAsset != null)
                     {
                         foreach (var variable in graphAsset.Graph.Variables)
@@ -183,7 +183,7 @@ namespace CZToolKit.GraphProcessor
             }
         }
 
-        public GraphAssetClass TGraphAsset
+        public TGraphAsset T_GraphAsset
         {
             get { return graphAsset; }
             set
@@ -208,12 +208,12 @@ namespace CZToolKit.GraphProcessor
             get { return GraphAsset.Graph; }
         }
 
-        public GraphClass TGraph
+        public TGraph T_Graph
         {
-            get { return TGraphAsset.TGraph; }
+            get { return T_GraphAsset.TGraph; }
         }
 
-        public override Type GraphAssetType { get { return typeof(GraphAssetClass); } }
-        public override Type GraphType { get { return typeof(GraphClass); } }
+        public override Type GraphAssetType { get { return typeof(TGraphAsset); } }
+        public override Type GraphType { get { return typeof(TGraph); } }
     }
 }

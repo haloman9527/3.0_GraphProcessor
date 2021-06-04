@@ -7,7 +7,6 @@ using System.Linq;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
-using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -82,7 +81,7 @@ namespace CZToolKit.GraphProcessor.Editors
             if (Initialized) return;
             GraphWindow = _window;
             Graph = _graph;
-            GraphAsset = (_graph as IBaseGraphFromAsset)?.From;
+            GraphAsset = (_graph as IBaseGraphFromAsset)?.Asset;
             SerializedObject = new SerializedObject(GraphAsset);
             GraphWindow.Toolbar.AddButton("Center", () =>
             {
@@ -111,7 +110,7 @@ namespace CZToolKit.GraphProcessor.Editors
             InitializeGraphView();
             InitializeNodeViews();
             InitializeEdgeViews();
-            InitializeStackNodes();
+            InitializeStacks();
             InitializeGroups();
             InitializeBlackboard();
 
@@ -182,17 +181,17 @@ namespace CZToolKit.GraphProcessor.Editors
             }
         }
 
+        void InitializeStacks()
+        {
+            foreach (var stack in Graph.StackNodesGUIDMapping.Values)
+                AddStackNodeView(stack);
+        }
+
         /// <summary> 初始化所有Group的视图 </summary>
         void InitializeGroups()
         {
             foreach (var group in Graph.Groups)
                 AddGroupView(group);
-        }
-
-        void InitializeStackNodes()
-        {
-            foreach (var stackNode in Graph.StackNodesGUIDMapping.Values)
-                AddStackNodeView(stackNode);
         }
 
         void InitializeBlackboard()
@@ -315,7 +314,6 @@ namespace CZToolKit.GraphProcessor.Editors
                         continue;
                 }
             }
-            ClearSelection();
             return Encoding.UTF8.GetString(SerializationUtility.SerializeValue(data, DataFormat.JSON, out CopyPasteHelper.objectReferences));
         }
 
@@ -327,12 +325,11 @@ namespace CZToolKit.GraphProcessor.Editors
         void DeserializeAndPasteCallback(string _operationName, string _serializedData)
         {
             RegisterCompleteObjectUndo(_operationName);
+            ClearSelection();
             var data = SerializationUtility.DeserializeValue<CopyPasteHelper>(Encoding.UTF8.GetBytes(_serializedData), DataFormat.JSON, CopyPasteHelper.objectReferences);
-
             Dictionary<string, BaseNode> copiedNodesMap = new Dictionary<string, BaseNode>();
             foreach (var node in data.copiedNodes)
             {
-                //var node = JsonSerializer.Deserialize(node) as BaseNode;
                 if (node == null)
                     continue;
                 node.position.position += new Vector2(20, 20);
@@ -349,7 +346,6 @@ namespace CZToolKit.GraphProcessor.Editors
 
             foreach (var group in data.copiedGroups)
             {
-                //var group = JsonSerializer.Deserialize<BaseGroup>(group);
                 group.position.position += new Vector2(20, 20);
 
                 var oldGUIDList = group.innerNodeGUIDs.ToList();
@@ -365,8 +361,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
             foreach (var edge in data.copiedEdges)
             {
-                edge.Initialize(Graph);
-                //var edge = JsonSerializer.Deserialize<SerializableEdge>(serializedEdge);
+                edge.Enable(Graph);
 
                 copiedNodesMap.TryGetValue(edge.InputNodeGUID, out var inputNode);
                 copiedNodesMap.TryGetValue(edge.OutputNodeGUID, out var outputNode);
@@ -387,7 +382,7 @@ namespace CZToolKit.GraphProcessor.Editors
                 }
             }
 
-            this.SetDirty(true);
+            SetDirty();
         }
 
         /// <summary> GraphView发生改变时调用 </summary>
@@ -464,10 +459,10 @@ namespace CZToolKit.GraphProcessor.Editors
 
         protected virtual void KeyDownCallback(KeyDownEvent e)
         {
-            if (e.keyCode == KeyCode.S && e.commandKey)
+            if ((e.commandKey || e.ctrlKey) && e.keyCode == KeyCode.S)
             {
                 SaveGraphToDisk();
-                e.StopPropagation();
+                //e.StopPropagation();
             }
         }
 
@@ -509,18 +504,17 @@ namespace CZToolKit.GraphProcessor.Editors
 
             if (dragData == null)
                 return;
-
             var exposedParameterFieldViews = dragData.OfType<BlackboardField>();
             if (exposedParameterFieldViews.Any())
             {
+                RegisterCompleteObjectUndo("Create Parameter Node");
                 foreach (var paramFieldView in exposedParameterFieldViews)
                 {
-                    RegisterCompleteObjectUndo("Create Parameter Node");
                     var paramNode = BaseNode.CreateNew<ParameterNode>(mousePos);
                     paramNode.name = paramFieldView.text;
                     AddNode(paramNode);
-                    this.SetDirty();
                 }
+                this.SetDirty();
             }
         }
 
@@ -531,17 +525,12 @@ namespace CZToolKit.GraphProcessor.Editors
 
             if (dragData != null)
             {
-                // Handle drag from exposed parameter view
                 if (dragData.OfType<BlackboardField>().Any())
                     dragging = true;
             }
 
             if (dragging)
-            {
                 DragAndDrop.visualMode = DragAndDropVisualMode.Generic;
-            }
-
-            UpdateNodeInspectorSelection();
         }
 
         #endregion
@@ -571,10 +560,10 @@ namespace CZToolKit.GraphProcessor.Editors
                     drawnNode = true;
                 }
             }
-            if (!drawnNode)
-                Selection.activeObject = null;
             //if (!drawnNode)
-            //    Selection.activeObject = GraphAsset;
+            //    Selection.activeObject = null;
+            if (!drawnNode)
+                Selection.activeObject = GraphAsset;
         }
 
         public RelayNodeView AddRelayNode(PortView _inputPortView, PortView _outputPortView, Vector2 _position)
@@ -589,6 +578,8 @@ namespace CZToolKit.GraphProcessor.Editors
                 Connect(_inputPortView, nodeView.PortViews["output"]);
             return nodeView;
         }
+
+
 
         public void RemoveRelayNode(RelayNodeView _relayNodeView)
         {
@@ -705,7 +696,6 @@ namespace CZToolKit.GraphProcessor.Editors
             {
                 AddElement(item);
             }
-            //_groupView.Clear();
             RemoveElement(_groupView);
         }
 
@@ -887,12 +877,12 @@ namespace CZToolKit.GraphProcessor.Editors
             //Undo.RegisterCompleteObjectUndo(GraphData, name);
         }
 
-        public void SaveGraphToDisk(bool _immediately = false)
+        public void SaveGraphToDisk()
         {
-            if (GraphAsset == null) return;
+            (GraphAsset as IGraphAsset)?.SaveGraph();
+            GraphWindow.GraphAssetOwner?.SaveVariables();
             SetDirty(true);
-            if (_immediately)
-                AssetDatabase.SaveAssets();
+            AssetDatabase.SaveAssets();
         }
 
         public virtual void ResetPositionAndZoom()
@@ -900,10 +890,6 @@ namespace CZToolKit.GraphProcessor.Editors
             Graph.Position = Vector3.zero;
             Graph.Scale = Vector3.one;
         }
-
-        /// <summary> Deletes the selected content, can be called form an IMGUI container </summary>
-        public void DelayedDeleteSelection() => this.schedule.Execute(() => DeleteSelectionOperation("Delete", AskUser.DontAskUser)).ExecuteLater(0);
-
         #endregion
     }
 }

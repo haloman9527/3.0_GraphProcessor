@@ -1,14 +1,12 @@
 ﻿using CZToolKit.Core;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using UnityEditor;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
     public static class NodeEditorUtility
     {
-
         #region GraphViewTypeCache
         /// <summary> GraphEditorWindow类型缓存 Key:Graph类型 Value:Graph视图类型 </summary>
         static Dictionary<Type, Type> GRAPH_EDITOR_WINDOW_TYPE_CACHE;
@@ -121,25 +119,6 @@ namespace CZToolKit.GraphProcessor.Editors
             return ObjectNames.NicifyVariableName(_fieldName);
         }
         #endregion
-
-        public static MonoScript FindScriptFromType(Type _type)
-        {
-            var scriptGUIDs = AssetDatabase.FindAssets($"t:script {_type.Name}");
-
-            if (scriptGUIDs.Length == 0)
-                return null;
-
-            foreach (var scriptGUID in scriptGUIDs)
-            {
-                var assetPath = AssetDatabase.GUIDToAssetPath(scriptGUID);
-                var script = AssetDatabase.LoadAssetAtPath<MonoScript>(assetPath);
-
-                if (script != null && String.Equals(_type.Name, Path.GetFileNameWithoutExtension(assetPath), StringComparison.OrdinalIgnoreCase) && script.GetClass() == _type)
-                    return script;
-            }
-
-            return null;
-        }
     }
 }
 

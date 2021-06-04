@@ -53,10 +53,12 @@ namespace CZToolKit.GraphProcessor
 
         public SerializableEdge() { }
 
-        public void Initialize(IBaseGraph _graph)
+        public void Enable(IBaseGraph _graph)
         {
             owner = _graph;
         }
+
+        public virtual void OnEnabled() { }
 
         public static SerializableEdge CreateNewEdge(IBaseGraph _graph, NodePort _inputPort, NodePort _outputPort)
         {

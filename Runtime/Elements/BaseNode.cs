@@ -64,7 +64,7 @@ namespace CZToolKit.GraphProcessor
         public virtual void OnCreated() { }
 
         /// <summary> 请不要在其它任何地方调用 </summary>
-        public void Initialize(IBaseGraph _graph)
+        public void Enable(IBaseGraph _graph)
         {
             owner = _graph;
             foreach (var port in Ports.Values)
@@ -73,31 +73,33 @@ namespace CZToolKit.GraphProcessor
             }
         }
 
-        public virtual void InitializeGraphOwner(IGraphAssetOwner _graphOwner) { }
+        public virtual void OnEnabled() { }
+
+        public virtual void Initialize(IGraphOwner _graphOwner) { }
 
         #region Ports
         /// <summary> 通过字段名获取一个本地Input接口 </summary>
-        public bool TryGetInputPort(string _fieldName, out NodePort _nodePort)
+        public bool TryGetInputPort(string _fieldName, out NodePort _localNodePort)
         {
-            if (TryGetPort(_fieldName, out _nodePort) && _nodePort.Direction == PortDirection.Input)
+            if (TryGetPort(_fieldName, out _localNodePort) && _localNodePort.Direction == PortDirection.Input)
                 return true;
-            _nodePort = null;
+            _localNodePort = null;
             return false;
         }
 
         /// <summary> 通过字段名获取一个本地Output接口 </summary>
-        public bool TryGetOutputPort(string _fieldName, out NodePort _nodePort)
+        public bool TryGetOutputPort(string _fieldName, out NodePort _localNodePort)
         {
-            if (TryGetPort(_fieldName, out _nodePort) && _nodePort.Direction == PortDirection.Output)
+            if (TryGetPort(_fieldName, out _localNodePort) && _localNodePort.Direction == PortDirection.Output)
                 return true;
-            _nodePort = null;
+            _localNodePort = null;
             return false;
         }
 
         /// <summary> 通过字段名获取一个本地接口 </summary>
-        public bool TryGetPort(string _fieldName, out NodePort _nodePort)
+        public bool TryGetPort(string _fieldName, out NodePort _localNodePort)
         {
-            if (Ports.TryGetValue(_fieldName, out _nodePort)) return true;
+            if (Ports.TryGetValue(_fieldName, out _localNodePort)) return true;
             else return false;
         }
 
@@ -153,26 +155,26 @@ namespace CZToolKit.GraphProcessor
         }
 
         /// <summary> 向本地接口连接的远程接口返回一个值(override) </summary>
-        public virtual bool GetValue<T>(NodePort _port, ref T _value)
+        public virtual bool GetValue<T>(NodePort _localPort, ref T _value)
         {
             Debug.LogWarning("No GetValue(NodePort port) override defined for " + GetType());
             return false;
         }
 
         /// <summary> 执行节点逻辑，指定接口和参数(可判断接口执行相应逻辑) </summary>
-        public virtual void Execute(NodePort _port, params object[] _params) { }
+        public virtual void Execute(NodePort _localPort, params object[] _params) { }
 
         /// <summary> 通过字段名执行本地接口连接的远程接口的<see cref="Execute(NodePort, object[])"/>方法 </summary>
-        public void ExecuteConnections(string _portName, params object[] _params)
+        public void ExecuteConnections(string _localPortName, params object[] _params)
         {
-            if (TryGetPort(_portName, out NodePort port))
+            if (TryGetPort(_localPortName, out NodePort port))
                 ExecuteConnections(port, _params);
         }
 
         /// <summary> 执行本地接口连接的远程接口的<see cref="Execute(NodePort, object[])"/>方法 </summary>
-        public void ExecuteConnections(NodePort _port, params object[] _params)
+        public void ExecuteConnections(NodePort _localPort, params object[] _params)
         {
-            foreach (var targetPort in _port.GetConnections())
+            foreach (var targetPort in _localPort.GetConnections())
             {
                 targetPort.Execute(_params);
             }
@@ -180,17 +182,17 @@ namespace CZToolKit.GraphProcessor
 
         #endregion
         /// <summary> 在接口连接时触发 </summary>
-        /// <param name="_port"> 本地接口 </param>
+        /// <param name="_localPort"> 本地接口 </param>
         /// <param name="_targetPort"> 目标接口 </param>
-        public virtual void OnConnected(NodePort _port, NodePort _targetPort) { }
+        public virtual void OnConnected(NodePort _localPort, NodePort _targetPort) { }
 
         /// <summary> 在接口断开连接时触发 </summary>
-        /// <param name="_port"> 本地接口 </param>
+        /// <param name="_localPort"> 本地接口 </param>
         /// <param name="_targetPort"> 目标接口 </param>
-        public virtual void OnDisconnected(NodePort _port, NodePort _targetPort) { }
+        public virtual void OnDisconnected(NodePort _localPort, NodePort _targetPort) { }
 
         /// <summary> 动态返回接口类型 </summary>
-        public virtual Type PortDynamicType(string _portName) { return null; }
+        public virtual Type PortDynamicType(string _localPortName) { return null; }
 
         /// <summary> 清理连接(不通知) </summary>
         public void ClearConnectionsWithoutNotification()
