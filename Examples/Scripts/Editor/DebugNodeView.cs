@@ -34,7 +34,7 @@ namespace CZToolKit.GraphProcessor.Editors
     }
 
     [CustomNodeView(typeof(DebugNode))]
-    public class DebugNodeView : BaseNodeView, IOnGUIObserver
+    public class DebugNodeView : BaseNodeView
     {
         DebugNode debugNode;
         Label label = new Label();
@@ -51,14 +51,10 @@ namespace CZToolKit.GraphProcessor.Editors
             icon.style.left = 5;
             icon.style.alignSelf = Align.Center;
             AddIcon(icon);
+            Add(new IMGUIContainer(UpdateLabel));
         }
 
-        public void OnGUI()
-        {
-            UpdateLabel();
-        }
-
-        private void UpdateLabel()
+        void UpdateLabel()
         {
             if (!debugNode.TryGetPort("input", out NodePort port) || !port.IsConnected)
             {

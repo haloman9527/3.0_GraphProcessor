@@ -106,7 +106,7 @@ namespace CZToolKit.GraphProcessor.Editors
                     box.AddToClassList("port-input-element");
                     VisualElement fieldDrawer;
                     if (Utility_Attribute.TryGetFieldInfoAttribute(fieldInfo, out ShowAsDrawer showAsDrawer)
-                        && (fieldDrawer = CreateControlField(fieldInfo)) != null)
+                        && (fieldDrawer = CreateControlField(fieldInfo,string.Empty,_=> { Owner.SetDirty(); })) != null)
                     {
                         box.Add(fieldDrawer);
                         box.visible = !portView.PortData.IsConnected;
@@ -122,7 +122,7 @@ namespace CZToolKit.GraphProcessor.Editors
                 }
             }
             if (!Owner.Initialized)
-                Owner.OnInitializeCompleted += OnInitialized;
+                Owner.onInitializeCompleted += OnInitialized;
             else
                 OnInitialized();
             Initialized = true;

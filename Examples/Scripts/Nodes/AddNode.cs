@@ -4,20 +4,32 @@ namespace CZToolKit.GraphProcessor
     [NodeMenuItem("Math", "Add")]
     public class AddNode : BaseNode
     {
-        [Port(PortDirection.Input, IsMulti = false)]
+        [Port(PortDirection.Input, IsMulti = true)]
         [ShowAsDrawer]
-        public float a, b;
-       
+        float input;
+
         [Port(PortDirection.Output, IsMulti = true)]
         float output;
 
         public override bool GetValue<T>(NodePort _port, ref T _value)
         {
-            TryGetInputValue(nameof(a), out float tempA, a);
-            TryGetInputValue(nameof(b), out float tempB, b);
+            switch (_port.FieldName)
+            {
+                case nameof(input):
+                    float inputSum = 0;
+                    foreach (var value in GetConnectValues<float>(nameof(input)))
+                    {
+                        inputSum += value;
+                    }
+                    if (inputSum is T tValue)
+                    {
+                        _value = tValue;
+                        return true;
+                    }
+                    break;
+            }
 
-            if ((tempA + tempB) is T tValue) { _value = tValue; return true; }
-            else return false;
+            return false;
         }
     }
 }

@@ -134,15 +134,12 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             if (Toolbar != null)
                 GUILayoutUtility.GetRect(Toolbar.style.width.value.value, Toolbar.style.height.value.value);
-
-            if (GraphView != null)
-                GraphView.OnGUI();
         }
 
         protected virtual void OnDisable()
         {
-            //if (GraphView != null)
-            //    GraphView.SaveGraphToDisk();
+            if (GraphView != null)
+                GraphView.SaveGraphToDisk();
             EditorApplication.playModeStateChanged -= OnPlayModeChanged;
         }
 
@@ -191,8 +188,6 @@ namespace CZToolKit.GraphProcessor.Editors
             GraphViewElement.Add(GraphView);
             GraphViewElement.style.top = 20;
             rootVisualElement.Add(GraphViewElement);
-
-            GraphView.OnInitializeCompleted?.Invoke();
 
             OnInitializedWindow();
         }

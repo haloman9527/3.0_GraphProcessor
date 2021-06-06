@@ -181,24 +181,24 @@ namespace CZToolKit.GraphProcessor
                 if (edge.InputNode == null || edge.OutputNode == null || edge.InputNode == edge.OutputNode)
                 {
                     Disconnect(edge.GUID);
-                    edge.InputPort?.DisconnectEdge(edge);
-                    edge.OutputPort?.DisconnectEdge(edge);
+                    edge.InputPort?.DisconnectToEdge(edge);
+                    edge.OutputPort?.DisconnectToEdge(edge);
                     continue;
                 }
 
                 if (edge.InputPort == null || edge.OutputPort == null || edge.InputPort.Direction == edge.OutputPort.Direction)
                 {
                     Disconnect(edge.GUID);
-                    edge.InputPort?.DisconnectEdge(edge);
-                    edge.OutputPort?.DisconnectEdge(edge);
+                    edge.InputPort?.DisconnectToEdge(edge);
+                    edge.OutputPort?.DisconnectToEdge(edge);
                     continue;
                 }
 
                 if (!edge.InputPort.EdgeGUIDS.Contains(edge.GUID) || !edge.OutputPort.EdgeGUIDS.Contains(edge.GUID))
                 {
                     Disconnect(edge.GUID);
-                    edge.InputPort.DisconnectEdge(edge);
-                    edge.OutputPort.DisconnectEdge(edge);
+                    edge.InputPort.DisconnectToEdge(edge);
+                    edge.OutputPort.DisconnectToEdge(edge);
                     continue;
                 }
             }
@@ -271,8 +271,8 @@ namespace CZToolKit.GraphProcessor
             SerializableEdge edge = SerializableEdge.CreateNewEdge(this, _inputPort, _outputPort);
             AddEdge(edge);
 
-            _inputPort.ConnectEdge(edge);
-            _outputPort.ConnectEdge(edge);
+            _inputPort.ConnectToEdge(edge);
+            _outputPort.ConnectToEdge(edge);
 
             _inputPort.Owner.OnConnected(_inputPort, _outputPort);
             _outputPort.Owner.OnConnected(_outputPort, _inputPort);
@@ -297,8 +297,8 @@ namespace CZToolKit.GraphProcessor
             {
                 if (edge != null)
                 {
-                    edge.InputPort?.DisconnectEdge(edge);
-                    edge.OutputPort?.DisconnectEdge(edge);
+                    edge.InputPort?.DisconnectToEdge(edge);
+                    edge.OutputPort?.DisconnectToEdge(edge);
                     edge.InputNode?.OnDisconnected(edge.InputPort, edge.OutputPort);
                     edge.OutputNode?.OnDisconnected(edge.OutputPort, edge.InputPort);
                 }

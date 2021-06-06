@@ -130,21 +130,8 @@ namespace CZToolKit.GraphProcessor
             Owner.Execute(this, _params);
         }
 
-        public IEnumerable<NodePort> GetConnections()
-        {
-            foreach (var edge in GetEdges())
-            {
-                yield return direction == PortDirection.Input ? edge.OutputPort : edge.InputPort;
-            }
-        }
-
-        public bool TryGetConnectValue<T>(ref T _value)
-        {
-            NodePort port = Connection;
-            if (port == null) return false;
-            return port.TryGetValue(ref _value);
-        }
-
+        /// <summary> 返回所有连接 </summary>
+        /// <returns></returns>
         public IEnumerable<SerializableEdge> GetEdges()
         {
             foreach (string edge in edgeGUIDs)
@@ -153,22 +140,38 @@ namespace CZToolKit.GraphProcessor
             }
         }
 
-        public SerializableEdge GetEdge(int i)
+        /// <summary> 返回所有连接的远程端口 </summary>
+        /// <returns></returns>
+        public IEnumerable<NodePort> GetConnections()
         {
-            if (graph.EdgesGUIDMapping.TryGetValue(edgeGUIDs[i], out SerializableEdge edge)) return edge;
-            return null;
+            foreach (var edge in GetEdges())
+            {
+                yield return direction == PortDirection.Input ? edge.OutputPort : edge.InputPort;
+            }
         }
 
-        public SerializableEdge GetEdge(string edgeGUID)
+        /// <summary> 尝试获取第一个连接的远程端口的值 </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="_value"></param>
+        /// <returns></returns>
+        public bool TryGetConnectValue<T>(ref T _value)
         {
-            if (graph.EdgesGUIDMapping.TryGetValue(edgeGUID, out SerializableEdge edge)) return edge;
-            return null;
+            NodePort port = Connection;
+            if (port == null) return false;
+            return port.TryGetValue(ref _value);
         }
 
-        public void ConnectEdge(SerializableEdge _edge)
+        /// <summary> 返回所有连接的远程端口的值 </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public IEnumerable<T> GetConnectValues<T>()
         {
-            if (!edgeGUIDs.Contains(_edge.GUID))
-                edgeGUIDs.Add(_edge.GUID);
+            foreach (var port in GetConnections())
+            {
+                T value = default;
+                if (port.TryGetValue(ref value))
+                    yield return value;
+            }
         }
 
         /// <summary> 第二个参数是中间值 </summary>
@@ -177,20 +180,39 @@ namespace CZToolKit.GraphProcessor
             edgeGUIDs.QuickSort(_comparison);
         }
 
-        public void DisconnectEdge(string _edgeGUID)
+        /// <summary> 根据索引返回连接 </summary>
+        /// <param name="i"></param>
+        /// <returns></returns>
+        public SerializableEdge GetEdge(int i)
+        {
+            if (graph.EdgesGUIDMapping.TryGetValue(edgeGUIDs[i], out SerializableEdge edge)) return edge;
+            return null;
+        }
+
+        /// <summary> 根据GUID返回连接 </summary>
+        /// <param name="edgeGUID"></param>
+        /// <returns></returns>
+        public SerializableEdge GetEdge(string edgeGUID)
+        {
+            if (graph.EdgesGUIDMapping.TryGetValue(edgeGUID, out SerializableEdge edge)) return edge;
+            return null;
+        }
+
+        public void ConnectToEdge(SerializableEdge _edge)
+        {
+            if (!edgeGUIDs.Contains(_edge.GUID))
+                edgeGUIDs.Add(_edge.GUID);
+        }
+
+        public void DisconnectToEdge(string _edgeGUID)
         {
             if (edgeGUIDs.Contains(_edgeGUID))
                 edgeGUIDs.Remove(_edgeGUID);
         }
 
-        public void DisconnectEdge(SerializableEdge _edge)
+        public void DisconnectToEdge(SerializableEdge _edge)
         {
-            DisconnectEdge(_edge.GUID);
-        }
-
-        public void ClearConnections()
-        {
-            throw new NotImplementedException();
+            DisconnectToEdge(_edge.GUID);
         }
     }
 }

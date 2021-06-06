@@ -154,6 +154,17 @@ namespace CZToolKit.GraphProcessor
             return false;
         }
 
+        public IEnumerable<T> GetConnectValues<T>(string _fieldName)
+        {
+            if (TryGetPort(_fieldName, out NodePort localPort))
+            {
+                foreach (var value in localPort.GetConnectValues<T>())
+                {
+                    yield return value;
+                }
+            }
+        }
+
         /// <summary> 向本地接口连接的远程接口返回一个值(override) </summary>
         public virtual bool GetValue<T>(NodePort _localPort, ref T _value)
         {

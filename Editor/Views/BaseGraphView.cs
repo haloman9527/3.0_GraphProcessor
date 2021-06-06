@@ -30,13 +30,10 @@ namespace CZToolKit.GraphProcessor.Editors
         }
 
         public BaseEdgeConnectorListener connectorListener;
-
-        List<IOnGUIObserver> onGUIObservers = new List<IOnGUIObserver>(16);
+        public event Action onInitializeCompleted;
 
         protected virtual Type GetDefaultNodeViewType(Type _nodeDataType) { return typeof(BaseNodeView); }
-
         public bool Initialized { get; private set; }
-        public Action OnInitializeCompleted { get; set; }
         public bool IsDirty { get; private set; } = false;
         private ExposedParameterView Blackboard { get; set; }
         public CreateNodeMenuWindow CreateNodeMenu { get; private set; }
@@ -48,8 +45,6 @@ namespace CZToolKit.GraphProcessor.Editors
         public List<EdgeView> EdgeViews { get; private set; } = new List<EdgeView>();
         public List<GroupView> GroupViews { get; private set; } = new List<GroupView>();
         public Dictionary<string, BaseStackNodeView> StackNodeViews { get; private set; } = new Dictionary<string, BaseStackNodeView>();
-        public List<IOnGUIObserver> OnGUIObservers { get { return onGUIObservers; } }
-
         protected override bool canCopySelection
         {
             get { return selection.Any(e => e is BaseNodeView || e is GroupView || e is BaseStackNodeView); }
@@ -114,7 +109,8 @@ namespace CZToolKit.GraphProcessor.Editors
             InitializeGroups();
             InitializeBlackboard();
 
-            OnInitializeCompleted += OnInitialized;
+            onInitializeCompleted?.Invoke();
+            OnInitialized();
             Initialized = true;
         }
 
@@ -203,12 +199,6 @@ namespace CZToolKit.GraphProcessor.Editors
         }
 
         #endregion
-
-        public virtual void OnGUI()
-        {
-            foreach (var observer in OnGUIObservers)
-                observer.OnGUI();
-        }
 
         public override Blackboard GetBlackboard()
         {
@@ -617,8 +607,6 @@ namespace CZToolKit.GraphProcessor.Editors
             AddElement(nodeView);
             NodeViews[_nodeData.GUID] = nodeView;
             nodeView.Initialize(this, _nodeData);
-            if (nodeView is IOnGUIObserver observer)
-                onGUIObservers.Add(observer);
             return nodeView;
         }
 
@@ -640,8 +628,6 @@ namespace CZToolKit.GraphProcessor.Editors
         public void RemoveNodeView(BaseNodeView _nodeView)
         {
             NodeViews.Remove(_nodeView.NodeData.GUID);
-            if (_nodeView is IOnGUIObserver observer)
-                onGUIObservers.Remove(observer);
             RemoveElement(_nodeView);
             UpdateNodeInspectorSelection();
         }
@@ -651,7 +637,6 @@ namespace CZToolKit.GraphProcessor.Editors
             foreach (var nodeView in NodeViews.Values)
                 RemoveElement(nodeView);
             NodeViews.Clear();
-            onGUIObservers.Clear();
         }
 
         public GroupView AddGroup(BaseGroup _groupData)

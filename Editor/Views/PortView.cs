@@ -145,7 +145,7 @@ namespace CZToolKit.GraphProcessor.Editors
             if (Owner.Owner.Initialized)
                 OnInitialized();
             else
-                Owner.Owner.OnInitializeCompleted += OnInitialized;
+                Owner.Owner.onInitializeCompleted += OnInitialized;
         }
 
         protected virtual void OnInitialized() { }
