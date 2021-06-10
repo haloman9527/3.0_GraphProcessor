@@ -1,27 +1,12 @@
-﻿using UnityEngine;
-using UnityEngine.UIElements;
-
+﻿
 namespace CZToolKit.GraphProcessor.Editors
 {
     public class SimpleNodeView : BaseNodeView
     {
-        const string SimpleNodeViewStyleFile = "GraphProcessor/Styles/SimpleNodeView";
-
-        static StyleSheet simpleNodeViewStyle;
-        public static StyleSheet SimpleNodeViewStyle
-        {
-            get
-            {
-                if (simpleNodeViewStyle == null)
-                    simpleNodeViewStyle = Resources.Load<StyleSheet>(SimpleNodeViewStyleFile);
-                return simpleNodeViewStyle;
-            }
-        }
-
         protected override void OnInitialized()
         {
             base.OnInitialized();
-            styleSheets.Add(SimpleNodeViewStyle);
+            styleSheets.Add(GraphProcessorStyles.SimpleNodeViewStyle);
 
             titleContainer.Insert(0, inputContainer);
             titleContainer.Add(outputContainer);

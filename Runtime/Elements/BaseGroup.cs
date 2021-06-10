@@ -5,7 +5,7 @@ using UnityEngine;
 namespace CZToolKit.GraphProcessor
 {
     [Serializable]
-    public class BaseGroup
+    public class BaseGroup : IGraphElement
     {
         public string title;
         public Color color = new Color(0, 0, 0, 0.7f);

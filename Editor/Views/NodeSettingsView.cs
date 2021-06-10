@@ -1,6 +1,4 @@
 using UnityEngine.UIElements;
-using UnityEditor.UIElements;
-using UnityEngine;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
@@ -11,9 +9,8 @@ namespace CZToolKit.GraphProcessor.Editors
         public NodeSettingsView()
         {
             pickingMode = PickingMode.Ignore;
-            styleSheets.Add(Resources.Load<StyleSheet>("GraphProcessor/Styles/NodeSettings"));
-            var uxml = Resources.Load<VisualTreeAsset>("GraphProcessor/UXML/NodeSettings");
-            uxml.CloneTree(this);
+            styleSheets.Add(GraphProcessorStyles.NodeSettingsViewStyle);
+            GraphProcessorStyles.NodeSettingsViewTree.CloneTree(this);
 
             m_ContentContainer = this.Q("contentContainer");
             RegisterCallback<MouseDownEvent>(OnMouseDown);

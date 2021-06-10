@@ -7,30 +7,12 @@ using System.Collections.Generic;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
-    public class PortView : Port, IBasePortView
+    public class PortView : Port, IPortView
     {
-        const int DefaultPortSize = 8;
-
-        const string PortViewStyleFile = "GraphProcessor/Styles/PortView";
-
-        static StyleSheet portViewStyle;
-
-        public static StyleSheet PortViewStyle
+        public static PortView CreatePV(Orientation _orientation, Direction _direction, NodePort _portData)
         {
-            get
-            {
-                if (portViewStyle == null)
-                    portViewStyle = Resources.Load<StyleSheet>(PortViewStyleFile);
-                return portViewStyle;
-            }
-        }
+            var portView = new PortView(_orientation, _direction, _portData);
 
-        public static PortView CreatePV(Orientation _orientation, Direction _direction, NodePort _portData, BaseEdgeConnectorListener _edgeConnectorListener)
-        {
-            var portView = new PortView(_orientation, _direction, _portData, _edgeConnectorListener);
-
-            portView.m_EdgeConnector = new BaseEdgeConnector(_edgeConnectorListener);
-            portView.AddManipulator(portView.m_EdgeConnector);
             var portLabel = portView.Q("type");
             if (portLabel != null)
             {
@@ -48,12 +30,9 @@ namespace CZToolKit.GraphProcessor.Editors
             return portView;
         }
 
-        public static PortView CreatePV(Orientation _orientation, Direction _direction, NodePort _portData, Type _displayType, BaseEdgeConnectorListener _edgeConnectorListener)
+        public static PortView CreatePV(Orientation _orientation, Direction _direction, NodePort _portData, Type _displayType)
         {
-            var portView = new PortView(_orientation, _direction, _portData, _displayType, _edgeConnectorListener);
-
-            portView.m_EdgeConnector = new BaseEdgeConnector(_edgeConnectorListener);
-            portView.AddManipulator(portView.m_EdgeConnector);
+            var portView = new PortView(_orientation, _direction, _portData, _displayType);
 
             var portLabel = portView.Q("type");
             if (portLabel != null)
@@ -74,7 +53,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
         public int size;
         public Port Self { get { return this; } }
-        public BaseNodeView Owner { get; private set; }
+        public BaseGraphView GraphView { get; private set; }
         public NodePort PortData { get; private set; }
         public string FieldName { get { return PortData.FieldName; } }
 
@@ -97,9 +76,11 @@ namespace CZToolKit.GraphProcessor.Editors
 
         public Action onConnected, onDisconnected;
 
-        PortView(Orientation _orientation, Direction _direction, NodePort _portData, BaseEdgeConnectorListener edgeConnectorListener)
+        PortView(Orientation _orientation, Direction _direction, NodePort _portData)
             : base(_orientation, _direction, _portData.IsMulti ? Capacity.Multi : Capacity.Single, _portData.DisplayType)
         {
+            styleSheets.Add(GraphProcessorStyles.PortViewStyle);
+
             PortData = _portData;
             portName = PortData.FieldName;
 
@@ -109,7 +90,7 @@ namespace CZToolKit.GraphProcessor.Editors
             UpdatePortSize();
         }
 
-        PortView(Orientation _orientation, Direction _direction, NodePort _portData, Type _displayType, BaseEdgeConnectorListener edgeConnectorListener)
+        PortView(Orientation _orientation, Direction _direction, NodePort _portData, Type _displayType)
             : base(_orientation, _direction, _portData.IsMulti ? Capacity.Multi : Capacity.Single, _displayType)
         {
             PortData = _portData;
@@ -121,31 +102,32 @@ namespace CZToolKit.GraphProcessor.Editors
             UpdatePortSize();
         }
 
-        public void Initialize(BaseNodeView _nodeView)
+        public void SetUp(IGraphElement _graphElement, CommandDispatcher _commandDispatcher, IGraphView _graphView)
         {
-            styleSheets.Add(PortViewStyle);
+            GraphView = _graphView as BaseGraphView;
 
-            Owner = _nodeView;
+            m_EdgeConnector = new BaseEdgeConnector(GraphView, new BaseEdgeConnectorListener(GraphView));
+            this.AddManipulator(m_EdgeConnector);
 
-            if (Utility_Attribute.TryGetFieldAttribute(Owner.NodeDataType, FieldName, out PortColorAttribute colorAttrib))
+            if (Utility_Attribute.TryGetFieldAttribute(PortData.Owner.GetType(), FieldName, out PortColorAttribute colorAttrib))
                 portColor = colorAttrib.Color;
 
-            if (Utility_Attribute.TryGetFieldAttribute(Owner.NodeDataType, FieldName, out TooltipAttribute toolTipAttrib))
+            if (Utility_Attribute.TryGetFieldAttribute(PortData.Owner.GetType(), FieldName, out TooltipAttribute toolTipAttrib))
                 tooltip = toolTipAttrib.tooltip;
             else if (orientation == Orientation.Vertical)
                 tooltip = NodeEditorUtility.GetDisplayName(FieldName);
 
-            if (Utility_Attribute.TryGetFieldAttribute(Owner.NodeDataType, FieldName, out DisplayNameAttribute attrib))
+            if (Utility_Attribute.TryGetFieldAttribute(PortData.Owner.GetType(), FieldName, out DisplayNameAttribute attrib))
                 portName = attrib.DisplayName;
             else
                 portName = NodeEditorUtility.GetDisplayName(FieldName);
 
             AddToClassList(FieldName);
             visualClass = "Port_" + portType.Name;
-            if (Owner.Owner.Initialized)
+            if (GraphView.Initialized)
                 OnInitialized();
             else
-                Owner.Owner.onInitializeCompleted += OnInitialized;
+                GraphView.onInitializeCompleted += OnInitialized;
         }
 
         protected virtual void OnInitialized() { }
@@ -169,38 +151,10 @@ namespace CZToolKit.GraphProcessor.Editors
             }
         }
 
-        public bool TryGetValue<T>(ref T _value)
-        {
-            return Owner.GetValue(this, ref _value);
-        }
-
-        public void Execute(params object[] _params)
-        {
-            Owner.Execute(this, _params);
-        }
-
-        public bool TryGetConnectValue<T>(ref T _value)
-        {
-            PortView portView = Connection;
-            if (portView == null) return false;
-            return portView.TryGetValue(ref _value);
-        }
-
         public override void Connect(Edge edge)
         {
             base.Connect(edge);
             onConnected?.Invoke();
-            switch (direction)
-            {
-                case Direction.Input:
-                    var outputNode = (edge.output as PortView).Owner;
-                    outputNode.OnPortConnected(edge.output as PortView, edge.input as PortView);
-                    break;
-                case Direction.Output:
-                    var inputNode = (edge.input as PortView).Owner;
-                    inputNode.OnPortConnected(edge.input as PortView, edge.output as PortView);
-                    break;
-            }
         }
 
         public override void Disconnect(Edge edge)
@@ -209,17 +163,6 @@ namespace CZToolKit.GraphProcessor.Editors
             if (!(edge as EdgeView).isConnected)
                 return;
             onDisconnected?.Invoke();
-            switch (direction)
-            {
-                case Direction.Input:
-                    var outputNode = (edge.output as PortView).Owner;
-                    outputNode.OnPortDisconnected(edge.output as PortView, edge.input as PortView);
-                    break;
-                case Direction.Output:
-                    var inputNode = (edge.input as PortView).Owner;
-                    inputNode.OnPortDisconnected(edge.input as PortView, edge.output as PortView);
-                    break;
-            }
         }
 
         public void UpdatePortView()
@@ -232,7 +175,7 @@ namespace CZToolKit.GraphProcessor.Editors
                 visualClass = "Port_" + portType.Name;
             }
 
-            if (Utility_Attribute.TryGetFieldAttribute(Owner.NodeDataType, FieldName, out DisplayNameAttribute attrib))
+            if (Utility_Attribute.TryGetFieldAttribute(PortData.Owner.GetType(), FieldName, out DisplayNameAttribute attrib))
                 portName = attrib.DisplayName;
             else
                 portName = NodeEditorUtility.GetDisplayName(FieldName);
@@ -256,7 +199,7 @@ namespace CZToolKit.GraphProcessor.Editors
             if (Utility_Attribute.TryGetFieldAttribute(PortData.Owner.GetType(), PortData.FieldName, out PortSizeAttribute portSizeAttribute))
                 size = portSizeAttribute.size;
             else
-                size = DefaultPortSize;
+                size = GraphProcessorStyles.DefaultPortSize;
 
             var connector = this.Q("connector");
             var cap = connector.Q("cap");

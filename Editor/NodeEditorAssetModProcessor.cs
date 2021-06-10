@@ -40,7 +40,7 @@ namespace CZToolKit.GraphProcessor.Editors
                 if (obj != null)
                 {
                     foreach (var graphWindow in Resources.FindObjectsOfTypeAll<BaseGraphWindow>().Where(w => w.GraphAsset == obj))
-                        graphWindow.OnGraphDeleted();
+                        graphWindow.Clear();
                 }
             }
 

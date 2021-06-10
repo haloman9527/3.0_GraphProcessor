@@ -12,7 +12,7 @@ namespace CZToolKit.GraphProcessor.Editors
             titleContainer.RemoveFromHierarchy();
             this.Q("divider").RemoveFromHierarchy();
 
-            styleSheets.Add(Resources.Load<StyleSheet>("GraphProcessor/Styles/RelayNode"));
+            styleSheets.Add(GraphProcessorStyles.RelayNodeViewStyle);
             foreach (var item in PortViews)
             {
                 item.Value.Q("type").style.display = DisplayStyle.None;

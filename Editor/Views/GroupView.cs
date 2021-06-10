@@ -7,37 +7,27 @@ using System.Linq;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
-    public class GroupView : Group
+    public class GroupView : Group, IGroupView
     {
-        const string groupStylePath = "GraphProcessor/Styles/GroupView";
-        static StyleSheet groupViewStyle;
-        public static StyleSheet GroupViewStyle
-        {
-            get
-            {
-                if (groupViewStyle == null)
-                    groupViewStyle = Resources.Load<StyleSheet>(groupStylePath);
-                return groupViewStyle;
-            }
-        }
-
-
         public BaseGraphView Owner { get; private set; }
-        public BaseGroup GroupData { get; private set; }
+        public BaseGroup GroupData { get { return userData as BaseGroup; } }
         public Label titleLabel { get; private set; }
         public ColorField colorField { get; private set; }
 
+
         public GroupView()
         {
-            styleSheets.Add(GroupViewStyle);
+            styleSheets.Add(GraphProcessorStyles.GroupViewStyle);
         }
 
-        public void Initialize(BaseGraphView _owner, BaseGroup _groupData)
+        public void SetUp(IGraphElement _graphElement, CommandDispatcher _commandDispatcher, IGraphView _graphView)
         {
-            Owner = _owner;
-            GroupData = _groupData;
-            title = _groupData.title;
-            base.SetPosition(_groupData.position);
+            userData = _graphElement;
+            Owner = _graphView as BaseGraphView;
+
+            BaseGroup groupData = _graphElement as BaseGroup;
+            title = groupData.title;
+            base.SetPosition(groupData.position);
 
             titleLabel = headerContainer.Q("titleLabel") as Label;
             colorField = new ColorField { value = GroupData.color, name = "headerColorPicker" };
@@ -71,12 +61,13 @@ namespace CZToolKit.GraphProcessor.Editors
             }
         }
 
-        public void UpdateGroupColor(Color newColor)
+        public void UpdateGroupColor(Color _newColor)
         {
-            GroupData.color = newColor;
-            headerContainer.style.backgroundColor = newColor;
+            headerContainer.style.backgroundColor = _newColor;
             // 当明度大于0.5f,且透明度大于0.5f，文字颜色为黑色，否则为白色
-            titleLabel.style.color = newColor.GetLuminance() > 0.5f && newColor.a > 0.5f ? Color.black : Color.white * 0.9f;
+            titleLabel.style.color = _newColor.GetLuminance() > 0.5f && _newColor.a > 0.5f ? Color.black : Color.white * 0.9f;
+            GroupData.color = _newColor;
+            Owner.SetDirty();
         }
 
         protected override void OnGroupRenamed(string _oldName, string _newName)
@@ -84,6 +75,7 @@ namespace CZToolKit.GraphProcessor.Editors
             if (string.IsNullOrEmpty(_newName) || _oldName.Equals(_newName)) return;
             base.OnGroupRenamed(_oldName, _newName);
             GroupData.title = _newName;
+            Owner.SetDirty();
         }
 
         public override void OnSelected()
@@ -118,27 +110,11 @@ namespace CZToolKit.GraphProcessor.Editors
             base.OnElementsAdded(elements);
         }
 
-        protected override void OnElementsRemoved(IEnumerable<GraphElement> elements)
+        public override void SetPosition(Rect _newPos)
         {
-            if (parent != null)
-            {
-                foreach (VisualElement element in elements)
-                {
-                    if (element is BaseNodeView nodeView)
-                        GroupData.innerNodeGUIDs.Remove(nodeView.NodeData.GUID);
-                    else if (element is BaseStackNodeView stackNodeView)
-                        GroupData.innerNodeGUIDs.Remove(stackNodeView.stackNode.GUID);
-                }
-            }
-
-            base.OnElementsRemoved(elements);
-        }
-
-        public override void SetPosition(Rect newPos)
-        {
-            base.SetPosition(newPos);
+            base.SetPosition(_newPos);
             if (Owner.Initialized)
-                GroupData.position = newPos;
+                GroupData.position = _newPos;
         }
     }
 }

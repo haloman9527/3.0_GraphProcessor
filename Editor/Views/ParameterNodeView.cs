@@ -20,13 +20,13 @@ namespace CZToolKit.GraphProcessor.Editors
             //}));
         }
 
-        protected override PortView CustomCreatePortView(Orientation _orientation, Direction _direction, NodePort _nodePort, BaseEdgeConnectorListener _listener)
+        protected override PortView CustomCreatePortView(Orientation _orientation, Direction _direction, NodePort _nodePort)
         {
             ParameterNode parameterNode = NodeData as ParameterNode;
             if (parameterNode.Parameter == null || parameterNode.Parameter.ValueType == null)
                 return null;
             if (_nodePort.FieldName == nameof(parameterNode.output))
-                return PortView.CreatePV(_orientation, _direction, _nodePort, parameterNode.Parameter.ValueType, _listener);
+                return PortView.CreatePV(_orientation, _direction, _nodePort, parameterNode.Parameter.ValueType);
             return null;
         }
     }

@@ -6,6 +6,8 @@ using UnityEngine.UIElements;
 using UnityEditor.Callbacks;
 
 using UnityObject = UnityEngine.Object;
+using System.Diagnostics;
+using UnityEngine.Profiling;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
@@ -20,7 +22,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
             if (graphAsset != null)
             {
-                OpenGraph(graphAsset);
+                OpenGraphAsset(graphAsset);
                 return true;
             }
 
@@ -30,15 +32,15 @@ namespace CZToolKit.GraphProcessor.Editors
         public static void Open(GraphAssetOwner _graphAssetOwner)
         {
             _graphAssetOwner.Graph.InitializePropertyMapping(_graphAssetOwner);
-            OpenGraph(_graphAssetOwner.Graph);
+            LoadGraph(_graphAssetOwner.Graph);
         }
 
-        public static BaseGraphWindow OpenGraph(IGraphAsset _graphAsset)
+        public static BaseGraphWindow OpenGraphAsset(IGraphAsset _graphAsset)
         {
-            return OpenGraph(_graphAsset.Graph);
+            return LoadGraph(_graphAsset.Graph);
         }
 
-        public static BaseGraphWindow OpenGraph(IBaseGraph _graph)
+        public static BaseGraphWindow LoadGraph(IGraph _graph)
         {
             if (_graph == null) return null;
             Type windowType = NodeEditorUtility.GetGraphWindowType(_graph.GetType());
@@ -88,34 +90,40 @@ namespace CZToolKit.GraphProcessor.Editors
         #endregion
 
         [SerializeField] int graphOwnerInstanceID;
-        [SerializeField] GraphAssetOwner graphOwner;
+        [SerializeField] IGraphOwner graphOwner;
         [SerializeField] UnityObject graphAsset;
 
-        public GraphAssetOwner GraphAssetOwner
+        public IGraphOwner GraphOwner
         {
             get { return graphOwner; }
             private set { graphOwner = value; if (graphOwner != null) graphOwnerInstanceID = graphOwner.GetInstanceID(); }
         }
         public UnityObject GraphAsset { get { return graphAsset; } private set { graphAsset = value; } }
-        public IBaseGraph Graph { get; private set; }
+        public IGraph Graph { get; private set; }
         public BaseGraphView GraphView { get; private set; }
         public ToolbarView Toolbar { get; private set; }
-        VisualElement GraphViewElement { get; set; }
+        public VisualElement GraphViewElement { get; private set; }
+        public CommandDispatcher CommandDispatcher { get; private set; }
 
         protected virtual void OnEnable()
         {
             titleContent = new GUIContent("Default Graph");
+
             GraphViewElement = new VisualElement();
             GraphViewElement.name = "GraphView";
             GraphViewElement.StretchToParentSize();
             rootVisualElement.Add(GraphViewElement);
+
             EditorApplication.playModeStateChanged += OnPlayModeChanged;
-            GraphAssetOwner = EditorUtility.InstanceIDToObject(graphOwnerInstanceID) as GraphAssetOwner;
+
+            CommandDispatcher = new CommandDispatcher(CreateGraphState());
+            CommandDispatcherHelper.RegisterDefaultCommandHandlers(CommandDispatcher);
+
+            GraphOwner = EditorUtility.InstanceIDToObject(graphOwnerInstanceID) as IGraphOwner;
 
             if (GraphView == null && GraphAsset != null)
                 EditorApplication.delayCall += ReloadGraph;
         }
-
 
         void OnPlayModeChanged(PlayModeStateChange obj)
         {
@@ -123,7 +131,7 @@ namespace CZToolKit.GraphProcessor.Editors
             {
                 case PlayModeStateChange.EnteredEditMode:
                 case PlayModeStateChange.EnteredPlayMode:
-                    GraphAssetOwner = EditorUtility.InstanceIDToObject(graphOwnerInstanceID) as GraphAssetOwner;
+                    GraphOwner = EditorUtility.InstanceIDToObject(graphOwnerInstanceID) as GraphAssetOwner;
                     break;
                 default:
                     break;
@@ -136,6 +144,18 @@ namespace CZToolKit.GraphProcessor.Editors
                 GUILayoutUtility.GetRect(Toolbar.style.width.value.value, Toolbar.style.height.value.value);
         }
 
+        protected override void Update()
+        {
+            base.Update();
+            Profiler.BeginSample("CZToolKit.GraphProcessor");
+            Stopwatch sw = new Stopwatch();
+
+            CommandDispatcher.NotifyObservers();
+
+            sw.Stop();
+            Profiler.EndSample();
+        }
+
         protected virtual void OnDisable()
         {
             if (GraphView != null)
@@ -143,20 +163,7 @@ namespace CZToolKit.GraphProcessor.Editors
             EditorApplication.playModeStateChanged -= OnPlayModeChanged;
         }
 
-        void LoadGraphInternal(IBaseGraph _graph)
-        {
-            if (GraphView != null)
-                GraphView.SaveGraphToDisk();
-            ClearWindow();
-            InitializeWindow(_graph);
-        }
-
-        public virtual void OnGraphDeleted()
-        {
-            ClearWindow();
-        }
-
-        protected virtual void ClearWindow()
+        public virtual void Clear()
         {
             if (GraphView != null)
                 GraphView.RemoveFromHierarchy();
@@ -166,52 +173,49 @@ namespace CZToolKit.GraphProcessor.Editors
                 Toolbar.RemoveFromHierarchy();
             Toolbar = null;
 
-            GraphAssetOwner = null;
+            GraphOwner = null;
         }
 
-        void InitializeWindow(IBaseGraph _graph)
+        protected virtual BaseGraphView CreateGraphView(IGraph _graph)
         {
+            BaseGraphView graphView = new BaseGraphView(_graph, CommandDispatcher, this);
+            //graphView.Initialize(this, _graph);
+            return graphView;
+        }
+
+        void LoadGraphInternal(IGraph _graph)
+        {
+            if (GraphView != null)
+                GraphView.SaveGraphToDisk();
+            Clear();
+
             Graph = _graph;
-            GraphAsset = (Graph as IBaseGraphFromAsset)?.Asset;
-            Toolbar = new ToolbarView(this);
-            
-            rootVisualElement.Add(Toolbar);
+            GraphAsset = (Graph as IGraphFromAsset)?.Asset;
             if (GraphAsset == null) return;
-            GraphView = InitializeGraphView(Graph);
+
+            Toolbar = new ToolbarView(this);
+            GraphView = CreateGraphView(Graph);
             if (GraphView == null) return;
 
             Toolbar.AddButton("Show In Project", () => EditorGUIUtility.PingObject(GraphView.GraphAsset), false);
             Toolbar.AddButton("Save Assets", () => { GraphView.SaveGraphToDisk(); }, false);
             Toolbar.AddButton("Reload", ReloadGraph, false);
+            rootVisualElement.Add(Toolbar);
 
-            Undo.undoRedoPerformed += ReloadGraph;
             GraphViewElement.Add(GraphView);
             GraphViewElement.style.top = 20;
             rootVisualElement.Add(GraphViewElement);
-
-            OnInitializedWindow();
         }
 
-        protected virtual BaseGraphView InitializeGraphView(IBaseGraph _graph)
-        {
-            BaseGraphView graphView = new BaseGraphView();
-            graphView.Initialize(this, _graph);
-            return graphView;
-        }
-
-        protected virtual void OnInitializedWindow() { }
+        protected virtual void OnLoadedGraph() { }
 
         void ReloadGraph()
         {
-            GraphAssetOwner owner = GraphAssetOwner;
-
+            IGraphOwner tempGraphOwner = GraphOwner;
             LoadGraphInternal((GraphAsset as IGraphAsset).Graph);
-            GraphAssetOwner = owner;
-            if (Graph != null
-                && GraphAssetOwner != null
-                && GraphAssetOwner.GraphAsset != null
-                && GraphAssetOwner.GraphAsset == GraphAsset as BaseGraphAsset)
-                Graph.InitializePropertyMapping(GraphAssetOwner);
+            GraphOwner = tempGraphOwner;
+            if (Graph != null && GraphOwner != null)
+                Graph.InitializePropertyMapping(GraphOwner);
         }
 
         protected virtual void OnDestroy()
@@ -223,5 +227,12 @@ namespace CZToolKit.GraphProcessor.Editors
                 Selection.activeObject = null;
             }
         }
+
+        #region Overrides
+        protected virtual GraphState CreateGraphState()
+        {
+            return new GraphState();
+        }
+        #endregion
     }
 }

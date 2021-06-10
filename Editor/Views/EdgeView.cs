@@ -4,28 +4,27 @@ using UnityEngine;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
-    public class EdgeView : Edge
+    public class EdgeView : Edge, IEdgeView
     {
-        const string EdgeStylePath = "GraphProcessor/Styles/EdgeView";
-        static StyleSheet edgeViewStyle;
-        public static StyleSheet EdgeViewStyle
-        {
-            get
-            {
-                if (edgeViewStyle == null)
-                    edgeViewStyle = Resources.Load<StyleSheet>(EdgeStylePath);
-                return edgeViewStyle;
-            }
-        }
 
         public bool isConnected = false;
-        protected BaseGraphView Owner { get { return ((input ?? output) as PortView).Owner.Owner; } }
+        protected BaseGraphView Owner { get; private set; }
+        protected CommandDispatcher CommandDispatcher { get; private set; }
         public SerializableEdge EdgeData { get { return userData as SerializableEdge; } }
 
         public EdgeView() : base()
         {
-            styleSheets.Add(EdgeViewStyle);
+            styleSheets.Add(GraphProcessorStyles.EdgeViewStyle);
             RegisterCallback<MouseDownEvent>(OnMouseDown);
+        }
+
+        public void SetUp(IGraphElement _graphElement, CommandDispatcher _commandDispatcher, IGraphView _graphView)
+        {
+            userData = _graphElement;
+            CommandDispatcher = _commandDispatcher;
+            Owner = _graphView as BaseGraphView;
+
+            //Add(new EdgeBubble());
         }
 
         public override void OnPortChanged(bool isInput)
@@ -34,11 +33,16 @@ namespace CZToolKit.GraphProcessor.Editors
             UpdateEdgeSize();
         }
 
+        protected override void DrawEdge()
+        {
+            base.DrawEdge();
+
+        }
+
         public void UpdateEdgeSize()
         {
             if (input == null && output == null)
                 return;
-
             PortView inputPortView = input as PortView;
             PortView outputPortView = output as PortView;
 

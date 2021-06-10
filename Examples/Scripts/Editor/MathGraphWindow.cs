@@ -6,15 +6,14 @@ namespace CZToolKit.GraphProcessor.Examples
     [CustomGraphWindow(typeof(MathGraph))]
     public class MathGraphWindow : BaseGraphWindow
     {
-        protected override void OnInitializedWindow()
+        protected override void OnLoadedGraph()
         {
             titleContent = new GUIContent("Examples.Math");
         }
 
-        protected override BaseGraphView InitializeGraphView(IBaseGraph _graph)
+        protected override BaseGraphView CreateGraphView(IGraph _graph)
         {
-            MathGraphView graphView = new MathGraphView();
-            graphView.Initialize(this, _graph);
+            MathGraphView graphView = new MathGraphView(_graph, CommandDispatcher, this);
             return graphView;
         }
     }

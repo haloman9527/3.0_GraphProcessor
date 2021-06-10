@@ -15,7 +15,7 @@ namespace CZToolKit.GraphProcessor
         {
             switch (_port.FieldName)
             {
-                case nameof(input):
+                case nameof(output):
                     float inputSum = 0;
                     foreach (var value in GetConnectValues<float>(nameof(input)))
                     {

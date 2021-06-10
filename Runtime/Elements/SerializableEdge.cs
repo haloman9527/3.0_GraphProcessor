@@ -4,10 +4,24 @@ using UnityEngine;
 namespace CZToolKit.GraphProcessor
 {
     [Serializable]
-    public class SerializableEdge
+    public class SerializableEdge : IGraphElement
     {
+        public static SerializableEdge CreateNewEdge(NodePort _inputPort, NodePort _outputPort)
+        {
+            SerializableEdge edge = new SerializableEdge();
+
+            edge.guid = Guid.NewGuid().ToString();
+
+            edge.inputNodeGUID = _inputPort.Owner.GUID;
+            edge.inputFieldName = _inputPort.FieldName;
+            edge.outputNodeGUID = _outputPort.Owner.GUID;
+            edge.outputFieldName = _outputPort.FieldName;
+
+            return edge;
+        }
+
         [NonSerialized]
-        IBaseGraph owner;
+        IGraph owner;
 
         /// <summary> 自身GUID </summary>
         [SerializeField]
@@ -23,7 +37,7 @@ namespace CZToolKit.GraphProcessor
         [SerializeField]
         string outputFieldName;
 
-        public IBaseGraph Owner { get { return owner; } }
+        public IGraph Owner { get { return owner; } }
         public string GUID { get { return guid; } }
         public string InputNodeGUID { get { return inputNodeGUID; } }
         public string OutputNodeGUID { get { return outputNodeGUID; } }
@@ -51,28 +65,13 @@ namespace CZToolKit.GraphProcessor
             }
         }
 
-        public SerializableEdge() { }
+        protected SerializableEdge() { }
 
-        public void Enable(IBaseGraph _graph)
+        public void Enable(IGraph _graph)
         {
             owner = _graph;
         }
 
         public virtual void OnEnabled() { }
-
-        public static SerializableEdge CreateNewEdge(IBaseGraph _graph, NodePort _inputPort, NodePort _outputPort)
-        {
-            SerializableEdge edge = new SerializableEdge();
-
-            edge.guid = Guid.NewGuid().ToString();
-            edge.owner = _graph;
-
-            edge.inputNodeGUID = _inputPort.Owner.GUID;
-            edge.inputFieldName = _inputPort.FieldName;
-            edge.outputNodeGUID = _outputPort.Owner.GUID;
-            edge.outputFieldName = _outputPort.FieldName;
-
-            return edge;
-        }
     }
 }

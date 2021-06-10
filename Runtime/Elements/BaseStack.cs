@@ -5,9 +5,9 @@ using System;
 namespace CZToolKit.GraphProcessor
 {
     [Serializable]
-    public class BaseStack
+    public class BaseStack : IGraphElement
     {
-        [SerializeField] 
+        [SerializeField]
         string guid;
         public Vector2 position;
         public string title = "New Stack";

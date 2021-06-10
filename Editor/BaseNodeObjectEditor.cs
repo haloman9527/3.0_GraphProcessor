@@ -25,9 +25,9 @@ namespace CZToolKit.GraphProcessor.Editors
             base.OnInspectorGUI();
             if (EditorGUI.EndChangeCheck())
             {
-                IBaseGraphFromAsset inAsset = (Target as BaseNode).Owner as IBaseGraphFromAsset;
-                if (inAsset != null)
-                    EditorUtility.SetDirty(inAsset.Asset);
+                IGraphFromAsset asset = (Target as BaseNode).Owner as IGraphFromAsset;
+                if (asset != null)
+                    EditorUtility.SetDirty(asset.Asset);
             }
         }
     }

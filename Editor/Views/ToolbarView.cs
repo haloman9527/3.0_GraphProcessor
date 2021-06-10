@@ -8,7 +8,6 @@ using System;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
-
     public class ToolbarView : Toolbar
     {
         protected enum ElementType

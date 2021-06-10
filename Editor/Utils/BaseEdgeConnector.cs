@@ -9,16 +9,16 @@ namespace CZToolKit.GraphProcessor.Editors
 {
     public class BaseEdgeConnector : EdgeConnector
     {
-        BaseEdgeDragHelper dragHelper;
+        EdgeViewDragHelper dragHelper;
         Edge edgeCandidate;
         private bool active;
         Vector2 mouseDownPosition;
 
         internal const float k_ConnectionDistanceTreshold = 10f;
 
-        public BaseEdgeConnector(IEdgeConnectorListener listener) : base()
+        public BaseEdgeConnector(GraphView _graphView, IEdgeConnectorListener listener) : base()
         {
-            dragHelper = new BaseEdgeDragHelper(listener);
+            dragHelper = new EdgeViewDragHelper(_graphView, listener);
             active = false;
             activators.Add(new ManipulatorActivationFilter { button = MouseButton.LeftMouse });
         }
@@ -27,6 +27,8 @@ namespace CZToolKit.GraphProcessor.Editors
 
         protected override void RegisterCallbacksOnTarget()
         {
+           
+
             target.RegisterCallback<MouseDownEvent>(OnMouseDown);
             target.RegisterCallback<MouseMoveEvent>(OnMouseMove);
             target.RegisterCallback<MouseUpEvent>(OnMouseUp);

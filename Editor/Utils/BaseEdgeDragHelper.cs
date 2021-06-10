@@ -7,9 +7,9 @@ using System.Collections.Generic;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
-    public class BaseEdgeDragHelper : EdgeDragHelper
+    public class EdgeViewDragHelper : EdgeDragHelper
     {
-        internal const int k_PanAreaWidth = 30;
+        internal const int k_PanAreaWidth = 10;
         internal const int k_PanSpeed = 4;
         internal const int k_PanInterval = 10;
         internal const float k_MinSpeedFactor = 0.5f;
@@ -17,9 +17,8 @@ namespace CZToolKit.GraphProcessor.Editors
         internal const float k_MaxPanSpeed = k_MaxSpeedFactor * k_PanSpeed;
         internal const float kPortDetectionWidth = 30;
 
-        protected Dictionary<BaseNodeView, List<Port>> compatiblePorts = new Dictionary<BaseNodeView, List<Port>>();
+        protected List<Port> compatiblePorts = new List<Port>();
         private Edge ghostEdge;
-        protected GraphView graphView;
         protected static NodeAdapter nodeAdapter = new NodeAdapter();
         protected readonly IEdgeConnectorListener listener;
 
@@ -27,10 +26,12 @@ namespace CZToolKit.GraphProcessor.Editors
         private Vector3 panDiff = Vector3.zero;
         private bool wasPanned;
 
+        protected GraphView GraphView { get; }
         public bool resetPositionOnPan { get; set; }
 
-        public BaseEdgeDragHelper(IEdgeConnectorListener listener)
+        public EdgeViewDragHelper(GraphView _graphView, IEdgeConnectorListener listener)
         {
+            GraphView = _graphView;
             this.listener = listener;
             resetPositionOnPan = true;
             Reset();
@@ -40,12 +41,12 @@ namespace CZToolKit.GraphProcessor.Editors
 
         public override Port draggedPort { get; set; }
 
-        public override void Reset(bool didConnect = false)
+        public override void Reset(bool _didConnect = false)
         {
-            if (compatiblePorts != null && graphView != null)
+            if (compatiblePorts != null && GraphView != null)
             {
                 // Reset the highlights.
-                graphView.ports.ForEach((p) =>
+                GraphView.ports.ForEach((p) =>
                 {
                     p.OnStopEdgeDragging();
                 });
@@ -53,24 +54,23 @@ namespace CZToolKit.GraphProcessor.Editors
             }
 
             // Clean up ghost edge.
-            if ((ghostEdge != null) && (graphView != null))
+            if (ghostEdge != null && GraphView != null)
             {
                 var pv = ghostEdge.input as PortView;
-                graphView.schedule.Execute(() =>
-                {
-                    pv.portCapLit = false;
-                    // pv.UpdatePortView(pv.portData);
-                }).ExecuteLater(10);
-                graphView.RemoveElement(ghostEdge);
+                pv.portCapLit = false;
+                //GraphView.schedule.Execute(() =>
+                //{
+                //}).ExecuteLater(10);
+                GraphView.RemoveElement(ghostEdge);
             }
 
             if (wasPanned)
             {
-                if (!resetPositionOnPan || didConnect)
+                if (!resetPositionOnPan || _didConnect)
                 {
-                    Vector3 p = graphView.contentViewContainer.transform.position;
-                    Vector3 s = graphView.contentViewContainer.transform.scale;
-                    graphView.UpdateViewTransform(p, s);
+                    Vector3 p = GraphView.contentViewContainer.transform.position;
+                    Vector3 s = GraphView.contentViewContainer.transform.scale;
+                    GraphView.UpdateViewTransform(p, s);
                 }
             }
 
@@ -83,7 +83,7 @@ namespace CZToolKit.GraphProcessor.Editors
                 ghostEdge.output = null;
             }
 
-            if (draggedPort != null && !didConnect)
+            if (draggedPort != null && !_didConnect)
             {
                 draggedPort.portCapLit = false;
                 draggedPort = null;
@@ -96,78 +96,45 @@ namespace CZToolKit.GraphProcessor.Editors
 
             ghostEdge = null;
             edgeCandidate = null;
-
-            graphView = null;
         }
 
         public override bool HandleMouseDown(MouseDownEvent evt)
         {
-            Vector2 mousePosition = evt.mousePosition;
-
-            if ((draggedPort == null) || (edgeCandidate == null))
-            {
-                return false;
-            }
-
-            graphView = draggedPort.GetFirstAncestorOfType<GraphView>();
-
-            if (graphView == null)
-            {
-                return false;
-            }
-
             if (edgeCandidate.parent == null)
+                GraphView.AddElement(edgeCandidate);
+
+            switch (draggedPort.direction)
             {
-                graphView.AddElement(edgeCandidate);
+                case Direction.Input:
+                    edgeCandidate.input = draggedPort;
+                    edgeCandidate.output = null;
+                    break;
+                case Direction.Output:
+                    edgeCandidate.input = null;
+                    edgeCandidate.output = draggedPort;
+                    break;
             }
 
-            bool startFromOutput = (draggedPort.direction == Direction.Output);
-
-            edgeCandidate.candidatePosition = mousePosition;
+            edgeCandidate.candidatePosition = evt.mousePosition;
             edgeCandidate.SetEnabled(false);
-
-            if (startFromOutput)
-            {
-                edgeCandidate.output = draggedPort;
-                edgeCandidate.input = null;
-            }
-            else
-            {
-                edgeCandidate.output = null;
-                edgeCandidate.input = draggedPort;
-            }
 
             draggedPort.portCapLit = true;
 
-            compatiblePorts.Clear();
+            compatiblePorts = GraphView.GetCompatiblePorts(draggedPort, nodeAdapter);
 
-            foreach (IBasePortView port in graphView.GetCompatiblePorts(draggedPort, nodeAdapter))
+            GraphView.ports.ForEach(port =>
             {
-                compatiblePorts.TryGetValue(port.Owner, out var portList);
-                if (portList == null)
-                    portList = compatiblePorts[port.Owner] = new List<Port>();
-                portList.Add(port.Self);
-            }
-
-            // Sort ports by position in the node
-            foreach (var kp in compatiblePorts)
-                kp.Value.Sort((e1, e2) => e1.layout.y.CompareTo(e2.layout.y));
-
-            // Only light compatible anchors when dragging an edge.
-            graphView.ports.ForEach((p) =>
-            {
-                p.OnStartEdgeDragging();
+                port.OnStartEdgeDragging();
             });
 
-            foreach (var kp in compatiblePorts)
-                foreach (var port in kp.Value)
-                    port.highlight = true;
+            foreach (var port in compatiblePorts)
+                port.highlight = true;
 
             edgeCandidate.UpdateEdgeControl();
 
             if (panSchedule == null)
             {
-                panSchedule = graphView.schedule.Execute(Pan).Every(k_PanInterval).StartingIn(k_PanInterval);
+                panSchedule = GraphView.schedule.Execute(Pan).Every(k_PanInterval).StartingIn(k_PanInterval);
                 panSchedule.Pause();
             }
             wasPanned = false;
@@ -177,30 +144,29 @@ namespace CZToolKit.GraphProcessor.Editors
             return true;
         }
 
-        internal Vector2 GetEffectivePanSpeed(Vector2 mousePos)
+        internal Vector2 GetEffectivePanSpeed(Vector2 _mousePos)
         {
             Vector2 effectiveSpeed = Vector2.zero;
 
-            if (mousePos.x <= k_PanAreaWidth)
-                effectiveSpeed.x = -(((k_PanAreaWidth - mousePos.x) / k_PanAreaWidth) + 0.5f) * k_PanSpeed;
-            else if (mousePos.x >= graphView.contentContainer.layout.width - k_PanAreaWidth)
-                effectiveSpeed.x = (((mousePos.x - (graphView.contentContainer.layout.width - k_PanAreaWidth)) / k_PanAreaWidth) + 0.5f) * k_PanSpeed;
+            if (_mousePos.x <= k_PanAreaWidth)
+                effectiveSpeed.x = -(((k_PanAreaWidth - _mousePos.x) / k_PanAreaWidth) + 0.5f) * k_PanSpeed;
+            else if (_mousePos.x >= GraphView.contentContainer.layout.width - k_PanAreaWidth)
+                effectiveSpeed.x = (((_mousePos.x - (GraphView.contentContainer.layout.width - k_PanAreaWidth)) / k_PanAreaWidth) + 0.5f) * k_PanSpeed;
 
-            if (mousePos.y <= k_PanAreaWidth)
-                effectiveSpeed.y = -(((k_PanAreaWidth - mousePos.y) / k_PanAreaWidth) + 0.5f) * k_PanSpeed;
-            else if (mousePos.y >= graphView.contentContainer.layout.height - k_PanAreaWidth)
-                effectiveSpeed.y = (((mousePos.y - (graphView.contentContainer.layout.height - k_PanAreaWidth)) / k_PanAreaWidth) + 0.5f) * k_PanSpeed;
+            if (_mousePos.y <= k_PanAreaWidth)
+                effectiveSpeed.y = -(((k_PanAreaWidth - _mousePos.y) / k_PanAreaWidth) + 0.5f) * k_PanSpeed;
+            else if (_mousePos.y >= GraphView.contentContainer.layout.height - k_PanAreaWidth)
+                effectiveSpeed.y = (((_mousePos.y - (GraphView.contentContainer.layout.height - k_PanAreaWidth)) / k_PanAreaWidth) + 0.5f) * k_PanSpeed;
 
             effectiveSpeed = Vector2.ClampMagnitude(effectiveSpeed, k_MaxPanSpeed);
 
             return effectiveSpeed;
         }
 
-        Vector2 lastMousePos;
         public override void HandleMouseMove(MouseMoveEvent evt)
         {
             var ve = (VisualElement)evt.target;
-            Vector2 gvMousePos = ve.ChangeCoordinatesTo(graphView.contentContainer, evt.localMousePosition);
+            Vector2 gvMousePos = ve.ChangeCoordinatesTo(GraphView.contentContainer, evt.localMousePosition);
             panDiff = GetEffectivePanSpeed(gvMousePos);
 
             if (panDiff != Vector3.zero)
@@ -209,11 +175,7 @@ namespace CZToolKit.GraphProcessor.Editors
                 panSchedule.Pause();
 
             Vector2 mousePosition = evt.mousePosition;
-            lastMousePos = evt.mousePosition;
-
             edgeCandidate.candidatePosition = mousePosition;
-
-            // Draw ghost edge if possible port exists.
             Port endPort = GetEndPort(mousePosition);
 
             if (endPort != null)
@@ -223,7 +185,7 @@ namespace CZToolKit.GraphProcessor.Editors
                     ghostEdge = new EdgeView();
                     ghostEdge.isGhostEdge = true;
                     ghostEdge.pickingMode = PickingMode.Ignore;
-                    graphView.AddElement(ghostEdge);
+                    GraphView.AddElement(ghostEdge);
                 }
 
                 if (edgeCandidate.output == null)
@@ -255,16 +217,14 @@ namespace CZToolKit.GraphProcessor.Editors
                     if (ghostEdge.output != null)
                         ghostEdge.output.portCapLit = false;
                 }
-                graphView.RemoveElement(ghostEdge);
-                ghostEdge.input = null;
-                ghostEdge.output = null;
+                GraphView.RemoveElement(ghostEdge);
                 ghostEdge = null;
             }
         }
 
         private void Pan(TimerState ts)
         {
-            graphView.viewTransform.position -= panDiff;
+            GraphView.viewTransform.position -= panDiff;
 
             // Workaround to force edge to update when we pan the graph
             edgeCandidate.output = edgeCandidate.output;
@@ -281,7 +241,7 @@ namespace CZToolKit.GraphProcessor.Editors
             Vector2 mousePosition = evt.mousePosition;
 
             // Reset the highlights.
-            graphView.ports.ForEach((p) =>
+            GraphView.ports.ForEach((p) =>
             {
                 p.OnStopEdgeDragging();
             });
@@ -294,7 +254,7 @@ namespace CZToolKit.GraphProcessor.Editors
                 if (ghostEdge.output != null)
                     ghostEdge.output.portCapLit = false;
 
-                graphView.RemoveElement(ghostEdge);
+                GraphView.RemoveElement(ghostEdge);
                 ghostEdge.input = null;
                 ghostEdge.output = null;
                 ghostEdge = null;
@@ -322,7 +282,7 @@ namespace CZToolKit.GraphProcessor.Editors
                 Port oldInput = edgeCandidate.input;
                 Port oldOutput = edgeCandidate.output;
 
-                graphView.DeleteElements(new[] { edgeCandidate });
+                GraphView.DeleteElements(new[] { edgeCandidate });
 
                 // Restore the previous input and output
                 edgeCandidate.input = oldInput;
@@ -331,7 +291,7 @@ namespace CZToolKit.GraphProcessor.Editors
             // otherwise, if it is an temporary edge then just remove it as it is not already known my the model
             else
             {
-                graphView.RemoveElement(edgeCandidate);
+                GraphView.RemoveElement(edgeCandidate);
             }
 
             if (endPort != null)
@@ -341,7 +301,7 @@ namespace CZToolKit.GraphProcessor.Editors
                 else
                     edgeCandidate.input = endPort;
 
-                listener.OnDrop(graphView, edgeCandidate);
+                listener.OnDrop(GraphView, edgeCandidate);
                 didConnect = true;
             }
             else
@@ -353,75 +313,55 @@ namespace CZToolKit.GraphProcessor.Editors
             edgeCandidate.ResetLayer();
 
             edgeCandidate = null;
-            compatiblePorts.Clear();
             Reset(didConnect);
         }
 
-        Rect GetPortBounds(BaseNodeView nodeView, int index, List<Port> portList)
+        Rect GetPortBounds(Port _portView)
         {
-            var port = portList[index];
-            var bounds = port.worldBound;
+            var bounds = _portView.worldBound;
 
-            bounds.xMin = nodeView.worldBound.xMin;
-            bounds.xMax = nodeView.worldBound.xMax;
-
-            if (index == 0)
-                bounds.yMin = nodeView.worldBound.yMin;
-            if (index == portList.Count - 1)
-                bounds.yMax = nodeView.worldBound.yMax;
-
-            if (index > 0)
+            switch (_portView.orientation)
             {
-                Rect above = portList[index - 1].worldBound;
-                bounds.yMin = (above.yMax + bounds.yMin) / 2.0f;
-            }
-            if (index < portList.Count - 1)
-            {
-                Rect below = portList[index + 1].worldBound;
-                bounds.yMax = (below.yMin + bounds.yMax) / 2.0f;
-            }
-
-            if (port.orientation == Orientation.Horizontal)
-            {
-                if (port.direction == Direction.Input)
-                    bounds.xMin -= kPortDetectionWidth;
-                else
-                    bounds.xMax += kPortDetectionWidth;
+                case Orientation.Horizontal:
+                    if (_portView.direction == Direction.Input)
+                    {
+                        bounds.xMin -= kPortDetectionWidth;
+                        bounds.yMin -= 10;
+                    }
+                    else
+                    {
+                        bounds.xMax += kPortDetectionWidth;
+                        bounds.yMax += 10;
+                    }
+                    break;
+                case Orientation.Vertical:
+                    if (_portView.direction == Direction.Input)
+                        bounds.yMin -= kPortDetectionWidth;
+                    else
+                        bounds.yMax += kPortDetectionWidth;
+                    break;
             }
 
             return bounds;
         }
 
-        private Port GetEndPort(Vector2 mousePosition)
+        Port GetEndPort(Vector2 _mousePosition)
         {
-            if (graphView == null)
-                return null;
-
             Port bestPort = null;
             float bestDistance = 1e20f;
 
-            foreach (var kp in compatiblePorts)
+            foreach (var port in compatiblePorts)
             {
-                var nodeView = kp.Key;
-                var portList = kp.Value;
+                Rect bounds = GetPortBounds(port);
 
-                // We know that the port in the list is top to bottom in term of layout
-                for (int i = 0; i < portList.Count; i++)
+                float distance = Vector2.Distance(port.worldBound.position, _mousePosition);
+
+                if (bounds.Contains(_mousePosition) && distance < bestDistance)
                 {
-                    var port = portList[i];
-                    Rect bounds = GetPortBounds(nodeView, i, portList);
-
-                    float distance = Vector2.Distance(port.worldBound.position, mousePosition);
-
-                    // Check if mouse is over port.
-                    if (bounds.Contains(mousePosition) && distance < bestDistance)
-                    {
-                        bestPort = port;
-                        bestDistance = distance;
-                    }
+                    bestPort = port;
+                    bestDistance = distance;
                 }
             }
-
             return bestPort;
         }
     }

@@ -7,32 +7,32 @@ using System.Collections.Generic;
 namespace CZToolKit.GraphProcessor
 {
     [Serializable]
-    public class NodePort
+    public class NodePort : IGraphElement
     {
         #region 静态方法
         /// <summary> 接口兼容性查询 </summary>
-        public static bool IsCompatible(NodePort port1, NodePort port2)
+        public static bool IsCompatible(NodePort _port1, NodePort _port2)
         {
+            if (_port1 == null || _port2 == null) return false;
+            if (_port1 == _port2 || _port1.Owner == _port2.Owner)
+                return false;
+
+            if (_port1.Direction == _port2.Direction)
+                return false;
+
             bool Compatible(NodePort portA, NodePort portB)
             {
-                if (portA == null || portB == null) return false;
-                if (portA == portB || portA.Owner == portB.Owner)
-                    return false;
-
-                if (portA.Direction == portB.Direction)
-                    return false;
-
-                if (portA.TypeConstraint == PortTypeConstraint.None || portB.TypeConstraint == PortTypeConstraint.None) return true;
+                if (portA.TypeConstraint == PortTypeConstraint.None) return true;
                 if (portA.TypeConstraint == PortTypeConstraint.Inherited && portA.DisplayType.IsAssignableFrom(portB.DisplayType)) return true;
                 if (portA.TypeConstraint == PortTypeConstraint.Strict && portA.DisplayType == portB.DisplayType) return true;
                 return false;
             }
 
-            return Compatible(port1, port2) && Compatible(port2, port1);
+            return Compatible(_port1, _port2) && Compatible(_port2, _port1);
         }
         #endregion
 
-        [NonSerialized] IBaseGraph graph;
+        [NonSerialized] IGraph graph;
         [SerializeField] string ownerGUID;
         [SerializeField] string fieldName;
         [SerializeField] string typeQualifiedName;
@@ -140,6 +140,17 @@ namespace CZToolKit.GraphProcessor
             }
         }
 
+        /// <summary> 根据EdgeGUID获取连接的端口 </summary>
+        /// <param name="_edgeGUID"></param>
+        /// <returns></returns>
+        public NodePort GetConnection(int _edgeGUID)
+        {
+            SerializableEdge edge = GetEdge(_edgeGUID);
+            if (edge == null)
+                return null;
+            return Direction == PortDirection.Input ? edge.OutputPort : edge.InputPort;
+        }
+
         /// <summary> 返回所有连接的远程端口 </summary>
         /// <returns></returns>
         public IEnumerable<NodePort> GetConnections()
@@ -174,27 +185,27 @@ namespace CZToolKit.GraphProcessor
             }
         }
 
-        /// <summary> 第二个参数是中间值 </summary>
+        /// <summary> 第二个参数是中间值(快排) </summary>
         public void SortEdge(Func<string, string, bool> _comparison)
         {
             edgeGUIDs.QuickSort(_comparison);
         }
 
         /// <summary> 根据索引返回连接 </summary>
-        /// <param name="i"></param>
+        /// <param name="_index"></param>
         /// <returns></returns>
-        public SerializableEdge GetEdge(int i)
+        public SerializableEdge GetEdge(int _index)
         {
-            if (graph.EdgesGUIDMapping.TryGetValue(edgeGUIDs[i], out SerializableEdge edge)) return edge;
+            if (graph.EdgesGUIDMapping.TryGetValue(edgeGUIDs[_index], out SerializableEdge edge)) return edge;
             return null;
         }
 
         /// <summary> 根据GUID返回连接 </summary>
-        /// <param name="edgeGUID"></param>
+        /// <param name="_edgeGUID"></param>
         /// <returns></returns>
-        public SerializableEdge GetEdge(string edgeGUID)
+        public SerializableEdge GetEdge(string _edgeGUID)
         {
-            if (graph.EdgesGUIDMapping.TryGetValue(edgeGUID, out SerializableEdge edge)) return edge;
+            if (graph.EdgesGUIDMapping.TryGetValue(_edgeGUID, out SerializableEdge edge)) return edge;
             return null;
         }
 

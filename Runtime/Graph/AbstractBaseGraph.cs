@@ -21,7 +21,7 @@ using UnityEngine;
 namespace CZToolKit.GraphProcessor
 {
     [Serializable]
-    public abstract class AbstrackBaseGraph : IBaseGraph
+    public abstract class AbstrackBaseGraph : IGraph
     {
         public static readonly Vector2 DefaultBlackboardSize = new Vector2(150, 200);
 
@@ -261,15 +261,15 @@ namespace CZToolKit.GraphProcessor
 
         public SerializableEdge Connect(NodePort _inputPort, NodePort _outputPort)
         {
+            // 创建一条连线
+            SerializableEdge edge = SerializableEdge.CreateNewEdge(_inputPort, _outputPort);
+            AddEdge(edge);
+
             // 在连接两个端口，如果端口设置为只能连接一个端口，则需要在连接前把其他所有连接断开
             if (!_inputPort.IsMulti)
                 Disconnect(_inputPort);
             if (!_outputPort.IsMulti)
                 Disconnect(_outputPort);
-
-            // 创建一条连线
-            SerializableEdge edge = SerializableEdge.CreateNewEdge(this, _inputPort, _outputPort);
-            AddEdge(edge);
 
             _inputPort.ConnectToEdge(edge);
             _outputPort.ConnectToEdge(edge);
@@ -280,10 +280,10 @@ namespace CZToolKit.GraphProcessor
             return edge;
         }
 
-        private void AddEdge(SerializableEdge _edge)
+        public void AddEdge(SerializableEdge _edge)
         {
-            _edge.Enable(this);
             edges[_edge.GUID] = _edge;
+            _edge.Enable(this);
         }
 
         public void Disconnect(SerializableEdge _edge)

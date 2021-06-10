@@ -16,7 +16,7 @@ namespace CZToolKit.GraphProcessor
         Dictionary<string, int> sharedVariableIndex;
 
         public abstract BaseGraphAsset GraphAsset { get; set; }
-        public abstract IBaseGraph Graph { get; }
+        public abstract IGraph Graph { get; }
         public abstract Type GraphAssetType { get; }
         public abstract Type GraphType { get; }
 
@@ -158,7 +158,7 @@ namespace CZToolKit.GraphProcessor
 
     public abstract class GraphAssetOwner<TGraphAsset, TGraph> : GraphAssetOwner
         where TGraphAsset : BaseGraphAsset<TGraph>
-        where TGraph : IBaseGraph, IBaseGraphFromAsset, new()
+        where TGraph : IGraph, IGraphFromAsset, new()
     {
         [SerializeField]
         TGraphAsset graphAsset;
@@ -203,7 +203,7 @@ namespace CZToolKit.GraphProcessor
                 }
             }
         }
-        public override IBaseGraph Graph
+        public override IGraph Graph
         {
             get { return GraphAsset.Graph; }
         }

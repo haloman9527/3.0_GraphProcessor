@@ -5,22 +5,26 @@ using UnityEngine.UIElements;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
-    public interface IHasSettingNodeView
+    public interface IHasSettingsView
     {
         void CloseSettings();
     }
 
-    public class HasSettingNodeView : BaseNodeView, IHasSettingNodeView
+    public class HasSettingNodeView : BaseNodeView, IHasSettingsView
     {
         bool settingsExpanded = false;
         NodeSettingsView settingsContainer;
         VisualElement settings;
         Button settingButton;
+
+        public HasSettingNodeView()
+        {
+            styleSheets.Add(GraphProcessorStyles.SettingsNodeViewStyle);
+        }
+
         protected override void OnInitialized()
         {
             base.OnInitialized();
-
-            styleSheets.Add(Resources.Load<StyleSheet>("GraphProcessor/Styles/SettingsNodeView"));
 
             InitializeSettings();
             RegisterCallback<GeometryChangedEvent>(OnGeometryChanged);

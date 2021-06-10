@@ -14,10 +14,11 @@ namespace CZToolKit.GraphProcessor
         protected List<SharedVariable> variables = new List<SharedVariable>();
         protected Dictionary<string, int> sharedVariableIndex;
 
-        public abstract IBaseGraph Graph { get; }
+        public abstract IGraph Graph { get; }
         public abstract Type GraphType { get; }
 
         #region Serialize
+        public abstract void SaveVariables();
 
         public abstract void SaveGraph();
 
@@ -120,13 +121,13 @@ namespace CZToolKit.GraphProcessor
     }
 
     public abstract class GraphOwner<TGraph> : GraphOwner, ISerializationCallbackReceiver
-        where TGraph : IBaseGraph, IBaseGraphFromAsset, new()
+        where TGraph : IGraph, IGraphFromAsset, new()
     {
         [HideInInspector]
         [SerializeField]
         TGraph graph = new TGraph();
 
-        public override IBaseGraph Graph
+        public override IGraph Graph
         {
             get { return graph; }
         }
@@ -178,7 +179,7 @@ namespace CZToolKit.GraphProcessor
         [SerializeField]
         List<UnityObject> variablesUnityReferences;
 
-        public void SaveVariables()
+        public override void SaveVariables()
         {
             serializedVariables = Encoding.UTF8.GetString(SerializationUtility.SerializeValue(variables, DataFormat.JSON, out variablesUnityReferences));
         }

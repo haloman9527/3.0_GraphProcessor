@@ -5,18 +5,22 @@ using System.Collections.Generic;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
-    public class BaseStackNodeView : StackNode
+    public class BaseStackNodeView : StackNode, IStackView
     {
-        protected BaseGraphView owner;
+        CommandDispatcher CommandDispatcher { get; set; }
+        public BaseGraphView Owner { get; private set; }
         protected internal BaseStack stackNode;
 
-        public virtual void Initialize(BaseGraphView _graphView, BaseStack _stackNode)
+        public void SetUp(IGraphElement _graphElement, CommandDispatcher _commandDispatcher, IGraphView _graphView)
         {
-            owner = _graphView;
-            stackNode = _stackNode;
+            stackNode = _graphElement as BaseStack;
+            CommandDispatcher = _commandDispatcher;
+            Owner = _graphView as BaseGraphView;
+
             headerContainer.Add(new Label(stackNode.title));
-            SetPosition(new Rect(stackNode.position, Vector2.one));
             this.Q("stackSeparatorContainer").style.visibility = Visibility.Hidden;
+
+            SetPosition(new Rect(stackNode.position, Vector2.one));
             InitializeInnerNodes();
         }
 
@@ -25,9 +29,9 @@ namespace CZToolKit.GraphProcessor.Editors
             int i = 0;
             foreach (var nodeGUID in stackNode.nodeGUIDs.ToArray())
             {
-                if (owner.Graph.NodesGUIDMapping.TryGetValue(nodeGUID, out BaseNode node))
+                if (Owner.Graph.NodesGUIDMapping.TryGetValue(nodeGUID, out BaseNode node))
                 {
-                    BaseNodeView nodeView = owner.NodeViews[nodeGUID];
+                    BaseNodeView nodeView = Owner.NodeViews[nodeGUID];
                     nodeView.AddToClassList("stack-child__" + i);
                     AddElement(nodeView);
                     i++;

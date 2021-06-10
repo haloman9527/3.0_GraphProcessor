@@ -12,7 +12,7 @@ namespace CZToolKit.GraphProcessor
     {
         public BaseGraphAsset() { }
 
-        public abstract IBaseGraph Graph { get; }
+        public abstract IGraph Graph { get; }
 
         public abstract void SaveGraph();
 
@@ -23,14 +23,14 @@ namespace CZToolKit.GraphProcessor
 
     [Serializable]
     public abstract class BaseGraphAsset<GraphClass> : BaseGraphAsset, ISerializationCallbackReceiver
-        where GraphClass : IBaseGraph, IBaseGraphFromAsset, new()
+        where GraphClass : IGraph, IGraphFromAsset, new()
     {
         [HideInInspector]
         [SerializeField]
         GraphClass graph = new GraphClass();
 
         public GraphClass TGraph { get { return graph; } }
-        public override IBaseGraph Graph { get { return graph; } }
+        public override IGraph Graph { get { return graph; } }
 
         public BaseGraphAsset() { }
 

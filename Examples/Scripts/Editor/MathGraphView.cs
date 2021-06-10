@@ -7,6 +7,10 @@ namespace CZToolKit.GraphProcessor.Examples
 
     public class MathGraphView : BaseGraphView
     {
+        public MathGraphView(IGraph _graph, CommandDispatcher _commandDispatcher, BaseGraphWindow _window) : base(_graph, _commandDispatcher, _window)
+        {
+        }
+
         protected override IEnumerable<Type> GetNodeTypes()
         {
             yield return typeof(StringNode);

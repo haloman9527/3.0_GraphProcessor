@@ -37,7 +37,7 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             base.OnInspectorGUI();
             if (GUILayout.Button("Edit", GUILayout.Height(30)))
-                BaseGraphWindow.OpenGraph(target as IGraphAsset);
+                BaseGraphWindow.OpenGraphAsset(target as IGraphAsset);
         }
 
         private void DrawSerialziedVaraibles(SerializedProperty property)
