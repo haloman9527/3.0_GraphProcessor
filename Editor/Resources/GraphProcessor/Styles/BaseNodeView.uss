@@ -41,6 +41,14 @@
     opacity: 1;
 }
 
+.unity-base-field__label{
+    min-width: 60px;
+}
+
+.unity-base-field__input{
+    min-width: 60px;
+}
+
 #input-container > .port-input-element > IntegerField,
 #input-container > .port-input-element > FloatField {
     min-width: 30px;

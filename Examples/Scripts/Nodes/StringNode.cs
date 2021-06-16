@@ -8,7 +8,8 @@ namespace CZToolKit.GraphProcessor
     {
         [TextArea]
         [Port(PortDirection.Output)]
-        public string value;
+        [InspectorName("")]
+        public string value = "";
 
         public override bool GetValue<T>(NodePort _port, ref T _value)
         {

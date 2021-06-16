@@ -9,6 +9,7 @@ using System.Linq;
 using System;
 
 using Blackboard = UnityEditor.Experimental.GraphView.Blackboard;
+using CZToolKit.Core.Editors;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
@@ -53,7 +54,7 @@ namespace CZToolKit.GraphProcessor.Editors
             foreach (var dataType in CZTypeFactory.TypeCreator.Keys)
             {
                 Type valueType = Utility_Refelection.GetFieldInfo(dataType, "value").FieldType;
-                if (!typeof(UnityEngine.Object).IsAssignableFrom(valueType) && !FieldFactory.FieldDrawerCreatorMap.ContainsKey(valueType))
+                if (!typeof(UnityEngine.Object).IsAssignableFrom(valueType) && !UIElementsFactory.FieldDrawerCreatorMap.ContainsKey(valueType))
                     continue;
                 menu.AddItem(new GUIContent(dataType.Name), false, () =>
                 {
@@ -89,7 +90,7 @@ namespace CZToolKit.GraphProcessor.Editors
             BlackboardField blackboardField = new BlackboardField() { text = _name, typeText = _data.ValueType.Name, userData = _data };
             property.Add(blackboardField);
 
-            VisualElement fieldDrawer = FieldFactory.CreateField("", _data.ValueType, _data.GetValue(), _newValue =>
+            VisualElement fieldDrawer = UIElementsFactory.CreateField("", _data.ValueType, _data.GetValue(), _newValue =>
              {
                  _data.SetValue(_newValue);
                  if (_data.GetValue() != null)

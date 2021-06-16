@@ -4,10 +4,10 @@ using UnityEngine;
 using UnityEditor;
 using UnityEngine.UIElements;
 using UnityEditor.Callbacks;
-
-using UnityObject = UnityEngine.Object;
 using System.Diagnostics;
 using UnityEngine.Profiling;
+
+using UnityObject = UnityEngine.Object;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
@@ -67,6 +67,7 @@ namespace CZToolKit.GraphProcessor.Editors
                 if (window.Graph != _graph)
                     window.LoadGraphInternal(_graph);
             }
+
             return window;
         }
 
@@ -74,7 +75,7 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             Type type = NodeEditorUtility.GetGraphWindowType(_graph.GetType());
 
-            UnityEngine.Object[] objs = Resources.FindObjectsOfTypeAll(type);
+            UnityObject[] objs = Resources.FindObjectsOfTypeAll(type);
             BaseGraphWindow window = null;
             foreach (var obj in objs)
             {

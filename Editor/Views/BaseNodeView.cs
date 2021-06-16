@@ -18,7 +18,7 @@ namespace CZToolKit.GraphProcessor.Editors
     {
         Label titleLabel;
 
-        [NonSerialized] 
+        [NonSerialized]
         List<IconBadge> badges = new List<IconBadge>();
         public Label TitleLabel
         {
@@ -107,7 +107,27 @@ namespace CZToolKit.GraphProcessor.Editors
 
         protected virtual void OnInitialized()
         {
-            //ProcessFields();
+            //List<int> nums = new List<int>() { 1, 2, 3, 4 };
+            //BindableElement list = UIElementsFactory.CreateField("Nums", typeof(List<int>), nums, _ => { });
+            //controlsContainer.Add(list);
+
+            foreach (var fieldInfo in Utility_Refelection.GetFieldInfos(NodeDataType))
+            {
+                if (!EditorGUILayoutExtension.CanDraw(fieldInfo)) continue;
+                if (PortViews.TryGetValue(fieldInfo.Name, out PortView portView) && portView.direction == Direction.Input) continue;
+                if (fieldInfo.FieldType != typeof(string) && !fieldInfo.FieldType.IsValueType && fieldInfo.GetValue(NodeData) == null)
+                    fieldInfo.SetValue(NodeData, Activator.CreateInstance(fieldInfo.FieldType));
+
+                string label = NodeEditorUtility.GetDisplayName(fieldInfo.Name);
+                if (Utility_Attribute.TryGetFieldInfoAttribute(fieldInfo, out InspectorNameAttribute displayName))
+                    label = displayName.displayName;
+                BindableElement element = UIElementsFactory.CreateField(label, fieldInfo.FieldType, fieldInfo.GetValue(NodeData), newValue =>
+                {
+                    fieldInfo.SetValue(NodeData, newValue);
+                });
+                element.MarkDirtyRepaint();
+                controlsContainer.Add(element);
+            }
         }
 
         void InitializeView()
@@ -384,13 +404,13 @@ namespace CZToolKit.GraphProcessor.Editors
             if (_fieldInfo == null)
                 return null;
 
-            var fieldDrawer = FieldFactory.CreateField(_label, _fieldInfo.FieldType, _fieldInfo.GetValue(NodeData), (newValue) =>
-            {
-                Owner.RegisterCompleteObjectUndo("Updated " + newValue);
-                _fieldInfo.SetValue(NodeData, newValue);
-                valueChangedCallback?.Invoke(newValue);
-                Owner.SetDirty();
-            });
+            var fieldDrawer = UIElementsFactory.CreateField(_label, _fieldInfo.FieldType, _fieldInfo.GetValue(NodeData), (newValue) =>
+             {
+                 Owner.RegisterCompleteObjectUndo("Updated " + newValue);
+                 _fieldInfo.SetValue(NodeData, newValue);
+                 valueChangedCallback?.Invoke(newValue);
+                 Owner.SetDirty();
+             });
 
             return fieldDrawer;
         }

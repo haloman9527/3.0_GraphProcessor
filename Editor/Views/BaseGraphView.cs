@@ -519,7 +519,7 @@ namespace CZToolKit.GraphProcessor.Editors
                 if (element is BaseNodeView nodeView)
                 {
                     EditorGUILayoutExtension.DrawFieldsInInspector(nodeView.title, nodeView.NodeData);
-                    Selection.activeObject = GraphAsset;
+                    Selection.activeObject = ObjectInspector.Instance;
                     break;
                 }
             }
