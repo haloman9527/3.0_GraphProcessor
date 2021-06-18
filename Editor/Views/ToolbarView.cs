@@ -36,6 +36,24 @@ namespace CZToolKit.GraphProcessor.Editors
             Right.Add(_element);
         }
 
+        public void AddButtonToLeft(ToolbarButton _button)
+        {
+            _button.style.alignSelf = Align.Center;
+            _button.style.width = 60;
+            _button.style.unityTextAlign = TextAnchor.MiddleCenter;
+            _button.style.color = Color.black;
+            AddToLeft(_button);
+        }
+
+        public void AddButtonToRight(ToolbarButton _button)
+        {
+            _button.style.alignSelf = Align.Center;
+            _button.style.width = 60;
+            _button.style.unityTextAlign = TextAnchor.MiddleCenter;
+            _button.style.color = Color.black;
+            AddToRight(_button);
+        }
+
         public void AddToggleToLeft(ToolbarToggle _toggle)
         {
             _toggle.Q(className: "unity-toggle__input").style.justifyContent = Justify.Center;

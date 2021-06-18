@@ -215,26 +215,26 @@ namespace CZToolKit.GraphProcessor.Editors
             ToolbarButton btnPing = new ToolbarButton()
             {
                 text = "Ping",
-                style = { alignSelf = Align.Center, width = 60, unityTextAlign = TextAnchor.MiddleCenter, color = Color.black }
+                style = { width = 60 }
             };
             btnPing.clicked += () => EditorGUIUtility.PingObject(GraphView.GraphAsset);
-            GraphViewParent.Toolbar.AddToRight(btnPing);
+            GraphViewParent.Toolbar.AddButtonToRight(btnPing);
 
             ToolbarButton btnSave = new ToolbarButton()
             {
                 text = "Save",
-                style = { alignSelf = Align.Center, width = 60, unityTextAlign = TextAnchor.MiddleCenter, color = Color.black }
+                style = { width = 60 }
             };
             btnSave.clicked += () => GraphView.SaveGraphToDisk();
-            GraphViewParent.Toolbar.AddToRight(btnSave);
+            GraphViewParent.Toolbar.AddButtonToRight(btnSave);
 
             ToolbarButton btnReload = new ToolbarButton()
             {
                 text = "Reload",
-                style = { alignSelf = Align.Center, width = 70, unityTextAlign = TextAnchor.MiddleCenter, color = Color.black }
+                style = { width = 70 }
             };
             btnReload.clicked += ReloadGraph;
-            GraphViewParent.Toolbar.AddToRight(btnReload);
+            GraphViewParent.Toolbar.AddButtonToRight(btnReload);
 
             GraphViewParent.SetUp(GraphView);
 

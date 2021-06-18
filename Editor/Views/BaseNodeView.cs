@@ -30,10 +30,14 @@ namespace CZToolKit.GraphProcessor.Editors
             }
         }
 
-        public VisualElement topPortContainer { get; private set; }
-        public VisualElement bottomPortContainer { get; private set; }
-        public VisualElement controlsContainer { get; private set; }
-        public VisualElement inputContainerElement { get; private set; }
+        public VisualElement topPortContainer { get; }
+        public VisualElement bottomPortContainer { get; }
+        public VisualElement controlsContainer { get; }
+        public VisualElement inputContainerElement { get; }
+        public VisualElement contentHorizontalDivider { get; }
+        public VisualElement portsVerticalDivider { get; }
+        public VisualElement controlsHorizontalDivider { get; }
+
         public bool Initialized { get; private set; }
         public override bool expanded
         {
@@ -60,11 +64,11 @@ namespace CZToolKit.GraphProcessor.Editors
 
         public BaseNodeView()
         {
-            titleContainer.style.paddingLeft = 8;
-            titleContainer.style.paddingRight = 8;
-
             styleSheets.Add(GraphProcessorStyles.BaseNodeViewStyle);
             styleSheets.Add(GraphProcessorStyles.PortViewTypesStyle);
+
+            contentHorizontalDivider = contentContainer.Q(name: "divider", className: "horizontal");
+            portsVerticalDivider = topContainer.Q(name: "divider", className: "vertical");
 
             controlsContainer = new VisualElement { name = "Controls" };
             controlsContainer.AddToClassList("NodeControls");
@@ -87,6 +91,18 @@ namespace CZToolKit.GraphProcessor.Editors
             inputContainerElement.pickingMode = PickingMode.Ignore;
             inputContainerElement.SendToBack();
             Add(inputContainerElement);
+
+            controlsHorizontalDivider = new VisualElement() { name = "divider" };
+            controlsHorizontalDivider.AddToClassList("horizontal");
+            controlsHorizontalDivider.style.height = 1;
+            controlsHorizontalDivider.style.backgroundColor = new Color(0.2f, 0.2f, 0.2f, 1);
+            controlsHorizontalDivider.StretchToParentWidth();
+            controlsContainer.Add(controlsHorizontalDivider);
+
+
+            contentHorizontalDivider.style.backgroundColor = Color.green;
+            portsVerticalDivider.style.backgroundColor = Color.red;
+            controlsHorizontalDivider.style.backgroundColor = Color.blue;
         }
 
         public void SetUp(IGraphElement _graphElement, CommandDispatcher _commandDispatcher, IGraphView _graphView)
@@ -134,6 +150,10 @@ namespace CZToolKit.GraphProcessor.Editors
                 Owner.onInitializeCompleted += OnInitialized;
             else
                 OnInitialized();
+
+            //expanded = NodeData.Expanded;
+            //inputContainerElement.style.display = expanded ? DisplayStyle.Flex : DisplayStyle.None;
+
             Initialized = true;
 
             this.MarkDirtyRepaint();
@@ -143,7 +163,6 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             title = NodeEditorUtility.GetNodeDisplayName(NodeDataType);
             TitleLabel.style.flexWrap = Wrap.Wrap;
-            expanded = NodeData.Expanded;
             SetPosition(NodeData.position);
             Lockable = Utility_Attribute.TryGetTypeAttribute(NodeDataType, out LockableAttribute lockableAttribute);
 
@@ -163,30 +182,30 @@ namespace CZToolKit.GraphProcessor.Editors
                 TitleLabel.style.color = nodeTitleTintAttribute.BackgroundColor.GetLuminance() > 0.5f && nodeTitleTintAttribute.BackgroundColor.a > 0.5f ? Color.black : Color.white * 0.9f;
             }
 
-            bool showControlOnHover = Utility_Attribute.TryGetTypeAttribute(NodeDataType, out ShowControlOnHoverAttribute showControlOnHoverAttrib);
-            if (showControlOnHover)
-            {
-                bool mouseOverControls = false;
-                controlsContainer.style.display = DisplayStyle.None;
-                RegisterCallback<MouseOverEvent>(e =>
-                {
-                    controlsContainer.style.display = DisplayStyle.Flex;
-                    mouseOverControls = true;
-                });
-                RegisterCallback<MouseOutEvent>(e =>
-                {
-                    var rect = GetPosition();
-                    var graphMousePosition = Owner.contentViewContainer.WorldToLocal(e.mousePosition);
-                    if (rect.Contains(graphMousePosition) || !showControlOnHover)
-                        return;
-                    mouseOverControls = false;
-                    schedule.Execute(_ =>
-                    {
-                        if (!mouseOverControls)
-                            controlsContainer.style.display = DisplayStyle.None;
-                    }).ExecuteLater(500);
-                });
-            }
+            //bool showControlOnHover = Utility_Attribute.TryGetTypeAttribute(NodeDataType, out ShowControlOnHoverAttribute showControlOnHoverAttrib);
+            //if (showControlOnHover)
+            //{
+            //    bool mouseOverControls = false;
+            //    controlsContainer.style.display = DisplayStyle.None;
+            //    RegisterCallback<MouseOverEvent>(e =>
+            //    {
+            //        controlsContainer.style.display = DisplayStyle.Flex;
+            //        mouseOverControls = true;
+            //    });
+            //    RegisterCallback<MouseOutEvent>(e =>
+            //    {
+            //        var rect = GetPosition();
+            //        var graphMousePosition = Owner.contentViewContainer.WorldToLocal(e.mousePosition);
+            //        if (rect.Contains(graphMousePosition) || !showControlOnHover)
+            //            return;
+            //        mouseOverControls = false;
+            //        schedule.Execute(_ =>
+            //        {
+            //            if (!mouseOverControls)
+            //                controlsContainer.style.display = DisplayStyle.None;
+            //        }).ExecuteLater(500);
+            //    });
+            //}
 
             //Undo.undoRedoPerformed += UpdateFieldValues;
         }
@@ -320,112 +339,11 @@ namespace CZToolKit.GraphProcessor.Editors
             BringToFront();
         }
 
-        //protected virtual void ProcessFields()
-        //{
-        //    foreach (var fieldInfo in NodeDataTypeFieldInfos)
-        //    {
-        //        // 如果标记了NonSerialized或HideInInspector特性，跳过
-        //        if (fieldInfo.GetCustomAttribute(typeof(System.NonSerializedAttribute)) != null || fieldInfo.GetCustomAttribute(typeof(HideInInspector)) != null)
-        //            continue;
-
-        //        // 是否是一个接口
-        //        bool isPort = Utility_Attribute.TryGetFieldInfoAttribute(fieldInfo, out PortAttribute portAttrib);
-        //        // 是公开，或者有SerializeField特性
-        //        bool isDisplay = fieldInfo.IsPublic || Utility_Attribute.TryGetFieldInfoAttribute(fieldInfo, out SerializeField serializable);
-        //        if (!isDisplay)
-        //            continue;
-
-        //        // 是否是入方向的接口
-        //        bool isInputPort = isPort && portAttrib.Direction == PortDirection.Input;
-        //        bool showAsDrawer = fieldInfo.GetCustomAttribute(typeof(ShowAsDrawer)) != null;
-        //        bool showInputDrawer = isInputPort && showAsDrawer;
-        //        // 把数组排除
-        //        showInputDrawer &= !typeof(IList).IsAssignableFrom(fieldInfo.FieldType);
-
-        //        if (showInputDrawer)
-        //            continue;
-
-        //        var elem = AddControlField(fieldInfo, ObjectNames.NicifyVariableName(fieldInfo.Name));
-        //        if (isInputPort)
-        //        {
-        //            hideElementIfConnected[fieldInfo.Name] = elem;
-        //            if (PortViews.TryGetValue(fieldInfo.Name, out var pv))
-        //                if (pv.connected)
-        //                    elem.style.display = DisplayStyle.None;
-        //        }
-        //    }
-        //}
-
-        //void UpdateFieldVisibility(string fieldName, object newValue)
-        //{
-        //    if (visibleConditions.TryGetValue(fieldName, out var list))
-        //    {
-        //        foreach (var elem in list)
-        //        {
-        //            if (newValue.Equals(elem.value))
-        //                elem.target.style.display = DisplayStyle.Flex;
-        //            else
-        //                elem.target.style.display = DisplayStyle.None;
-        //        }
-        //    }
-        //}
-
-        //void UpdateOtherFieldValueSpecific<T>(FieldInfo field, object newValue)
-        //{
-        //    foreach (var inputField in fieldControlsMap[field])
-        //    {
-        //        var notify = inputField as INotifyValueChanged<T>;
-        //        if (notify != null)
-        //            notify.SetValueWithoutNotify((T)newValue);
-        //    }
-        //}
-
-        //static MethodInfo specificUpdateOtherFieldValue = typeof(BaseNodeView).GetMethod(nameof(UpdateOtherFieldValueSpecific), BindingFlags.NonPublic | BindingFlags.Instance);
-        //void UpdateOtherFieldValue(FieldInfo info, object newValue)
-        //{
-        //    // Warning: Keep in sync with FieldFactory CreateField
-        //    var fieldType = info.FieldType.IsSubclassOf(typeof(UnityEngine.Object)) ? typeof(UnityEngine.Object) : info.FieldType;
-        //    var genericUpdate = specificUpdateOtherFieldValue.MakeGenericMethod(fieldType);
-
-        //    genericUpdate.Invoke(this, new object[] { info, newValue });
-        //}
-
-        //object GetInputFieldValueSpecific<T>(FieldInfo field)
-        //{
-        //    if (fieldControlsMap.TryGetValue(field, out var list))
-        //    {
-        //        foreach (var inputField in list)
-        //        {
-        //            if (inputField is INotifyValueChanged<T> notify)
-        //                return notify.value;
-        //        }
-        //    }
-        //    return null;
-        //}
-
-        //static MethodInfo specificGetValue = typeof(BaseNodeView).GetMethod(nameof(GetInputFieldValueSpecific), BindingFlags.NonPublic | BindingFlags.Instance);
-
-        //protected VisualElement AddControlField(FieldInfo _fieldInfo, string _label = null, Action valueChangedCallback = null)
-        //{
-        //    if (_fieldInfo == null)
-        //        return null;
-
-        //    var fieldDrawer = CreateControlField(_fieldInfo, _label, newValue =>
-        //    {
-        //        valueChangedCallback?.Invoke();
-        //        UpdateFieldVisibility(_fieldInfo.Name, newValue);
-        //        UpdateOtherFieldValue(_fieldInfo, newValue);
-        //    });
-
-        //    if (!fieldControlsMap.TryGetValue(_fieldInfo, out var inputFieldList))
-        //        inputFieldList = fieldControlsMap[_fieldInfo] = new List<VisualElement>();
-        //    inputFieldList.Add(fieldDrawer);
-
-        //    if (fieldDrawer != null)
-        //        controlsContainer.Add(fieldDrawer);
-
-        //    return fieldDrawer;
-        //}
+        protected override void ToggleCollapse()
+        {
+            base.ToggleCollapse();
+            inputContainerElement.style.display = expanded ? DisplayStyle.Flex : DisplayStyle.None;
+        }
 
         protected VisualElement CreateControlField(FieldInfo _fieldInfo, string _label = null, Action<object> _valueChangedCallback = null)
         {

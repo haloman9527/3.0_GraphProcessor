@@ -1,13 +1,8 @@
-﻿using System;
-using UnityEditor;
-using UnityEditor.Experimental.GraphView;
-using UnityEngine;
-using UnityEngine.UIElements;
+﻿using UnityEngine.UIElements;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
     [CustomNodeView(typeof(DebugNode))]
-    [NodeTooltip("123123124123124123")]
     public class DebugNodeView : BaseNodeView
     {
         DebugNode debugNode;
@@ -19,13 +14,8 @@ namespace CZToolKit.GraphProcessor.Editors
             debugNode = NodeData as DebugNode;
             controlsContainer.Add(label);
             UpdateLabel();
-            Image icon = new Image() { image = EditorGUIUtility.FindTexture("editicon.sml") };
-            icon.style.width = 25;
-            icon.style.height = 25;
-            icon.style.left = 5;
-            icon.style.alignSelf = Align.Center;
-            AddIcon(icon);
             Add(new IMGUIContainer(UpdateLabel));
+            MarkDirtyRepaint();
         }
 
         void UpdateLabel()

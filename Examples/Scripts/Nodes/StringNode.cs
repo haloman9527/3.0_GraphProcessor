@@ -3,7 +3,7 @@
 namespace CZToolKit.GraphProcessor
 {
     [NodeMenuItem("String")]
-    [NodeIcon("Assets/CZToolKit/0.1_GOAP/Editor/Icons/Running.png", width = 15, height = 18)]
+    [NodeIcon("Assets/CZToolKit/0.1_GOAP/Editor/Icons/Running.png", width = 12, height = 15)]
     public class StringNode : BaseNode
     {
         [TextArea]

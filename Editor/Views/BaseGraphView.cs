@@ -55,6 +55,11 @@ namespace CZToolKit.GraphProcessor.Editors
 
             Insert(0, new GridBackground());
             SetupZoom(0.05f, 2f);
+            this.AddManipulator(new ContentDragger());
+            this.AddManipulator(new SelectionDragger());
+            this.AddManipulator(new RectangleSelector());
+
+            InitializeCallbacks();
 
             this.StretchToParentSize();
         }
@@ -104,14 +109,13 @@ namespace CZToolKit.GraphProcessor.Editors
                     time += 1;
                 }
             }));
-            InitializeManipulators();
-            InitializeViewAndCallbacks();
+
             InitializeGraphView();
+            InitializeBlackboard();
             InitializeNodeViews();
-            InitializeEdgeViews();
             InitializeStacks();
             InitializeGroups();
-            InitializeBlackboard();
+            InitializeEdgeViews();
 
             onInitializeCompleted?.Invoke();
             OnInitialized();
@@ -120,6 +124,33 @@ namespace CZToolKit.GraphProcessor.Editors
 
         #region Initialize
 
+
+        void GenerateNodeViews()
+        {
+            foreach (var node in Graph.NodesGUIDMapping)
+            {
+                if (node.Value == null) continue;
+                AddNodeView(node.Value);
+            }
+        }
+
+        void GenerateStackViews()
+        {
+            foreach (var stack in Graph.StackNodesGUIDMapping.Values)
+                AddStackNodeView(stack);
+        }
+
+        void GenerateGroupViews()
+        {
+            foreach (var group in Graph.Groups)
+                AddGroupView(group);
+        }
+
+        void LinkingNodeViews()
+        {
+            // 只连接，不会触发节点的OnPortConnected和OnPortDisconnected方法
+        }
+
         protected virtual BaseEdgeConnectorListener CreateEdgeConnectorListener()
         {
             return new BaseEdgeConnectorListener(this);
@@ -127,14 +158,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
         protected virtual void OnInitialized() { }
 
-        protected virtual void InitializeManipulators()
-        {
-            this.AddManipulator(new ContentDragger());
-            this.AddManipulator(new SelectionDragger());
-            this.AddManipulator(new RectangleSelector());
-        }
-
-        void InitializeViewAndCallbacks()
+        void InitializeCallbacks()
         {
             graphViewChanged = GraphViewChangedCallback;
             groupTitleChanged = GroupTitleChangedCallback;
@@ -147,16 +171,16 @@ namespace CZToolKit.GraphProcessor.Editors
             RegisterCallback<DragUpdatedEvent>(DragUpdatedCallback);
             RegisterCallback<KeyDownEvent>(KeyDownCallback);
             RegisterCallback<MouseUpEvent>(MouseUpCallback);
+
+            CreateNodeMenu = ScriptableObject.CreateInstance<CreateNodeMenuWindow>();
+            CreateNodeMenu.Initialize(this, GetNodeTypes());
+            nodeCreationRequest = c => SearchWindow.Open(new SearchWindowContext(c.screenMousePosition), CreateNodeMenu);
         }
 
         void InitializeGraphView()
         {
-            CreateNodeMenu = ScriptableObject.CreateInstance<CreateNodeMenuWindow>();
-            CreateNodeMenu.Initialize(this, GetNodeTypes());
-
             viewTransform.position = Graph.Position;
             viewTransform.scale = Graph.Scale;
-            nodeCreationRequest = c => SearchWindow.Open(new SearchWindowContext(c.screenMousePosition), CreateNodeMenu);
         }
 
         /// <summary> 初始化所有节点视图 </summary>
@@ -166,23 +190,6 @@ namespace CZToolKit.GraphProcessor.Editors
             {
                 if (node.Value == null) continue;
                 AddNodeView(node.Value);
-            }
-        }
-
-        /// <summary> 初始化所有连接的视图 </summary>
-        void InitializeEdgeViews()
-        {
-            foreach (var serializedEdge in Graph.EdgesGUIDMapping)
-            {
-                if (serializedEdge.Value == null) continue;
-                BaseNodeView inputNodeView = null, outputNodeView = null;
-                if (serializedEdge.Value.InputNode != null)
-                    NodeViews.TryGetValue(serializedEdge.Value.InputNodeGUID, out inputNodeView);
-                if (serializedEdge.Value.OutputNode != null)
-                    NodeViews.TryGetValue(serializedEdge.Value.OutputNodeGUID, out outputNodeView);
-                if (inputNodeView == null || outputNodeView == null)
-                    continue;
-                ConnectView(inputNodeView.PortViews[serializedEdge.Value.InputFieldName], outputNodeView.PortViews[serializedEdge.Value.OutputFieldName], serializedEdge.Value);
             }
         }
 
@@ -197,6 +204,21 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             foreach (var group in Graph.Groups)
                 AddGroupView(group);
+        }
+
+        /// <summary> 初始化所有连接的视图 </summary>
+        void InitializeEdgeViews()
+        {
+            foreach (var serializedEdge in Graph.EdgesGUIDMapping)
+            {
+                if (serializedEdge.Value == null) continue;
+                BaseNodeView inputNodeView = null, outputNodeView = null;
+                NodeViews.TryGetValue(serializedEdge.Value.InputNodeGUID, out inputNodeView);
+                NodeViews.TryGetValue(serializedEdge.Value.OutputNodeGUID, out outputNodeView);
+                if (inputNodeView == null || outputNodeView == null)
+                    continue;
+                ConnectView(inputNodeView.PortViews[serializedEdge.Value.InputFieldName], outputNodeView.PortViews[serializedEdge.Value.OutputFieldName], serializedEdge.Value);
+            }
         }
 
         void InitializeBlackboard()
@@ -712,6 +734,7 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             var inputPortView = _edgeView.input as PortView;
             var outputPortView = _edgeView.output as PortView;
+
             var inputNodeView = inputPortView.node as BaseNodeView;
             var outputNodeView = outputPortView.node as BaseNodeView;
 
@@ -722,7 +745,7 @@ namespace CZToolKit.GraphProcessor.Editors
                     DisconnectView(edge);
                 }
             }
-            if (!(_edgeView.output as PortView).PortData.IsMulti)
+            if (!outputPortView.PortData.IsMulti)
             {
                 foreach (var edge in EdgeViews.Where(ev => ev.output == _edgeView.output).ToList())
                 {
@@ -732,9 +755,6 @@ namespace CZToolKit.GraphProcessor.Editors
 
             inputPortView.Connect(_edgeView);
             outputPortView.Connect(_edgeView);
-
-            inputNodeView.RefreshPorts();
-            outputNodeView.RefreshPorts();
 
             _edgeView.isConnected = true;
 
@@ -746,11 +766,11 @@ namespace CZToolKit.GraphProcessor.Editors
                 _edgeView.UpdateEdgeControl();
             }).ExecuteLater(1);
 
-            var outputNode = _edgeView.output.node as BaseNodeView;
-            outputNode.OnPortConnected(_edgeView.output as PortView, _edgeView.input as PortView);
+            outputNodeView.OnPortConnected(outputPortView, inputPortView);
+            inputNodeView.OnPortConnected(inputPortView, outputPortView);
 
-            var inputNode = _edgeView.input.node as BaseNodeView;
-            inputNode.OnPortConnected(_edgeView.input as PortView, _edgeView.output as PortView);
+            inputNodeView.RefreshPorts();
+            outputNodeView.RefreshPorts();
             return true;
         }
 
@@ -816,28 +836,33 @@ namespace CZToolKit.GraphProcessor.Editors
         public void DisconnectView(EdgeView _edgeView)
         {
             RemoveElement(_edgeView);
-
-            if (_edgeView.input != null &&
-                _edgeView.input is PortView inputPortView &&
-                inputPortView.node is BaseNodeView inputNodeView)
+            PortView inputPortView = _edgeView.input as PortView;
+            BaseNodeView inputNodeView = inputPortView.node as BaseNodeView;
+            if (_edgeView.input != null
+                && inputPortView != null
+                && inputNodeView != null)
             {
                 inputPortView.Disconnect(_edgeView);
-                inputNodeView.RefreshPorts();
             }
-            if (_edgeView.output != null &&
-                _edgeView.output is PortView ouputPortView &&
-                ouputPortView.node is BaseNodeView outputNodeView)
+
+            PortView outputPortView = _edgeView.output as PortView;
+            BaseNodeView outputNodeView = outputPortView.node as BaseNodeView;
+            if (_edgeView.output != null
+                && outputPortView != null
+                && outputNodeView != null)
             {
                 _edgeView.output.Disconnect(_edgeView);
-                outputNodeView.RefreshPorts();
             }
             EdgeViews.Remove(_edgeView);
 
-            var inputNode = _edgeView.input.node as BaseNodeView;
+            var inputNode = inputPortView.node as BaseNodeView;
             inputNode.OnPortDisconnected(_edgeView.input as PortView, _edgeView.output as PortView);
 
             var outputNode = _edgeView.output.node as BaseNodeView;
             outputNode.OnPortDisconnected(_edgeView.output as PortView, _edgeView.input as PortView);
+
+            inputNodeView.RefreshPorts();
+            outputNodeView.RefreshPorts();
         }
 
 

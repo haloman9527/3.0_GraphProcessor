@@ -2,8 +2,18 @@
     background-color: rgba(0, 63, 63, 1);
 }
 
-#controls {
-    background-color: rgba(63, 63, 63, 1);
+#title {
+    height: 30px;
+    padding-left: 8px;
+}
+
+#title > #title-label {
+    margin-left: 2px;
+    align-self: center;
+}
+
+#title > #settings-button {
+    align-self: center;
 }
 
 #contents #top .executed #connector, #contents #top .executed #connector #cap,
@@ -28,9 +38,10 @@
 #input-container {
     position: absolute;
     right: 100%;
-    top: 45px;
+    top: 40px;
     align-items: flex-end;
     --layer: -50;
+    opacity: 0.6;
 }
 
 .collapsed #input-container {
@@ -42,109 +53,76 @@
 }
 
 .unity-base-field__label{
-    min-width: 60px;
+    min-width: 50px;
 }
 
 .unity-base-field__input{
-    min-width: 60px;
-}
-
-#input-container > .port-input-element > IntegerField,
-#input-container > .port-input-element > FloatField {
-    min-width: 30px;
-    max-width: 100px;
-}
-
-#input-container > .port-input-element IntegerInput,
-#input-container > .port-input-element FloatInput,
-#input-container > .port-input-element TextInput {
+    min-width: 50px;
     border-top-left-radius: 1px;
     border-bottom-left-radius: 1px;
     border-top-right-radius: 1px;
     border-bottom-right-radius: 1px;
+    margin-top: 1px;
     padding-bottom: 1px;
-    height: 15px;
+    height: 16px;
 }
 
+#input-container > .port-input-element > IntegerField,
+#input-container > .port-input-element > LongField,
+#input-container > .port-input-element > FloatField,
+#input-container > .port-input-element > DoubleField {
+    min-width: 30px;
+    max-width: 100px;
+    margin-top: 0px;
+}
 
 #input-container > .port-input-element > ColorField,
 #input-container > .port-input-element > ObjectField,
 #input-container > .port-input-element > GradientField,
-#input-container > .port-input-element > CurveField {
+#input-container > .port-input-element > CurveField,
+#input-container > .port-input-element > TextField {
     margin-top: 0;
     margin-bottom: 0;
-    min-width: 60px;
-    max-width: 100px;
-}
-
-#input-container > .port-input-element > TextField {
-    min-width: 50px;
+    width: 100px;
     max-width: 150px;
 }
 
-#input-container > .port-input-element > Vector3IntField Label,
-#input-container > .port-input-element > Vector2IntField Label,
-#input-container > .port-input-element > Vector4Field Label,
-#input-container > .port-input-element > Vector3Field Label,
-#input-container > .port-input-element > Vector2Field Label {
-    font-size: 8px;
-    min-width: 8px;
-    flex-basis: 8px;
-    padding-top: 2px;
+#input-container > .port-input-element > .unity-vector3-int-field Label,
+#input-container > .port-input-element > .unity-vector2-int-field Label,
+#input-container > .port-input-element > .unity-vector4-field Label,
+#input-container > .port-input-element > .unity-vector3-field Label,
+#input-container > .port-input-element > .unity-vector2-field Label {
+    font-size: 10px;
+    min-width: 10px;
     margin-right: 1px;
 }
 
-#input-container > .port-input-element > Vector3IntField IntInput,
-#input-container > .port-input-element > Vector2IntField IntInput,
-#input-container > .port-input-element > Vector4Field FloatInput,
-#input-container > .port-input-element > Vector3Field FloatInput,
-#input-container > .port-input-element > Vector2Field FloatInput {
-    
-    min-width: 28px;
+#input-container > .port-input-element > .unity-vector3-int-field IntegerInput,
+#input-container > .port-input-element > .unity-vector2-int-field IntegerInput,
+#input-container > .port-input-element > .unity-vector4-field FloatInput,
+#input-container > .port-input-element > .unity-vector3-field FloatInput,
+#input-container > .port-input-element > .unity-vector2-field FloatInput {
+    min-width: 30px;
+    flex-basis: 30%;
+    height: 14px;
 }
 
 #input-container ObjectFieldSelector {
     width: 17px;
-    height: 15px;
     border-top-right-radius: 2px;
     border-bottom-right-radius: 2px;
 }
 
-#input-container ObjectFieldDisplay > Label {
-    margin-top: 2px;
-}
-
-#input-container ObjectFieldDisplay > Image {
-    margin: 0;
-}
-
-#input-container > .port-input-element > * {
-    margin-left: 2px;
-}
-
-#input-container > .port-input-element * {
-    font-size: 8px;
-}
-
 #input-container > .port-input-element {
-    max-width: 180px;
     background-color: rgba(72, 72, 72, 1);
-    margin-top: 3px;
-    margin-bottom: 2px;
+    margin-left: 1px;
+    margin-top: 1px;
+    margin-bottom: 3px;
     padding-top: 1px;
     padding-bottom: 1px;
-    border-top-left-radius: 4px;
-    border-bottom-left-radius: 4px;
-    height: 19px;
+    height: 20px;
     overflow: hidden;
     padding-right: 1px;
-}
-
-#input-container > .port-input-element.empty {
-    width: 0;
-    padding: 0;
-}
-
-#input-container {
-    opacity: 0.6;
+    font-size: 8px;
+    flex-direction: row-reverse
 }
