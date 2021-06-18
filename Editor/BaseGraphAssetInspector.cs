@@ -39,7 +39,7 @@ namespace CZToolKit.GraphProcessor.Editors
             }
             if (GUILayout.Button("Open", GUILayout.Height(30)))
             {
-                BaseGraphWindow.OpenGraphAsset(target as BaseGraphAsset);
+                BaseGraphWindow.LoadGraphFromAsset(target as BaseGraphAsset);
             }
             EditorGUILayout.EndHorizontal();
         }

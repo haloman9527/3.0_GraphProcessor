@@ -6,6 +6,7 @@ namespace CZToolKit.GraphProcessor
     [Serializable]
     public class SerializableEdge : IGraphElement
     {
+        #region 静态方法
         public static SerializableEdge CreateNewEdge(NodePort _inputPort, NodePort _outputPort)
         {
             SerializableEdge edge = new SerializableEdge();
@@ -19,7 +20,9 @@ namespace CZToolKit.GraphProcessor
 
             return edge;
         }
+        #endregion
 
+        #region 字段
         [NonSerialized]
         IGraph owner;
 
@@ -36,7 +39,9 @@ namespace CZToolKit.GraphProcessor
         string outputNodeGUID;
         [SerializeField]
         string outputFieldName;
+        #endregion
 
+        #region 属性
         public IGraph Owner { get { return owner; } }
         public string GUID { get { return guid; } }
         public string InputNodeGUID { get { return inputNodeGUID; } }
@@ -64,6 +69,7 @@ namespace CZToolKit.GraphProcessor
                 return nodePort;
             }
         }
+        #endregion
 
         protected SerializableEdge() { }
 
@@ -73,5 +79,7 @@ namespace CZToolKit.GraphProcessor
         }
 
         public virtual void OnEnabled() { }
+
+        public virtual void OnCreated() { }
     }
 }

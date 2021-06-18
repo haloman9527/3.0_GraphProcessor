@@ -1,4 +1,5 @@
 ﻿using CZToolKit.Core;
+using CZToolKit.Core.Editors;
 using System.Reflection;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -50,12 +51,10 @@ namespace CZToolKit.GraphProcessor.Editors
 
         protected void AddSettingField(FieldInfo _fieldInfo)
         {
-            var label = Utility_Attribute.TryGetFieldInfoAttribute(_fieldInfo, out DisplayNameAttribute displayNameAttribute)
-                ? displayNameAttribute.DisplayName : NodeEditorUtility.GetDisplayName(_fieldInfo.Name);
-
+            var label = Utility_Attribute.TryGetFieldInfoAttribute(_fieldInfo, out InspectorNameAttribute inspectorNameAttribute)
+                ? inspectorNameAttribute.displayName : _fieldInfo.Name;
             VisualElement fieldDrawer = CreateControlField(_fieldInfo, label);
             if (fieldDrawer == null) return;
-
             settingsContainer.Add(fieldDrawer);
         }
 

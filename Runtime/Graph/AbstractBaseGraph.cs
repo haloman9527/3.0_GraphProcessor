@@ -224,7 +224,7 @@ namespace CZToolKit.GraphProcessor
             }
         }
 
-        #region Operation
+        #region API
         public T AddNode<T>(Vector2 _nodePosition) where T : BaseNode
         {
             T node = BaseNode.CreateNew<T>(_nodePosition);
@@ -263,6 +263,7 @@ namespace CZToolKit.GraphProcessor
         {
             // 创建一条连线
             SerializableEdge edge = SerializableEdge.CreateNewEdge(_inputPort, _outputPort);
+            edge.OnCreated();
             AddEdge(edge);
 
             // 在连接两个端口，如果端口设置为只能连接一个端口，则需要在连接前把其他所有连接断开

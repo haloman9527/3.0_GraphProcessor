@@ -6,10 +6,10 @@ namespace CZToolKit.GraphProcessor
     {
         [Port(PortDirection.Input, IsMulti = true)]
         [ShowAsDrawer]
-        float input;
+        public float input;
 
         [Port(PortDirection.Output, IsMulti = true)]
-        float output;
+        public float output;
 
         public override bool GetValue<T>(NodePort _port, ref T _value)
         {

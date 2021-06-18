@@ -33,6 +33,7 @@ namespace CZToolKit.GraphProcessor
         }
         #endregion
 
+        #region 字段
         [NonSerialized]
         IGraph owner;
 
@@ -50,16 +51,20 @@ namespace CZToolKit.GraphProcessor
         bool locked = false;
         [SerializeField, HideInInspector]
         Dictionary<string, NodePort> ports = new Dictionary<string, NodePort>();
+        #endregion
 
+        #region 属性
         /// <summary> 节点对象的所有者，即图 </summary>
         public IGraph Owner { get { return owner; } }
         public string GUID { get { return guid; } }
         public bool Expanded { get { return expanded; } set { expanded = value; } }
         public bool Locked { get { return locked; } set { locked = value; } }
         public Dictionary<string, NodePort> Ports { get { return ports; } }
+        #endregion
 
         protected BaseNode() { }
 
+        #region Overrides
         /// <summary> 在节点被创建出来后调用，调用优先级最高 </summary>
         public virtual void OnCreated() { }
 
@@ -77,6 +82,10 @@ namespace CZToolKit.GraphProcessor
 
         public virtual void Initialize(IGraphOwner _graphOwner) { }
 
+        public virtual void DrawGizmos(GraphAssetOwner _graphOwner) { }
+        #endregion
+
+        #region API
         #region Ports
         /// <summary> 通过字段名获取一个本地Input接口 </summary>
         public bool TryGetInputPort(string _fieldName, out NodePort _localNodePort)
@@ -192,6 +201,7 @@ namespace CZToolKit.GraphProcessor
         }
 
         #endregion
+
         /// <summary> 在接口连接时触发 </summary>
         /// <param name="_localPort"> 本地接口 </param>
         /// <param name="_targetPort"> 目标接口 </param>
@@ -213,7 +223,6 @@ namespace CZToolKit.GraphProcessor
                 port.EdgeGUIDS.Clear();
             }
         }
-
-        public virtual void DrawGizmos(GraphAssetOwner _graphOwner) { }
+        #endregion
     }
 }

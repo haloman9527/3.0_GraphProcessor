@@ -9,16 +9,19 @@ using UnityObject = UnityEngine.Object;
 
 namespace CZToolKit.GraphProcessor
 {
-
     public abstract class GraphAssetOwner : MonoBehaviour, IGraphAssetOwner, IGraphOwner, ISerializationCallbackReceiver
     {
+        #region 字段
         List<SharedVariable> variables = new List<SharedVariable>();
         Dictionary<string, int> sharedVariableIndex;
+        #endregion
 
+        #region 属性
         public abstract BaseGraphAsset GraphAsset { get; set; }
         public abstract IGraph Graph { get; }
         public abstract Type GraphAssetType { get; }
         public abstract Type GraphType { get; }
+        #endregion
 
         #region Serialize
 
@@ -61,6 +64,7 @@ namespace CZToolKit.GraphProcessor
 
         #endregion
 
+        #region API
         public UnityObject Self()
         {
             return this;
@@ -122,6 +126,20 @@ namespace CZToolKit.GraphProcessor
             GetVariable(_guid)?.SetValue(_value);
         }
 
+        public IReadOnlyList<SharedVariable> GetVariables()
+        {
+            CheckSerialization();
+            return variables;
+        }
+
+        public void SetVariables(List<SharedVariable> _variables)
+        {
+            variables = _variables;
+            UpdateVariablesIndex();
+        }
+        #endregion
+
+        #region 帮助方法
         private void UpdateVariablesIndex()
         {
             if (variables == null)
@@ -140,29 +158,19 @@ namespace CZToolKit.GraphProcessor
                     sharedVariableIndex.Add(variables[i].GUID, i);
             }
         }
-
-
-
-        public IReadOnlyList<SharedVariable> GetVariables()
-        {
-            CheckSerialization();
-            return variables;
-        }
-
-        public void SetVariables(List<SharedVariable> _variables)
-        {
-            variables = _variables;
-            UpdateVariablesIndex();
-        }
+        #endregion
     }
 
     public abstract class GraphAssetOwner<TGraphAsset, TGraph> : GraphAssetOwner
         where TGraphAsset : BaseGraphAsset<TGraph>
         where TGraph : IGraph, IGraphFromAsset, new()
     {
+        #region 字段
         [SerializeField]
         TGraphAsset graphAsset;
+        #endregion
 
+        #region 属性
         public override BaseGraphAsset GraphAsset
         {
             get { return graphAsset; }
@@ -203,6 +211,7 @@ namespace CZToolKit.GraphProcessor
                 }
             }
         }
+
         public override IGraph Graph
         {
             get { return GraphAsset.Graph; }
@@ -214,6 +223,8 @@ namespace CZToolKit.GraphProcessor
         }
 
         public override Type GraphAssetType { get { return typeof(TGraphAsset); } }
+
         public override Type GraphType { get { return typeof(TGraph); } }
+        #endregion
     }
 }

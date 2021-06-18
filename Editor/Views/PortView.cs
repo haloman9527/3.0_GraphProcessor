@@ -117,8 +117,8 @@ namespace CZToolKit.GraphProcessor.Editors
             else if (orientation == Orientation.Vertical)
                 tooltip = NodeEditorUtility.GetDisplayName(FieldName);
 
-            if (Utility_Attribute.TryGetFieldAttribute(PortData.Owner.GetType(), FieldName, out DisplayNameAttribute attrib))
-                portName = attrib.DisplayName;
+            if (Utility_Attribute.TryGetFieldAttribute(PortData.Owner.GetType(), FieldName, out InspectorNameAttribute attrib))
+                portName = attrib.displayName;
             else
                 portName = NodeEditorUtility.GetDisplayName(FieldName);
 
@@ -175,8 +175,8 @@ namespace CZToolKit.GraphProcessor.Editors
                 visualClass = "Port_" + portType.Name;
             }
 
-            if (Utility_Attribute.TryGetFieldAttribute(PortData.Owner.GetType(), FieldName, out DisplayNameAttribute attrib))
-                portName = attrib.DisplayName;
+            if (Utility_Attribute.TryGetFieldAttribute(PortData.Owner.GetType(), FieldName, out InspectorNameAttribute attrib))
+                portName = attrib.displayName;
             else
                 portName = NodeEditorUtility.GetDisplayName(FieldName);
 

@@ -1,164 +1,57 @@
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
-using UnityEditor;
-using System.Linq;
-using System;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
     public class ToolbarView : Toolbar
     {
-        protected enum ElementType
-        {
-            Button,
-            Toggle,
-            DropDownButton,
-        }
+        public VisualElement Left { get; }
+        public VisualElement Right { get; }
 
-        protected class ToolbarButtonData
-        {
-            public GUIContent content;
-            public ElementType type;
-            public bool value;
-            public bool visible = true;
-            public Action buttonCallback;
-            public Action<bool> toggleCallback;
-        }
-
-        List<ToolbarButtonData> leftButtonDatas = new List<ToolbarButtonData>();
-        List<ToolbarButtonData> rightButtonDatas = new List<ToolbarButtonData>();
-        protected BaseGraphWindow graphWindow;
-
-        ToolbarButtonData showParameters;
-
-        public ToolbarView(BaseGraphWindow _graphWindow)
+        public ToolbarView()
         {
             name = "ToolbarView";
             style.backgroundColor = new Color(0, 0, 0, 0);
-            graphWindow = _graphWindow;
 
-            leftButtonDatas.Clear();
-            rightButtonDatas.Clear();
+            Left = new VisualElement() { name = "left", style = { flexDirection = FlexDirection.Row } };
+            Right = new VisualElement() { name = "right", style = { flexDirection = FlexDirection.Row } };
 
-            IMGUIContainer container = new IMGUIContainer(DrawImGUIToolbar);
-            container.StretchToParentSize();
-            Add(container);
+            Add(Left);
+            Add(new VisualElement() { style = { flexGrow = 1 } });
+            Add(Right);
         }
 
-        public void AddButton(string name, Action callback, bool left = true)
-            => AddButton(new GUIContent(name), callback, left);
-
-        public void AddButton(GUIContent content, Action callback, bool left = true)
+        public void AddToLeft(VisualElement _element)
         {
-            var data = new ToolbarButtonData
-            {
-                content = content,
-                type = ElementType.Button,
-                buttonCallback = callback
-            };
-            (left ? leftButtonDatas : rightButtonDatas).Add(data);
+            _element.style.height = new StyleLength(new Length(100, LengthUnit.Percent));
+            Left.Add(_element);
         }
 
-        public void AddToggle(string name, bool defaultValue, Action<bool> callback, bool left = true)
-            => AddToggle(new GUIContent(name), defaultValue, callback, left);
-
-        public void AddToggle(GUIContent content, bool defaultValue, Action<bool> callback, bool left = true)
+        public void AddToRight(VisualElement _element)
         {
-            var data = new ToolbarButtonData
-            {
-                content = content,
-                type = ElementType.Toggle,
-                value = defaultValue,
-                toggleCallback = callback
-            };
-            (left ? leftButtonDatas : rightButtonDatas).Add(data);
+            _element.style.height = new StyleLength(new Length(100, LengthUnit.Percent));
+            _element.style.left = 0;
+            _element.style.borderRightWidth = 0;
+            Right.Add(_element);
         }
 
-        public void AddDropDownButton(string name, Action callback, bool left = true)
-            => AddDropDownButton(new GUIContent(name), callback, left);
-
-        public void AddDropDownButton(GUIContent content, Action callback, bool left = true)
+        public void AddToggleToLeft(ToolbarToggle _toggle)
         {
-            var data = new ToolbarButtonData
-            {
-                content = content,
-                type = ElementType.DropDownButton,
-                buttonCallback = callback
-            };
-            (left ? leftButtonDatas : rightButtonDatas).Add(data);
-            //return data;
+            _toggle.Q(className: "unity-toggle__input").style.justifyContent = Justify.Center;
+            _toggle.Q(className: "unity-toggle__input").StretchToParentSize();
+            _toggle.Q(className: "unity-toggle__input").style.marginBottom = 0;
+            _toggle.Q(className: "unity-toggle__text").style.color = new Color(0, 0, 0, 1);
+            AddToLeft(_toggle);
         }
 
-        /// <summary> Also works for toggles </summary>
-        public void RemoveButton(string name, bool left)
+        public void AddToggleToRight(ToolbarToggle _toggle)
         {
-            (left ? leftButtonDatas : rightButtonDatas).RemoveAll(b => b.content.text == name);
-        }
-
-        /// <summary> Hide the button </summary>
-        /// <param name="name">Display name of the button</param>
-        protected void HideButton(string name)
-        {
-            leftButtonDatas.Concat(rightButtonDatas).All(b =>
-            {
-                if (b.content.text == name)
-                    b.visible = false;
-                return true;
-            });
-        }
-
-        /// <summary> Show the button </summary>
-        /// <param name="name">Display name of the button</param>
-        protected void ShowButton(string name)
-        {
-            leftButtonDatas.Concat(rightButtonDatas).All(b =>
-            {
-                if (b.content.text == name)
-                    b.visible = true;
-                return true;
-            });
-        }
-
-        void DrawImGUIButtonList(List<ToolbarButtonData> buttons)
-        {
-            foreach (var button in buttons)
-            {
-                if (!button.visible)
-                    continue;
-
-                switch (button.type)
-                {
-                    case ElementType.Button:
-                        if (GUILayout.Button(button.content, EditorStyles.toolbarButton) && button.buttonCallback != null)
-                            button.buttonCallback();
-                        break;
-                    case ElementType.Toggle:
-                        EditorGUI.BeginChangeCheck();
-                        button.value = GUILayout.Toggle(button.value, button.content, EditorStyles.toolbarButton);
-                        if (EditorGUI.EndChangeCheck() && button.toggleCallback != null)
-                            button.toggleCallback(button.value);
-                        break;
-                    case ElementType.DropDownButton:
-                        if (EditorGUILayout.DropdownButton(button.content, FocusType.Passive, EditorStyles.toolbarDropDown))
-                            button.buttonCallback();
-                        break;
-                }
-            }
-        }
-
-        protected virtual void DrawImGUIToolbar()
-        {
-            GUILayout.BeginHorizontal();
-
-            DrawImGUIButtonList(leftButtonDatas);
-
-            GUILayout.FlexibleSpace();
-
-            DrawImGUIButtonList(rightButtonDatas);
-
-            GUILayout.EndHorizontal();
+            _toggle.Q(className: "unity-toggle__input").style.justifyContent = Justify.Center;
+            _toggle.Q(className: "unity-toggle__input").StretchToParentSize();
+            _toggle.Q(className: "unity-toggle__input").style.marginBottom = 0;
+            _toggle.Q(className: "unity-toggle__text").style.color = new Color(0, 0, 0, 1);
+            AddToLeft(_toggle);
         }
     }
 }

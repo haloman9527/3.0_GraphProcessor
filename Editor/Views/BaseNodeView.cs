@@ -58,6 +58,37 @@ namespace CZToolKit.GraphProcessor.Editors
 
         #region  Initialization
 
+        public BaseNodeView()
+        {
+            titleContainer.style.paddingLeft = 8;
+            titleContainer.style.paddingRight = 8;
+
+            styleSheets.Add(GraphProcessorStyles.BaseNodeViewStyle);
+            styleSheets.Add(GraphProcessorStyles.PortViewTypesStyle);
+
+            controlsContainer = new VisualElement { name = "Controls" };
+            controlsContainer.AddToClassList("NodeControls");
+            controlsContainer.style.backgroundColor = new Color(0.2f, 0.2f, 0.2f, 1);
+            mainContainer.Add(controlsContainer);
+
+            topPortContainer = new VisualElement { name = "TopPortContainer" };
+            topPortContainer.style.justifyContent = Justify.Center;
+            topPortContainer.style.alignItems = Align.Center;
+            topPortContainer.style.flexDirection = FlexDirection.Row;
+            Insert(0, topPortContainer);
+
+            bottomPortContainer = new VisualElement { name = "BottomPortContainer" };
+            bottomPortContainer.style.justifyContent = Justify.Center;
+            bottomPortContainer.style.alignItems = Align.Center;
+            bottomPortContainer.style.flexDirection = FlexDirection.Row;
+            Add(bottomPortContainer);
+
+            inputContainerElement = new VisualElement { name = "input-container" };
+            inputContainerElement.pickingMode = PickingMode.Ignore;
+            inputContainerElement.SendToBack();
+            Add(inputContainerElement);
+        }
+
         public void SetUp(IGraphElement _graphElement, CommandDispatcher _commandDispatcher, IGraphView _graphView)
         {
             if (Initialized) return;
@@ -98,73 +129,27 @@ namespace CZToolKit.GraphProcessor.Editors
                     inputContainerElement.Add(box);
                 }
             }
+
             if (!Owner.Initialized)
                 Owner.onInitializeCompleted += OnInitialized;
             else
                 OnInitialized();
             Initialized = true;
-        }
 
-        protected virtual void OnInitialized()
-        {
-            //List<int> nums = new List<int>() { 1, 2, 3, 4 };
-            //BindableElement list = UIElementsFactory.CreateField("Nums", typeof(List<int>), nums, _ => { });
-            //controlsContainer.Add(list);
-
-            foreach (var fieldInfo in Utility_Refelection.GetFieldInfos(NodeDataType))
-            {
-                if (!EditorGUILayoutExtension.CanDraw(fieldInfo)) continue;
-                if (PortViews.TryGetValue(fieldInfo.Name, out PortView portView) && portView.direction == Direction.Input) continue;
-                if (fieldInfo.FieldType != typeof(string) && !fieldInfo.FieldType.IsValueType && fieldInfo.GetValue(NodeData) == null)
-                    fieldInfo.SetValue(NodeData, Activator.CreateInstance(fieldInfo.FieldType));
-
-                string label = NodeEditorUtility.GetDisplayName(fieldInfo.Name);
-                if (Utility_Attribute.TryGetFieldInfoAttribute(fieldInfo, out InspectorNameAttribute displayName))
-                    label = displayName.displayName;
-                BindableElement element = UIElementsFactory.CreateField(label, fieldInfo.FieldType, fieldInfo.GetValue(NodeData), newValue =>
-                {
-                    fieldInfo.SetValue(NodeData, newValue);
-                });
-                element.MarkDirtyRepaint();
-                controlsContainer.Add(element);
-            }
+            this.MarkDirtyRepaint();
         }
 
         void InitializeView()
         {
-            styleSheets.Add(GraphProcessorStyles.BaseNodeViewStyle);
-            styleSheets.Add(GraphProcessorStyles.PortViewTypesStyle);
-
-            controlsContainer = new VisualElement { name = "Controls" };
-            controlsContainer.AddToClassList("NodeControls");
-            controlsContainer.style.backgroundColor = new Color(0.2f, 0.2f, 0.2f, 1);
-            mainContainer.Add(controlsContainer);
-
-            topPortContainer = new VisualElement { name = "TopPortContainer" };
-            topPortContainer.style.justifyContent = Justify.Center;
-            topPortContainer.style.alignItems = Align.Center;
-            topPortContainer.style.flexDirection = FlexDirection.Row;
-            Insert(0, topPortContainer);
-
-            bottomPortContainer = new VisualElement { name = "BottomPortContainer" };
-            bottomPortContainer.style.justifyContent = Justify.Center;
-            bottomPortContainer.style.alignItems = Align.Center;
-            bottomPortContainer.style.flexDirection = FlexDirection.Row;
-            Add(bottomPortContainer);
-
-            inputContainerElement = new VisualElement { name = "input-container" };
-            inputContainerElement.pickingMode = PickingMode.Ignore;
-            inputContainerElement.SendToBack();
-            Add(inputContainerElement);
-
             title = NodeEditorUtility.GetNodeDisplayName(NodeDataType);
+            TitleLabel.style.flexWrap = Wrap.Wrap;
             expanded = NodeData.Expanded;
             SetPosition(NodeData.position);
             Lockable = Utility_Attribute.TryGetTypeAttribute(NodeDataType, out LockableAttribute lockableAttribute);
 
             if (Utility_Attribute.TryGetTypeAttribute(NodeDataType, out NodeIconAttribute iconAttribute))
             {
-                Texture icon = AssetDatabase.LoadAssetAtPath<Texture>(iconAttribute.iconPath);
+                Texture icon = AssetDatabase.LoadAssetAtPath<Texture2D>(iconAttribute.iconPath);
                 if (icon != null)
                     AddIcon(new Image() { image = icon, style = { width = iconAttribute.width, height = iconAttribute.height } });
             }
@@ -206,11 +191,6 @@ namespace CZToolKit.GraphProcessor.Editors
             //Undo.undoRedoPerformed += UpdateFieldValues;
         }
 
-        protected virtual PortView CustomCreatePortView(Orientation _orientation, Direction _direction, NodePort _nodePort)
-        {
-            return null;
-        }
-
         void InitializePorts()
         {
             foreach (var nodePort in NodeData.Ports)
@@ -226,6 +206,27 @@ namespace CZToolKit.GraphProcessor.Editors
                 portView.SetUp(nodePort.Value, CommandDispatcher, Owner);
                 PortViews[nodePort.Key] = portView;
             }
+        }
+
+        protected virtual void OnInitialized()
+        {
+            //foreach (var fieldInfo in Utility_Refelection.GetFieldInfos(NodeDataType))
+            //{
+            //    if (!EditorGUILayoutExtension.CanDraw(fieldInfo)) continue;
+            //    if (PortViews.TryGetValue(fieldInfo.Name, out PortView portView) && portView.direction == Direction.Input) continue;
+            //    if (fieldInfo.FieldType != typeof(string) && !fieldInfo.FieldType.IsValueType && fieldInfo.GetValue(NodeData) == null)
+            //        fieldInfo.SetValue(NodeData, Activator.CreateInstance(fieldInfo.FieldType));
+
+            //    string label = NodeEditorUtility.GetDisplayName(fieldInfo.Name);
+            //    if (Utility_Attribute.TryGetFieldInfoAttribute(fieldInfo, out InspectorNameAttribute displayName))
+            //        label = displayName.displayName;
+            //    BindableElement element = UIElementsFactory.CreateField(label, fieldInfo.FieldType, fieldInfo.GetValue(NodeData), newValue =>
+            //    {
+            //        fieldInfo.SetValue(NodeData, newValue);
+            //    });
+            //    element.MarkDirtyRepaint();
+            //    controlsContainer.Add(element);
+            //}
         }
         #endregion
 
@@ -287,7 +288,7 @@ namespace CZToolKit.GraphProcessor.Editors
         #region Private
         void OpenNodeScript()
         {
-            var script = EditorUtilityExtension.FindScriptFromType(NodeData.GetType());
+            var script = EditorUtilityExtension.FindScriptFromType(NodeDataType);
 
             if (script != null)
                 AssetDatabase.OpenAsset(script.GetInstanceID(), 0, 0);
@@ -308,98 +309,125 @@ namespace CZToolKit.GraphProcessor.Editors
         Dictionary<string, VisualElement> hideElementIfConnected = new Dictionary<string, VisualElement>();
         Dictionary<FieldInfo, List<VisualElement>> fieldControlsMap = new Dictionary<FieldInfo, List<VisualElement>>();
 
+        protected virtual PortView CustomCreatePortView(Orientation _orientation, Direction _direction, NodePort _nodePort)
+        {
+            return null;
+        }
+
         public override void OnSelected()
         {
             base.OnSelected();
             BringToFront();
         }
 
-        protected virtual void ProcessFields()
-        {
-            foreach (var fieldInfo in NodeDataTypeFieldInfos)
-            {
-                // 如果标记了NonSerialized或HideInInspector特性，跳过
-                if (fieldInfo.GetCustomAttribute(typeof(System.NonSerializedAttribute)) != null || fieldInfo.GetCustomAttribute(typeof(HideInInspector)) != null)
-                    continue;
+        //protected virtual void ProcessFields()
+        //{
+        //    foreach (var fieldInfo in NodeDataTypeFieldInfos)
+        //    {
+        //        // 如果标记了NonSerialized或HideInInspector特性，跳过
+        //        if (fieldInfo.GetCustomAttribute(typeof(System.NonSerializedAttribute)) != null || fieldInfo.GetCustomAttribute(typeof(HideInInspector)) != null)
+        //            continue;
 
-                // 是否是一个接口
-                bool isPort = Utility_Attribute.TryGetFieldInfoAttribute(fieldInfo, out PortAttribute portAttrib);
-                // 是公开，或者有SerializeField特性
-                bool isDisplay = fieldInfo.IsPublic || Utility_Attribute.TryGetFieldInfoAttribute(fieldInfo, out SerializeField serializable);
-                if (!isDisplay)
-                    continue;
+        //        // 是否是一个接口
+        //        bool isPort = Utility_Attribute.TryGetFieldInfoAttribute(fieldInfo, out PortAttribute portAttrib);
+        //        // 是公开，或者有SerializeField特性
+        //        bool isDisplay = fieldInfo.IsPublic || Utility_Attribute.TryGetFieldInfoAttribute(fieldInfo, out SerializeField serializable);
+        //        if (!isDisplay)
+        //            continue;
 
-                // 是否是入方向的接口
-                bool isInputPort = isPort && portAttrib.Direction == PortDirection.Input;
-                bool showAsDrawer = fieldInfo.GetCustomAttribute(typeof(ShowAsDrawer)) != null;
-                bool showInputDrawer = isInputPort && showAsDrawer;
-                // 把数组排除
-                showInputDrawer &= !typeof(IList).IsAssignableFrom(fieldInfo.FieldType);
+        //        // 是否是入方向的接口
+        //        bool isInputPort = isPort && portAttrib.Direction == PortDirection.Input;
+        //        bool showAsDrawer = fieldInfo.GetCustomAttribute(typeof(ShowAsDrawer)) != null;
+        //        bool showInputDrawer = isInputPort && showAsDrawer;
+        //        // 把数组排除
+        //        showInputDrawer &= !typeof(IList).IsAssignableFrom(fieldInfo.FieldType);
 
-                if (showInputDrawer)
-                    continue;
+        //        if (showInputDrawer)
+        //            continue;
 
-                var elem = AddControlField(fieldInfo, ObjectNames.NicifyVariableName(fieldInfo.Name));
-                if (isInputPort)
-                {
-                    hideElementIfConnected[fieldInfo.Name] = elem;
-                    if (PortViews.TryGetValue(fieldInfo.Name, out var pv))
-                        if (pv.connected)
-                            elem.style.display = DisplayStyle.None;
-                }
-            }
-        }
+        //        var elem = AddControlField(fieldInfo, ObjectNames.NicifyVariableName(fieldInfo.Name));
+        //        if (isInputPort)
+        //        {
+        //            hideElementIfConnected[fieldInfo.Name] = elem;
+        //            if (PortViews.TryGetValue(fieldInfo.Name, out var pv))
+        //                if (pv.connected)
+        //                    elem.style.display = DisplayStyle.None;
+        //        }
+        //    }
+        //}
 
-        void UpdateFieldVisibility(string fieldName, object newValue)
-        {
-            if (visibleConditions.TryGetValue(fieldName, out var list))
-            {
-                foreach (var elem in list)
-                {
-                    if (newValue.Equals(elem.value))
-                        elem.target.style.display = DisplayStyle.Flex;
-                    else
-                        elem.target.style.display = DisplayStyle.None;
-                }
-            }
-        }
+        //void UpdateFieldVisibility(string fieldName, object newValue)
+        //{
+        //    if (visibleConditions.TryGetValue(fieldName, out var list))
+        //    {
+        //        foreach (var elem in list)
+        //        {
+        //            if (newValue.Equals(elem.value))
+        //                elem.target.style.display = DisplayStyle.Flex;
+        //            else
+        //                elem.target.style.display = DisplayStyle.None;
+        //        }
+        //    }
+        //}
 
-        void UpdateOtherFieldValueSpecific<T>(FieldInfo field, object newValue)
-        {
-            foreach (var inputField in fieldControlsMap[field])
-            {
-                var notify = inputField as INotifyValueChanged<T>;
-                if (notify != null)
-                    notify.SetValueWithoutNotify((T)newValue);
-            }
-        }
+        //void UpdateOtherFieldValueSpecific<T>(FieldInfo field, object newValue)
+        //{
+        //    foreach (var inputField in fieldControlsMap[field])
+        //    {
+        //        var notify = inputField as INotifyValueChanged<T>;
+        //        if (notify != null)
+        //            notify.SetValueWithoutNotify((T)newValue);
+        //    }
+        //}
 
-        static MethodInfo specificUpdateOtherFieldValue = typeof(BaseNodeView).GetMethod(nameof(UpdateOtherFieldValueSpecific), BindingFlags.NonPublic | BindingFlags.Instance);
-        void UpdateOtherFieldValue(FieldInfo info, object newValue)
-        {
-            // Warning: Keep in sync with FieldFactory CreateField
-            var fieldType = info.FieldType.IsSubclassOf(typeof(UnityEngine.Object)) ? typeof(UnityEngine.Object) : info.FieldType;
-            var genericUpdate = specificUpdateOtherFieldValue.MakeGenericMethod(fieldType);
+        //static MethodInfo specificUpdateOtherFieldValue = typeof(BaseNodeView).GetMethod(nameof(UpdateOtherFieldValueSpecific), BindingFlags.NonPublic | BindingFlags.Instance);
+        //void UpdateOtherFieldValue(FieldInfo info, object newValue)
+        //{
+        //    // Warning: Keep in sync with FieldFactory CreateField
+        //    var fieldType = info.FieldType.IsSubclassOf(typeof(UnityEngine.Object)) ? typeof(UnityEngine.Object) : info.FieldType;
+        //    var genericUpdate = specificUpdateOtherFieldValue.MakeGenericMethod(fieldType);
 
-            genericUpdate.Invoke(this, new object[] { info, newValue });
-        }
+        //    genericUpdate.Invoke(this, new object[] { info, newValue });
+        //}
 
-        object GetInputFieldValueSpecific<T>(FieldInfo field)
-        {
-            if (fieldControlsMap.TryGetValue(field, out var list))
-            {
-                foreach (var inputField in list)
-                {
-                    if (inputField is INotifyValueChanged<T> notify)
-                        return notify.value;
-                }
-            }
-            return null;
-        }
+        //object GetInputFieldValueSpecific<T>(FieldInfo field)
+        //{
+        //    if (fieldControlsMap.TryGetValue(field, out var list))
+        //    {
+        //        foreach (var inputField in list)
+        //        {
+        //            if (inputField is INotifyValueChanged<T> notify)
+        //                return notify.value;
+        //        }
+        //    }
+        //    return null;
+        //}
 
-        static MethodInfo specificGetValue = typeof(BaseNodeView).GetMethod(nameof(GetInputFieldValueSpecific), BindingFlags.NonPublic | BindingFlags.Instance);
+        //static MethodInfo specificGetValue = typeof(BaseNodeView).GetMethod(nameof(GetInputFieldValueSpecific), BindingFlags.NonPublic | BindingFlags.Instance);
 
-        protected VisualElement CreateControlField(FieldInfo _fieldInfo, string _label = null, Action<object> valueChangedCallback = null)
+        //protected VisualElement AddControlField(FieldInfo _fieldInfo, string _label = null, Action valueChangedCallback = null)
+        //{
+        //    if (_fieldInfo == null)
+        //        return null;
+
+        //    var fieldDrawer = CreateControlField(_fieldInfo, _label, newValue =>
+        //    {
+        //        valueChangedCallback?.Invoke();
+        //        UpdateFieldVisibility(_fieldInfo.Name, newValue);
+        //        UpdateOtherFieldValue(_fieldInfo, newValue);
+        //    });
+
+        //    if (!fieldControlsMap.TryGetValue(_fieldInfo, out var inputFieldList))
+        //        inputFieldList = fieldControlsMap[_fieldInfo] = new List<VisualElement>();
+        //    inputFieldList.Add(fieldDrawer);
+
+        //    if (fieldDrawer != null)
+        //        controlsContainer.Add(fieldDrawer);
+
+        //    return fieldDrawer;
+        //}
+
+        protected VisualElement CreateControlField(FieldInfo _fieldInfo, string _label = null, Action<object> _valueChangedCallback = null)
         {
             if (_fieldInfo == null)
                 return null;
@@ -408,31 +436,9 @@ namespace CZToolKit.GraphProcessor.Editors
              {
                  Owner.RegisterCompleteObjectUndo("Updated " + newValue);
                  _fieldInfo.SetValue(NodeData, newValue);
-                 valueChangedCallback?.Invoke(newValue);
+                 _valueChangedCallback?.Invoke(newValue);
                  Owner.SetDirty();
              });
-
-            return fieldDrawer;
-        }
-
-        protected VisualElement AddControlField(FieldInfo _fieldInfo, string _label = null, Action valueChangedCallback = null)
-        {
-            if (_fieldInfo == null)
-                return null;
-
-            var fieldDrawer = CreateControlField(_fieldInfo, _label, newValue =>
-            {
-                valueChangedCallback?.Invoke();
-                UpdateFieldVisibility(_fieldInfo.Name, newValue);
-                UpdateOtherFieldValue(_fieldInfo, newValue);
-            });
-
-            if (!fieldControlsMap.TryGetValue(_fieldInfo, out var inputFieldList))
-                inputFieldList = fieldControlsMap[_fieldInfo] = new List<VisualElement>();
-            inputFieldList.Add(fieldDrawer);
-
-            if (fieldDrawer != null)
-                controlsContainer.Add(fieldDrawer);
 
             return fieldDrawer;
         }

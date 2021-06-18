@@ -1,20 +1,21 @@
 ﻿using CZToolKit.Core.Editors;
 using System;
+using System.Diagnostics;
 using UnityEngine;
 using UnityEditor;
 using UnityEngine.UIElements;
 using UnityEditor.Callbacks;
-using System.Diagnostics;
 using UnityEngine.Profiling;
 
 using UnityObject = UnityEngine.Object;
+using UnityEditor.UIElements;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
     [Serializable]
     public class BaseGraphWindow : BasicEditorWindow
     {
-        #region 静态
+        #region 静态方法
         [OnOpenAsset(0)]
         static bool OnGraphAssetOpened(int _instanceID, int _line)
         {
@@ -22,30 +23,39 @@ namespace CZToolKit.GraphProcessor.Editors
 
             if (graphAsset != null)
             {
-                OpenGraphAsset(graphAsset);
+                LoadGraphFromAsset(graphAsset);
                 return true;
             }
 
             return false;
         }
 
-        public static void Open(GraphAssetOwner _graphAssetOwner)
+        /// <summary> 从GraphOwner中加载 </summary>
+        /// <param name="_graphAssetOwner"></param>
+        /// <returns></returns>
+        public static BaseGraphWindow LoadGraphFromOwner(GraphAssetOwner _graphAssetOwner)
         {
             _graphAssetOwner.Graph.InitializePropertyMapping(_graphAssetOwner);
-            LoadGraph(_graphAssetOwner.Graph);
+            return LoadGraph(_graphAssetOwner.Graph);
         }
 
-        public static BaseGraphWindow OpenGraphAsset(IGraphAsset _graphAsset)
+        /// <summary> 从GraphAsset中加载 </summary>
+        /// <param name="_graphAsset"></param>
+        /// <returns></returns>
+        public static BaseGraphWindow LoadGraphFromAsset(IGraphAsset _graphAsset)
         {
             return LoadGraph(_graphAsset.Graph);
         }
 
+        /// <summary> 加载Graph </summary>
+        /// <param name="_graph"></param>
+        /// <returns></returns>
         public static BaseGraphWindow LoadGraph(IGraph _graph)
         {
             if (_graph == null) return null;
             Type windowType = NodeEditorUtility.GetGraphWindowType(_graph.GetType());
 
-            UnityEngine.Object[] objs = Resources.FindObjectsOfTypeAll(windowType);
+            UnityObject[] objs = Resources.FindObjectsOfTypeAll(windowType);
             BaseGraphWindow window = null;
             foreach (var obj in objs)
             {
@@ -71,6 +81,9 @@ namespace CZToolKit.GraphProcessor.Editors
             return window;
         }
 
+        /// <summary> 根据Graph获取已打开的Window </summary>
+        /// <param name="_graph"></param>
+        /// <returns></returns>
         public static BaseGraphWindow GetWindow(BaseGraph _graph)
         {
             Type type = NodeEditorUtility.GetGraphWindowType(_graph.GetType());
@@ -90,10 +103,13 @@ namespace CZToolKit.GraphProcessor.Editors
         }
         #endregion
 
+        #region 字段
         [SerializeField] int graphOwnerInstanceID;
         [SerializeField] IGraphOwner graphOwner;
         [SerializeField] UnityObject graphAsset;
+        #endregion
 
+        #region 属性
         public IGraphOwner GraphOwner
         {
             get { return graphOwner; }
@@ -102,20 +118,14 @@ namespace CZToolKit.GraphProcessor.Editors
         public UnityObject GraphAsset { get { return graphAsset; } private set { graphAsset = value; } }
         public IGraph Graph { get; private set; }
         public BaseGraphView GraphView { get; private set; }
-        public ToolbarView Toolbar { get; private set; }
-        public VisualElement GraphViewElement { get; private set; }
+        public GraphViewParentElement GraphViewParent { get; private set; }
         public CommandDispatcher CommandDispatcher { get; private set; }
+        #endregion
 
+        #region Unity
         protected virtual void OnEnable()
         {
             titleContent = new GUIContent("Default Graph");
-
-            GraphViewElement = new VisualElement();
-            GraphViewElement.name = "GraphView";
-            GraphViewElement.StretchToParentSize();
-            rootVisualElement.Add(GraphViewElement);
-
-            EditorApplication.playModeStateChanged += OnPlayModeChanged;
 
             CommandDispatcher = new CommandDispatcher(CreateGraphState());
             CommandDispatcherHelper.RegisterDefaultCommandHandlers(CommandDispatcher);
@@ -124,30 +134,20 @@ namespace CZToolKit.GraphProcessor.Editors
 
             if (GraphView == null && GraphAsset != null)
                 EditorApplication.delayCall += ReloadGraph;
+            EditorApplication.playModeStateChanged += OnPlayModeChanged;
         }
 
-        void OnPlayModeChanged(PlayModeStateChange obj)
+        protected virtual void OnDisable()
         {
-            switch (obj)
-            {
-                case PlayModeStateChange.EnteredEditMode:
-                case PlayModeStateChange.EnteredPlayMode:
-                    GraphOwner = EditorUtility.InstanceIDToObject(graphOwnerInstanceID) as GraphAssetOwner;
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        protected virtual void OnGUI()
-        {
-            if (Toolbar != null)
-                GUILayoutUtility.GetRect(Toolbar.style.width.value.value, Toolbar.style.height.value.value);
+            if (GraphView != null && GraphAsset != null && EditorUtility.IsDirty(GraphAsset))
+                GraphView.SaveGraphToDisk();
+            EditorApplication.playModeStateChanged -= OnPlayModeChanged;
         }
 
         protected override void Update()
         {
             base.Update();
+
             Profiler.BeginSample("CZToolKit.GraphProcessor");
             Stopwatch sw = new Stopwatch();
 
@@ -155,68 +155,6 @@ namespace CZToolKit.GraphProcessor.Editors
 
             sw.Stop();
             Profiler.EndSample();
-        }
-
-        protected virtual void OnDisable()
-        {
-            if (GraphView != null)
-                GraphView.SaveGraphToDisk();
-            EditorApplication.playModeStateChanged -= OnPlayModeChanged;
-        }
-
-        public virtual void Clear()
-        {
-            if (GraphView != null)
-                GraphView.RemoveFromHierarchy();
-            GraphView = null;
-
-            if (Toolbar != null)
-                Toolbar.RemoveFromHierarchy();
-            Toolbar = null;
-
-            GraphOwner = null;
-        }
-
-        protected virtual BaseGraphView CreateGraphView(IGraph _graph)
-        {
-            BaseGraphView graphView = new BaseGraphView(_graph, CommandDispatcher, this);
-            //graphView.Initialize(this, _graph);
-            return graphView;
-        }
-
-        void LoadGraphInternal(IGraph _graph)
-        {
-            if (GraphView != null)
-                GraphView.SaveGraphToDisk();
-            Clear();
-
-            Graph = _graph;
-            GraphAsset = (Graph as IGraphFromAsset)?.Asset;
-            if (GraphAsset == null) return;
-
-            Toolbar = new ToolbarView(this);
-            GraphView = CreateGraphView(Graph);
-            if (GraphView == null) return;
-
-            Toolbar.AddButton("Show In Project", () => EditorGUIUtility.PingObject(GraphView.GraphAsset), false);
-            Toolbar.AddButton("Save Assets", () => { GraphView.SaveGraphToDisk(); }, false);
-            Toolbar.AddButton("Reload", ReloadGraph, false);
-            rootVisualElement.Add(Toolbar);
-
-            GraphViewElement.Add(GraphView);
-            GraphViewElement.style.top = 20;
-            rootVisualElement.Add(GraphViewElement);
-        }
-
-        protected virtual void OnLoadedGraph() { }
-
-        void ReloadGraph()
-        {
-            IGraphOwner tempGraphOwner = GraphOwner;
-            LoadGraphInternal((GraphAsset as IGraphAsset).Graph);
-            GraphOwner = tempGraphOwner;
-            if (Graph != null && GraphOwner != null)
-                Graph.InitializePropertyMapping(GraphOwner);
         }
 
         protected virtual void OnDestroy()
@@ -228,8 +166,100 @@ namespace CZToolKit.GraphProcessor.Editors
                 Selection.activeObject = null;
             }
         }
+        #endregion
+
+        #region 回调
+        void OnPlayModeChanged(PlayModeStateChange _playMode)
+        {
+            switch (_playMode)
+            {
+                case PlayModeStateChange.EnteredEditMode:
+                case PlayModeStateChange.EnteredPlayMode:
+                    GraphOwner = EditorUtility.InstanceIDToObject(graphOwnerInstanceID) as GraphAssetOwner;
+                    break;
+                default:
+                    break;
+            }
+        }
+        #endregion
+
+        #region 帮助方法
+        public void Clear()
+        {
+            if (GraphViewParent != null)
+            {
+                GraphViewParent.RemoveFromHierarchy();
+                GraphViewParent = null;
+            }
+
+            GraphOwner = null;
+        }
+
+        void LoadGraphInternal(IGraph _graph)
+        {
+            if (GraphView != null && GraphAsset != null && EditorUtility.IsDirty(GraphAsset))
+                GraphView.SaveGraphToDisk();
+            Clear();
+
+            Graph = _graph;
+            GraphAsset = (Graph as IGraphFromAsset)?.Asset;
+            if (GraphAsset == null) return;
+
+            GraphViewParent = new GraphViewParentElement();
+            GraphViewParent.StretchToParentSize();
+            rootVisualElement.Add(GraphViewParent);
+
+            GraphView = CreateGraphView(Graph);
+            if (GraphView == null) return;
+
+            ToolbarButton btnPing = new ToolbarButton()
+            {
+                text = "Ping",
+                style = { alignSelf = Align.Center, width = 60, unityTextAlign = TextAnchor.MiddleCenter, color = Color.black }
+            };
+            btnPing.clicked += () => EditorGUIUtility.PingObject(GraphView.GraphAsset);
+            GraphViewParent.Toolbar.AddToRight(btnPing);
+
+            ToolbarButton btnSave = new ToolbarButton()
+            {
+                text = "Save",
+                style = { alignSelf = Align.Center, width = 60, unityTextAlign = TextAnchor.MiddleCenter, color = Color.black }
+            };
+            btnSave.clicked += () => GraphView.SaveGraphToDisk();
+            GraphViewParent.Toolbar.AddToRight(btnSave);
+
+            ToolbarButton btnReload = new ToolbarButton()
+            {
+                text = "Reload",
+                style = { alignSelf = Align.Center, width = 70, unityTextAlign = TextAnchor.MiddleCenter, color = Color.black }
+            };
+            btnReload.clicked += ReloadGraph;
+            GraphViewParent.Toolbar.AddToRight(btnReload);
+
+            GraphViewParent.SetUp(GraphView);
+
+            OnLoadedGraph();
+        }
+
+        void ReloadGraph()
+        {
+            IGraphOwner tempGraphOwner = GraphOwner;
+            LoadGraphInternal((GraphAsset as IGraphAsset).Graph);
+            GraphOwner = tempGraphOwner;
+            if (Graph != null && GraphOwner != null)
+                Graph.InitializePropertyMapping(GraphOwner);
+        }
+        #endregion
 
         #region Overrides
+        protected virtual BaseGraphView CreateGraphView(IGraph _graph)
+        {
+            BaseGraphView graphView = new BaseGraphView(_graph, CommandDispatcher, this);
+            return graphView;
+        }
+
+        protected virtual void OnLoadedGraph() { }
+
         protected virtual GraphState CreateGraphState()
         {
             return new GraphState();

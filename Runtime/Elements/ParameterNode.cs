@@ -9,7 +9,7 @@ namespace CZToolKit.GraphProcessor
     public class ParameterNode : BaseNode
     {
         [Port(PortDirection.Output)]
-        [DisplayName("Value")]
+        [InspectorName("Value")]
         [PortSize(12)]
         [Tooltip("接口无限制，参数提供")]
         [HideInInspector]

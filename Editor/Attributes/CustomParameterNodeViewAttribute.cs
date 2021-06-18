@@ -19,12 +19,11 @@ namespace CZToolKit.GraphProcessor.Editors
     {
         public Type targetType;
 
-        /// <summary> </summary>
+        /// <summary>  </summary>
         /// <param name="_targetType">参数的类型</param>
         public CustomParameterNodeViewAttribute(Type _targetType)
         {
             targetType = _targetType;
         }
     }
-
 }

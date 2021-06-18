@@ -25,12 +25,16 @@ namespace CZToolKit.GraphProcessor
     public abstract class BaseGraphAsset<GraphClass> : BaseGraphAsset, ISerializationCallbackReceiver
         where GraphClass : IGraph, IGraphFromAsset, new()
     {
+        #region 字段
         [HideInInspector]
         [SerializeField]
         GraphClass graph = new GraphClass();
+        #endregion
 
+        #region 属性
         public GraphClass TGraph { get { return graph; } }
         public override IGraph Graph { get { return graph; } }
+        #endregion
 
         public BaseGraphAsset() { }
 

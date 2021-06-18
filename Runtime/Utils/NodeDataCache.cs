@@ -9,9 +9,7 @@ namespace CZToolKit.GraphProcessor
     /// <summary> 节点端口数据缓存 </summary>
     public static class NodeDataCache
     {
-        private static Dictionary<Type, List<NodePort>> PortCache = null;
-
-        private static bool Initialized { get { return PortCache != null; } }
+        static Dictionary<Type, List<NodePort>> PortCache = null;
 
         private static void CachePorts(Type _nodeType)
         {
@@ -48,8 +46,7 @@ namespace CZToolKit.GraphProcessor
         /// <summary> 更新端口 </summary>
         public static void UpdateStaticPorts(BaseNode _node)
         {
-            if (!Initialized) BuildCache();
-            // Ports.Clear();
+            if (PortCache == null) BuildCache();
             Type nodeType = _node.GetType();
 
             Dictionary<string, NodePort> staticPorts = new Dictionary<string, NodePort>();
@@ -60,6 +57,7 @@ namespace CZToolKit.GraphProcessor
                     staticPorts[nodePort.FieldName] = nodePort;
                 }
             }
+
             // 清理端口，移除不存在的端口
             // 通过遍历当前节点的接口实现
             foreach (var port in _node.Ports.ToList())
@@ -104,25 +102,12 @@ namespace CZToolKit.GraphProcessor
             foreach (NodePort staticPort in staticPorts.Values)
             {
                 if (!_node.Ports.ContainsKey(staticPort.FieldName))
-                    _node.Ports[staticPort.FieldName] = new NodePort(staticPort, _node);
+                {
+                    NodePort port = new NodePort(staticPort, _node);
+                    port.OnCreated();
+                    _node.Ports[staticPort.FieldName] = port;
+                }
             }
         }
-
-        public static List<MethodInfo> GetNodeMethods(Type _nodeType)
-        {
-            List<MethodInfo> methodInfos =
-                new List<MethodInfo>(
-                    _nodeType.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance));
-
-            // 获取类包含的所有方法(包含私有)
-            Type tempType = _nodeType;
-            while ((tempType = tempType.BaseType) != typeof(BaseNode) && tempType != null)
-            {
-                methodInfos.AddRange(tempType.GetMethods(BindingFlags.NonPublic | BindingFlags.Instance));
-            }
-
-            return methodInfos;
-        }
-
     }
 }

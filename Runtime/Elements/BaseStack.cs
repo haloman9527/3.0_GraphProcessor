@@ -7,6 +7,15 @@ namespace CZToolKit.GraphProcessor
     [Serializable]
     public class BaseStack : IGraphElement
     {
+        public static BaseStack CreateStack(Vector2 _position, string _title = "Stack")
+        {
+            BaseStack stack = new BaseStack();
+            stack.title = _title;
+            stack.position = _position;
+            stack.guid = Guid.NewGuid().ToString();
+            return stack;
+        }
+
         [SerializeField]
         string guid;
         public Vector2 position;
@@ -15,15 +24,8 @@ namespace CZToolKit.GraphProcessor
 
         public string GUID { get { return guid; } }
 
-        public BaseStack(Vector2 position, string title = "Stack", bool acceptDrop = true, bool acceptNewNode = true)
-        {
-            this.position = position;
-            this.title = title;
-        }
+        protected BaseStack() { }
 
-        public void OnCreated()
-        {
-            guid = Guid.NewGuid().ToString();
-        }
+        public virtual void OnCreated() { }
     }
 }

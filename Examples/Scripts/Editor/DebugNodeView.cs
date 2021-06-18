@@ -7,6 +7,7 @@ using UnityEngine.UIElements;
 namespace CZToolKit.GraphProcessor.Editors
 {
     [CustomNodeView(typeof(DebugNode))]
+    [NodeTooltip("123123124123124123")]
     public class DebugNodeView : BaseNodeView
     {
         DebugNode debugNode;

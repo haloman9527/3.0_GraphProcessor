@@ -32,7 +32,7 @@ namespace CZToolKit.GraphProcessor.Editors
                 GraphAssetOwner owner = target as GraphAssetOwner;
                 owner.GraphAsset = EditorGUILayout.ObjectField(graphContent, (target as GraphAssetOwner).GraphAsset, owner.GraphAssetType, false) as BaseGraphAsset;
                 if (GUILayout.Button("Edit", GUILayout.Width(50)))
-                    BaseGraphWindow.Open(target as GraphAssetOwner);
+                    BaseGraphWindow.LoadGraphFromOwner(target as GraphAssetOwner);
                 EditorGUILayout.EndHorizontal();
             });
         }

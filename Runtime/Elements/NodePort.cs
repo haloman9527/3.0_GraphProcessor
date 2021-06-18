@@ -107,6 +107,8 @@ namespace CZToolKit.GraphProcessor
                 DisplayType = port.DisplayType;
         }
 
+        public virtual void OnCreated() { }
+
         public void Reload(NodePort port)
         {
             fieldName = port.fieldName;

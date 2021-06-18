@@ -242,36 +242,36 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 27da8701ff282eb4fb9fb7cbb56abea2, type: 3}
-  m_Name: 
+  m_Name: sadf
   m_EditorClassIdentifier: 
   graph:
-    position: {x: -70, y: 235, z: 0}
-    scale: {x: 1, y: 1, z: 1}
+    position: {x: 330, y: 274, z: 0}
+    scale: {x: 0.8695652, y: 0.8695652, z: 1}
     blackboardVisible: 1
     blackboardPosition:
       serializedVersion: 2
-      x: 0
-      y: 0
+      x: 30
+      y: 10
       width: 213
       height: 263
     groups: []
   serializedGraph: "{\r\n    \"$id\": 0,\r\n    \"$type\": \"0|CZToolKit.GraphProcessor.Examples.MathGraph,
     Assembly-CSharp\",\r\n    \"position\": {\r\n        \"$type\": \"1|UnityEngine.Vector3,
-    UnityEngine.CoreModule\",\r\n        -70,\r\n        235,\r\n        0\r\n   
-    },\r\n    \"scale\": {\r\n        \"$type\": 1,\r\n        1,\r\n        1,\r\n       
-    1\r\n    },\r\n    \"blackboardVisible\": true,\r\n    \"blackboardPosition\":
-    {\r\n        \"$type\": \"2|UnityEngine.Rect, UnityEngine.CoreModule\",\r\n       
-    0,\r\n        0,\r\n        213,\r\n        263\r\n    },\r\n    \"nodes\": {\r\n       
-    \"$id\": 1,\r\n        \"$type\": \"3|System.Collections.Generic.Dictionary`2[[System.String,
+    UnityEngine.CoreModule\",\r\n        330,\r\n        274,\r\n        0\r\n   
+    },\r\n    \"scale\": {\r\n        \"$type\": 1,\r\n        0.8695652,\r\n       
+    0.8695652,\r\n        1\r\n    },\r\n    \"blackboardVisible\": true,\r\n   
+    \"blackboardPosition\": {\r\n        \"$type\": \"2|UnityEngine.Rect, UnityEngine.CoreModule\",\r\n       
+    30,\r\n        10,\r\n        213,\r\n        263\r\n    },\r\n    \"nodes\":
+    {\r\n        \"$id\": 1,\r\n        \"$type\": \"3|System.Collections.Generic.Dictionary`2[[System.String,
     mscorlib],[CZToolKit.GraphProcessor.BaseNode, Assembly-CSharp]], mscorlib\",\r\n       
     \"comparer\": {\r\n            \"$id\": 2,\r\n            \"$type\": \"4|System.Collections.Generic.GenericEqualityComparer`1[[System.String,
-    mscorlib]], mscorlib\"\r\n        },\r\n        \"$rlength\": 3,\r\n        \"$rcontent\":
+    mscorlib]], mscorlib\"\r\n        },\r\n        \"$rlength\": 9,\r\n        \"$rcontent\":
     [\r\n            {\r\n                \"$k\": \"c842deca-8b7c-4f9f-8ac7-3239d6435be8\",\r\n               
     \"$v\": {\r\n                    \"$id\": 3,\r\n                    \"$type\":
     \"5|CZToolKit.GraphProcessor.DebugNode, Assembly-CSharp\",\r\n                   
     \"guid\": \"c842deca-8b7c-4f9f-8ac7-3239d6435be8\",\r\n                    \"position\":
-    {\r\n                        \"$type\": 2,\r\n                        594,\r\n                       
-    44,\r\n                        109,\r\n                        90\r\n                   
+    {\r\n                        \"$type\": 2,\r\n                        601,\r\n                       
+    37,\r\n                        109,\r\n                        90\r\n                   
     },\r\n                    \"expanded\": true,\r\n                    \"locked\":
     false,\r\n                    \"ports\": {\r\n                        \"$id\":
     4,\r\n                        \"$type\": \"6|System.Collections.Generic.Dictionary`2[[System.String,
@@ -299,114 +299,300 @@ MonoBehaviour:
     \"$v\": {\r\n                    \"$id\": 8,\r\n                    \"$type\":
     \"10|CZToolKit.GraphProcessor.AddNode, Assembly-CSharp\",\r\n                   
     \"guid\": \"8a74af53-7cca-4728-888c-675c700ef5d2\",\r\n                    \"position\":
-    {\r\n                        \"$type\": 2,\r\n                        440,\r\n                       
-    44,\r\n                        119,\r\n                        101\r\n                   
-    },\r\n                    \"expanded\": true,\r\n                    \"locked\":
-    false,\r\n                    \"ports\": {\r\n                        \"$id\":
-    9,\r\n                        \"$type\": 6,\r\n                        \"comparer\":
-    {\r\n                            \"$id\": 10,\r\n                           
+    {\r\n                        \"$type\": 2,\r\n                        422.85,\r\n                       
+    34.7499847,\r\n                        143.000015,\r\n                       
+    77.0000153\r\n                    },\r\n                    \"expanded\": true,\r\n                   
+    \"locked\": false,\r\n                    \"ports\": {\r\n                       
+    \"$id\": 9,\r\n                        \"$type\": 6,\r\n                       
+    \"comparer\": {\r\n                            \"$id\": 10,\r\n                           
     \"$type\": 4\r\n                        },\r\n                        \"$rlength\":
-    3,\r\n                        \"$rcontent\": [\r\n                           
-    {\r\n                                \"$k\": \"a\",\r\n                               
+    2,\r\n                        \"$rcontent\": [\r\n                           
+    {\r\n                                \"$k\": \"input\",\r\n                               
     \"$v\": {\r\n                                    \"$id\": 11,\r\n                                   
     \"$type\": 7,\r\n                                    \"ownerGUID\": \"8a74af53-7cca-4728-888c-675c700ef5d2\",\r\n                                   
-    \"fieldName\": \"a\",\r\n                                    \"typeQualifiedName\":
+    \"fieldName\": \"input\",\r\n                                    \"typeQualifiedName\":
     \"System.Single, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089\",\r\n                                   
     \"dataType\": {\r\n                                        \"$id\": 12,\r\n                                       
     \"$type\": 8,\r\n                                        \"System.Single, mscorlib\"\r\n                                   
-    },\r\n                                    \"isMulti\": false,\r\n                                   
+    },\r\n                                    \"isMulti\": true,\r\n                                   
     \"direction\": 0,\r\n                                    \"typeConstraint\":
     1,\r\n                                    \"edgeGUIDs\": {\r\n                                       
     \"$id\": 13,\r\n                                        \"$type\": 9,\r\n                                       
-    \"$rlength\": 1,\r\n                                        \"$rcontent\": [\r\n                                           
-    \"524feeb5-4fc5-4f70-8db6-3995e0085fb1\"\r\n                                       
-    ]\r\n                                    }\r\n                               
-    }\r\n                            },\r\n                            {\r\n                               
-    \"$k\": \"b\",\r\n                                \"$v\": {\r\n                                   
-    \"$id\": 14,\r\n                                    \"$type\": 7,\r\n                                   
-    \"ownerGUID\": \"8a74af53-7cca-4728-888c-675c700ef5d2\",\r\n                                   
-    \"fieldName\": \"b\",\r\n                                    \"typeQualifiedName\":
-    \"System.Single, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089\",\r\n                                   
-    \"dataType\": $iref:12,\r\n                                    \"isMulti\": false,\r\n                                   
-    \"direction\": 0,\r\n                                    \"typeConstraint\":
-    1,\r\n                                    \"edgeGUIDs\": {\r\n                                       
-    \"$id\": 15,\r\n                                        \"$type\": 9,\r\n                                       
-    \"$rlength\": 0,\r\n                                        \"$rcontent\": [\r\n                                       
+    \"$rlength\": 7,\r\n                                        \"$rcontent\": [\r\n                                           
+    \"ccd18a11-2bf0-403c-bf9a-0a0f05e90e5e\",\r\n                                           
+    \"4dfc0cbc-2dd9-4163-8b12-3b07ceb020e0\",\r\n                                           
+    \"e335ef5b-04fa-46ba-be6c-f53e4527aea4\",\r\n                                           
+    \"8954f6f4-9eba-46d4-a9a5-945c44067ff1\",\r\n                                           
+    \"eaaf2a78-7c8e-4b7d-b6ef-b9be1ec70326\",\r\n                                           
+    \"94058ca1-4e76-4c55-b351-ce818096b07e\",\r\n                                           
+    \"892ba9a7-24f9-4e2c-bcbc-9a4c3b914b5b\"\r\n                                       
     ]\r\n                                    }\r\n                               
     }\r\n                            },\r\n                            {\r\n                               
     \"$k\": \"output\",\r\n                                \"$v\": {\r\n                                   
-    \"$id\": 16,\r\n                                    \"$type\": 7,\r\n                                   
+    \"$id\": 14,\r\n                                    \"$type\": 7,\r\n                                   
     \"ownerGUID\": \"8a74af53-7cca-4728-888c-675c700ef5d2\",\r\n                                   
     \"fieldName\": \"output\",\r\n                                    \"typeQualifiedName\":
     \"System.Single, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089\",\r\n                                   
     \"dataType\": $iref:12,\r\n                                    \"isMulti\": true,\r\n                                   
     \"direction\": 1,\r\n                                    \"typeConstraint\":
     1,\r\n                                    \"edgeGUIDs\": {\r\n                                       
-    \"$id\": 17,\r\n                                        \"$type\": 9,\r\n                                       
+    \"$id\": 15,\r\n                                        \"$type\": 9,\r\n                                       
     \"$rlength\": 1,\r\n                                        \"$rcontent\": [\r\n                                           
     \"a6736e52-1b72-4b92-83c1-ea58f6d838ee\"\r\n                                       
     ]\r\n                                    }\r\n                               
     }\r\n                            }\r\n                        ]\r\n                   
-    },\r\n                    \"a\": 0,\r\n                    \"b\": 2\r\n               
+    },\r\n                    \"input\": 0,\r\n                    \"output\": 0\r\n               
     }\r\n            },\r\n            {\r\n                \"$k\": \"9baa58cd-fd7a-490a-ba7a-9415d827a5b4\",\r\n               
-    \"$v\": {\r\n                    \"$id\": 18,\r\n                    \"$type\":
+    \"$v\": {\r\n                    \"$id\": 16,\r\n                    \"$type\":
     \"11|CZToolKit.GraphProcessor.ParameterNode, Assembly-CSharp\",\r\n                   
     \"guid\": \"9baa58cd-fd7a-490a-ba7a-9415d827a5b4\",\r\n                    \"position\":
-    {\r\n                        \"$type\": 2,\r\n                        280,\r\n                       
-    87,\r\n                        116,\r\n                        27\r\n                   
+    {\r\n                        \"$type\": 2,\r\n                        167,\r\n                       
+    -48,\r\n                        116,\r\n                        27\r\n                   
     },\r\n                    \"expanded\": true,\r\n                    \"locked\":
     false,\r\n                    \"ports\": {\r\n                        \"$id\":
-    19,\r\n                        \"$type\": 6,\r\n                        \"comparer\":
-    {\r\n                            \"$id\": 20,\r\n                           
+    17,\r\n                        \"$type\": 6,\r\n                        \"comparer\":
+    {\r\n                            \"$id\": 18,\r\n                           
     \"$type\": 4\r\n                        },\r\n                        \"$rlength\":
     1,\r\n                        \"$rcontent\": [\r\n                           
     {\r\n                                \"$k\": \"output\",\r\n                               
-    \"$v\": {\r\n                                    \"$id\": 21,\r\n                                   
+    \"$v\": {\r\n                                    \"$id\": 19,\r\n                                   
     \"$type\": 7,\r\n                                    \"ownerGUID\": \"9baa58cd-fd7a-490a-ba7a-9415d827a5b4\",\r\n                                   
     \"fieldName\": \"output\",\r\n                                    \"typeQualifiedName\":
     \"System.Single, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089\",\r\n                                   
     \"dataType\": $iref:12,\r\n                                    \"isMulti\": true,\r\n                                   
     \"direction\": 1,\r\n                                    \"typeConstraint\":
     1,\r\n                                    \"edgeGUIDs\": {\r\n                                       
-    \"$id\": 22,\r\n                                        \"$type\": 9,\r\n                                       
+    \"$id\": 20,\r\n                                        \"$type\": 9,\r\n                                       
     \"$rlength\": 1,\r\n                                        \"$rcontent\": [\r\n                                           
-    \"524feeb5-4fc5-4f70-8db6-3995e0085fb1\"\r\n                                       
+    \"ccd18a11-2bf0-403c-bf9a-0a0f05e90e5e\"\r\n                                       
+    ]\r\n                                    }\r\n                               
+    }\r\n                            }\r\n                        ]\r\n                   
+    },\r\n                    \"output\": null,\r\n                    \"name\":
+    \"float num\"\r\n                }\r\n            },\r\n            {\r\n               
+    \"$k\": \"c1c30ccf-1e6a-44e8-95e4-e82ffcad166c\",\r\n                \"$v\":
+    {\r\n                    \"$id\": 21,\r\n                    \"$type\": 11,\r\n                   
+    \"guid\": \"c1c30ccf-1e6a-44e8-95e4-e82ffcad166c\",\r\n                    \"position\":
+    {\r\n                        \"$type\": 2,\r\n                        130,\r\n                       
+    13,\r\n                        116,\r\n                        27\r\n                   
+    },\r\n                    \"expanded\": true,\r\n                    \"locked\":
+    false,\r\n                    \"ports\": {\r\n                        \"$id\":
+    22,\r\n                        \"$type\": 6,\r\n                        \"comparer\":
+    {\r\n                            \"$id\": 23,\r\n                           
+    \"$type\": 4\r\n                        },\r\n                        \"$rlength\":
+    1,\r\n                        \"$rcontent\": [\r\n                           
+    {\r\n                                \"$k\": \"output\",\r\n                               
+    \"$v\": {\r\n                                    \"$id\": 24,\r\n                                   
+    \"$type\": 7,\r\n                                    \"ownerGUID\": \"c1c30ccf-1e6a-44e8-95e4-e82ffcad166c\",\r\n                                   
+    \"fieldName\": \"output\",\r\n                                    \"typeQualifiedName\":
+    \"System.Single, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089\",\r\n                                   
+    \"dataType\": $iref:12,\r\n                                    \"isMulti\": true,\r\n                                   
+    \"direction\": 1,\r\n                                    \"typeConstraint\":
+    1,\r\n                                    \"edgeGUIDs\": {\r\n                                       
+    \"$id\": 25,\r\n                                        \"$type\": 9,\r\n                                       
+    \"$rlength\": 1,\r\n                                        \"$rcontent\": [\r\n                                           
+    \"4dfc0cbc-2dd9-4163-8b12-3b07ceb020e0\"\r\n                                       
+    ]\r\n                                    }\r\n                               
+    }\r\n                            }\r\n                        ]\r\n                   
+    },\r\n                    \"output\": null,\r\n                    \"name\":
+    \"float num\"\r\n                }\r\n            },\r\n            {\r\n               
+    \"$k\": \"c2b659c2-042f-4123-aeda-3bd74658819c\",\r\n                \"$v\":
+    {\r\n                    \"$id\": 26,\r\n                    \"$type\": 11,\r\n                   
+    \"guid\": \"c2b659c2-042f-4123-aeda-3bd74658819c\",\r\n                    \"position\":
+    {\r\n                        \"$type\": 2,\r\n                        89,\r\n                       
+    69,\r\n                        116,\r\n                        27\r\n                   
+    },\r\n                    \"expanded\": true,\r\n                    \"locked\":
+    false,\r\n                    \"ports\": {\r\n                        \"$id\":
+    27,\r\n                        \"$type\": 6,\r\n                        \"comparer\":
+    {\r\n                            \"$id\": 28,\r\n                           
+    \"$type\": 4\r\n                        },\r\n                        \"$rlength\":
+    1,\r\n                        \"$rcontent\": [\r\n                           
+    {\r\n                                \"$k\": \"output\",\r\n                               
+    \"$v\": {\r\n                                    \"$id\": 29,\r\n                                   
+    \"$type\": 7,\r\n                                    \"ownerGUID\": \"c2b659c2-042f-4123-aeda-3bd74658819c\",\r\n                                   
+    \"fieldName\": \"output\",\r\n                                    \"typeQualifiedName\":
+    \"System.Single, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089\",\r\n                                   
+    \"dataType\": $iref:12,\r\n                                    \"isMulti\": true,\r\n                                   
+    \"direction\": 1,\r\n                                    \"typeConstraint\":
+    1,\r\n                                    \"edgeGUIDs\": {\r\n                                       
+    \"$id\": 30,\r\n                                        \"$type\": 9,\r\n                                       
+    \"$rlength\": 1,\r\n                                        \"$rcontent\": [\r\n                                           
+    \"e335ef5b-04fa-46ba-be6c-f53e4527aea4\"\r\n                                       
+    ]\r\n                                    }\r\n                               
+    }\r\n                            }\r\n                        ]\r\n                   
+    },\r\n                    \"output\": null,\r\n                    \"name\":
+    \"float num\"\r\n                }\r\n            },\r\n            {\r\n               
+    \"$k\": \"ff046d65-3d64-47c2-877e-bb259b27192c\",\r\n                \"$v\":
+    {\r\n                    \"$id\": 31,\r\n                    \"$type\": 11,\r\n                   
+    \"guid\": \"ff046d65-3d64-47c2-877e-bb259b27192c\",\r\n                    \"position\":
+    {\r\n                        \"$type\": 2,\r\n                        66,\r\n                       
+    133,\r\n                        116,\r\n                        27\r\n                   
+    },\r\n                    \"expanded\": true,\r\n                    \"locked\":
+    false,\r\n                    \"ports\": {\r\n                        \"$id\":
+    32,\r\n                        \"$type\": 6,\r\n                        \"comparer\":
+    {\r\n                            \"$id\": 33,\r\n                           
+    \"$type\": 4\r\n                        },\r\n                        \"$rlength\":
+    1,\r\n                        \"$rcontent\": [\r\n                           
+    {\r\n                                \"$k\": \"output\",\r\n                               
+    \"$v\": {\r\n                                    \"$id\": 34,\r\n                                   
+    \"$type\": 7,\r\n                                    \"ownerGUID\": \"ff046d65-3d64-47c2-877e-bb259b27192c\",\r\n                                   
+    \"fieldName\": \"output\",\r\n                                    \"typeQualifiedName\":
+    \"System.Single, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089\",\r\n                                   
+    \"dataType\": $iref:12,\r\n                                    \"isMulti\": true,\r\n                                   
+    \"direction\": 1,\r\n                                    \"typeConstraint\":
+    1,\r\n                                    \"edgeGUIDs\": {\r\n                                       
+    \"$id\": 35,\r\n                                        \"$type\": 9,\r\n                                       
+    \"$rlength\": 1,\r\n                                        \"$rcontent\": [\r\n                                           
+    \"8954f6f4-9eba-46d4-a9a5-945c44067ff1\"\r\n                                       
+    ]\r\n                                    }\r\n                               
+    }\r\n                            }\r\n                        ]\r\n                   
+    },\r\n                    \"output\": null,\r\n                    \"name\":
+    \"float num\"\r\n                }\r\n            },\r\n            {\r\n               
+    \"$k\": \"dc1f6369-fe7c-4e5a-9093-f40a0c280393\",\r\n                \"$v\":
+    {\r\n                    \"$id\": 36,\r\n                    \"$type\": 11,\r\n                   
+    \"guid\": \"dc1f6369-fe7c-4e5a-9093-f40a0c280393\",\r\n                    \"position\":
+    {\r\n                        \"$type\": 2,\r\n                        102.86956,\r\n                       
+    177.043442,\r\n                        116,\r\n                        27\r\n                   
+    },\r\n                    \"expanded\": true,\r\n                    \"locked\":
+    false,\r\n                    \"ports\": {\r\n                        \"$id\":
+    37,\r\n                        \"$type\": 6,\r\n                        \"comparer\":
+    {\r\n                            \"$id\": 38,\r\n                           
+    \"$type\": 4\r\n                        },\r\n                        \"$rlength\":
+    1,\r\n                        \"$rcontent\": [\r\n                           
+    {\r\n                                \"$k\": \"output\",\r\n                               
+    \"$v\": {\r\n                                    \"$id\": 39,\r\n                                   
+    \"$type\": 7,\r\n                                    \"ownerGUID\": \"dc1f6369-fe7c-4e5a-9093-f40a0c280393\",\r\n                                   
+    \"fieldName\": \"output\",\r\n                                    \"typeQualifiedName\":
+    \"System.Single, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089\",\r\n                                   
+    \"dataType\": $iref:12,\r\n                                    \"isMulti\": true,\r\n                                   
+    \"direction\": 1,\r\n                                    \"typeConstraint\":
+    1,\r\n                                    \"edgeGUIDs\": {\r\n                                       
+    \"$id\": 40,\r\n                                        \"$type\": 9,\r\n                                       
+    \"$rlength\": 1,\r\n                                        \"$rcontent\": [\r\n                                           
+    \"eaaf2a78-7c8e-4b7d-b6ef-b9be1ec70326\"\r\n                                       
+    ]\r\n                                    }\r\n                               
+    }\r\n                            }\r\n                        ]\r\n                   
+    },\r\n                    \"output\": null,\r\n                    \"name\":
+    \"float num\"\r\n                }\r\n            },\r\n            {\r\n               
+    \"$k\": \"220887d7-ba4d-4ec6-bb3c-16a6b9762e72\",\r\n                \"$v\":
+    {\r\n                    \"$id\": 41,\r\n                    \"$type\": 11,\r\n                   
+    \"guid\": \"220887d7-ba4d-4ec6-bb3c-16a6b9762e72\",\r\n                    \"position\":
+    {\r\n                        \"$type\": 2,\r\n                        123,\r\n                       
+    248,\r\n                        116,\r\n                        27\r\n                   
+    },\r\n                    \"expanded\": true,\r\n                    \"locked\":
+    false,\r\n                    \"ports\": {\r\n                        \"$id\":
+    42,\r\n                        \"$type\": 6,\r\n                        \"comparer\":
+    {\r\n                            \"$id\": 43,\r\n                           
+    \"$type\": 4\r\n                        },\r\n                        \"$rlength\":
+    1,\r\n                        \"$rcontent\": [\r\n                           
+    {\r\n                                \"$k\": \"output\",\r\n                               
+    \"$v\": {\r\n                                    \"$id\": 44,\r\n                                   
+    \"$type\": 7,\r\n                                    \"ownerGUID\": \"220887d7-ba4d-4ec6-bb3c-16a6b9762e72\",\r\n                                   
+    \"fieldName\": \"output\",\r\n                                    \"typeQualifiedName\":
+    \"System.Single, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089\",\r\n                                   
+    \"dataType\": $iref:12,\r\n                                    \"isMulti\": true,\r\n                                   
+    \"direction\": 1,\r\n                                    \"typeConstraint\":
+    1,\r\n                                    \"edgeGUIDs\": {\r\n                                       
+    \"$id\": 45,\r\n                                        \"$type\": 9,\r\n                                       
+    \"$rlength\": 1,\r\n                                        \"$rcontent\": [\r\n                                           
+    \"94058ca1-4e76-4c55-b351-ce818096b07e\"\r\n                                       
+    ]\r\n                                    }\r\n                               
+    }\r\n                            }\r\n                        ]\r\n                   
+    },\r\n                    \"output\": null,\r\n                    \"name\":
+    \"float num\"\r\n                }\r\n            },\r\n            {\r\n               
+    \"$k\": \"b3b10df4-4f7b-4f3a-bf45-f8851e7d2204\",\r\n                \"$v\":
+    {\r\n                    \"$id\": 46,\r\n                    \"$type\": 11,\r\n                   
+    \"guid\": \"b3b10df4-4f7b-4f3a-bf45-f8851e7d2204\",\r\n                    \"position\":
+    {\r\n                        \"$type\": 2,\r\n                        194,\r\n                       
+    296,\r\n                        116,\r\n                        27\r\n                   
+    },\r\n                    \"expanded\": true,\r\n                    \"locked\":
+    false,\r\n                    \"ports\": {\r\n                        \"$id\":
+    47,\r\n                        \"$type\": 6,\r\n                        \"comparer\":
+    {\r\n                            \"$id\": 48,\r\n                           
+    \"$type\": 4\r\n                        },\r\n                        \"$rlength\":
+    1,\r\n                        \"$rcontent\": [\r\n                           
+    {\r\n                                \"$k\": \"output\",\r\n                               
+    \"$v\": {\r\n                                    \"$id\": 49,\r\n                                   
+    \"$type\": 7,\r\n                                    \"ownerGUID\": \"b3b10df4-4f7b-4f3a-bf45-f8851e7d2204\",\r\n                                   
+    \"fieldName\": \"output\",\r\n                                    \"typeQualifiedName\":
+    \"System.Single, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089\",\r\n                                   
+    \"dataType\": $iref:12,\r\n                                    \"isMulti\": true,\r\n                                   
+    \"direction\": 1,\r\n                                    \"typeConstraint\":
+    1,\r\n                                    \"edgeGUIDs\": {\r\n                                       
+    \"$id\": 50,\r\n                                        \"$type\": 9,\r\n                                       
+    \"$rlength\": 1,\r\n                                        \"$rcontent\": [\r\n                                           
+    \"892ba9a7-24f9-4e2c-bcbc-9a4c3b914b5b\"\r\n                                       
     ]\r\n                                    }\r\n                               
     }\r\n                            }\r\n                        ]\r\n                   
     },\r\n                    \"output\": null,\r\n                    \"name\":
     \"float num\"\r\n                }\r\n            }\r\n        ]\r\n    },\r\n   
-    \"edges\": {\r\n        \"$id\": 23,\r\n        \"$type\": \"12|System.Collections.Generic.Dictionary`2[[System.String,
+    \"edges\": {\r\n        \"$id\": 51,\r\n        \"$type\": \"12|System.Collections.Generic.Dictionary`2[[System.String,
     mscorlib],[CZToolKit.GraphProcessor.SerializableEdge, Assembly-CSharp]], mscorlib\",\r\n       
-    \"comparer\": $iref:2,\r\n        \"$rlength\": 2,\r\n        \"$rcontent\":
-    [\r\n            {\r\n                \"$k\": \"524feeb5-4fc5-4f70-8db6-3995e0085fb1\",\r\n               
-    \"$v\": {\r\n                    \"$id\": 24,\r\n                    \"$type\":
+    \"comparer\": $iref:2,\r\n        \"$rlength\": 8,\r\n        \"$rcontent\":
+    [\r\n            {\r\n                \"$k\": \"ccd18a11-2bf0-403c-bf9a-0a0f05e90e5e\",\r\n               
+    \"$v\": {\r\n                    \"$id\": 52,\r\n                    \"$type\":
     \"13|CZToolKit.GraphProcessor.SerializableEdge, Assembly-CSharp\",\r\n                   
-    \"guid\": \"524feeb5-4fc5-4f70-8db6-3995e0085fb1\",\r\n                    \"inputNodeGUID\":
+    \"guid\": \"ccd18a11-2bf0-403c-bf9a-0a0f05e90e5e\",\r\n                    \"inputNodeGUID\":
     \"8a74af53-7cca-4728-888c-675c700ef5d2\",\r\n                    \"inputFieldName\":
-    \"a\",\r\n                    \"outputNodeGUID\": \"9baa58cd-fd7a-490a-ba7a-9415d827a5b4\",\r\n                   
+    \"input\",\r\n                    \"outputNodeGUID\": \"9baa58cd-fd7a-490a-ba7a-9415d827a5b4\",\r\n                   
     \"outputFieldName\": \"output\"\r\n                }\r\n            },\r\n           
     {\r\n                \"$k\": \"a6736e52-1b72-4b92-83c1-ea58f6d838ee\",\r\n               
-    \"$v\": {\r\n                    \"$id\": 25,\r\n                    \"$type\":
+    \"$v\": {\r\n                    \"$id\": 53,\r\n                    \"$type\":
     13,\r\n                    \"guid\": \"a6736e52-1b72-4b92-83c1-ea58f6d838ee\",\r\n                   
     \"inputNodeGUID\": \"c842deca-8b7c-4f9f-8ac7-3239d6435be8\",\r\n                   
     \"inputFieldName\": \"input\",\r\n                    \"outputNodeGUID\": \"8a74af53-7cca-4728-888c-675c700ef5d2\",\r\n                   
+    \"outputFieldName\": \"output\"\r\n                }\r\n            },\r\n           
+    {\r\n                \"$k\": \"4dfc0cbc-2dd9-4163-8b12-3b07ceb020e0\",\r\n               
+    \"$v\": {\r\n                    \"$id\": 54,\r\n                    \"$type\":
+    13,\r\n                    \"guid\": \"4dfc0cbc-2dd9-4163-8b12-3b07ceb020e0\",\r\n                   
+    \"inputNodeGUID\": \"8a74af53-7cca-4728-888c-675c700ef5d2\",\r\n                   
+    \"inputFieldName\": \"input\",\r\n                    \"outputNodeGUID\": \"c1c30ccf-1e6a-44e8-95e4-e82ffcad166c\",\r\n                   
+    \"outputFieldName\": \"output\"\r\n                }\r\n            },\r\n           
+    {\r\n                \"$k\": \"e335ef5b-04fa-46ba-be6c-f53e4527aea4\",\r\n               
+    \"$v\": {\r\n                    \"$id\": 55,\r\n                    \"$type\":
+    13,\r\n                    \"guid\": \"e335ef5b-04fa-46ba-be6c-f53e4527aea4\",\r\n                   
+    \"inputNodeGUID\": \"8a74af53-7cca-4728-888c-675c700ef5d2\",\r\n                   
+    \"inputFieldName\": \"input\",\r\n                    \"outputNodeGUID\": \"c2b659c2-042f-4123-aeda-3bd74658819c\",\r\n                   
+    \"outputFieldName\": \"output\"\r\n                }\r\n            },\r\n           
+    {\r\n                \"$k\": \"8954f6f4-9eba-46d4-a9a5-945c44067ff1\",\r\n               
+    \"$v\": {\r\n                    \"$id\": 56,\r\n                    \"$type\":
+    13,\r\n                    \"guid\": \"8954f6f4-9eba-46d4-a9a5-945c44067ff1\",\r\n                   
+    \"inputNodeGUID\": \"8a74af53-7cca-4728-888c-675c700ef5d2\",\r\n                   
+    \"inputFieldName\": \"input\",\r\n                    \"outputNodeGUID\": \"ff046d65-3d64-47c2-877e-bb259b27192c\",\r\n                   
+    \"outputFieldName\": \"output\"\r\n                }\r\n            },\r\n           
+    {\r\n                \"$k\": \"eaaf2a78-7c8e-4b7d-b6ef-b9be1ec70326\",\r\n               
+    \"$v\": {\r\n                    \"$id\": 57,\r\n                    \"$type\":
+    13,\r\n                    \"guid\": \"eaaf2a78-7c8e-4b7d-b6ef-b9be1ec70326\",\r\n                   
+    \"inputNodeGUID\": \"8a74af53-7cca-4728-888c-675c700ef5d2\",\r\n                   
+    \"inputFieldName\": \"input\",\r\n                    \"outputNodeGUID\": \"dc1f6369-fe7c-4e5a-9093-f40a0c280393\",\r\n                   
+    \"outputFieldName\": \"output\"\r\n                }\r\n            },\r\n           
+    {\r\n                \"$k\": \"94058ca1-4e76-4c55-b351-ce818096b07e\",\r\n               
+    \"$v\": {\r\n                    \"$id\": 58,\r\n                    \"$type\":
+    13,\r\n                    \"guid\": \"94058ca1-4e76-4c55-b351-ce818096b07e\",\r\n                   
+    \"inputNodeGUID\": \"8a74af53-7cca-4728-888c-675c700ef5d2\",\r\n                   
+    \"inputFieldName\": \"input\",\r\n                    \"outputNodeGUID\": \"220887d7-ba4d-4ec6-bb3c-16a6b9762e72\",\r\n                   
+    \"outputFieldName\": \"output\"\r\n                }\r\n            },\r\n           
+    {\r\n                \"$k\": \"892ba9a7-24f9-4e2c-bcbc-9a4c3b914b5b\",\r\n               
+    \"$v\": {\r\n                    \"$id\": 59,\r\n                    \"$type\":
+    13,\r\n                    \"guid\": \"892ba9a7-24f9-4e2c-bcbc-9a4c3b914b5b\",\r\n                   
+    \"inputNodeGUID\": \"8a74af53-7cca-4728-888c-675c700ef5d2\",\r\n                   
+    \"inputFieldName\": \"input\",\r\n                    \"outputNodeGUID\": \"b3b10df4-4f7b-4f3a-bf45-f8851e7d2204\",\r\n                   
     \"outputFieldName\": \"output\"\r\n                }\r\n            }\r\n       
-    ]\r\n    },\r\n    \"stacks\": {\r\n        \"$id\": 26,\r\n        \"$type\":
+    ]\r\n    },\r\n    \"stacks\": {\r\n        \"$id\": 60,\r\n        \"$type\":
     \"14|System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[CZToolKit.GraphProcessor.BaseStack,
     Assembly-CSharp]], mscorlib\",\r\n        \"comparer\": $iref:2,\r\n        \"$rlength\":
     0,\r\n        \"$rcontent\": [\r\n        ]\r\n    },\r\n    \"groups\": {\r\n       
-    \"$id\": 27,\r\n        \"$type\": \"15|System.Collections.Generic.List`1[[CZToolKit.GraphProcessor.BaseGroup,
+    \"$id\": 61,\r\n        \"$type\": \"15|System.Collections.Generic.List`1[[CZToolKit.GraphProcessor.BaseGroup,
     Assembly-CSharp]], mscorlib\",\r\n        \"$rlength\": 0,\r\n        \"$rcontent\":
-    [\r\n        ]\r\n    },\r\n    \"blackboard\": {\r\n        \"$id\": 28,\r\n       
+    [\r\n        ]\r\n    },\r\n    \"blackboard\": {\r\n        \"$id\": 62,\r\n       
     \"$type\": \"16|CZToolKit.Core.Blackboards.CZBlackboard, CZToolKit.Core\",\r\n       
-    \"dataMap\": {\r\n            \"$id\": 29,\r\n            \"$type\": \"17|System.Collections.Generic.Dictionary`2[[System.String,
+    \"dataMap\": {\r\n            \"$id\": 63,\r\n            \"$type\": \"17|System.Collections.Generic.Dictionary`2[[System.String,
     mscorlib],[CZToolKit.Core.Blackboards.ICZType, CZToolKit.Core]], mscorlib\",\r\n           
     \"comparer\": $iref:2,\r\n            \"$rlength\": 1,\r\n            \"$rcontent\":
     [\r\n                {\r\n                    \"$k\": \"4416fd08-3007-4188-86e6-efd57c8fc0a1\",\r\n                   
-    \"$v\": {\r\n                        \"$id\": 30,\r\n                       
+    \"$v\": {\r\n                        \"$id\": 64,\r\n                       
     \"$type\": \"18|CZToolKit.Core.Blackboards.CZFloat, CZToolKit.Core\",\r\n                       
     \"value\": 1\r\n                    }\r\n                }\r\n            ]\r\n       
-    },\r\n        \"guidMap\": {\r\n            \"$id\": 31,\r\n            \"$type\":
+    },\r\n        \"guidMap\": {\r\n            \"$id\": 65,\r\n            \"$type\":
     \"19|System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.String,
     mscorlib]], mscorlib\",\r\n            \"comparer\": $iref:2,\r\n           
     \"$rlength\": 1,\r\n            \"$rcontent\": [\r\n                {\r\n                   
@@ -540,8 +726,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1934968587}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: -10}
+  m_LocalRotation: {x: -0.045880128, y: -0.005162413, z: 0.00028618934, w: -0.9989336}
+  m_LocalPosition: {x: 975.6617, y: 556.372, z: -177.84468}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}

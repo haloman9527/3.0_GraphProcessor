@@ -7,7 +7,6 @@ namespace CZToolKit.GraphProcessor.Editors
     public class BaseEdgeConnectorListener : IEdgeConnectorListener
     {
         protected BaseGraphView GraphView { get; private set; }
-        static CreateNodeMenuWindow edgeNodeCreateMenuWindow;
 
         public BaseEdgeConnectorListener(BaseGraphView _graphView)
         {
@@ -38,10 +37,6 @@ namespace CZToolKit.GraphProcessor.Editors
                 GraphView.RegisterCompleteObjectUndo("Disconnect edge");
                 GraphView.RemoveElement(_edge as EdgeView);
             }
-            else
-            {
-
-            }
 
             //if (edge.input == null || edge.output == null)
             //    ShowNodeCreationMenuFromEdge(edge as EdgeView, position);
@@ -49,10 +44,6 @@ namespace CZToolKit.GraphProcessor.Editors
 
         void ShowNodeCreationMenuFromEdge(EdgeView edgeView, Vector2 position)
         {
-            if (edgeNodeCreateMenuWindow == null)
-                edgeNodeCreateMenuWindow = ScriptableObject.CreateInstance<CreateNodeMenuWindow>();
-
-
             //edgeNodeCreateMenuWindow.Initialize(graphView, edgeView);
             SearchWindow.Open(new SearchWindowContext(position + EditorWindow.focusedWindow.position.position), GraphView.CreateNodeMenu);
         }

@@ -104,9 +104,9 @@ namespace CZToolKit.GraphProcessor.Editors
 
         public void RemoveField(BlackboardField blackboardField)
         {
-            //ICZType param = blackboardField.userData as ExposedParameter;
             contentContainer.Remove(fields[blackboardField.text]);
             fields.Remove(blackboardField.text);
+            Debug.Log(1);
         }
 
         public override void UpdatePresenterPosition()

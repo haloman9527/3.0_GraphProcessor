@@ -11,11 +11,15 @@ namespace CZToolKit.GraphProcessor
 {
     public abstract class GraphOwner : MonoBehaviour, IGraphOwner, IGraphAsset, IVariableOwner
     {
+        #region ×Ö¶Î
         protected List<SharedVariable> variables = new List<SharedVariable>();
         protected Dictionary<string, int> sharedVariableIndex;
+        #endregion
 
+        #region ÊôÐÔ
         public abstract IGraph Graph { get; }
         public abstract Type GraphType { get; }
+        #endregion
 
         #region Serialize
         public abstract void SaveVariables();
@@ -27,6 +31,7 @@ namespace CZToolKit.GraphProcessor
         protected abstract void CheckVaraiblesSerialization();
         #endregion
 
+        #region API
         public UnityObject Self()
         {
             return this;
@@ -34,7 +39,7 @@ namespace CZToolKit.GraphProcessor
 
         public string GetOwnerName()
         {
-            return name;
+            return gameObject.name;
         }
 
         public SharedVariable GetVariable(string _guid)
@@ -88,6 +93,19 @@ namespace CZToolKit.GraphProcessor
             GetVariable(_guid)?.SetValue(_value);
         }
 
+        public IReadOnlyList<SharedVariable> GetVariables()
+        {
+            CheckVaraiblesSerialization();
+            return variables;
+        }
+
+        public void SetVariables(List<SharedVariable> _variables)
+        {
+            variables = _variables;
+            UpdateVariablesIndex();
+        }
+        #endregion
+
         protected void UpdateVariablesIndex()
         {
             if (variables == null)
@@ -106,27 +124,18 @@ namespace CZToolKit.GraphProcessor
                     sharedVariableIndex.Add(variables[i].GUID, i);
             }
         }
-
-        public IReadOnlyList<SharedVariable> GetVariables()
-        {
-            CheckVaraiblesSerialization();
-            return variables;
-        }
-
-        public void SetVariables(List<SharedVariable> _variables)
-        {
-            variables = _variables;
-            UpdateVariablesIndex();
-        }
     }
 
     public abstract class GraphOwner<TGraph> : GraphOwner, ISerializationCallbackReceiver
         where TGraph : IGraph, IGraphFromAsset, new()
     {
+        #region ×Ö¶Î
         [HideInInspector]
         [SerializeField]
         TGraph graph = new TGraph();
+        #endregion
 
+        #region ÊôÐÔ
         public override IGraph Graph
         {
             get { return graph; }
@@ -136,6 +145,7 @@ namespace CZToolKit.GraphProcessor
         {
             get { return graph; }
         }
+        #endregion
 
         #region Serialize
         #region Graph

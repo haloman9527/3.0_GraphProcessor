@@ -12,13 +12,18 @@ using UnityEngine.UIElements;
 
 using Blackboard = UnityEditor.Experimental.GraphView.Blackboard;
 using UnityObject = UnityEngine.Object;
+using UnityEditor.SceneManagement;
+using UnityEditor.UIElements;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
     public class BaseGraphView : GraphView, IGraphView
     {
+        #region 事件
         public event Action onInitializeCompleted;
+        #endregion
 
+        #region 属性
         public bool Initialized { get; }
         public bool IsDirty { get; private set; } = false;
         public BaseEdgeConnectorListener ConnectorListener { get; }
@@ -26,6 +31,7 @@ namespace CZToolKit.GraphProcessor.Editors
         private ExposedParameterView Blackboard { get; set; }
         public CreateNodeMenuWindow CreateNodeMenu { get; private set; }
         public BaseGraphWindow GraphWindow { get; private set; }
+        public GraphViewParentElement Parent { get { return GraphWindow.GraphViewParent; } }
         public UnityObject GraphAsset { get; private set; }
         public IGraph Graph { get; private set; }
         public SerializedObject SerializedObject { get; private set; }
@@ -37,11 +43,11 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             get { return selection.Any(e => e is BaseNodeView || e is GroupView || e is BaseStackNodeView); }
         }
-
         protected override bool canCutSelection
         {
             get { return selection.Any(e => e is BaseNodeView || e is GroupView || e is BaseStackNodeView); }
         }
+        #endregion
 
         public BaseGraphView()
         {
@@ -55,22 +61,36 @@ namespace CZToolKit.GraphProcessor.Editors
 
         public BaseGraphView(IGraph _graph, CommandDispatcher _commandDispatcher, BaseGraphWindow _window) : this()
         {
-            if (Initialized) return;
             CommandDispatcher = _commandDispatcher;
             GraphWindow = _window;
             Graph = _graph;
             GraphAsset = (_graph as IGraphFromAsset)?.Asset;
             SerializedObject = new SerializedObject(GraphAsset);
-            GraphWindow.Toolbar.AddButton("Center", () =>
+
+            ToolbarButton btnCenter = new ToolbarButton()
+            {
+                text = "Center",
+                style = { alignSelf = Align.Center, width = 70, unityTextAlign = TextAnchor.MiddleCenter, color = Color.black }
+            };
+            btnCenter.clicked += () =>
             {
                 ResetPositionAndZoom();
                 UpdateViewTransform(Graph.Position, Graph.Scale);
-            });
-            GraphWindow.Toolbar.AddToggle("Show Parameters", Graph.BlackboardVisible, (v) =>
+            };
+            Parent.Toolbar.AddToLeft(btnCenter);
+
+            ToolbarToggle toggleBlackboard = new ToolbarToggle()
             {
-                GetBlackboard().style.display = v ? DisplayStyle.Flex : DisplayStyle.None;
-                Graph.BlackboardVisible = v;
+                text = "Blackboard",
+                value = Graph.BlackboardVisible,
+                style = { alignSelf = Align.Center, width = 100, unityTextAlign = TextAnchor.MiddleCenter, color = Color.black }
+            };
+            toggleBlackboard.RegisterValueChangedCallback(e =>
+            {
+                GetBlackboard().style.display = e.newValue ? DisplayStyle.Flex : DisplayStyle.None;
+                Graph.BlackboardVisible = e.newValue;
             });
+            Parent.Toolbar.AddToggleToLeft(toggleBlackboard);
 
             ConnectorListener = CreateEdgeConnectorListener();
 
@@ -189,14 +209,14 @@ namespace CZToolKit.GraphProcessor.Editors
 
         #endregion
 
+        #region Callbacks
+
+        #region 系统回调
         public override Blackboard GetBlackboard()
         {
             return Blackboard;
         }
 
-        #region Callbacks
-
-        #region 系统回调
         /// <summary> GraphView发生改变时调用 </summary>
         GraphViewChange GraphViewChangedCallback(GraphViewChange changes)
         {
@@ -225,17 +245,17 @@ namespace CZToolKit.GraphProcessor.Editors
                     }
                     return GetPriority(element1).CompareTo(GetPriority(element2));
                 });
-                foreach (var element in changes.elementsToRemove)
+                changes.elementsToRemove.RemoveAll(element =>
                 {
                     switch (element)
                     {
                         case EdgeView edgeView:
                             Disconnect(edgeView);
-                            continue;
+                            return true;
                         case BaseNodeView nodeView:
                             if (nodeView.selected)
                                 RemoveNode(nodeView);
-                            continue;
+                            return true;
                         case BlackboardField blackboardField:
                             bool canDelete = true;
                             foreach (var parameterNode in Graph.NodesGUIDMapping.Values.OfType<ParameterNode>())
@@ -249,20 +269,20 @@ namespace CZToolKit.GraphProcessor.Editors
                             }
                             if (canDelete && Graph.Blackboard.RemoveData(blackboardField.text))
                                 Blackboard.RemoveField(blackboardField);
-                            continue;
+                            return true;
                         case BaseStackNodeView stackNodeView:
                             RemoveStackNode(stackNodeView);
-                            continue;
+                            return true;
                         case GroupView groupView:
                             RemoveGroup(groupView);
-                            continue;
+                            return true;
                     }
-                }
+                    return false;
+                });
 
                 UpdateNodeInspectorSelection();
-                SetDirty();
             }
-
+            SetDirty();
             return changes;
         }
 
@@ -282,11 +302,16 @@ namespace CZToolKit.GraphProcessor.Editors
             Vector2 position = (evt.currentTarget as VisualElement).ChangeCoordinatesTo(contentViewContainer, evt.localMousePosition);
             evt.menu.AppendAction("New Stack", (e) =>
             {
-                BaseStack stackNode = new BaseStack(position);
+                BaseStack stackNode = BaseStack.CreateStack(position);
                 stackNode.OnCreated();
                 AddStackNode(stackNode);
             }, DropdownMenuAction.AlwaysEnabled);
-            evt.menu.AppendAction("New Group", (e) => AddSelectionsToGroup(AddGroup(new BaseGroup("New Group", position))), DropdownMenuAction.AlwaysEnabled);
+            evt.menu.AppendAction("New Group", (e) =>
+            {
+                BaseGroup group = new BaseGroup("New Group", position);
+                group.OnCreated();
+                AddSelectionsToGroup(AddGroup(group));
+            }, DropdownMenuAction.AlwaysEnabled);
 
             evt.menu.AppendAction("Select Asset", (e) => EditorGUIUtility.PingObject(GraphAsset), DropdownMenuAction.AlwaysEnabled);
 
@@ -294,8 +319,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
             evt.menu.AppendAction("Save Asset", (e) =>
             {
-                SetDirty();
-                AssetDatabase.SaveAssets();
+                SaveGraphToDisk();
             }, DropdownMenuAction.AlwaysEnabled);
 
             evt.menu.AppendAction("Help/Reset Blackboard Windows", e =>
@@ -336,7 +360,6 @@ namespace CZToolKit.GraphProcessor.Editors
             });
             return compatiblePorts;
         }
-        #endregion
 
         string SerializeGraphElementsCallback(IEnumerable<GraphElement> elements)
         {
@@ -442,6 +465,7 @@ namespace CZToolKit.GraphProcessor.Editors
                 Graph.Scale = viewTransform.scale;
             }
         }
+        #endregion
 
         void KeyDownCallback(KeyDownEvent evt)
         {
@@ -490,7 +514,6 @@ namespace CZToolKit.GraphProcessor.Editors
                 SetDirty();
             }
         }
-
         #endregion
 
         #region Overrides
@@ -510,7 +533,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
         #endregion
 
-        #region Graph content modification
+        #region Graph修改
 
         public void UpdateNodeInspectorSelection()
         {
@@ -829,6 +852,7 @@ namespace CZToolKit.GraphProcessor.Editors
             GraphWindow.GraphOwner?.SaveVariables();
             SetDirty(true);
             AssetDatabase.SaveAssets();
+            EditorSceneManager.SaveOpenScenes();
         }
 
         public virtual void ResetPositionAndZoom()
@@ -838,6 +862,7 @@ namespace CZToolKit.GraphProcessor.Editors
         }
         #endregion
 
+        #region 帮助方法
         public void SetDirty(bool _immediately = false)
         {
             if (_immediately)
@@ -845,5 +870,6 @@ namespace CZToolKit.GraphProcessor.Editors
             else
                 IsDirty = true;
         }
+        #endregion
     }
 }

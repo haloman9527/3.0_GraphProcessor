@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using System;
 
 namespace CZToolKit.GraphProcessor
@@ -9,21 +7,13 @@ namespace CZToolKit.GraphProcessor
     [NodeMenuItem("Utils", "Relay")]
     public class RelayNode : BaseNode
     {
-        [HideInInspector]
-        public struct PackedRelayData
-        {
-            public List<object> values;
-            public List<string> names;
-            public List<Type> types;
-        }
-
         [Port(PortDirection.Input, IsMulti = false, TypeConstraint = PortTypeConstraint.None)]
-        [DisplayName("In")]
+        [InspectorName("In")]
         [PortSize(12),PortColor(0, 0.7f, 0.3f)]
         object input;
 
         [Port(PortDirection.Output, IsMulti = false, TypeConstraint = PortTypeConstraint.None)]
-        [DisplayName("Out")]
+        [InspectorName("Out")]
         [PortSize(12), PortColor(0, 0.7f, 0.3f)]
         object output;
 
@@ -45,11 +35,11 @@ namespace CZToolKit.GraphProcessor
             switch (_port.Direction)
             {
                 case PortDirection.Input:
-                    if (TryGetPort("output", out NodePort outputPort) && outputPort.IsConnected)
+                    if (TryGetPort(nameof(input), out NodePort outputPort) && outputPort.IsConnected)
                         outputPort.Connection.Execute(_params);
                     break;
                 case PortDirection.Output:
-                    if (TryGetPort("input", out NodePort intputPort) && intputPort.IsConnected)
+                    if (TryGetPort(nameof(output), out NodePort intputPort) && intputPort.IsConnected)
                         intputPort.Connection.Execute(_params);
                     break;
                 default:
