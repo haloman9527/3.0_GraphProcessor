@@ -122,9 +122,9 @@ namespace CZToolKit.GraphProcessor
                 DisplayType = port.DisplayType;
         }
 
-        public bool TryGetValue<T>(ref T _value)
+        public object GetValue()
         {
-            return Owner.GetValue(this, ref _value);
+            return Owner.GetValue(this);
         }
 
         public void Execute(params object[] _params)
@@ -164,25 +164,23 @@ namespace CZToolKit.GraphProcessor
         }
 
         /// <summary> 尝试获取第一个连接的远程端口的值 </summary>
-        /// <typeparam name="T"></typeparam>
         /// <param name="_value"></param>
         /// <returns></returns>
-        public bool TryGetConnectValue<T>(ref T _value)
+        public object GetConnectValue()
         {
             NodePort port = Connection;
-            if (port == null) return false;
-            return port.TryGetValue(ref _value);
+            if (port == null) return null;
+            return port.GetValue();
         }
 
         /// <summary> 返回所有连接的远程端口的值 </summary>
-        /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public IEnumerable<T> GetConnectValues<T>()
+        public IEnumerable<object> GetConnectValues()
         {
             foreach (var port in GetConnections())
             {
-                T value = default;
-                if (port.TryGetValue(ref value))
+                object value = port.GetValue();
+                if (value != null)
                     yield return value;
             }
         }

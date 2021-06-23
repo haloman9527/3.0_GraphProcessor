@@ -11,22 +11,17 @@ namespace CZToolKit.GraphProcessor
         [Port(PortDirection.Output, IsMulti = true)]
         public float output;
 
-        public override bool GetValue<T>(NodePort _port, ref T _value)
+        public override object GetValue(NodePort _port)
         {
             switch (_port.FieldName)
             {
                 case nameof(output):
                     float inputSum = 0;
-                    foreach (var value in GetConnectValues<float>(nameof(input)))
+                    foreach (var value in GetConnectValues(nameof(input)))
                     {
-                        inputSum += value;
+                        inputSum += (float)value;
                     }
-                    if (inputSum is T tValue)
-                    {
-                        _value = tValue;
-                        return true;
-                    }
-                    break;
+                    return inputSum;
             }
 
             return false;

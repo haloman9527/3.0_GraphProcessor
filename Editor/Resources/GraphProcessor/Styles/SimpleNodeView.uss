@@ -29,6 +29,10 @@
     flex-direction: row;
 }
 
+#contents > .contents-horizontal-divider{
+    display: none;
+}
+
 #node-border {
     border-radius: 10px;
 }

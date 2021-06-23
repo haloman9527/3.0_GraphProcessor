@@ -124,13 +124,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
             AddToClassList(FieldName);
             visualClass = "Port_" + portType.Name;
-            if (GraphView.Initialized)
-                OnInitialized();
-            else
-                GraphView.onInitializeCompleted += OnInitialized;
         }
-
-        protected virtual void OnInitialized() { }
 
         #region API
         public IEnumerable<PortView> GetConnections()

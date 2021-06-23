@@ -122,52 +122,58 @@ namespace CZToolKit.GraphProcessor
 
         #region Inputs/Outputs
         /// <summary> 通过字段名获取本地Input接口连接的远程接口的返回值 </summary>
-        /// <typeparam name="T"> 目标返回值类型 </typeparam>
         /// <param name="_fieldName"></param>
         /// <param name="_value"></param>
         /// <param name="_fallback"></param>
         /// <returns></returns>
-        public bool TryGetInputValue<T>(string _fieldName, out T _value, T _fallback = default)
+        public object GetInputValue(string _fieldName)
         {
-            _value = _fallback;
             if (TryGetInputPort(_fieldName, out NodePort port))
-                return port.TryGetConnectValue(ref _value);
-            return false;
+                return port.GetConnectValue();
+            return null;
         }
 
         /// <summary> 通过字段名获取本地Output接口连接的远程接口的返回值 </summary>
-        /// <typeparam name="T"> 目标返回值类型 </typeparam>
         /// <param name="_fieldName"></param>
         /// <param name="_value"></param>
         /// <param name="_fallback"></param>
         /// <returns></returns>
-        public bool TryGetOutputValue<T>(string _fieldName, out T _value, T _fallback = default)
+        public object GetOutputValue(string _fieldName)
         {
-            _value = _fallback;
             if (TryGetOutputPort(_fieldName, out NodePort port))
-                return port.TryGetConnectValue(ref _value);
-            return false;
+                return port.GetConnectValue();
+            return null;
         }
 
         /// <summary> 通过字段名获取本地接口连接的远程接口的返回值 </summary>
-        /// <typeparam name="T"> 目标返回值类型 </typeparam>
         /// <param name="_fieldName"></param>
         /// <param name="_value"></param>
         /// <param name="_fallback"></param>
         /// <returns></returns>
-        public bool TryGetConnectValue<T>(string _fieldName, out T _value, T _fallback = default)
+        public object GetConnectValue(string _fieldName)
         {
-            _value = _fallback;
             if (TryGetPort(_fieldName, out NodePort port))
-                return port.TryGetConnectValue(ref _value);
-            return false;
+                return port.GetConnectValue();
+            return null;
         }
 
-        public IEnumerable<T> GetConnectValues<T>(string _fieldName)
+        /// <summary> 通过字段名获取本地接口连接的远程接口的返回值 </summary>
+        /// <param name="_fieldName"></param>
+        /// <param name="_fallback"></param>
+        /// <returns></returns>
+        public T GetConnectValue<T>(string _fieldName, T _fallback)
+        {
+            object v = GetConnectValue(_fieldName);
+            if (v != null)
+                return (T)v;
+            return _fallback;
+        }
+
+        public IEnumerable<object> GetConnectValues(string _fieldName)
         {
             if (TryGetPort(_fieldName, out NodePort localPort))
             {
-                foreach (var value in localPort.GetConnectValues<T>())
+                foreach (var value in localPort.GetConnectValues())
                 {
                     yield return value;
                 }
@@ -175,10 +181,10 @@ namespace CZToolKit.GraphProcessor
         }
 
         /// <summary> 向本地接口连接的远程接口返回一个值(override) </summary>
-        public virtual bool GetValue<T>(NodePort _localPort, ref T _value)
+        public virtual object GetValue(NodePort _localPort)
         {
             Debug.LogWarning("No GetValue(NodePort port) override defined for " + GetType());
-            return false;
+            return null;
         }
 
         /// <summary> 执行节点逻辑，指定接口和参数(可判断接口执行相应逻辑) </summary>

@@ -9,7 +9,7 @@ namespace CZToolKit.GraphProcessor
     {
         [Port(PortDirection.Input, IsMulti = false, TypeConstraint = PortTypeConstraint.None)]
         [InspectorName("In")]
-        [PortSize(12),PortColor(0, 0.7f, 0.3f)]
+        [PortSize(12), PortColor(0, 0.7f, 0.3f)]
         object input;
 
         [Port(PortDirection.Output, IsMulti = false, TypeConstraint = PortTypeConstraint.None)]
@@ -17,16 +17,16 @@ namespace CZToolKit.GraphProcessor
         [PortSize(12), PortColor(0, 0.7f, 0.3f)]
         object output;
 
-        public override bool GetValue<T>(NodePort _port, ref T _value)
+        public override object GetValue(NodePort _port)
         {
             switch (_port.FieldName)
             {
                 case nameof(input):
-                    return TryGetOutputValue<T>(nameof(output), out _value);
+                    return GetConnectValue(nameof(output));
                 case nameof(output):
-                    return TryGetOutputValue<T>(nameof(input), out _value);
+                    return GetConnectValue(nameof(input));
                 default:
-                    return false;
+                    return null;
             }
         }
 

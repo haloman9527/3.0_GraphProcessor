@@ -1,17 +1,21 @@
 using UnityEngine;
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
+using UnityEditor.Experimental.GraphView;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
     public class ToolbarView : Toolbar
     {
+        public new class UxmlFactory : UxmlFactory<ToolbarView, GraphView.UxmlTraits> { }
+
         public VisualElement Left { get; }
         public VisualElement Right { get; }
 
         public ToolbarView()
         {
             name = "ToolbarView";
+            style.height = 20;
             style.backgroundColor = new Color(0, 0, 0, 0);
 
             Left = new VisualElement() { name = "left", style = { flexDirection = FlexDirection.Row } };

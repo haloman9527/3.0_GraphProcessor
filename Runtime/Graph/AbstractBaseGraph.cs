@@ -78,7 +78,6 @@ namespace CZToolKit.GraphProcessor
             {
                 node.Enable(this);
             }
-
             foreach (var edge in edges.Values)
             {
                 edge.Enable(this);
@@ -88,7 +87,6 @@ namespace CZToolKit.GraphProcessor
             {
                 node.OnEnabled();
             }
-
             foreach (var edge in edges.Values)
             {
                 edge.OnEnabled();

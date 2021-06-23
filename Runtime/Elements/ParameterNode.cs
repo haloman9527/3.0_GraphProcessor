@@ -23,14 +23,9 @@ namespace CZToolKit.GraphProcessor
             get { return Owner.Blackboard.TryGetData(name, out ICZType param) ? param : null; }
         }
 
-        public override bool GetValue<T>(NodePort _port, ref T _value)
+        public override object GetValue(NodePort _port)
         {
-            if (Parameter.GetValue() is T tValue)
-            {
-                _value = tValue;
-                return true;
-            }
-            return false;
+            return Parameter.GetValue();
         }
 
         public override Type PortDynamicType(string _portName)

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace CZToolKit.GraphProcessor
 {
@@ -10,16 +9,9 @@ namespace CZToolKit.GraphProcessor
         [Port(PortDirection.Output)]
         public float value;
 
-        public List<int> nums;
-
-        public override bool GetValue<T>(NodePort _port, ref T _value)
+        public override object GetValue(NodePort _port)
         {
-            if (value is T tValue)
-            {
-                _value = tValue;
-                return true;
-            }
-            return false;
+            return value;
         }
     }
 }

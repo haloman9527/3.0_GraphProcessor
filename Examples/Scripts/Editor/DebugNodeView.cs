@@ -26,8 +26,8 @@ namespace CZToolKit.GraphProcessor.Editors
                 return;
             }
 
-            object value = null;
-            if (port.TryGetConnectValue(ref value))
+            object value = port.GetConnectValue();
+            if (value != null)
             {
                 if (value.Equals(null))
                     label.text = "NULL";

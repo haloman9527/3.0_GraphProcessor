@@ -1,9 +1,13 @@
+using UnityEditor.Experimental.GraphView;
 using UnityEngine.UIElements;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
     class NodeSettingsView : VisualElement
     {
+        public new class UxmlFactory : UxmlFactory<NodeSettingsView, GraphView.UxmlTraits> { }
+
+
         VisualElement m_ContentContainer;
 
         public NodeSettingsView()

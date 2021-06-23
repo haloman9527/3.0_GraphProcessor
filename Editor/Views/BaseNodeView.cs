@@ -16,10 +16,12 @@ namespace CZToolKit.GraphProcessor.Editors
 {
     public class BaseNodeView : NodeView, INodeView
     {
-        Label titleLabel;
+        public new class UxmlFactory : UxmlFactory<BaseNodeView, GraphView.UxmlTraits> { }
 
+        Label titleLabel;
         [NonSerialized]
         List<IconBadge> badges = new List<IconBadge>();
+
         public Label TitleLabel
         {
             get
@@ -38,14 +40,13 @@ namespace CZToolKit.GraphProcessor.Editors
         public VisualElement portsVerticalDivider { get; }
         public VisualElement controlsHorizontalDivider { get; }
 
-        public bool Initialized { get; private set; }
         public override bool expanded
         {
             get { return base.expanded; }
             set
             {
                 base.expanded = value;
-                if (Initialized)
+                if (Owner.Initialized)
                     NodeData.Expanded = value;
             }
         }
@@ -57,7 +58,7 @@ namespace CZToolKit.GraphProcessor.Editors
         public Dictionary<string, PortView> PortViews { get; private set; } = new Dictionary<string, PortView>();
         protected List<FieldInfo> NodeDataTypeFieldInfos
         {
-            get { return Utility_Refelection.GetFieldInfos(NodeDataType); }
+            get { return Utility_Reflection.GetFieldInfos(NodeDataType); }
         }
 
         #region  Initialization
@@ -68,12 +69,25 @@ namespace CZToolKit.GraphProcessor.Editors
             styleSheets.Add(GraphProcessorStyles.PortViewTypesStyle);
 
             contentHorizontalDivider = contentContainer.Q(name: "divider", className: "horizontal");
+            contentHorizontalDivider.AddToClassList("contents-horizontal-divider");
+
+
             portsVerticalDivider = topContainer.Q(name: "divider", className: "vertical");
+            portsVerticalDivider.AddToClassList("ports-vertical-divider");
 
             controlsContainer = new VisualElement { name = "Controls" };
             controlsContainer.AddToClassList("NodeControls");
             controlsContainer.style.backgroundColor = new Color(0.2f, 0.2f, 0.2f, 1);
             mainContainer.Add(controlsContainer);
+
+            controlsHorizontalDivider = new VisualElement() { name = "divider" };
+            controlsHorizontalDivider.AddToClassList("horizontal");
+            controlsHorizontalDivider.style.height = 1;
+            controlsHorizontalDivider.style.backgroundColor = new Color(0.2f, 0.2f, 0.2f, 1);
+            controlsHorizontalDivider.StretchToParentWidth();
+            controlsHorizontalDivider.AddToClassList("controls-horizontal-divider");
+            controlsContainer.Add(controlsHorizontalDivider);
+
 
             topPortContainer = new VisualElement { name = "TopPortContainer" };
             topPortContainer.style.justifyContent = Justify.Center;
@@ -92,23 +106,15 @@ namespace CZToolKit.GraphProcessor.Editors
             inputContainerElement.SendToBack();
             Add(inputContainerElement);
 
-            controlsHorizontalDivider = new VisualElement() { name = "divider" };
-            controlsHorizontalDivider.AddToClassList("horizontal");
-            controlsHorizontalDivider.style.height = 1;
-            controlsHorizontalDivider.style.backgroundColor = new Color(0.2f, 0.2f, 0.2f, 1);
-            controlsHorizontalDivider.StretchToParentWidth();
-            controlsContainer.Add(controlsHorizontalDivider);
-
-
             contentHorizontalDivider.style.backgroundColor = Color.green;
             portsVerticalDivider.style.backgroundColor = Color.red;
             controlsHorizontalDivider.style.backgroundColor = Color.blue;
+
+            TitleLabel.style.flexWrap = Wrap.Wrap;
         }
 
         public void SetUp(IGraphElement _graphElement, CommandDispatcher _commandDispatcher, IGraphView _graphView)
         {
-            if (Initialized) return;
-
             NodeData = _graphElement as BaseNode;
             NodeDataType = NodeData.GetType();
             CommandDispatcher = _commandDispatcher;
@@ -117,7 +123,6 @@ namespace CZToolKit.GraphProcessor.Editors
             InitializeView();
             InitializePorts();
             RefreshPorts();
-            RefreshExpandedState();
 
             foreach (var fieldInfo in NodeDataTypeFieldInfos)
             {
@@ -145,24 +150,11 @@ namespace CZToolKit.GraphProcessor.Editors
                     inputContainerElement.Add(box);
                 }
             }
-
-            if (!Owner.Initialized)
-                Owner.onInitializeCompleted += OnInitialized;
-            else
-                OnInitialized();
-
-            //expanded = NodeData.Expanded;
-            //inputContainerElement.style.display = expanded ? DisplayStyle.Flex : DisplayStyle.None;
-
-            Initialized = true;
-
-            this.MarkDirtyRepaint();
         }
 
         void InitializeView()
         {
             title = NodeEditorUtility.GetNodeDisplayName(NodeDataType);
-            TitleLabel.style.flexWrap = Wrap.Wrap;
             SetPosition(NodeData.position);
             Lockable = Utility_Attribute.TryGetTypeAttribute(NodeDataType, out LockableAttribute lockableAttribute);
 
@@ -182,31 +174,6 @@ namespace CZToolKit.GraphProcessor.Editors
                 TitleLabel.style.color = nodeTitleTintAttribute.BackgroundColor.GetLuminance() > 0.5f && nodeTitleTintAttribute.BackgroundColor.a > 0.5f ? Color.black : Color.white * 0.9f;
             }
 
-            //bool showControlOnHover = Utility_Attribute.TryGetTypeAttribute(NodeDataType, out ShowControlOnHoverAttribute showControlOnHoverAttrib);
-            //if (showControlOnHover)
-            //{
-            //    bool mouseOverControls = false;
-            //    controlsContainer.style.display = DisplayStyle.None;
-            //    RegisterCallback<MouseOverEvent>(e =>
-            //    {
-            //        controlsContainer.style.display = DisplayStyle.Flex;
-            //        mouseOverControls = true;
-            //    });
-            //    RegisterCallback<MouseOutEvent>(e =>
-            //    {
-            //        var rect = GetPosition();
-            //        var graphMousePosition = Owner.contentViewContainer.WorldToLocal(e.mousePosition);
-            //        if (rect.Contains(graphMousePosition) || !showControlOnHover)
-            //            return;
-            //        mouseOverControls = false;
-            //        schedule.Execute(_ =>
-            //        {
-            //            if (!mouseOverControls)
-            //                controlsContainer.style.display = DisplayStyle.None;
-            //        }).ExecuteLater(500);
-            //    });
-            //}
-
             //Undo.undoRedoPerformed += UpdateFieldValues;
         }
 
@@ -225,6 +192,13 @@ namespace CZToolKit.GraphProcessor.Editors
                 portView.SetUp(nodePort.Value, CommandDispatcher, Owner);
                 PortViews[nodePort.Key] = portView;
             }
+        }
+
+        public void Initialized()
+        {
+            base.expanded = NodeData.Expanded;
+            inputContainerElement.style.display = expanded ? DisplayStyle.Flex : DisplayStyle.None;
+            OnInitialized();
         }
 
         protected virtual void OnInitialized()
@@ -248,6 +222,8 @@ namespace CZToolKit.GraphProcessor.Editors
             //}
         }
         #endregion
+
+
 
         #region API
 
@@ -384,7 +360,7 @@ namespace CZToolKit.GraphProcessor.Editors
             if (NodeData.Locked) return;
 
             base.SetPosition(newPos);
-            if (Initialized)
+            if (Owner.Initialized)
             {
                 Owner.RegisterCompleteObjectUndo("Moved graph node");
                 NodeData.position = newPos;

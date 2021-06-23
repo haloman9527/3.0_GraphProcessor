@@ -9,6 +9,8 @@ namespace CZToolKit.GraphProcessor.Editors
 {
     public class GroupView : Group, IGroupView
     {
+        public new class UxmlFactory : UxmlFactory<GroupView, GraphView.UxmlTraits> { }
+
         public BaseGraphView Owner { get; private set; }
         public BaseGroup GroupData { get { return userData as BaseGroup; } }
         public Label titleLabel { get; private set; }

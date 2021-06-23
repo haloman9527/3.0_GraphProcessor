@@ -3,21 +3,15 @@
 namespace CZToolKit.GraphProcessor
 {
     [NodeMenuItem("String")]
-    [NodeIcon("Assets/CZToolKit/0.1_GOAP/Editor/Icons/Running.png", width = 12, height = 15)]
     public class StringNode : BaseNode
     {
         [TextArea]
         [Port(PortDirection.Output)]
         public string value = "";
 
-        public override bool GetValue<T>(NodePort _port, ref T _value)
+        public override object GetValue(NodePort _localPort)
         {
-            if (value is T tValue)
-            {
-                _value = tValue;
-                return true;
-            }
-            return false;
+            return value;
         }
     }
 }

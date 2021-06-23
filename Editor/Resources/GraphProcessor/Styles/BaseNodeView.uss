@@ -16,23 +16,8 @@
     align-self: center;
 }
 
-#contents #top .executed #connector, #contents #top .executed #connector #cap,
-#contents #top .executes #connector, #contents #top .executes #connector #cap,
-#contents #top .true #connector, #contents #top .true #connector #cap,
-#contents #top .false #connector, #contents #top .false #connector #cap,
-#contents #top .loopBody #connector, #contents #top .loopBody #connector #cap,
-#contents #top .loopCompleted #connector, #contents #top .loopCompleted #connector #cap {
-    border-radius: 0px;
-}
-
 .Highlight {
     background-color: rgba(0, 63, 63, 0.8);
-}
-
-#RightTitleContainer {
-    justify-content: flex-end;
-    flex-grow: 1;
-    flex-direction: row;
 }
 
 #input-container {
@@ -52,19 +37,22 @@
     opacity: 1;
 }
 
-.unity-base-field__label{
-    min-width: 50px;
+#input-container > .port-input-element {
+    background-color: rgba(72, 72, 72, 1);
+    margin-left: 1px;
+    margin-top: 1px;
+    margin-bottom: 3px;
+    padding-top: 1px;
+    padding-bottom: 1px;
+    height: 20px;
+    overflow: hidden;
+    padding-right: 1px;
+    font-size: 8px;
+    flex-direction: row-reverse
 }
 
-.unity-base-field__input{
+.unity-base-field__label{
     min-width: 50px;
-    border-top-left-radius: 1px;
-    border-bottom-left-radius: 1px;
-    border-top-right-radius: 1px;
-    border-bottom-right-radius: 1px;
-    margin-top: 1px;
-    padding-bottom: 1px;
-    height: 16px;
 }
 
 #input-container > .port-input-element > IntegerField,
@@ -85,6 +73,17 @@
     margin-bottom: 0;
     width: 100px;
     max-width: 150px;
+}
+
+.unity-base-field__input{
+    min-width: 50px;
+    border-top-left-radius: 1px;
+    border-bottom-left-radius: 1px;
+    border-top-right-radius: 1px;
+    border-bottom-right-radius: 1px;
+    margin-top: 1px;
+    padding-bottom: 1px;
+    height: 16px;
 }
 
 #input-container > .port-input-element > .unity-vector3-int-field Label,
@@ -111,18 +110,4 @@
     width: 17px;
     border-top-right-radius: 2px;
     border-bottom-right-radius: 2px;
-}
-
-#input-container > .port-input-element {
-    background-color: rgba(72, 72, 72, 1);
-    margin-left: 1px;
-    margin-top: 1px;
-    margin-bottom: 3px;
-    padding-top: 1px;
-    padding-bottom: 1px;
-    height: 20px;
-    overflow: hidden;
-    padding-right: 1px;
-    font-size: 8px;
-    flex-direction: row-reverse
 }

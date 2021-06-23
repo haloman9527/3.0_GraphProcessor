@@ -6,6 +6,8 @@ namespace CZToolKit.GraphProcessor.Editors
 {
     public class EdgeView : Edge, IEdgeView
     {
+        public new class UxmlFactory : UxmlFactory<EdgeView, GraphView.UxmlTraits> { }
+
 
         public bool isConnected = false;
         protected BaseGraphView Owner { get; private set; }

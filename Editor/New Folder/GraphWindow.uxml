@@ -1,0 +1,6 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <CZToolKit.GraphProcessor.Editors.ToolbarView style="flex-grow: 0; height: 20px;" />
+    <ui:VisualElement style="flex-grow: 1;">
+        <CZToolKit.GraphProcessor.Editors.BaseGraphView focusable="True" style="flex-grow: 1;" />
+    </ui:VisualElement>
+</ui:UXML>

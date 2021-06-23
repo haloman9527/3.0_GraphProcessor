@@ -7,6 +7,8 @@ namespace CZToolKit.GraphProcessor.Editors
 {
     public class BaseStackNodeView : StackNode, IStackView
     {
+        public new class UxmlFactory : UxmlFactory<BaseStackNodeView, GraphView.UxmlTraits> { }
+
         CommandDispatcher CommandDispatcher { get; set; }
         public BaseGraphView Owner { get; private set; }
         protected internal BaseStack stackNode;

@@ -17,18 +17,17 @@ using UnityEditor.UIElements;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
+
     public class BaseGraphView : GraphView, IGraphView
     {
-        #region 事件
-        public event Action onInitializeCompleted;
-        #endregion
+        public new class UxmlFactory : UxmlFactory<BaseGraphView, GraphView.UxmlTraits> { }
 
         #region 属性
         public bool Initialized { get; }
         public bool IsDirty { get; private set; } = false;
         public BaseEdgeConnectorListener ConnectorListener { get; }
         public CommandDispatcher CommandDispatcher { get; }
-        private ExposedParameterView Blackboard { get; set; }
+        private BlackboardView Blackboard { get; set; }
         public CreateNodeMenuWindow CreateNodeMenu { get; private set; }
         public BaseGraphWindow GraphWindow { get; private set; }
         public GraphViewParentElement Parent { get { return GraphWindow.GraphViewParent; } }
@@ -54,14 +53,15 @@ namespace CZToolKit.GraphProcessor.Editors
             styleSheets.Add(GraphProcessorStyles.GraphViewStyle);
 
             Insert(0, new GridBackground());
-            SetupZoom(0.05f, 2f);
+
+            this.AddManipulator(new ContentZoomer() { minScale = 0.05f, maxScale = 2f });
             this.AddManipulator(new ContentDragger());
             this.AddManipulator(new SelectionDragger());
             this.AddManipulator(new RectangleSelector());
 
-            InitializeCallbacks();
-
             this.StretchToParentSize();
+
+            InitializeCallbacks();
         }
 
         public BaseGraphView(IGraph _graph, CommandDispatcher _commandDispatcher, BaseGraphWindow _window) : this()
@@ -71,6 +71,11 @@ namespace CZToolKit.GraphProcessor.Editors
             Graph = _graph;
             GraphAsset = (_graph as IGraphFromAsset)?.Asset;
             SerializedObject = new SerializedObject(GraphAsset);
+
+            viewTransform.position = Graph.Position;
+            viewTransform.scale = Graph.Scale;
+            ConnectorListener = CreateEdgeConnectorListener();
+            InitializeCallbacks();
 
             ToolbarButton btnCenter = new ToolbarButton()
             {
@@ -97,8 +102,6 @@ namespace CZToolKit.GraphProcessor.Editors
             });
             Parent.Toolbar.AddToggleToLeft(toggleBlackboard);
 
-            ConnectorListener = CreateEdgeConnectorListener();
-
             double time = EditorApplication.timeSinceStartup;
             Add(new IMGUIContainer(() =>
             {
@@ -110,20 +113,43 @@ namespace CZToolKit.GraphProcessor.Editors
                 }
             }));
 
-            InitializeGraphView();
-            InitializeBlackboard();
-            InitializeNodeViews();
-            InitializeStacks();
-            InitializeGroups();
-            InitializeEdgeViews();
+            GenerateBlackboardView();
+            GenerateNodeViews();
+            GenerateStackViews();
+            GenerateGroupViews();
+            LinkNodeViews();
+            RefreshNodeViewsExpandedState();
+            NotifyNodeViewsInitialized();
 
-            onInitializeCompleted?.Invoke();
             OnInitialized();
             Initialized = true;
         }
 
         #region Initialize
+        void InitializeCallbacks()
+        {
+            graphViewChanged = GraphViewChangedCallback;
+            groupTitleChanged = GroupTitleChangedCallback;
+            serializeGraphElements = SerializeGraphElementsCallback;
+            canPasteSerializedData = CanPasteSerializedDataCallback;
+            unserializeAndPaste = DeserializeAndPasteCallback;
+            viewTransformChanged = ViewTransformChangedCallback;
 
+            RegisterCallback<DragPerformEvent>(DragPerformedCallback);
+            RegisterCallback<DragUpdatedEvent>(DragUpdatedCallback);
+            RegisterCallback<KeyDownEvent>(KeyDownCallback);
+            RegisterCallback<MouseUpEvent>(MouseUpCallback);
+
+            CreateNodeMenu = ScriptableObject.CreateInstance<CreateNodeMenuWindow>();
+            CreateNodeMenu.Initialize(this, GetNodeTypes());
+            nodeCreationRequest = c => SearchWindow.Open(new SearchWindowContext(c.screenMousePosition), CreateNodeMenu);
+        }
+
+        void GenerateBlackboardView()
+        {
+            Blackboard = new BlackboardView(this);
+            Add(Blackboard);
+        }
 
         void GenerateNodeViews()
         {
@@ -146,89 +172,36 @@ namespace CZToolKit.GraphProcessor.Editors
                 AddGroupView(group);
         }
 
-        void LinkingNodeViews()
-        {
-            // 只连接，不会触发节点的OnPortConnected和OnPortDisconnected方法
-        }
-
-        protected virtual BaseEdgeConnectorListener CreateEdgeConnectorListener()
-        {
-            return new BaseEdgeConnectorListener(this);
-        }
-
-        protected virtual void OnInitialized() { }
-
-        void InitializeCallbacks()
-        {
-            graphViewChanged = GraphViewChangedCallback;
-            groupTitleChanged = GroupTitleChangedCallback;
-            serializeGraphElements = SerializeGraphElementsCallback;
-            canPasteSerializedData = CanPasteSerializedDataCallback;
-            unserializeAndPaste = DeserializeAndPasteCallback;
-            viewTransformChanged = ViewTransformChangedCallback;
-
-            RegisterCallback<DragPerformEvent>(DragPerformedCallback);
-            RegisterCallback<DragUpdatedEvent>(DragUpdatedCallback);
-            RegisterCallback<KeyDownEvent>(KeyDownCallback);
-            RegisterCallback<MouseUpEvent>(MouseUpCallback);
-
-            CreateNodeMenu = ScriptableObject.CreateInstance<CreateNodeMenuWindow>();
-            CreateNodeMenu.Initialize(this, GetNodeTypes());
-            nodeCreationRequest = c => SearchWindow.Open(new SearchWindowContext(c.screenMousePosition), CreateNodeMenu);
-        }
-
-        void InitializeGraphView()
-        {
-            viewTransform.position = Graph.Position;
-            viewTransform.scale = Graph.Scale;
-        }
-
-        /// <summary> 初始化所有节点视图 </summary>
-        void InitializeNodeViews()
-        {
-            foreach (var node in Graph.NodesGUIDMapping)
-            {
-                if (node.Value == null) continue;
-                AddNodeView(node.Value);
-            }
-        }
-
-        void InitializeStacks()
-        {
-            foreach (var stack in Graph.StackNodesGUIDMapping.Values)
-                AddStackNodeView(stack);
-        }
-
-        /// <summary> 初始化所有Group的视图 </summary>
-        void InitializeGroups()
-        {
-            foreach (var group in Graph.Groups)
-                AddGroupView(group);
-        }
-
         /// <summary> 初始化所有连接的视图 </summary>
-        void InitializeEdgeViews()
+        void LinkNodeViews()
         {
             foreach (var serializedEdge in Graph.EdgesGUIDMapping)
             {
                 if (serializedEdge.Value == null) continue;
-                BaseNodeView inputNodeView = null, outputNodeView = null;
-                NodeViews.TryGetValue(serializedEdge.Value.InputNodeGUID, out inputNodeView);
-                NodeViews.TryGetValue(serializedEdge.Value.OutputNodeGUID, out outputNodeView);
-                if (inputNodeView == null || outputNodeView == null)
-                    continue;
+                BaseNodeView inputNodeView, outputNodeView;
+                if (!NodeViews.TryGetValue(serializedEdge.Value.InputNodeGUID, out inputNodeView)) return;
+                if (!NodeViews.TryGetValue(serializedEdge.Value.OutputNodeGUID, out outputNodeView)) return;
                 ConnectView(inputNodeView.PortViews[serializedEdge.Value.InputFieldName], outputNodeView.PortViews[serializedEdge.Value.OutputFieldName], serializedEdge.Value);
             }
         }
 
-        void InitializeBlackboard()
+        void RefreshNodeViewsExpandedState()
         {
-            Blackboard = new ExposedParameterView(this);
-            Blackboard.SetPosition(Graph.BlackboardPosition);
-            Blackboard.style.display = Graph.BlackboardVisible ? DisplayStyle.Flex : DisplayStyle.None;
-            Add(Blackboard);
+            foreach (var nodeView in NodeViews.Values)
+            {
+                nodeView.RefreshExpandedState();
+            }
         }
 
+        void NotifyNodeViewsInitialized()
+        {
+            foreach (var nodeView in NodeViews.Values)
+            {
+                nodeView.Initialized();
+            }
+        }
+
+        protected virtual void OnInitialized() { }
         #endregion
 
         #region Callbacks
@@ -546,13 +519,17 @@ namespace CZToolKit.GraphProcessor.Editors
 
         protected virtual IEnumerable<Type> GetNodeTypes()
         {
-            foreach (var type in Utility_Refelection.GetChildrenTypes<BaseNode>())
+            foreach (var type in Utility_Reflection.GetChildrenTypes<BaseNode>())
             {
                 if (type.IsAbstract) continue;
                 yield return type;
             }
         }
 
+        protected virtual BaseEdgeConnectorListener CreateEdgeConnectorListener()
+        {
+            return new BaseEdgeConnectorListener(this);
+        }
         #endregion
 
         #region Graph修改
@@ -596,6 +573,8 @@ namespace CZToolKit.GraphProcessor.Editors
             RegisterCompleteObjectUndo("AddNode " + _nodeData.GetType().Name);
             Graph.AddNode(_nodeData);
             BaseNodeView nodeView = AddNodeView(_nodeData);
+            nodeView.RefreshExpandedState();
+            nodeView.Initialized();
             SetDirty();
             return nodeView;
         }
@@ -616,9 +595,9 @@ namespace CZToolKit.GraphProcessor.Editors
                 nodeViewType = GetDefaultNodeViewType(_nodeData.GetType());
 
             BaseNodeView nodeView = Activator.CreateInstance(nodeViewType) as BaseNodeView;
+            nodeView.SetUp(_nodeData, CommandDispatcher, this);
             AddElement(nodeView);
             NodeViews[_nodeData.GUID] = nodeView;
-            nodeView.SetUp(_nodeData, CommandDispatcher, this);
             return nodeView;
         }
 
