@@ -71,7 +71,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
         public bool OnSelectEntry(SearchTreeEntry searchTreeEntry, SearchWindowContext context)
         {
-            var windowRoot = graphView.GraphWindow.GraphViewParent;
+            var windowRoot = graphView.GraphWindow.rootVisualElement;
             var windowMousePosition = windowRoot.ChangeCoordinatesTo(windowRoot.parent, context.screenMousePosition - graphView.GraphWindow.position.position);
             var graphMousePosition = graphView.contentViewContainer.WorldToLocal(windowMousePosition);
 

@@ -5,7 +5,6 @@ namespace CZToolKit.GraphProcessor
     public class AddNode : BaseNode
     {
         [Port(PortDirection.Input, IsMulti = true)]
-        [ShowAsDrawer]
         public float input;
 
         [Port(PortDirection.Output, IsMulti = true)]

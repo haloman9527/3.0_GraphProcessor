@@ -58,21 +58,27 @@ namespace CZToolKit.GraphProcessor.Editors
             AddToRight(_button);
         }
 
-        public void AddToggleToLeft(ToolbarToggle _toggle)
+        public void AddToggleToLeft(ToolbarToggle _toggle, float _width)
         {
             _toggle.Q(className: "unity-toggle__input").style.justifyContent = Justify.Center;
             _toggle.Q(className: "unity-toggle__input").StretchToParentSize();
             _toggle.Q(className: "unity-toggle__input").style.marginBottom = 0;
             _toggle.Q(className: "unity-toggle__text").style.color = new Color(0, 0, 0, 1);
+            _toggle.style.alignSelf = Align.Center;
+            _toggle.style.width = _width;
+            _toggle.style.unityTextAlign = TextAnchor.MiddleCenter;
             AddToLeft(_toggle);
         }
 
-        public void AddToggleToRight(ToolbarToggle _toggle)
+        public void AddToggleToRight(ToolbarToggle _toggle, float _width)
         {
             _toggle.Q(className: "unity-toggle__input").style.justifyContent = Justify.Center;
             _toggle.Q(className: "unity-toggle__input").StretchToParentSize();
             _toggle.Q(className: "unity-toggle__input").style.marginBottom = 0;
             _toggle.Q(className: "unity-toggle__text").style.color = new Color(0, 0, 0, 1);
+            _toggle.style.alignSelf = Align.Center;
+            _toggle.style.width = _width;
+            _toggle.style.unityTextAlign = TextAnchor.MiddleCenter;
             AddToLeft(_toggle);
         }
     }

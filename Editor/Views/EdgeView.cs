@@ -8,8 +8,6 @@ namespace CZToolKit.GraphProcessor.Editors
     {
         public new class UxmlFactory : UxmlFactory<EdgeView, GraphView.UxmlTraits> { }
 
-
-        public bool isConnected = false;
         protected BaseGraphView Owner { get; private set; }
         protected CommandDispatcher CommandDispatcher { get; private set; }
         public SerializableEdge EdgeData { get { return userData as SerializableEdge; } }
@@ -25,20 +23,12 @@ namespace CZToolKit.GraphProcessor.Editors
             userData = _graphElement;
             CommandDispatcher = _commandDispatcher;
             Owner = _graphView as BaseGraphView;
-
-            //Add(new EdgeBubble());
         }
 
         public override void OnPortChanged(bool isInput)
         {
             base.OnPortChanged(isInput);
             UpdateEdgeSize();
-        }
-
-        protected override void DrawEdge()
-        {
-            base.DrawEdge();
-
         }
 
         public void UpdateEdgeSize()
@@ -68,8 +58,8 @@ namespace CZToolKit.GraphProcessor.Editors
             if (e.clickCount == 2)
             {
                 var position = e.mousePosition;
-                position += new Vector2(-10f, -28);
-                Vector2 mousePos = Owner.ChangeCoordinatesTo(Owner.contentViewContainer, position);
+                position += new Vector2(-20 * Owner.scale, -30 * Owner.scale);
+                Vector2 mousePos = Owner.GraphWindow.rootVisualElement.ChangeCoordinatesTo(Owner.contentViewContainer, position);
                 Owner.Disconnect(this);
                 Owner.AddRelayNode(input as PortView, output as PortView, mousePos);
             }

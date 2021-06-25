@@ -5,10 +5,10 @@ using UnityEngine;
 using UnityEditor;
 using UnityEngine.UIElements;
 using UnityEditor.Callbacks;
+using UnityEditor.UIElements;
 using UnityEngine.Profiling;
 
 using UnityObject = UnityEngine.Object;
-using UnityEditor.UIElements;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
@@ -68,14 +68,14 @@ namespace CZToolKit.GraphProcessor.Editors
             if (window == null)
             {
                 window = CreateInstance(windowType) as BaseGraphWindow;
+                window.SetUp(_graph);
                 window.Show();
-                window.LoadGraphInternal(_graph);
             }
             else
             {
                 window.Focus();
                 if (window.Graph != _graph)
-                    window.LoadGraphInternal(_graph);
+                    window.SetUp(_graph);
             }
 
             return window;
@@ -125,7 +125,7 @@ namespace CZToolKit.GraphProcessor.Editors
         #region Unity
         protected virtual void OnEnable()
         {
-            titleContent = new GUIContent("Default Graph");
+            titleContent = new GUIContent("Graph Processor");
 
             CommandDispatcher = new CommandDispatcher(CreateGraphState());
             CommandDispatcherHelper.RegisterDefaultCommandHandlers(CommandDispatcher);
@@ -195,7 +195,7 @@ namespace CZToolKit.GraphProcessor.Editors
             GraphOwner = null;
         }
 
-        void LoadGraphInternal(IGraph _graph)
+        void SetUp(IGraph _graph)
         {
             if (GraphView != null && GraphAsset != null && EditorUtility.IsDirty(GraphAsset))
                 GraphView.SaveGraphToDisk();
@@ -209,7 +209,7 @@ namespace CZToolKit.GraphProcessor.Editors
             GraphViewParent.StretchToParentSize();
             rootVisualElement.Add(GraphViewParent);
 
-            GraphView = CreateGraphView(Graph);
+            GraphView = GenerateGraphView(Graph);
             if (GraphView == null) return;
 
             ToolbarButton btnPing = new ToolbarButton()
@@ -236,7 +236,7 @@ namespace CZToolKit.GraphProcessor.Editors
             btnReload.clicked += ReloadGraph;
             GraphViewParent.Toolbar.AddButtonToRight(btnReload);
 
-            GraphViewParent.SetUp(GraphView);
+            GraphViewParent.GraphViewElement.Add(GraphView);
 
             OnLoadedGraph();
         }
@@ -244,7 +244,7 @@ namespace CZToolKit.GraphProcessor.Editors
         void ReloadGraph()
         {
             IGraphOwner tempGraphOwner = GraphOwner;
-            LoadGraphInternal((GraphAsset as IGraphAsset).Graph);
+            SetUp((GraphAsset as IGraphAsset).Graph);
             GraphOwner = tempGraphOwner;
             if (Graph != null && GraphOwner != null)
                 Graph.InitializePropertyMapping(GraphOwner);
@@ -252,7 +252,7 @@ namespace CZToolKit.GraphProcessor.Editors
         #endregion
 
         #region Overrides
-        protected virtual BaseGraphView CreateGraphView(IGraph _graph)
+        protected virtual BaseGraphView GenerateGraphView(IGraph _graph)
         {
             BaseGraphView graphView = new BaseGraphView(_graph, CommandDispatcher, this);
             return graphView;

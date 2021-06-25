@@ -1,6 +1,4 @@
-﻿using System;
-using UnityEngine;
-using UnityEngine.UIElements;
+﻿using UnityEngine.UIElements;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
@@ -9,14 +7,7 @@ namespace CZToolKit.GraphProcessor.Editors
     {
         protected override void OnInitialized()
         {
-            titleContainer.RemoveFromHierarchy();
-            this.Q("divider").RemoveFromHierarchy();
-
             styleSheets.Add(GraphProcessorStyles.RelayNodeViewStyle);
-            foreach (var item in PortViews)
-            {
-                item.Value.Q("type").style.display = DisplayStyle.None;
-            }
 
             RegisterCallback<MouseDownEvent>(OnMouseDown);
         }

@@ -36,10 +36,5 @@ namespace CZToolKit.GraphProcessor.Editors
             GraphViewElement.style.top = Toolbar.style.height;
             Add(GraphViewElement);
         }
-
-        public void SetUp(BaseGraphView _graphView)
-        {
-            GraphViewElement.Add(_graphView);
-        }
     }
 }

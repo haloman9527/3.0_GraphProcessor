@@ -60,8 +60,6 @@ namespace CZToolKit.GraphProcessor.Editors
             this.AddManipulator(new RectangleSelector());
 
             this.StretchToParentSize();
-
-            InitializeCallbacks();
         }
 
         public BaseGraphView(IGraph _graph, CommandDispatcher _commandDispatcher, BaseGraphWindow _window) : this()
@@ -75,6 +73,7 @@ namespace CZToolKit.GraphProcessor.Editors
             viewTransform.position = Graph.Position;
             viewTransform.scale = Graph.Scale;
             ConnectorListener = CreateEdgeConnectorListener();
+
             InitializeCallbacks();
 
             ToolbarButton btnCenter = new ToolbarButton()
@@ -93,14 +92,13 @@ namespace CZToolKit.GraphProcessor.Editors
             {
                 text = "Blackboard",
                 value = Graph.BlackboardVisible,
-                style = { alignSelf = Align.Center, width = 100, unityTextAlign = TextAnchor.MiddleCenter, color = Color.black }
             };
             toggleBlackboard.RegisterValueChangedCallback(e =>
             {
                 GetBlackboard().style.display = e.newValue ? DisplayStyle.Flex : DisplayStyle.None;
                 Graph.BlackboardVisible = e.newValue;
             });
-            Parent.Toolbar.AddToggleToLeft(toggleBlackboard);
+            Parent.Toolbar.AddToggleToLeft(toggleBlackboard, 100);
 
             double time = EditorApplication.timeSinceStartup;
             Add(new IMGUIContainer(() =>
@@ -562,10 +560,13 @@ namespace CZToolKit.GraphProcessor.Editors
 
         public void RemoveRelayNode(RelayNodeView _relayNodeView)
         {
-            // 获取relayNodeViewinput侧接口
-            // 获取relayNodeViewoutput侧接口
-
-            // 如果两个接口都不为空，连接这两个接口
+            PortView input = _relayNodeView.PortViews["output"].Connection;
+            PortView output = _relayNodeView.PortViews["input"].Connection;
+            Disconnect(_relayNodeView.PortViews["output"]);
+            Disconnect(_relayNodeView.PortViews["input"]);
+            RemoveNode(_relayNodeView);
+            if (input != null && output != null)
+                Connect(input, output);
         }
 
         public BaseNodeView AddNode(BaseNode _nodeData)
@@ -603,16 +604,14 @@ namespace CZToolKit.GraphProcessor.Editors
 
         public void RemoveNode(BaseNodeView _nodeView)
         {
-            Graph.RemoveNode(_nodeView.NodeData);
-
-            // 然后移除节点View
             RemoveNodeView(_nodeView);
+            Graph.RemoveNode(_nodeView.NodeData);
         }
 
         public void RemoveNodeView(BaseNodeView _nodeView)
         {
-            NodeViews.Remove(_nodeView.NodeData.GUID);
             RemoveElement(_nodeView);
+            NodeViews.Remove(_nodeView.NodeData.GUID);
         }
 
         void RemoveNodeViews()
@@ -735,8 +734,6 @@ namespace CZToolKit.GraphProcessor.Editors
             inputPortView.Connect(_edgeView);
             outputPortView.Connect(_edgeView);
 
-            _edgeView.isConnected = true;
-
             AddElement(_edgeView);
             EdgeViews.Add(_edgeView);
 
@@ -757,7 +754,6 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             var edgeView = new EdgeView()
             {
-                userData = _serializableEdge,
                 input = _inputPortView,
                 output = _outputPortView,
             };
@@ -771,10 +767,10 @@ namespace CZToolKit.GraphProcessor.Editors
 
             var edgeView = new EdgeView()
             {
-                userData = newEdge,
                 input = _inputPortView,
                 output = _outputPortView,
             };
+            edgeView.SetUp(newEdge, CommandDispatcher, this);
             return ConnectView(edgeView);
         }
 
@@ -786,11 +782,8 @@ namespace CZToolKit.GraphProcessor.Editors
             var outputNodeView = outputPortView.node as BaseNodeView;
             inputNodeView.NodeData.TryGetPort(inputPortView.FieldName, out NodePort inputPort);
             outputNodeView.NodeData.TryGetPort(outputPortView.FieldName, out NodePort outputPort);
-
-            _edgeView.userData = Graph.Connect(inputPort, outputPort);
-
+            _edgeView.SetUp(Graph.Connect(inputPort, outputPort), CommandDispatcher, this);
             ConnectView(_edgeView);
-
             return true;
         }
 
@@ -808,8 +801,8 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             if (_edgeView == null) return;
 
-            Graph.Disconnect(_edgeView.EdgeData);
             DisconnectView(_edgeView);
+            Graph.Disconnect(_edgeView.EdgeData);
         }
 
         public void DisconnectView(EdgeView _edgeView)

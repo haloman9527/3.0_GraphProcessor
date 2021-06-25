@@ -9,6 +9,16 @@
     border-radius: 9px;
 }
 
+#title
+{
+    display: none;
+}
+
+.contents-horizontal-divider
+{
+    display: none;
+}
+
 #contents > #top > #input, #contents > #top > #output
 {
     padding: 0px;
@@ -28,6 +38,11 @@
 }
 
 .hideLabels .unity-label
+{
+    display: none;
+}
+
+.port > #type
 {
     display: none;
 }

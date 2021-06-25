@@ -11,7 +11,7 @@ namespace CZToolKit.GraphProcessor.Examples
             titleContent = new GUIContent("Examples.Math");
         }
 
-        protected override BaseGraphView CreateGraphView(IGraph _graph)
+        protected override BaseGraphView GenerateGraphView(IGraph _graph)
         {
             MathGraphView graphView = new MathGraphView(_graph, CommandDispatcher, this);
             return graphView;

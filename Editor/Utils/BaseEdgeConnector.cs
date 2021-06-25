@@ -27,8 +27,6 @@ namespace CZToolKit.GraphProcessor.Editors
 
         protected override void RegisterCallbacksOnTarget()
         {
-           
-
             target.RegisterCallback<MouseDownEvent>(OnMouseDown);
             target.RegisterCallback<MouseMoveEvent>(OnMouseMove);
             target.RegisterCallback<MouseUpEvent>(OnMouseUp);

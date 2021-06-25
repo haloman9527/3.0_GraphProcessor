@@ -154,8 +154,6 @@ namespace CZToolKit.GraphProcessor.Editors
         public override void Disconnect(Edge edge)
         {
             base.Disconnect(edge);
-            if (!(edge as EdgeView).isConnected)
-                return;
             onDisconnected?.Invoke();
         }
 

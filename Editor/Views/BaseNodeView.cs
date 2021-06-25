@@ -36,7 +36,7 @@ namespace CZToolKit.GraphProcessor.Editors
         public VisualElement bottomPortContainer { get; }
         public VisualElement controlsContainer { get; }
         public VisualElement inputContainerElement { get; }
-        public VisualElement contentHorizontalDivider { get; }
+        public VisualElement contentsHorizontalDivider { get; }
         public VisualElement portsVerticalDivider { get; }
         public VisualElement controlsHorizontalDivider { get; }
 
@@ -68,34 +68,33 @@ namespace CZToolKit.GraphProcessor.Editors
             styleSheets.Add(GraphProcessorStyles.BaseNodeViewStyle);
             styleSheets.Add(GraphProcessorStyles.PortViewTypesStyle);
 
-            contentHorizontalDivider = contentContainer.Q(name: "divider", className: "horizontal");
-            contentHorizontalDivider.AddToClassList("contents-horizontal-divider");
-
+            contentsHorizontalDivider = contentContainer.Q(name: "divider", className: "horizontal");
+            contentsHorizontalDivider.AddToClassList("contents-horizontal-divider");
 
             portsVerticalDivider = topContainer.Q(name: "divider", className: "vertical");
             portsVerticalDivider.AddToClassList("ports-vertical-divider");
 
-            controlsContainer = new VisualElement { name = "Controls" };
-            controlsContainer.AddToClassList("NodeControls");
+            controlsContainer = new VisualElement { name = "controls" };
+            controlsContainer.AddToClassList("node-controls");
             controlsContainer.style.backgroundColor = new Color(0.2f, 0.2f, 0.2f, 1);
             mainContainer.Add(controlsContainer);
 
             controlsHorizontalDivider = new VisualElement() { name = "divider" };
-            controlsHorizontalDivider.AddToClassList("horizontal");
             controlsHorizontalDivider.style.height = 1;
             controlsHorizontalDivider.style.backgroundColor = new Color(0.2f, 0.2f, 0.2f, 1);
             controlsHorizontalDivider.StretchToParentWidth();
+            controlsHorizontalDivider.AddToClassList("horizontal");
             controlsHorizontalDivider.AddToClassList("controls-horizontal-divider");
             controlsContainer.Add(controlsHorizontalDivider);
 
 
-            topPortContainer = new VisualElement { name = "TopPortContainer" };
+            topPortContainer = new VisualElement { name = "top-port-container" };
             topPortContainer.style.justifyContent = Justify.Center;
             topPortContainer.style.alignItems = Align.Center;
             topPortContainer.style.flexDirection = FlexDirection.Row;
             Insert(0, topPortContainer);
 
-            bottomPortContainer = new VisualElement { name = "BottomPortContainer" };
+            bottomPortContainer = new VisualElement { name = "bottom-port-container" };
             bottomPortContainer.style.justifyContent = Justify.Center;
             bottomPortContainer.style.alignItems = Align.Center;
             bottomPortContainer.style.flexDirection = FlexDirection.Row;
@@ -106,7 +105,7 @@ namespace CZToolKit.GraphProcessor.Editors
             inputContainerElement.SendToBack();
             Add(inputContainerElement);
 
-            contentHorizontalDivider.style.backgroundColor = Color.green;
+            contentsHorizontalDivider.style.backgroundColor = Color.green;
             portsVerticalDivider.style.backgroundColor = Color.red;
             controlsHorizontalDivider.style.backgroundColor = Color.blue;
 
@@ -300,9 +299,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
         #region Callbacks & Overrides
 
-        Dictionary<string, List<(object value, VisualElement target)>> visibleConditions = new Dictionary<string, List<(object value, VisualElement target)>>();
         Dictionary<string, VisualElement> hideElementIfConnected = new Dictionary<string, VisualElement>();
-        Dictionary<FieldInfo, List<VisualElement>> fieldControlsMap = new Dictionary<FieldInfo, List<VisualElement>>();
 
         protected virtual PortView CustomCreatePortView(Orientation _orientation, Direction _direction, NodePort _nodePort)
         {
