@@ -12,7 +12,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
         public BaseGraphView Owner { get; private set; }
 
-        public BaseStack Model { get; private set; }
+        public StackPanel Model { get; private set; }
 
         public StackView()
         {
@@ -21,7 +21,7 @@ namespace CZToolKit.GraphProcessor.Editors
             this.Q("stackSeparatorContainer").style.visibility = Visibility.Hidden;
         }
 
-        public void SetUp(BaseStack _stack, CommandDispatcher _commandDispatcher, BaseGraphView _graphView)
+        public void SetUp(StackPanel _stack, CommandDispatcher _commandDispatcher, BaseGraphView _graphView)
         {
             CommandDispatcher = _commandDispatcher;
             Owner = _graphView;

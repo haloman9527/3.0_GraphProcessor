@@ -12,7 +12,7 @@ namespace CZToolKit.GraphProcessor
 
         public List<BaseNode> copiedNodes = new List<BaseNode>();
         public List<BaseEdge> copiedEdges = new List<BaseEdge>();
-        public List<BaseStack> copiedStacks = new List<BaseStack>();
-        public List<BaseGroup> copiedGroups = new List<BaseGroup>();
+        public List<StackPanel> copiedStacks = new List<StackPanel>();
+        public List<GroupPanel> copiedGroups = new List<GroupPanel>();
     }
 }

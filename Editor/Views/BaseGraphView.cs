@@ -29,7 +29,7 @@ namespace CZToolKit.GraphProcessor.Editors
         protected override bool canCutSelection { get { return true; } }
         public Dictionary<string, BaseNodeView> NodeViews { get; private set; } = new Dictionary<string, BaseNodeView>();
         public Dictionary<string, StackView> StackViews { get; private set; } = new Dictionary<string, StackView>();
-        public Dictionary<BaseGroup, GroupView> GroupViews { get; private set; } = new Dictionary<BaseGroup, GroupView>();
+        public Dictionary<GroupPanel, GroupView> GroupViews { get; private set; } = new Dictionary<GroupPanel, GroupView>();
 
         public BaseGraph Model { get; set; }
         #endregion
@@ -567,7 +567,7 @@ namespace CZToolKit.GraphProcessor.Editors
             NodeViews.Remove(_nodeView.Model.GUID);
         }
 
-        public GroupView AddGroupView(BaseGroup _group)
+        public GroupView AddGroupView(GroupPanel _group)
         {
             var groupView = new GroupView();
             groupView.SetUp(_group, CommandDispatcher, this);
@@ -591,7 +591,7 @@ namespace CZToolKit.GraphProcessor.Editors
             }
         }
 
-        public void RemoveGroupView(BaseGroup _group)
+        public void RemoveGroupView(GroupPanel _group)
         {
             if (!GroupViews.TryGetValue(_group, out GroupView _groupView))
                 return;
@@ -604,7 +604,7 @@ namespace CZToolKit.GraphProcessor.Editors
             GroupViews.Remove(_group);
         }
 
-        public StackView AddStackNodeView(BaseStack _stackNode)
+        public StackView AddStackNodeView(StackPanel _stackNode)
         {
             var stackView = new StackView();
             stackView.SetUp(_stackNode, CommandDispatcher, this);

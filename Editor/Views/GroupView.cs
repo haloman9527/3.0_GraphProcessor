@@ -12,7 +12,7 @@ namespace CZToolKit.GraphProcessor.Editors
         public Label titleLabel { get; private set; }
         public ColorField colorField { get; private set; }
         public BaseGraphView Owner { get; private set; }
-        public BaseGroup Model { get; private set; }
+        public GroupPanel Model { get; private set; }
 
         public GroupView() : base()
         {
@@ -22,7 +22,7 @@ namespace CZToolKit.GraphProcessor.Editors
             headerContainer.Add(colorField);
         }
 
-        public void SetUp(BaseGroup _group, CommandDispatcher _commandDispatcher, BaseGraphView _graphView)
+        public void SetUp(GroupPanel _group, CommandDispatcher _commandDispatcher, BaseGraphView _graphView)
         {
             Owner = _graphView;
 

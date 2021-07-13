@@ -5,11 +5,11 @@ using System;
 namespace CZToolKit.GraphProcessor
 {
     [Serializable]
-    public class BaseStack : BaseGraphElement
+    public class StackPanel : BaseGraphElement
     {
-        public static BaseStack CreateStack(Vector2 _position, string _title = "Stack")
+        public static StackPanel CreateStack(Vector2 _position, string _title = "Stack")
         {
-            BaseStack stack = new BaseStack();
+            StackPanel stack = new StackPanel();
             stack.title = _title;
             stack.position = _position;
             stack.guid = Guid.NewGuid().ToString();

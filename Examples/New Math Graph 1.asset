@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: New Math Graph 1
   m_EditorClassIdentifier: 
   graph:
-    position: {x: 22, y: 601, z: 0}
-    scale: {x: 1, y: 1, z: 1}
+    position: {x: -240, y: 528, z: 0}
+    scale: {x: 0.8695652, y: 0.8695652, z: 1}
     blackboardVisible: 1
     blackboardPosition:
       serializedVersion: 2
@@ -22,14 +22,29 @@ MonoBehaviour:
       y: 9
       width: 295
       height: 332
-    groups: []
+    groups:
+    - title: 12312412
+      color: {r: 0.04396581, g: 0.49056602, b: 0.22780631, a: 1}
+      position:
+        serializedVersion: 2
+        x: 888.159
+        y: -193.11948
+        width: 607
+        height: 389
+      innerNodeGUIDs:
+      - 7b77527d-3d6a-425c-9fa1-25e5cc9f6ac1
+      - f668fe83-1f51-4642-8e51-c672628e9838
+      - 5e1c61d9-2c9c-418e-84dc-1c72bd8d31a9
+      - 7499abc1-0a97-494c-b18b-0c94567bb3b1
+      - f6a5b127-9c5d-46d6-b84b-32ac3170563e
+      innerStackGUIDs: []
     blackboard: {}
   serializedGraph: "{\r\n    \"$id\": 0,\r\n    \"$type\": \"0|CZToolKit.GraphProcessor.Examples.MathGraph,
     Assembly-CSharp\",\r\n    \"position\": {\r\n        \"$type\": \"1|UnityEngine.Vector3,
-    UnityEngine.CoreModule\",\r\n        22,\r\n        601,\r\n        0\r\n   
-    },\r\n    \"scale\": {\r\n        \"$type\": 1,\r\n        1,\r\n        1,\r\n       
-    1\r\n    },\r\n    \"blackboardVisible\": true,\r\n    \"blackboardPosition\":
-    {\r\n        \"$type\": \"2|UnityEngine.Rect, UnityEngine.CoreModule\",\r\n       
+    UnityEngine.CoreModule\",\r\n        -240,\r\n        528,\r\n        0\r\n   
+    },\r\n    \"scale\": {\r\n        \"$type\": 1,\r\n        0.8695652,\r\n       
+    0.8695652,\r\n        1\r\n    },\r\n    \"blackboardVisible\": true,\r\n   
+    \"blackboardPosition\": {\r\n        \"$type\": \"2|UnityEngine.Rect, UnityEngine.CoreModule\",\r\n       
     12,\r\n        9,\r\n        295,\r\n        332\r\n    },\r\n    \"nodes\":
     {\r\n        \"$id\": 1,\r\n        \"$type\": \"3|System.Collections.Generic.Dictionary`2[[System.String,
     mscorlib],[CZToolKit.GraphProcessor.BaseNode, Assembly-CSharp]], mscorlib\",\r\n       
@@ -40,7 +55,7 @@ MonoBehaviour:
     \"5|CZToolKit.GraphProcessor.AddNode, Assembly-CSharp\",\r\n                   
     \"guid\": \"7b77527d-3d6a-425c-9fa1-25e5cc9f6ac1\",\r\n                    \"position\":
     {\r\n                        \"$type\": \"6|UnityEngine.Vector2, UnityEngine.CoreModule\",\r\n                       
-    826.8809,\r\n                        -18.61815\r\n                    },\r\n                   
+    1071.15894,\r\n                        -5.11947632\r\n                    },\r\n                   
     \"expanded\": true,\r\n                    \"locked\": false,\r\n                   
     \"ports\": {\r\n                        \"$id\": 4,\r\n                       
     \"$type\": \"7|System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[CZToolKit.GraphProcessor.NodePort,
@@ -77,8 +92,8 @@ MonoBehaviour:
     \"$v\": {\r\n                    \"$id\": 10,\r\n                    \"$type\":
     \"10|CZToolKit.GraphProcessor.Examples.SharedVariableNode, Assembly-CSharp\",\r\n                   
     \"guid\": \"f668fe83-1f51-4642-8e51-c672628e9838\",\r\n                    \"position\":
-    {\r\n                        \"$type\": 6,\r\n                        1020,\r\n                       
-    -150\r\n                    },\r\n                    \"expanded\": true,\r\n                   
+    {\r\n                        \"$type\": 6,\r\n                        1264.15894,\r\n                       
+    -136.119476\r\n                    },\r\n                    \"expanded\": true,\r\n                   
     \"locked\": false,\r\n                    \"ports\": {\r\n                       
     \"$id\": 11,\r\n                        \"$type\": 7,\r\n                       
     \"comparer\": {\r\n                            \"$id\": 12,\r\n                           
@@ -104,8 +119,8 @@ MonoBehaviour:
     \"$v\": {\r\n                    \"$id\": 16,\r\n                    \"$type\":
     \"12|CZToolKit.GraphProcessor.DebugNode, Assembly-CSharp\",\r\n                   
     \"guid\": \"5e1c61d9-2c9c-418e-84dc-1c72bd8d31a9\",\r\n                    \"position\":
-    {\r\n                        \"$type\": 6,\r\n                        668.919861,\r\n                       
-    -74.39751\r\n                    },\r\n                    \"expanded\": true,\r\n                   
+    {\r\n                        \"$type\": 6,\r\n                        913.158936,\r\n                       
+    -60.1194763\r\n                    },\r\n                    \"expanded\": true,\r\n                   
     \"locked\": false,\r\n                    \"ports\": {\r\n                       
     \"$id\": 17,\r\n                        \"$type\": 7,\r\n                       
     \"comparer\": {\r\n                            \"$id\": 18,\r\n                           
@@ -127,7 +142,7 @@ MonoBehaviour:
     \"$v\": {\r\n                    \"$id\": 21,\r\n                    \"$type\":
     \"13|SampleNode, Assembly-CSharp\",\r\n                    \"guid\": \"799545f9-0ab0-45d8-a45c-83865b805e93\",\r\n                   
     \"position\": {\r\n                        \"$type\": 6,\r\n                       
-    1392.545,\r\n                        -182.272537\r\n                    },\r\n                   
+    1802.26721,\r\n                        -69.5039139\r\n                    },\r\n                   
     \"expanded\": true,\r\n                    \"locked\": false,\r\n                   
     \"ports\": {\r\n                        \"$id\": 22,\r\n                       
     \"$type\": 7,\r\n                        \"comparer\": {\r\n                           
@@ -500,7 +515,7 @@ MonoBehaviour:
     {\r\n                    \"$id\": 82,\r\n                    \"$type\": \"18|CZToolKit.GraphProcessor.StringNode,
     Assembly-CSharp\",\r\n                    \"guid\": \"7499abc1-0a97-494c-b18b-0c94567bb3b1\",\r\n                   
     \"position\": {\r\n                        \"$type\": 6,\r\n                       
-    978.7202,\r\n                        84.9036\r\n                    },\r\n                   
+    1223.15894,\r\n                        98.88052\r\n                    },\r\n                   
     \"expanded\": true,\r\n                    \"locked\": false,\r\n                   
     \"ports\": {\r\n                        \"$id\": 83,\r\n                       
     \"$type\": 7,\r\n                        \"comparer\": {\r\n                           
@@ -641,7 +656,7 @@ MonoBehaviour:
     \"$v\": {\r\n                    \"$id\": 111,\r\n                    \"$type\":
     12,\r\n                    \"guid\": \"f6a5b127-9c5d-46d6-b84b-32ac3170563e\",\r\n                   
     \"position\": {\r\n                        \"$type\": 6,\r\n                       
-    1102.85,\r\n                        -14.5499878\r\n                    },\r\n                   
+    1347.15894,\r\n                        -1.11947632\r\n                    },\r\n                   
     \"expanded\": true,\r\n                    \"locked\": false,\r\n                   
     \"ports\": {\r\n                        \"$id\": 112,\r\n                       
     \"$type\": 7,\r\n                        \"comparer\": {\r\n                           
@@ -672,38 +687,53 @@ MonoBehaviour:
     \"input\",\r\n                    \"outputNodeGUID\": \"7b77527d-3d6a-425c-9fa1-25e5cc9f6ac1\",\r\n                   
     \"outputFieldName\": \"output\"\r\n                }\r\n            }\r\n       
     ]\r\n    },\r\n    \"stacks\": {\r\n        \"$id\": 118,\r\n        \"$type\":
-    \"22|System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[CZToolKit.GraphProcessor.BaseStack,
+    \"22|System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[CZToolKit.GraphProcessor.StackPanel,
     Assembly-CSharp]], mscorlib\",\r\n        \"comparer\": $iref:2,\r\n        \"$rlength\":
     0,\r\n        \"$rcontent\": [\r\n        ]\r\n    },\r\n    \"groups\": {\r\n       
-    \"$id\": 119,\r\n        \"$type\": \"23|System.Collections.Generic.List`1[[CZToolKit.GraphProcessor.BaseGroup,
-    Assembly-CSharp]], mscorlib\",\r\n        \"$rlength\": 0,\r\n        \"$rcontent\":
-    [\r\n        ]\r\n    },\r\n    \"blackboard\": {\r\n        \"$id\": 120,\r\n       
-    \"$type\": \"24|CZToolKit.Core.Blackboards.CZBlackboard, CZToolKit.Core\",\r\n       
-    \"dataMap\": {\r\n            \"$id\": 121,\r\n            \"$type\": \"25|CZToolKit.Core.Blackboards.CZDataDictionary,
-    CZToolKit.Core\",\r\n            \"comparer\": {\r\n                \"$id\":
-    122,\r\n                \"$type\": 4\r\n            },\r\n            \"$rlength\":
-    4,\r\n            \"$rcontent\": [\r\n                {\r\n                   
-    \"$k\": \"886d2a50-c143-465a-8005-b98c46651355\",\r\n                    \"$v\":
-    {\r\n                        \"$id\": 123,\r\n                        \"$type\":
-    \"26|CZToolKit.Core.Blackboards.CZFloat, CZToolKit.Core\",\r\n                       
+    \"$id\": 119,\r\n        \"$type\": \"23|System.Collections.Generic.List`1[[CZToolKit.GraphProcessor.GroupPanel,
+    Assembly-CSharp]], mscorlib\",\r\n        \"$rlength\": 1,\r\n        \"$rcontent\":
+    [\r\n            {\r\n                \"$id\": 120,\r\n                \"$type\":
+    \"24|CZToolKit.GraphProcessor.GroupPanel, Assembly-CSharp\",\r\n               
+    \"title\": \"12312412\",\r\n                \"color\": {\r\n                   
+    \"$type\": 14,\r\n                    0.04396581,\r\n                    0.490566015,\r\n                   
+    0.227806315,\r\n                    1\r\n                },\r\n               
+    \"position\": {\r\n                    \"$type\": 2,\r\n                    888.159,\r\n                   
+    -193.119476,\r\n                    607,\r\n                    389\r\n               
+    },\r\n                \"innerNodeGUIDs\": {\r\n                    \"$id\": 121,\r\n                   
+    \"$type\": 9,\r\n                    \"$rlength\": 5,\r\n                   
+    \"$rcontent\": [\r\n                        \"7b77527d-3d6a-425c-9fa1-25e5cc9f6ac1\",\r\n                       
+    \"f668fe83-1f51-4642-8e51-c672628e9838\",\r\n                        \"5e1c61d9-2c9c-418e-84dc-1c72bd8d31a9\",\r\n                       
+    \"7499abc1-0a97-494c-b18b-0c94567bb3b1\",\r\n                        \"f6a5b127-9c5d-46d6-b84b-32ac3170563e\"\r\n                   
+    ]\r\n                },\r\n                \"innerStackGUIDs\": {\r\n                   
+    \"$id\": 122,\r\n                    \"$type\": 9,\r\n                    \"$rlength\":
+    0,\r\n                    \"$rcontent\": [\r\n                    ]\r\n               
+    }\r\n            }\r\n        ]\r\n    },\r\n    \"blackboard\": {\r\n       
+    \"$id\": 123,\r\n        \"$type\": \"25|CZToolKit.Core.Blackboards.CZBlackboard,
+    CZToolKit.Core\",\r\n        \"dataMap\": {\r\n            \"$id\": 124,\r\n           
+    \"$type\": \"26|CZToolKit.Core.Blackboards.CZDataDictionary, CZToolKit.Core\",\r\n           
+    \"comparer\": {\r\n                \"$id\": 125,\r\n                \"$type\":
+    4\r\n            },\r\n            \"$rlength\": 4,\r\n            \"$rcontent\":
+    [\r\n                {\r\n                    \"$k\": \"886d2a50-c143-465a-8005-b98c46651355\",\r\n                   
+    \"$v\": {\r\n                        \"$id\": 126,\r\n                       
+    \"$type\": \"27|CZToolKit.Core.Blackboards.CZFloat, CZToolKit.Core\",\r\n                       
     \"value\": 1\r\n                    }\r\n                },\r\n               
     {\r\n                    \"$k\": \"b1b780c3-97ca-4c8a-bd61-ba56c6fb22f5\",\r\n                   
-    \"$v\": {\r\n                        \"$id\": 124,\r\n                       
-    \"$type\": \"27|CZToolKit.Core.Blackboards.CZInt, CZToolKit.Core\",\r\n                       
+    \"$v\": {\r\n                        \"$id\": 127,\r\n                       
+    \"$type\": \"28|CZToolKit.Core.Blackboards.CZInt, CZToolKit.Core\",\r\n                       
     \"value\": 0\r\n                    }\r\n                },\r\n               
     {\r\n                    \"$k\": \"4ae939fa-955c-4fdd-8bfd-aabc27c4ee07\",\r\n                   
-    \"$v\": {\r\n                        \"$id\": 125,\r\n                       
-    \"$type\": \"28|CZToolKit.Core.Blackboards.CZVector4, CZToolKit.Core\",\r\n                       
+    \"$v\": {\r\n                        \"$id\": 128,\r\n                       
+    \"$type\": \"29|CZToolKit.Core.Blackboards.CZVector4, CZToolKit.Core\",\r\n                       
     \"value\": {\r\n                            \"$type\": 17,\r\n                           
     0,\r\n                            0,\r\n                            0,\r\n                           
     0\r\n                        }\r\n                    }\r\n                },\r\n               
     {\r\n                    \"$k\": \"fe456485-7a4a-4f1b-b2e1-d530f4ae9306\",\r\n                   
-    \"$v\": {\r\n                        \"$id\": 126,\r\n                       
-    \"$type\": \"29|CZToolKit.Core.Blackboards.CZObject, CZToolKit.Core\",\r\n                       
+    \"$v\": {\r\n                        \"$id\": 129,\r\n                       
+    \"$type\": \"30|CZToolKit.Core.Blackboards.CZObject, CZToolKit.Core\",\r\n                       
     \"value\": $eref:0\r\n                    }\r\n                }\r\n           
-    ]\r\n        },\r\n        \"guidMap\": {\r\n            \"$id\": 127,\r\n           
-    \"$type\": \"30|CZToolKit.Core.Blackboards.CZGUIDMapDictionary, CZToolKit.Core\",\r\n           
-    \"comparer\": $iref:122,\r\n            \"$rlength\": 4,\r\n            \"$rcontent\":
+    ]\r\n        },\r\n        \"guidMap\": {\r\n            \"$id\": 130,\r\n           
+    \"$type\": \"31|CZToolKit.Core.Blackboards.CZGUIDMapDictionary, CZToolKit.Core\",\r\n           
+    \"comparer\": $iref:125,\r\n            \"$rlength\": 4,\r\n            \"$rcontent\":
     [\r\n                {\r\n                    \"$k\": \"ni\",\r\n                   
     \"$v\": \"886d2a50-c143-465a-8005-b98c46651355\"\r\n                },\r\n               
     {\r\n                    \"$k\": \"CZInt\",\r\n                    \"$v\": \"b1b780c3-97ca-4c8a-bd61-ba56c6fb22f5\"\r\n               

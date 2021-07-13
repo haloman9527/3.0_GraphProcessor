@@ -5,11 +5,11 @@ using UnityEngine;
 namespace CZToolKit.GraphProcessor
 {
     [Serializable]
-    public class BaseGroup : BaseGraphElement
+    public sealed class GroupPanel : BaseGraphElement
     {
-        public static BaseGroup Create(string _title, Vector2 _position)
+        public static GroupPanel Create(string _title, Vector2 _position)
         {
-            BaseGroup group = new BaseGroup();
+            GroupPanel group = new GroupPanel();
             group.title = _title;
             group.position.position = _position;
             group.position.size = Vector2.one * 300;
@@ -34,18 +34,18 @@ namespace CZToolKit.GraphProcessor
         }
         public string Title
         {
-            get { return GetPropertyValue<string>(nameof(title)); }
-            set { SetPropertyValue(nameof(title), value); }
+            get { return GetPropertyValue<string>(nameof(Title)); }
+            set { SetPropertyValue(nameof(Title), value); }
         }
         public Color Color
         {
-            get { return GetPropertyValue<Color>(nameof(color)); }
-            set { SetPropertyValue(nameof(color), value); }
+            get { return GetPropertyValue<Color>(nameof(Color)); }
+            set { SetPropertyValue(nameof(Color), value); }
         }
         public Rect Position
         {
-            get { return GetPropertyValue<Rect>(nameof(position)); }
-            set { SetPropertyValue(nameof(position), value); }
+            get { return GetPropertyValue<Rect>(nameof(Position)); }
+            set { SetPropertyValue(nameof(Position), value); }
         }
         public List<string> InnerNodeGUIDs { get { return innerNodeGUIDs; } }
         public List<string> InnerStackGUIDs { get { return innerStackGUIDs; } }
@@ -57,9 +57,9 @@ namespace CZToolKit.GraphProcessor
 
         public override void InitializeBindableProperties()
         {
-            SetBindableProperty(nameof(title), new BindableProperty<string>(title, v => title = v));
-            SetBindableProperty(nameof(color), new BindableProperty<Color>(color, v => color = v));
-            SetBindableProperty(nameof(position), new BindableProperty<Rect>(position, v => position = v));
+            SetBindableProperty(nameof(Title), new BindableProperty<string>(title, v => title = v));
+            SetBindableProperty(nameof(Color), new BindableProperty<Color>(color, v => color = v));
+            SetBindableProperty(nameof(Position), new BindableProperty<Rect>(position, v => position = v));
         }
 
         public void AddNode(string _guid)

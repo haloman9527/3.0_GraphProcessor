@@ -33,8 +33,8 @@ namespace CZToolKit.GraphProcessor
 
         [SerializeField] Dictionary<string, BaseNode> nodes = new Dictionary<string, BaseNode>();
         [SerializeField] Dictionary<string, BaseEdge> edges = new Dictionary<string, BaseEdge>();
-        [SerializeField] Dictionary<string, BaseStack> stacks = new Dictionary<string, BaseStack>();
-        [SerializeField] List<BaseGroup> groups = new List<BaseGroup>();
+        [SerializeField] Dictionary<string, StackPanel> stacks = new Dictionary<string, StackPanel>();
+        [SerializeField] List<GroupPanel> groups = new List<GroupPanel>();
 
         [SerializeField] CZBlackboard blackboard = new CZBlackboard();
         #endregion
@@ -47,11 +47,11 @@ namespace CZToolKit.GraphProcessor
         public event Action<BaseEdge> onEdgeAdded;
         public event Action<BaseEdge> onEdgeRemoved;
 
-        public event Action<BaseStack> onStackAdded;
-        public event Action<BaseStack> onStackRemoved;
+        public event Action<StackPanel> onStackAdded;
+        public event Action<StackPanel> onStackRemoved;
 
-        public event Action<BaseGroup> onGroupAdded;
-        public event Action<BaseGroup> onGroupRemoved;
+        public event Action<GroupPanel> onGroupAdded;
+        public event Action<GroupPanel> onGroupRemoved;
 
         public event Action<string, ICZType> onBlackboardDataAdded;
         public event Action<string> onBlackboardDataRemoved;
@@ -84,8 +84,8 @@ namespace CZToolKit.GraphProcessor
         public IReadOnlyCZBlackboard Blackboard { get { return blackboard; } }
         public IReadOnlyDictionary<string, BaseNode> Nodes { get { return nodes; } }
         public IReadOnlyDictionary<string, BaseEdge> Edges { get { return edges; } }
-        public IReadOnlyDictionary<string, BaseStack> Stacks { get { return stacks; } }
-        public IReadOnlyList<BaseGroup> Groups { get { return groups; } }
+        public IReadOnlyDictionary<string, StackPanel> Stacks { get { return stacks; } }
+        public IReadOnlyList<GroupPanel> Groups { get { return groups; } }
         public IVariableOwner VarialbeOwner { get; private set; }
         public IReadOnlyList<SharedVariable> Variables
         {
@@ -265,20 +265,20 @@ namespace CZToolKit.GraphProcessor
             }
         }
 
-        public void AddStackNode(BaseStack _stack)
+        public void AddStackNode(StackPanel _stack)
         {
             _stack.Enable(this);
             stacks[_stack.GUID] = _stack;
             onStackAdded?.Invoke(_stack);
         }
 
-        public void RemoveStackNode(BaseStack _stack)
+        public void RemoveStackNode(StackPanel _stack)
         {
             stacks.Remove(_stack.GUID);
             onStackRemoved?.Invoke(_stack);
         }
 
-        public void AddGroup(BaseGroup _group)
+        public void AddGroup(GroupPanel _group)
         {
             _group.Enable(this);
             groups.Add(_group);
@@ -287,11 +287,11 @@ namespace CZToolKit.GraphProcessor
 
         public void AddGroup(string _title, Vector2 _position)
         {
-            BaseGroup group = BaseGroup.Create(_title, _position);
+            GroupPanel group = GroupPanel.Create(_title, _position);
             AddGroup(group);
         }
 
-        public void RemoveGroup(BaseGroup _group)
+        public void RemoveGroup(GroupPanel _group)
         {
             if (groups.Remove(_group))
                 onGroupRemoved?.Invoke(_group);
