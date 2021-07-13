@@ -1,5 +1,4 @@
 ﻿using CZToolKit.Core.Editors;
-using System;
 using UnityEditor;
 using UnityEngine;
 
@@ -9,6 +8,7 @@ namespace CZToolKit.GraphProcessor.Editors
     public class GraphAssetOwnerEditor : BasicEditor
     {
         GUIContent graphContent;
+
         protected override void OnEnable()
         {
             base.OnEnable();
@@ -32,7 +32,7 @@ namespace CZToolKit.GraphProcessor.Editors
                 GraphAssetOwner owner = target as GraphAssetOwner;
                 owner.GraphAsset = EditorGUILayout.ObjectField(graphContent, (target as GraphAssetOwner).GraphAsset, owner.GraphAssetType, false) as BaseGraphAsset;
                 if (GUILayout.Button("Edit", GUILayout.Width(50)))
-                    BaseGraphWindow.LoadGraphFromOwner(target as GraphAssetOwner);
+                    BaseGraphWindow.LoadGraphFromAssetOwner(target as GraphAssetOwner);
                 EditorGUILayout.EndHorizontal();
             });
         }

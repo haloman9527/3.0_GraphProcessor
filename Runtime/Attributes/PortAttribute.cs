@@ -22,4 +22,14 @@ namespace CZToolKit.GraphProcessor
             TypeConstraint = _typeConstraint;
         }
     }
+
+    public class InputAttribute : PortAttribute
+    {
+        public InputAttribute(bool _isMulti = true, PortTypeConstraint _typeConstraint = PortTypeConstraint.Inherited) : base(PortDirection.Input, _isMulti, _typeConstraint) { }
+    }
+
+    public class OutputAttribute : PortAttribute
+    {
+        public OutputAttribute(bool _isMulti = true, PortTypeConstraint _typeConstraint = PortTypeConstraint.Inherited) : base(PortDirection.Output, _isMulti, _typeConstraint) { }
+    }
 }

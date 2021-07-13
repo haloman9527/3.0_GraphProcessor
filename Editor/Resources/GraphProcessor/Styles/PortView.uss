@@ -47,7 +47,7 @@ PortView > #connector > #cap:hover
     background-color: #f0f0f0;
 }
 
-.Vertical
+.vertical
 {
     height: 10px;
 }

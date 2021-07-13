@@ -5,11 +5,11 @@ namespace CZToolKit.GraphProcessor.Editors
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = true)]
     public class CustomNodeViewAttribute : Attribute
     {
-        public Type NodeType;
+        public Type nodeType;
 
         public CustomNodeViewAttribute(Type _nodeType)
         {
-            NodeType = _nodeType;
+            nodeType = _nodeType;
         }
     }
 }

@@ -18,6 +18,7 @@ namespace CZToolKit.GraphProcessor.Editors
 {
     public static class GraphProcessorStyles
     {
+        const string BassicStyleFile = "GraphProcessor/Styles/BasicStyle";
         const string GraphViewStyleFile = "GraphProcessor/Styles/BaseGraphView";
         const string BaseNodeViewStyleFile = "GraphProcessor/Styles/BaseNodeView";
         const string SimpleNodeViewStyleFile = "GraphProcessor/Styles/SimpleNodeView";
@@ -29,8 +30,8 @@ namespace CZToolKit.GraphProcessor.Editors
         const string NodeSettingViewStyleFile = "GraphProcessor/Styles/NodeSettings";
         const string NodeSettingsTreeFile = "GraphProcessor/UXML/NodeSettings";
         const string RelayNodeViewStyleFile = "GraphProcessor/Styles/RelayNode";
-        public const int DefaultPortSize = 8;
 
+        public static StyleSheet BasicStyle { get; } = Resources.Load<StyleSheet>(BassicStyleFile);
         public static StyleSheet GraphViewStyle { get; } = Resources.Load<StyleSheet>(GraphViewStyleFile);
         public static StyleSheet BaseNodeViewStyle { get; } = Resources.Load<StyleSheet>(BaseNodeViewStyleFile);
         public static StyleSheet SimpleNodeViewStyle { get; } = Resources.Load<StyleSheet>(SimpleNodeViewStyleFile);

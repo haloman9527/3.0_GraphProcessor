@@ -9,6 +9,7 @@ using UnityEditor.UIElements;
 using UnityEngine.Profiling;
 
 using UnityObject = UnityEngine.Object;
+using System.Reflection;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
@@ -30,30 +31,39 @@ namespace CZToolKit.GraphProcessor.Editors
             return false;
         }
 
-        /// <summary> 从GraphOwner中加载 </summary>
-        /// <param name="_graphAssetOwner"></param>
-        /// <returns></returns>
-        public static BaseGraphWindow LoadGraphFromOwner(GraphAssetOwner _graphAssetOwner)
+        /// <summary> 从GraphAssetOwner中加载 </summary>
+        public static BaseGraphWindow LoadGraphFromOwner(GraphOwner _graphOwner)
         {
-            _graphAssetOwner.Graph.InitializePropertyMapping(_graphAssetOwner);
-            return LoadGraph(_graphAssetOwner.Graph);
+            BaseGraphWindow graphWindow = LoadGraph(_graphOwner.Graph);
+            graphWindow.GraphAsset = _graphOwner;
+            graphWindow.GraphView.Model.InitializePropertyMapping(_graphOwner);
+            graphWindow.GraphOwner = _graphOwner;
+            return graphWindow;
+        }
+
+        /// <summary> 从GraphAssetOwner中加载 </summary>
+        public static BaseGraphWindow LoadGraphFromAssetOwner(GraphAssetOwner _graphAssetOwner)
+        {
+            BaseGraphWindow graphWindow = LoadGraph(_graphAssetOwner.Graph);
+            graphWindow.GraphAsset = _graphAssetOwner.GraphAsset;
+            graphWindow.GraphView.Model.InitializePropertyMapping(_graphAssetOwner);
+            graphWindow.GraphOwner = _graphAssetOwner;
+            return graphWindow;
         }
 
         /// <summary> 从GraphAsset中加载 </summary>
-        /// <param name="_graphAsset"></param>
-        /// <returns></returns>
         public static BaseGraphWindow LoadGraphFromAsset(IGraphAsset _graphAsset)
         {
-            return LoadGraph(_graphAsset.Graph);
+            BaseGraphWindow graphWindow = LoadGraph(_graphAsset.Graph);
+            graphWindow.GraphAsset = _graphAsset as UnityObject;
+            return graphWindow;
         }
 
         /// <summary> 加载Graph </summary>
         /// <param name="_graph"></param>
-        /// <returns></returns>
-        public static BaseGraphWindow LoadGraph(IGraph _graph)
+        public static BaseGraphWindow LoadGraph(BaseGraph _graph)
         {
-            if (_graph == null) return null;
-            Type windowType = NodeEditorUtility.GetGraphWindowType(_graph.GetType());
+            Type windowType = GraphProcessorEditorUtility.GetGraphWindowType(_graph.GetType());
 
             UnityObject[] objs = Resources.FindObjectsOfTypeAll(windowType);
             BaseGraphWindow window = null;
@@ -80,27 +90,6 @@ namespace CZToolKit.GraphProcessor.Editors
 
             return window;
         }
-
-        /// <summary> 根据Graph获取已打开的Window </summary>
-        /// <param name="_graph"></param>
-        /// <returns></returns>
-        public static BaseGraphWindow GetWindow(BaseGraph _graph)
-        {
-            Type type = NodeEditorUtility.GetGraphWindowType(_graph.GetType());
-
-            UnityObject[] objs = Resources.FindObjectsOfTypeAll(type);
-            BaseGraphWindow window = null;
-            foreach (var obj in objs)
-            {
-                if (obj.GetType() == type)
-                {
-                    window = obj as BaseGraphWindow;
-                    if (window.Graph == _graph)
-                        return window;
-                }
-            }
-            return null;
-        }
         #endregion
 
         #region 字段
@@ -116,9 +105,11 @@ namespace CZToolKit.GraphProcessor.Editors
             private set { graphOwner = value; if (graphOwner != null) graphOwnerInstanceID = graphOwner.GetInstanceID(); }
         }
         public UnityObject GraphAsset { get { return graphAsset; } private set { graphAsset = value; } }
-        public IGraph Graph { get; private set; }
+        public BaseGraph Graph { get; private set; }
         public BaseGraphView GraphView { get; private set; }
         public GraphViewParentElement GraphViewParent { get; private set; }
+        public ToolbarView Toolbar { get { return GraphViewParent.Toolbar; } }
+        public VisualElement GraphViewElement { get { return GraphViewParent.GraphViewElement; } }
         public CommandDispatcher CommandDispatcher { get; private set; }
         #endregion
 
@@ -126,6 +117,7 @@ namespace CZToolKit.GraphProcessor.Editors
         protected virtual void OnEnable()
         {
             titleContent = new GUIContent("Graph Processor");
+            rootVisualElement.styleSheets.Add(GraphProcessorStyles.BasicStyle);
 
             CommandDispatcher = new CommandDispatcher(CreateGraphState());
             CommandDispatcherHelper.RegisterDefaultCommandHandlers(CommandDispatcher);
@@ -160,8 +152,7 @@ namespace CZToolKit.GraphProcessor.Editors
         protected virtual void OnDestroy()
         {
             if (Selection.activeObject is ObjectInspector objectInspector
-                && objectInspector.TargetObject is BaseNode node
-                && node.Owner == Graph)
+                && objectInspector.TargetObject is BaseNode node)
             {
                 Selection.activeObject = null;
             }
@@ -195,15 +186,13 @@ namespace CZToolKit.GraphProcessor.Editors
             GraphOwner = null;
         }
 
-        void SetUp(IGraph _graph)
+        void SetUp(BaseGraph _graph)
         {
             if (GraphView != null && GraphAsset != null && EditorUtility.IsDirty(GraphAsset))
                 GraphView.SaveGraphToDisk();
             Clear();
 
             Graph = _graph;
-            GraphAsset = (Graph as IGraphFromAsset)?.Asset;
-            if (GraphAsset == null) return;
 
             GraphViewParent = new GraphViewParentElement();
             GraphViewParent.StretchToParentSize();
@@ -217,16 +206,8 @@ namespace CZToolKit.GraphProcessor.Editors
                 text = "Ping",
                 style = { width = 60 }
             };
-            btnPing.clicked += () => EditorGUIUtility.PingObject(GraphView.GraphAsset);
+            btnPing.clicked += () => EditorGUIUtility.PingObject(GraphAsset);
             GraphViewParent.Toolbar.AddButtonToRight(btnPing);
-
-            ToolbarButton btnSave = new ToolbarButton()
-            {
-                text = "Save",
-                style = { width = 60 }
-            };
-            btnSave.clicked += () => GraphView.SaveGraphToDisk();
-            GraphViewParent.Toolbar.AddButtonToRight(btnSave);
 
             ToolbarButton btnReload = new ToolbarButton()
             {
@@ -247,15 +228,14 @@ namespace CZToolKit.GraphProcessor.Editors
             SetUp((GraphAsset as IGraphAsset).Graph);
             GraphOwner = tempGraphOwner;
             if (Graph != null && GraphOwner != null)
-                Graph.InitializePropertyMapping(GraphOwner);
+                GraphView.Model.InitializePropertyMapping(GraphOwner);
         }
         #endregion
 
         #region Overrides
-        protected virtual BaseGraphView GenerateGraphView(IGraph _graph)
+        protected virtual BaseGraphView GenerateGraphView(BaseGraph _graph)
         {
-            BaseGraphView graphView = new BaseGraphView(_graph, CommandDispatcher, this);
-            return graphView;
+            return new DefaultGraphView(_graph, CommandDispatcher, this);
         }
 
         protected virtual void OnLoadedGraph() { }

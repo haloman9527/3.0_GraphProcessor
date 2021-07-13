@@ -17,7 +17,7 @@ namespace CZToolKit.GraphProcessor
         #endregion
 
         #region  Ù–‘
-        public abstract IGraph Graph { get; }
+        public abstract BaseGraph Graph { get; }
         public abstract Type GraphType { get; }
         #endregion
 
@@ -127,7 +127,7 @@ namespace CZToolKit.GraphProcessor
     }
 
     public abstract class GraphOwner<TGraph> : GraphOwner, ISerializationCallbackReceiver
-        where TGraph : IGraph, IGraphFromAsset, new()
+        where TGraph : BaseGraph, new()
     {
         #region ◊÷∂Œ
         [HideInInspector]
@@ -136,7 +136,7 @@ namespace CZToolKit.GraphProcessor
         #endregion
 
         #region  Ù–‘
-        public override IGraph Graph
+        public override BaseGraph Graph
         {
             get { return graph; }
         }
@@ -145,6 +145,7 @@ namespace CZToolKit.GraphProcessor
         {
             get { return graph; }
         }
+
         #endregion
 
         #region Serialize
@@ -166,8 +167,7 @@ namespace CZToolKit.GraphProcessor
         void DeserializeGraph()
         {
             graph = SerializationUtility.DeserializeValue<TGraph>(Encoding.UTF8.GetBytes(serializedGraph), DataFormat.JSON, graphUnityReferences);
-            graph.Enable(this);
-            graph.Flush();
+            graph.Enable();
             graph.InitializePropertyMapping(this);
         }
 
@@ -227,9 +227,6 @@ namespace CZToolKit.GraphProcessor
         private void Reset()
         {
             graph = new TGraph();
-            graph.Enable(this);
-            graph.Flush();
-            graph.InitializePropertyMapping(this);
         }
     }
 }

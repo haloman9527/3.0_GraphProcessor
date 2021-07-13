@@ -7,77 +7,89 @@ using System.Linq;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
-    public class GroupView : Group, IGroupView
+    public sealed class GroupView : Group
     {
-        public new class UxmlFactory : UxmlFactory<GroupView, GraphView.UxmlTraits> { }
-
-        public BaseGraphView Owner { get; private set; }
-        public BaseGroup GroupData { get { return userData as BaseGroup; } }
         public Label titleLabel { get; private set; }
         public ColorField colorField { get; private set; }
+        public BaseGraphView Owner { get; private set; }
+        public BaseGroup Model { get; private set; }
 
-
-        public GroupView()
+        public GroupView() : base()
         {
             styleSheets.Add(GraphProcessorStyles.GroupViewStyle);
+            titleLabel = headerContainer.Q("titleLabel") as Label;
+            colorField = new ColorField { name = "headerColorPicker" };
+            headerContainer.Add(colorField);
         }
 
-        public void SetUp(IGraphElement _graphElement, CommandDispatcher _commandDispatcher, IGraphView _graphView)
+        public void SetUp(BaseGroup _group, CommandDispatcher _commandDispatcher, BaseGraphView _graphView)
         {
-            userData = _graphElement;
-            Owner = _graphView as BaseGraphView;
+            Owner = _graphView;
 
-            BaseGroup groupData = _graphElement as BaseGroup;
-            title = groupData.title;
-            base.SetPosition(groupData.position);
+            Model = _group;
+            BindingProperties();
+            Model.UpdateProperties();
 
-            titleLabel = headerContainer.Q("titleLabel") as Label;
-            colorField = new ColorField { value = GroupData.color, name = "headerColorPicker" };
             colorField.RegisterValueChangedCallback(e =>
             {
-                UpdateGroupColor(e.newValue);
+                Model.Color = e.newValue;
             });
-            UpdateGroupColor(GroupData.color);
-
-            headerContainer.Add(colorField);
 
             InitializeInnerNodes();
         }
 
+        void BindingProperties()
+        {
+            Model.RegisterValueChangedEvent<string>(nameof(Model.Title), v =>
+            {
+                title = v;
+                Owner.SetDirty();
+            });
+
+            Model.RegisterValueChangedEvent<Rect>(nameof(Model.Position), v =>
+            {
+                base.SetPosition(v);
+                Owner.SetDirty();
+            });
+
+            Model.RegisterValueChangedEvent<Color>(nameof(Model.Color), newColor =>
+            {
+                headerContainer.style.backgroundColor = newColor;
+                // 当明度大于0.5f,且透明度大于0.5f，文字颜色为黑色，否则为白色
+                titleLabel.style.color = newColor.GetLuminance() > 0.5f && newColor.a > 0.5f ? Color.black : Color.white * 0.9f;
+                colorField.SetValueWithoutNotify(newColor);
+                Owner.SetDirty();
+            });
+        }
+
+        public override bool AcceptsElement(GraphElement element, ref string reasonWhyNotAccepted)
+        {
+            return base.AcceptsElement(element, ref reasonWhyNotAccepted);
+        }
+
         void InitializeInnerNodes()
         {
-            foreach (var nodeGUID in GroupData.innerNodeGUIDs.ToList())
+            foreach (var nodeGUID in Model.InnerNodeGUIDs)
             {
-                if (!Owner.Graph.NodesGUIDMapping.ContainsKey(nodeGUID)) continue;
+                if (!Owner.Model.Nodes.ContainsKey(nodeGUID)) continue;
 
                 BaseNodeView nodeView = Owner.NodeViews[nodeGUID];
                 AddElement(nodeView);
             }
 
-            foreach (var stackGUID in GroupData.innerStackGUIDs.ToList())
+            foreach (var stackGUID in Model.InnerStackGUIDs)
             {
-                if (!Owner.Graph.StackNodesGUIDMapping.ContainsKey(stackGUID)) continue;
+                if (!Owner.Model.Stacks.ContainsKey(stackGUID)) continue;
 
-                var stackView = Owner.StackNodeViews[stackGUID];
+                var stackView = Owner.StackViews[stackGUID];
                 AddElement(stackView);
             }
-        }
-
-        public void UpdateGroupColor(Color _newColor)
-        {
-            headerContainer.style.backgroundColor = _newColor;
-            // 当明度大于0.5f,且透明度大于0.5f，文字颜色为黑色，否则为白色
-            titleLabel.style.color = _newColor.GetLuminance() > 0.5f && _newColor.a > 0.5f ? Color.black : Color.white * 0.9f;
-            GroupData.color = _newColor;
-            Owner.SetDirty();
         }
 
         protected override void OnGroupRenamed(string _oldName, string _newName)
         {
             if (string.IsNullOrEmpty(_newName) || _oldName.Equals(_newName)) return;
-            base.OnGroupRenamed(_oldName, _newName);
-            GroupData.title = _newName;
-            Owner.SetDirty();
+            Model.Title = _newName;
         }
 
         public override void OnSelected()
@@ -96,27 +108,32 @@ namespace CZToolKit.GraphProcessor.Editors
             foreach (var element in elements)
             {
                 BaseNodeView nodeView = element as BaseNodeView;
-                if (nodeView != null)
-                {
-                    if (!GroupData.innerNodeGUIDs.Contains(nodeView.NodeData.GUID))
-                        GroupData.innerNodeGUIDs.Add(nodeView.NodeData.GUID);
-                    continue;
-                }
-                BaseStackNodeView stackNodeView = element as BaseStackNodeView;
-                if (stackNodeView != null)
-                {
-                    if (!GroupData.innerStackGUIDs.Contains(stackNodeView.stackNode.GUID))
-                        GroupData.innerStackGUIDs.Add(stackNodeView.stackNode.GUID);
-                }
+                if (nodeView != null && !Model.InnerNodeGUIDs.Contains(nodeView.Model.GUID))
+                    Model.AddNode(nodeView.Model.GUID);
+                StackView stackNodeView = element as StackView;
+                if (stackNodeView != null && !Model.InnerStackGUIDs.Contains(stackNodeView.Model.GUID))
+                    Model.AddStack(stackNodeView.Model.GUID);
             }
             base.OnElementsAdded(elements);
         }
 
+        protected override void OnElementsRemoved(IEnumerable<GraphElement> elements)
+        {
+            foreach (var element in elements)
+            {
+                BaseNodeView nodeView = element as BaseNodeView;
+                if (nodeView != null)
+                    Model.AddNode(nodeView.Model.GUID);
+                StackView stackNodeView = element as StackView;
+                if (stackNodeView != null)
+                    Model.RemoveNode(stackNodeView.Model.GUID);
+            }
+            base.OnElementsRemoved(elements);
+        }
+
         public override void SetPosition(Rect _newPos)
         {
-            base.SetPosition(_newPos);
-            if (Owner.Initialized)
-                GroupData.position = _newPos;
+            Model.Position = _newPos;
         }
     }
 }

@@ -18,7 +18,7 @@ namespace CZToolKit.GraphProcessor
 {
     public interface IGraphOwner : IVariableOwner
     {
-        IGraph Graph { get; }
+        BaseGraph Graph { get; }
 
         void SaveVariables();
     }

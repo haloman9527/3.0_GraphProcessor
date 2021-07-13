@@ -1,10 +1,11 @@
 ﻿using CZToolKit.GraphProcessor;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class SampleNode : BaseNode
 {
+    [Port(PortDirection.Input)]
+    public AnimationPlayMode b;
+
     [Port(PortDirection.Input)]
     [ShowAsDrawer]
     [HideInInspector]

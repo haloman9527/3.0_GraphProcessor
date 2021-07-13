@@ -1,31 +1,31 @@
-﻿using UnityEngine.UIElements;
+﻿using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
     [CustomNodeView(typeof(DebugNode))]
-    public class DebugNodeView : BaseNodeView
+    public sealed class DebugNodeView : BaseNodeView
     {
-        DebugNode debugNode;
-        Label label = new Label();
+        Label label;
+
+        public DebugNode TViewModel { get { return Model as DebugNode; } }
+
+        public DebugNodeView() : base()
+        {
+            label = new Label();
+            controlsContainer.Add(label);
+        }
 
         protected override void OnInitialized()
         {
             base.OnInitialized();
-            debugNode = NodeData as DebugNode;
-            controlsContainer.Add(label);
             UpdateLabel();
             Add(new IMGUIContainer(UpdateLabel));
-            MarkDirtyRepaint();
         }
 
         void UpdateLabel()
         {
-            if (!debugNode.TryGetPort(nameof(debugNode.input), out NodePort port) || !port.IsConnected)
-            {
-                label.text = debugNode.input;
-                return;
-            }
-
+            Model.TryGetPort("input", out NodePort port);
             object value = port.GetConnectValue();
             if (value != null)
             {
@@ -33,6 +33,10 @@ namespace CZToolKit.GraphProcessor.Editors
                     label.text = "NULL";
                 else
                     label.text = value.ToString();
+            }
+            else
+            {
+                label.text = TViewModel.Input;
             }
         }
     }

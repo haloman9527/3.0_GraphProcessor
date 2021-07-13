@@ -1,33 +1,62 @@
 using UnityEditor.Experimental.GraphView;
+using UnityEngine.UIElements;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
     [CustomNodeView(typeof(ParameterNode))]
-    public class ParameterNodeView : SimpleNodeView
+    public class ParameterNodeView : SimpleNodeView<ParameterNode>
     {
+        protected override void BindingProperties()
+        {
+            base.BindingProperties();
+            T_Model.RegisterValueChangedEvent<string>(nameof(T_Model.Name), v =>
+            {
+                title = v;
+            });
+        }
+
         protected override void OnInitialized()
         {
             base.OnInitialized();
+            RegisterCallback<MouseEnterEvent>(_ => { OnMouseEnter(); });
+            RegisterCallback<MouseLeaveEvent>(_ => { OnMouseLeave(); });
+            RegisterCallback<DetachFromPanelEvent>(_ => { OnMouseLeave(); });
 
-            ParameterNode parameterNode = NodeData as ParameterNode;
-            title = parameterNode.name;
-
-            //PortViews[nameof(parameterNode.output)].tooltip = parameterNode.Parameter.ValueType.Name;
-
-            //Add(new IMGUIContainer(() =>
-            //{
-            //    tooltip = parameterNode.Parameter?.Value.ToString();
-            //}));
+            foreach (var portView in PortViews.Values)
+            {
+                portView.tooltip = T_Model.Parameter?.ValueType.ToString();
+            }
         }
 
-        protected override PortView CustomCreatePortView(Orientation _orientation, Direction _direction, NodePort _nodePort)
+        protected override NodePortView CustomCreatePortView(Orientation _orientation, Direction _direction, NodePort _nodePort)
         {
-            ParameterNode parameterNode = NodeData as ParameterNode;
-            if (parameterNode.Parameter == null || parameterNode.Parameter.ValueType == null)
+            if (T_Model.Parameter == null || T_Model.Parameter.ValueType == null)
                 return null;
-            if (_nodePort.FieldName == nameof(parameterNode.output))
-                return PortView.CreatePV(_orientation, _direction, _nodePort, parameterNode.Parameter.ValueType);
+            if (_nodePort.FieldName == "output")
+                return NodePortView.CreatePV(_orientation, _direction, _nodePort, T_Model.Parameter.ValueType);
             return null;
         }
+
+        void OnMouseEnter()
+        {
+            (Owner.Blackboard.Fields[T_Model.Name].Q(className: "blackboardField") as BlackboardField).highlighted = true;
+        }
+
+        void OnMouseLeave()
+        {
+            (Owner.Blackboard.Fields[T_Model.Name].Q(className: "blackboardField") as BlackboardField).highlighted = false;
+        }
+
+        //public override void OnSelected()
+        //{
+        //    base.OnSelected();
+        //    (Owner.Blackboard.Fields[TViewModel.Name].Q(className: "blackboardField") as BlackboardField).highlighted = true;
+        //}
+
+        //public override void OnUnselected()
+        //{
+        //    base.OnUnselected();
+        //    (Owner.Blackboard.Fields[TViewModel.Name].Q(className: "blackboardField") as BlackboardField).highlighted = false;
+        //}
     }
 }

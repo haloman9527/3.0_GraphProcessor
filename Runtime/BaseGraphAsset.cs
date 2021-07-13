@@ -12,7 +12,7 @@ namespace CZToolKit.GraphProcessor
     {
         public BaseGraphAsset() { }
 
-        public abstract IGraph Graph { get; }
+        public abstract BaseGraph Graph { get; }
 
         public abstract void SaveGraph();
 
@@ -23,7 +23,7 @@ namespace CZToolKit.GraphProcessor
 
     [Serializable]
     public abstract class BaseGraphAsset<GraphClass> : BaseGraphAsset, ISerializationCallbackReceiver
-        where GraphClass : IGraph, IGraphFromAsset, new()
+        where GraphClass : BaseGraph, new()
     {
         #region 字段
         [HideInInspector]
@@ -32,8 +32,8 @@ namespace CZToolKit.GraphProcessor
         #endregion
 
         #region 属性
-        public GraphClass TGraph { get { return graph; } }
-        public override IGraph Graph { get { return graph; } }
+        public GraphClass T_Graph { get { return graph; } }
+        public override BaseGraph Graph { get { return graph; } }
         #endregion
 
         public BaseGraphAsset() { }
@@ -64,8 +64,7 @@ namespace CZToolKit.GraphProcessor
             graph = SerializationUtility.DeserializeValue<GraphClass>(Encoding.UTF8.GetBytes(serializedGraph), DataFormat.JSON, graphUnityReferences);
             if (graph == null)
                 graph = new GraphClass();
-            graph.Enable(this);
-            graph.Flush();
+            graph.Enable();
         }
 
         public void OnBeforeSerialize()

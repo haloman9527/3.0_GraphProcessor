@@ -1,6 +1,6 @@
 ﻿using CZToolKit.Core;
+using CZToolKit.Core.Editors;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEditor;
@@ -8,16 +8,13 @@ using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-using Status = UnityEngine.UIElements.DropdownMenuAction.Status;
 using NodeView = UnityEditor.Experimental.GraphView.Node;
-using CZToolKit.Core.Editors;
+using Status = UnityEngine.UIElements.DropdownMenuAction.Status;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
-    public class BaseNodeView : NodeView, INodeView
+    public abstract class BaseNodeView : NodeView
     {
-        public new class UxmlFactory : UxmlFactory<BaseNodeView, GraphView.UxmlTraits> { }
-
         Label titleLabel;
         [NonSerialized]
         List<IconBadge> badges = new List<IconBadge>();
@@ -32,6 +29,8 @@ namespace CZToolKit.GraphProcessor.Editors
             }
         }
 
+        public Image icon { get; }
+        public VisualElement nodeBorder { get; }
         public VisualElement topPortContainer { get; }
         public VisualElement bottomPortContainer { get; }
         public VisualElement controlsContainer { get; }
@@ -40,39 +39,32 @@ namespace CZToolKit.GraphProcessor.Editors
         public VisualElement portsVerticalDivider { get; }
         public VisualElement controlsHorizontalDivider { get; }
 
-        public override bool expanded
-        {
-            get { return base.expanded; }
-            set
-            {
-                base.expanded = value;
-                if (Owner.Initialized)
-                    NodeData.Expanded = value;
-            }
-        }
-        public bool Lockable { get; private set; }
         public BaseGraphView Owner { get; private set; }
         public CommandDispatcher CommandDispatcher { get; private set; }
-        public BaseNode NodeData { get; private set; }
-        public Type NodeDataType { get; private set; }
-        public Dictionary<string, PortView> PortViews { get; private set; } = new Dictionary<string, PortView>();
-        protected List<FieldInfo> NodeDataTypeFieldInfos
-        {
-            get { return Utility_Reflection.GetFieldInfos(NodeDataType); }
-        }
+        public Dictionary<string, NodePortView> PortViews { get; } = new Dictionary<string, NodePortView>();
 
-        #region  Initialization
+        public BaseNode Model { get; protected set; }
+
+        #region Initialization
 
         public BaseNodeView()
         {
             styleSheets.Add(GraphProcessorStyles.BaseNodeViewStyle);
             styleSheets.Add(GraphProcessorStyles.PortViewTypesStyle);
 
+            icon = new Image();
+            icon.style.alignSelf = Align.Center;
+            titleContainer.Insert(titleContainer.IndexOf(TitleLabel), icon);
+
+            nodeBorder = this.Q(name: "node-border");
+
             contentsHorizontalDivider = contentContainer.Q(name: "divider", className: "horizontal");
             contentsHorizontalDivider.AddToClassList("contents-horizontal-divider");
+            contentsHorizontalDivider.style.backgroundColor = Color.green;
 
             portsVerticalDivider = topContainer.Q(name: "divider", className: "vertical");
             portsVerticalDivider.AddToClassList("ports-vertical-divider");
+            portsVerticalDivider.style.backgroundColor = Color.red;
 
             controlsContainer = new VisualElement { name = "controls" };
             controlsContainer.AddToClassList("node-controls");
@@ -85,8 +77,8 @@ namespace CZToolKit.GraphProcessor.Editors
             controlsHorizontalDivider.StretchToParentWidth();
             controlsHorizontalDivider.AddToClassList("horizontal");
             controlsHorizontalDivider.AddToClassList("controls-horizontal-divider");
+            controlsHorizontalDivider.style.backgroundColor = Color.blue;
             controlsContainer.Add(controlsHorizontalDivider);
-
 
             topPortContainer = new VisualElement { name = "top-port-container" };
             topPortContainer.style.justifyContent = Justify.Center;
@@ -105,89 +97,111 @@ namespace CZToolKit.GraphProcessor.Editors
             inputContainerElement.SendToBack();
             Add(inputContainerElement);
 
-            contentsHorizontalDivider.style.backgroundColor = Color.green;
-            portsVerticalDivider.style.backgroundColor = Color.red;
-            controlsHorizontalDivider.style.backgroundColor = Color.blue;
 
             TitleLabel.style.flexWrap = Wrap.Wrap;
         }
 
-        public void SetUp(IGraphElement _graphElement, CommandDispatcher _commandDispatcher, IGraphView _graphView)
+        public void SetUp(BaseNode _nodeViewModel, CommandDispatcher _commandDispatcher, BaseGraphView _graphView)
         {
-            NodeData = _graphElement as BaseNode;
-            NodeDataType = NodeData.GetType();
             CommandDispatcher = _commandDispatcher;
-            Owner = _graphView as BaseGraphView;
+            Owner = _graphView;
 
-            InitializeView();
+            Model = _nodeViewModel;
+            BindingProperties();
+            Model.UpdateProperties();
+            Model.RegisterValueChangedEvent<Color>(nameof(Model.TitleTint), v =>
+            {
+                titleContainer.style.backgroundColor = v;
+                TitleLabel.style.color = v.GetLuminance() > 0.5f && v.a > 0.5f ? Color.black : Color.white * 0.9f;
+            });
+
             InitializePorts();
             RefreshPorts();
 
-            foreach (var fieldInfo in NodeDataTypeFieldInfos)
-            {
-                // 如果是接口
-                if (PortViews.TryGetValue(fieldInfo.Name, out PortView portView)
-                && portView.orientation == Orientation.Horizontal
-                && portView.direction == Direction.Input)
-                {
-                    var box = new VisualElement { name = fieldInfo.Name };
-                    box.AddToClassList("port-input-element");
-                    VisualElement fieldDrawer;
-                    if (Utility_Attribute.TryGetFieldInfoAttribute(fieldInfo, out ShowAsDrawer showAsDrawer)
-                        && (fieldDrawer = CreateControlField(fieldInfo, string.Empty, _ => { Owner.SetDirty(); })) != null)
-                    {
-                        box.Add(fieldDrawer);
-                        box.visible = !portView.PortData.IsConnected;
-                        portView.onConnected += () => { box.visible = false; };
-                        portView.onDisconnected += () => { if (!portView.connected) box.visible = true; };
-                    }
-                    else
-                    {
-                        box.visible = false;
-                        box.style.height = portView.style.height;
-                    }
-                    inputContainerElement.Add(box);
-                }
-            }
+            //foreach (var fieldInfo in ViewModel.GetNodeFieldInfos())
+            //{
+            //    // 如果不是接口，跳过
+            //    if (!PortViews.TryGetValue(fieldInfo.Name, out NodePortView portView)) continue;
+            //    if (portView.direction != Direction.Input) continue;
+            //    if (portView.orientation != Orientation.Horizontal) continue;
+
+            //    var box = new VisualElement { name = fieldInfo.Name };
+            //    box.AddToClassList("port-input-element");
+            //    if (Utility_Attribute.TryGetFieldInfoAttribute(fieldInfo, out ShowAsDrawer showAsDrawer))
+            //    {
+            //        VisualElement fieldDrawer = CreateControlField(fieldInfo, string.Empty, null);
+            //        if (fieldDrawer != null)
+            //        {
+            //            box.Add(fieldDrawer);
+            //            box.visible = !portView.ViewModel.IsConnected;
+            //            portView.onConnected += () => { box.visible = false; };
+            //            portView.onDisconnected += () => { box.visible = !portView.connected; };
+            //        }
+            //    }
+            //    else
+            //    {
+            //        box.visible = false;
+            //        box.style.height = portView.style.height;
+            //    }
+            //    inputContainerElement.Add(box);
+            //}
         }
 
-        void InitializeView()
+
+        protected virtual void BindingProperties()
         {
-            title = NodeEditorUtility.GetNodeDisplayName(NodeDataType);
-            SetPosition(NodeData.position);
-            Lockable = Utility_Attribute.TryGetTypeAttribute(NodeDataType, out LockableAttribute lockableAttribute);
-
-            if (Utility_Attribute.TryGetTypeAttribute(NodeDataType, out NodeIconAttribute iconAttribute))
+            Model.RegisterValueChangedEvent<bool>(nameof(Model.Expanded), v =>
             {
-                Texture icon = AssetDatabase.LoadAssetAtPath<Texture2D>(iconAttribute.iconPath);
-                if (icon != null)
-                    AddIcon(new Image() { image = icon, style = { width = iconAttribute.width, height = iconAttribute.height } });
-            }
+                expanded = v;
+                inputContainerElement.style.display = v ? DisplayStyle.Flex : DisplayStyle.None;
 
-            if (Utility_Attribute.TryGetTypeAttribute(NodeDataType, out NodeTooltipAttribute nodeTooltipAttribute))
-                tooltip = nodeTooltipAttribute.Tooltip;
-
-            if (Utility_Attribute.TryGetTypeAttribute(NodeDataType, out NodeTitleTintAttribute nodeTitleTintAttribute))
+            });
+            Model.RegisterValueChangedEvent<string>(nameof(Model.Title), v =>
             {
-                titleContainer.style.backgroundColor = nodeTitleTintAttribute.BackgroundColor;
-                TitleLabel.style.color = nodeTitleTintAttribute.BackgroundColor.GetLuminance() > 0.5f && nodeTitleTintAttribute.BackgroundColor.a > 0.5f ? Color.black : Color.white * 0.9f;
-            }
-
-            //Undo.undoRedoPerformed += UpdateFieldValues;
+                title = v;
+            });
+            Model.Title = GraphProcessorEditorUtility.GetNodeDisplayName(Model.GetType());
+            Model.RegisterValueChangedEvent<Texture>(nameof(Model.Icon), v =>
+            {
+                if (v != null)
+                {
+                    icon.style.display = DisplayStyle.Flex;
+                    icon.image = v;
+                    icon.style.width = Model.IconSize.x;
+                    icon.style.height = Model.IconSize.y;
+                }
+                else
+                {
+                    icon.style.display = DisplayStyle.None;
+                }
+            });
+            Model.RegisterValueChangedEvent<Vector2>(nameof(Model.IconSize), v =>
+            {
+                icon.style.width = v.x;
+                icon.style.height = v.y;
+            });
+            Model.RegisterValueChangedEvent<string>(nameof(Model.Tooltip), v =>
+            {
+                tooltip = v;
+            });
+            Model.RegisterValueChangedEvent<Vector2>(nameof(Model.Position), v =>
+            {
+                base.SetPosition(new Rect(v, GetPosition().size));
+            });
         }
 
         void InitializePorts()
         {
-            foreach (var nodePort in NodeData.Ports)
+            foreach (var nodePort in Model.Ports)
             {
                 Direction direction = nodePort.Value.Direction == PortDirection.Input ? Direction.Input : Direction.Output;
                 Orientation orientation =
-                    Utility_Attribute.TryGetFieldAttribute(NodeDataType, nodePort.Value.FieldName, out VerticalAttribute vertical) ?
+                    Utility_Attribute.TryGetFieldAttribute(Model.GetType(), nodePort.Value.FieldName, out VerticalAttribute vertical) ?
                     Orientation.Vertical : Orientation.Horizontal;
 
-                PortView portView = CustomCreatePortView(orientation, direction, nodePort.Value);
+                NodePortView portView = CustomCreatePortView(orientation, direction, nodePort.Value);
                 if (portView == null)
-                    portView = PortView.CreatePV(orientation, direction, nodePort.Value);
+                    portView = NodePortView.CreatePV(orientation, direction, nodePort.Value);
                 portView.SetUp(nodePort.Value, CommandDispatcher, Owner);
                 PortViews[nodePort.Key] = portView;
             }
@@ -195,17 +209,19 @@ namespace CZToolKit.GraphProcessor.Editors
 
         public void Initialized()
         {
-            base.expanded = NodeData.Expanded;
-            inputContainerElement.style.display = expanded ? DisplayStyle.Flex : DisplayStyle.None;
-            OnInitialized();
-        }
-
-        protected virtual void OnInitialized()
-        {
-            //foreach (var fieldInfo in Utility_Refelection.GetFieldInfos(NodeDataType))
+            Model.UpdateExpanded();
+            //foreach (var item in ViewModel.BindableProperties)
+            //{
+            //    BindableElement element = UIElementsFactory.CreateField(item.Key, item.Value.ValueType, item.Value.ValueBoxed, newValue =>
+            //    {
+            //        item.Value.ValueBoxed = newValue;
+            //    });
+            //    controlsContainer.Add(element);
+            //}
+            //foreach (var fieldInfo in Utility_Reflection.GetFieldInfos(ViewModel.ModelType))
             //{
             //    if (!EditorGUILayoutExtension.CanDraw(fieldInfo)) continue;
-            //    if (PortViews.TryGetValue(fieldInfo.Name, out PortView portView) && portView.direction == Direction.Input) continue;
+            //    if (PortViews.TryGetValue(fieldInfo.Name, out BasePortView portView) && portView.direction == Direction.Input) continue;
             //    if (fieldInfo.FieldType != typeof(string) && !fieldInfo.FieldType.IsValueType && fieldInfo.GetValue(NodeData) == null)
             //        fieldInfo.SetValue(NodeData, Activator.CreateInstance(fieldInfo.FieldType));
 
@@ -219,12 +235,23 @@ namespace CZToolKit.GraphProcessor.Editors
             //    element.MarkDirtyRepaint();
             //    controlsContainer.Add(element);
             //}
+            OnInitialized();
+        }
+
+        protected virtual void OnInitialized()
+        {
         }
         #endregion
 
-
-
         #region API
+        public void HighlightOn()
+        {
+            nodeBorder.AddToClassList("highlight");
+        }
+        public void HighlightOff()
+        {
+            nodeBorder.RemoveFromClassList("highlight");
+        }
 
         public void SetDeletable(bool deletable)
         {
@@ -250,12 +277,6 @@ namespace CZToolKit.GraphProcessor.Editors
                 capabilities &= ~Capabilities.Selectable;
         }
 
-        public void AddIcon(Image _icon)
-        {
-            _icon.style.alignSelf = Align.Center;
-            titleContainer.Insert(titleContainer.IndexOf(TitleLabel), _icon);
-        }
-
         public void AddBadge(IconBadge badge)
         {
             Add(badge);
@@ -279,10 +300,18 @@ namespace CZToolKit.GraphProcessor.Editors
 
         #endregion
 
-        #region Private
+        #region ContextMenu
+        public override void BuildContextualMenu(ContextualMenuPopulateEvent evt)
+        {
+            evt.menu.AppendAction("Open Node Script", (e) => OpenNodeScript(), OpenNodeScriptStatus);
+            evt.menu.AppendAction("Open Node View Script", (e) => OpenNodeViewScript(), OpenNodeViewScriptStatus);
+            evt.menu.AppendAction(Model.Locked ? "Unlock" : "Lock", (e) => ChangeLockStatus(), Status.Normal);
+            evt.menu.AppendSeparator();
+        }
+
         void OpenNodeScript()
         {
-            var script = EditorUtilityExtension.FindScriptFromType(NodeDataType);
+            var script = EditorUtilityExtension.FindScriptFromType(Model.GetType());
 
             if (script != null)
                 AssetDatabase.OpenAsset(script.GetInstanceID(), 0, 0);
@@ -295,13 +324,24 @@ namespace CZToolKit.GraphProcessor.Editors
             if (script != null)
                 AssetDatabase.OpenAsset(script.GetInstanceID(), 0, 0);
         }
+
+        Status OpenNodeScriptStatus(DropdownMenuAction action)
+        {
+            if (EditorUtilityExtension.FindScriptFromType(Model.GetType()) != null)
+                return Status.Normal;
+            return Status.Disabled;
+        }
+
+        Status OpenNodeViewScriptStatus(DropdownMenuAction action)
+        {
+            if (EditorUtilityExtension.FindScriptFromType(GetType()) != null)
+                return Status.Normal;
+            return Status.Disabled;
+        }
         #endregion
 
         #region Callbacks & Overrides
-
-        Dictionary<string, VisualElement> hideElementIfConnected = new Dictionary<string, VisualElement>();
-
-        protected virtual PortView CustomCreatePortView(Orientation _orientation, Direction _direction, NodePort _nodePort)
+        protected virtual NodePortView CustomCreatePortView(Orientation _orientation, Direction _direction, NodePort _nodePort)
         {
             return null;
         }
@@ -314,8 +354,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
         protected override void ToggleCollapse()
         {
-            base.ToggleCollapse();
-            inputContainerElement.style.display = expanded ? DisplayStyle.Flex : DisplayStyle.None;
+            Model.Expanded = !expanded;
         }
 
         protected VisualElement CreateControlField(FieldInfo _fieldInfo, string _label = null, Action<object> _valueChangedCallback = null)
@@ -323,10 +362,9 @@ namespace CZToolKit.GraphProcessor.Editors
             if (_fieldInfo == null)
                 return null;
 
-            var fieldDrawer = UIElementsFactory.CreateField(_label, _fieldInfo.FieldType, _fieldInfo.GetValue(NodeData), (newValue) =>
+            var fieldDrawer = UIElementsFactory.CreateField(_label, _fieldInfo.FieldType, Model.GetFieldInfoValue(_fieldInfo), (newValue) =>
              {
-                 Owner.RegisterCompleteObjectUndo("Updated " + newValue);
-                 _fieldInfo.SetValue(NodeData, newValue);
+                 Model.SetFieldInfoValue(_fieldInfo, newValue);
                  _valueChangedCallback?.Invoke(newValue);
                  Owner.SetDirty();
              });
@@ -334,71 +372,23 @@ namespace CZToolKit.GraphProcessor.Editors
             return fieldDrawer;
         }
 
-        public virtual void OnPortConnected(PortView _portView, PortView _targetPortView)
-        {
-            if (_portView.direction == Direction.Input && inputContainerElement?.Q(_portView.FieldName) != null)
-                inputContainerElement.Q(_portView.FieldName).AddToClassList("empty");
-
-            if (hideElementIfConnected.TryGetValue(_portView.FieldName, out var elem))
-                elem.style.display = DisplayStyle.None;
-        }
-
-        public virtual void OnPortDisconnected(PortView _portView, PortView _targetPortView)
-        {
-            if (_portView.direction == Direction.Input && inputContainerElement?.Q(_portView.FieldName) != null)
-                inputContainerElement.Q(_portView.FieldName).RemoveFromClassList("empty");
-
-            if (hideElementIfConnected.TryGetValue(_portView.FieldName, out var elem))
-                elem.style.display = DisplayStyle.Flex;
-        }
-
         public override void SetPosition(Rect newPos)
         {
-            if (NodeData.Locked) return;
-
-            base.SetPosition(newPos);
-            if (Owner.Initialized)
-            {
-                Owner.RegisterCompleteObjectUndo("Moved graph node");
-                NodeData.position = newPos;
-                Owner.SetDirty();
-            }
+            Model.Position = newPos.position;
         }
 
         public void ChangeLockStatus()
         {
-            NodeData.Locked ^= true;
-            SetMovable(!NodeData.Locked);
-        }
-
-        public override void BuildContextualMenu(ContextualMenuPopulateEvent evt)
-        {
-            evt.menu.AppendAction("Open Node Script", (e) => OpenNodeScript(), OpenNodeScriptStatus);
-            evt.menu.AppendAction("Open Node View Script", (e) => OpenNodeViewScript(), OpenNodeViewScriptStatus);
-            if (Lockable)
-                evt.menu.AppendAction(NodeData.Locked ? "Unlock" : "Lock", (e) => ChangeLockStatus(), Status.Normal);
-        }
-
-        // 按钮状态
-        Status OpenNodeScriptStatus(DropdownMenuAction action)
-        {
-            if (EditorUtilityExtension.FindScriptFromType(NodeData.GetType()) != null)
-                return Status.Normal;
-            return Status.Disabled;
-        }
-
-        // 按钮状态
-        Status OpenNodeViewScriptStatus(DropdownMenuAction action)
-        {
-            if (EditorUtilityExtension.FindScriptFromType(GetType()) != null)
-                return Status.Normal;
-            return Status.Disabled;
+            Model.Locked ^= true;
+            SetMovable(!Model.Locked);
         }
 
         public virtual new bool RefreshPorts()
         {
-            foreach (var portView in PortViews.Values)
+            foreach (var ipv in PortViews.Values)
             {
+                if (!(ipv is NodePortView portView))
+                    continue;
                 switch (portView.direction)
                 {
                     case Direction.Input:
@@ -420,5 +410,15 @@ namespace CZToolKit.GraphProcessor.Editors
             return base.RefreshPorts();
         }
         #endregion
+    }
+
+    public abstract class BaseNodeView<M> : BaseNodeView where M : BaseNode
+    {
+        public M T_Model { get { return Model as M; } }
+    }
+
+    public sealed class DefaultNodeView : BaseNodeView<BaseNode>
+    {
+
     }
 }

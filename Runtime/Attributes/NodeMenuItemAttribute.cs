@@ -7,13 +7,13 @@ namespace CZToolKit.GraphProcessor
     public class NodeMenuItemAttribute : Attribute
     {
         /// <summary> 节点菜单路径 </summary>
-        public string[] Titles;
+        public string[] titles;
         /// <summary> 是否要显示在节点菜单中 </summary>
-        public bool ShowInList = true;
+        public bool showInList = true;
 
         public NodeMenuItemAttribute(params string[] _titles)
         {
-            Titles = _titles;
+            titles = _titles;
         }
     }
 }

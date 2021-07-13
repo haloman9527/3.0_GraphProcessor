@@ -30,19 +30,19 @@ namespace CZToolKit.GraphProcessor.Editors
             {
                 if (Utility_Attribute.TryGetTypeAttribute(type, out NodeMenuItemAttribute attribute))
                 {
-                    if (attribute.ShowInList)
+                    if (attribute.showInList)
                     {
-                        if (attribute.Titles.Length > 1)
+                        if (attribute.titles.Length > 1)
                         {
                             SearchTreeGroupEntry groupTemp = null;
-                            for (int i = 1; i < attribute.Titles.Length; i++)
+                            for (int i = 1; i < attribute.titles.Length; i++)
                             {
                                 SearchTreeGroupEntry group = tempTree.Find(item =>
-                                        (item.content.text == attribute.Titles[i - 1] && item.level == i)) as
+                                        (item.content.text == attribute.titles[i - 1] && item.level == i)) as
                                     SearchTreeGroupEntry;
                                 if (group == null)
                                 {
-                                    group = new SearchTreeGroupEntry(new GUIContent(attribute.Titles[i - 1]), i);
+                                    group = new SearchTreeGroupEntry(new GUIContent(attribute.titles[i - 1]), i);
                                     int index = groupTemp == null ? 0 : tempTree.IndexOf(groupTemp);
                                     tempTree.Insert(index + 1, group);
                                 }
@@ -50,19 +50,19 @@ namespace CZToolKit.GraphProcessor.Editors
                                 groupTemp = group;
                             }
                             tempTree.Insert(tempTree.IndexOf(groupTemp) + 1,
-                                new SearchTreeEntry(new GUIContent(attribute.Titles.Last()))
-                                { userData = type, level = attribute.Titles.Length });
+                                new SearchTreeEntry(new GUIContent(attribute.titles.Last()))
+                                { userData = type, level = attribute.titles.Length });
                         }
                         else
                         {
-                            tempTree.Add(new SearchTreeEntry(new GUIContent(attribute.Titles.Last()))
+                            tempTree.Add(new SearchTreeEntry(new GUIContent(attribute.titles.Last()))
                             { userData = type, level = 1 });
                         }
                     }
                 }
                 else
                 {
-                    GUIContent content = new GUIContent(NodeEditorUtility.GetNodeDisplayName(type));
+                    GUIContent content = new GUIContent(GraphProcessorEditorUtility.GetNodeDisplayName(type));
                     tempTree.Add(new SearchTreeEntry(content) { userData = type, level = 1 });
                 }
             }
@@ -75,7 +75,7 @@ namespace CZToolKit.GraphProcessor.Editors
             var windowMousePosition = windowRoot.ChangeCoordinatesTo(windowRoot.parent, context.screenMousePosition - graphView.GraphWindow.position.position);
             var graphMousePosition = graphView.contentViewContainer.WorldToLocal(windowMousePosition);
 
-            graphView.AddNode(BaseNode.CreateNew(searchTreeEntry.userData as Type, graphMousePosition));
+            graphView.Model.AddNode(BaseNode.CreateNew(searchTreeEntry.userData as Type, graphMousePosition));
             graphView.GraphWindow.Focus();
             return true;
         }

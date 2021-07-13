@@ -15,14 +15,15 @@ using System;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
+    [Obsolete]
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
     public class CustomStackNodeView : Attribute
     {
-        public Type stackNodeType;
+        public Type stackType;
 
         public CustomStackNodeView(Type _stackNodeType)
         {
-            this.stackNodeType = _stackNodeType;
+            this.stackType = _stackNodeType;
         }
     }
 }

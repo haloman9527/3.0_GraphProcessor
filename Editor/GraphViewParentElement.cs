@@ -25,7 +25,7 @@ namespace CZToolKit.GraphProcessor.Editors
             name = "GraphViewParent";
 
             Toolbar = new ToolbarView();
-            Toolbar.style.height = 25;
+            Toolbar.style.height = 20;
             Toolbar.style.flexGrow = 1;
             Toolbar.StretchToParentWidth();
             Add(Toolbar);

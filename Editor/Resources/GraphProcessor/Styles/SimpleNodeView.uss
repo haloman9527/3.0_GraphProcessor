@@ -1,7 +1,7 @@
 #title {
     height: 18px;
-    padding-left: 5px;
-    padding-right: 5px;
+    padding-left: 1px;
+    padding-right: 1px;
     align-items: stretch;
     justify-content: center;
 }
@@ -33,15 +33,19 @@
     display: none;
 }
 
+.highlight{
+    border-radius: 8px;
+}
+
 #node-border {
-    border-radius: 10px;
+    border-radius: 8px;
 }
 
 #selection-border {
-    border-radius: 12px;
+    border-radius: 9px;
 }
 
-PortView > Label {
+.port > Label {
     visibility: hidden;
     margin-left: 0;
     margin-right: 0;

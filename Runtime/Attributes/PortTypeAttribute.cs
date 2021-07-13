@@ -2,9 +2,14 @@
 
 namespace CZToolKit.GraphProcessor
 {
+    [AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]
     public class PortTypeAttribute : Attribute
     {
-        public Type PortType;
-        public PortTypeAttribute(Type _portType) { PortType = _portType; }
+        public Type portType;
+
+        public PortTypeAttribute(Type _portType)
+        {
+            portType = _portType;
+        }
     }
 }

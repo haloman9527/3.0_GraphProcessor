@@ -10,14 +10,16 @@
 #title > #title-label {
     margin-left: 2px;
     align-self: center;
+    flex-grow: 1;
 }
 
 #title > #settings-button {
     align-self: center;
 }
 
-.Highlight {
-    background-color: rgba(0, 63, 63, 0.8);
+.highlight {
+    background-color: rgba(0, 255, 255, 1);
+    border-radius: 7px
 }
 
 #input-container {

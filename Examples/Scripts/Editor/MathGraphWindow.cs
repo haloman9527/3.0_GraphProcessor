@@ -1,4 +1,6 @@
 ﻿using CZToolKit.GraphProcessor.Editors;
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace CZToolKit.GraphProcessor.Examples
@@ -11,10 +13,24 @@ namespace CZToolKit.GraphProcessor.Examples
             titleContent = new GUIContent("Examples.Math");
         }
 
-        protected override BaseGraphView GenerateGraphView(IGraph _graph)
+        protected override BaseGraphView GenerateGraphView(BaseGraph _graph)
         {
-            MathGraphView graphView = new MathGraphView(_graph, CommandDispatcher, this);
-            return graphView;
+            return new MathGraphView(_graph,CommandDispatcher,this);
+        }
+    }
+
+    public class MathGraphView : BaseGraphView
+    {
+        public MathGraphView(BaseGraph _graph, CommandDispatcher _commandDispatcher, BaseGraphWindow _window) : base(_graph, _commandDispatcher, _window) { }
+
+        protected override IEnumerable<Type> GetNodeTypes()
+        {
+            yield return typeof(StringNode);
+            yield return typeof(SampleNode);
+            yield return typeof(FloatNode);
+            yield return typeof(AddNode);
+            yield return typeof(DebugNode);
+            yield return typeof(SharedVariableNode);
         }
     }
 }

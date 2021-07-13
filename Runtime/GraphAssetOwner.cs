@@ -18,9 +18,8 @@ namespace CZToolKit.GraphProcessor
 
         #region 属性
         public abstract BaseGraphAsset GraphAsset { get; set; }
-        public abstract IGraph Graph { get; }
+        public abstract BaseGraph Graph { get; }
         public abstract Type GraphAssetType { get; }
-        public abstract Type GraphType { get; }
         #endregion
 
         #region Serialize
@@ -163,7 +162,7 @@ namespace CZToolKit.GraphProcessor
 
     public abstract class GraphAssetOwner<TGraphAsset, TGraph> : GraphAssetOwner
         where TGraphAsset : BaseGraphAsset<TGraph>
-        where TGraph : IGraph, IGraphFromAsset, new()
+        where TGraph : BaseGraph, new()
     {
         #region 字段
         [SerializeField]
@@ -181,7 +180,7 @@ namespace CZToolKit.GraphProcessor
                     graphAsset = value as TGraphAsset;
                     if (graphAsset != null)
                     {
-                        foreach (var variable in graphAsset.Graph.Variables)
+                        foreach (var variable in T_Graph.Variables)
                         {
                             if (GetVariable(variable.GUID) == null)
                                 SetVariable(variable.Clone() as SharedVariable);
@@ -189,42 +188,16 @@ namespace CZToolKit.GraphProcessor
                     }
                 }
             }
-        }
-
-        public TGraphAsset T_GraphAsset
-        {
-            get { return graphAsset; }
-            set
-            {
-                GraphAsset = value;
-                if (graphAsset != value)
-                {
-                    graphAsset = value;
-                    if (graphAsset != null)
-                    {
-                        foreach (var variable in GraphAsset.Graph.Variables)
-                        {
-                            if (GetVariable(variable.GUID) == null)
-                                SetVariable(variable.Clone() as SharedVariable);
-                        }
-                    }
-                }
-            }
-        }
-
-        public override IGraph Graph
-        {
-            get { return GraphAsset.Graph; }
-        }
-
-        public TGraph T_Graph
-        {
-            get { return T_GraphAsset.TGraph; }
         }
 
         public override Type GraphAssetType { get { return typeof(TGraphAsset); } }
 
-        public override Type GraphType { get { return typeof(TGraph); } }
+        public TGraphAsset T_GraphAsset { get { return graphAsset; } }
+
+        public override BaseGraph Graph { get { return T_Graph; } }
+
+        public TGraph T_Graph { get { return graphAsset.T_Graph; } }
+
         #endregion
     }
 }

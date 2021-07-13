@@ -3,7 +3,6 @@ using CZToolKit.Core.Blackboards;
 using CZToolKit.Core.Editors;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
@@ -15,8 +14,10 @@ namespace CZToolKit.GraphProcessor.Editors
 {
     public class BlackboardView : Blackboard
     {
+        Dictionary<string, BlackboardRow> fields = new Dictionary<string, BlackboardRow>();
+
         public BaseGraphView GraphView { get { return graphView as BaseGraphView; } }
-        public Dictionary<string, VisualElement> fields = new Dictionary<string, VisualElement>();
+        public Dictionary<string, BlackboardRow> Fields { get { return fields; } }
 
         public BlackboardView(GraphView associatedGraphView) : base(associatedGraphView)
         {
@@ -25,27 +26,39 @@ namespace CZToolKit.GraphProcessor.Editors
             scrollable = true;
             addItemRequested = OnAddClicked;
             editTextRequested = Rename;
-            base.SetPosition(GraphView.Graph.BlackboardPosition);
-            style.display = GraphView.Graph.BlackboardVisible ? DisplayStyle.Flex : DisplayStyle.None;
+
             UpdateParameterList();
+
+            GraphView.Model.RegisterValueChangedEvent<Rect>(nameof(GraphView.Model.BlackboardPosition), v =>
+            {
+                base.SetPosition(v);
+            });
+            GraphView.Model.RegisterValueChangedEvent<bool>(nameof(GraphView.Model.BlackboardVisible), v =>
+            {
+                style.display = v ? DisplayStyle.Flex : DisplayStyle.None;
+            });
+            GraphView.Model.onBlackboardDataAdded += (name, data) =>
+            {
+                AddFieldView(name, data);
+            };
+            GraphView.Model.onBlackboardDataRemoved += name =>
+            {
+                RemoveFieldView(name);
+            };
+            GraphView.Model.onBlackboardDataRenamed += (oldName, newName) =>
+            {
+                BlackboardRow blackboardRow = fields[oldName];
+                (blackboardRow.Q(className: "blackboardField") as BlackboardField).text = newName;
+                fields.Remove(oldName);
+                fields[newName] = blackboardRow;
+                MarkDirtyRepaint();
+            };
         }
 
-        private void Rename(Blackboard _blackboard, VisualElement _field, string _newName)
+        void Rename(Blackboard _blackboard, VisualElement _field, string _newName)
         {
-            if (string.IsNullOrEmpty(_newName)) return;
             BlackboardField blackboardField = _field as BlackboardField;
-            if (!GraphView.Graph.Blackboard.Rename(blackboardField.text, _newName)) return;
-
-            string oldName = blackboardField.text;
-            blackboardField.text = _newName;
-            foreach (var item in GraphView.NodeViews.Values.OfType<ParameterNodeView>())
-            {
-                if ((item.NodeData as ParameterNode).name == oldName)
-                {
-                    (item.NodeData as ParameterNode).name = _newName;
-                    item.title = _newName;
-                }
-            }
+            GraphView.Model.RenameData_BB(blackboardField.text, _newName);
         }
 
         protected virtual void OnAddClicked(Blackboard t)
@@ -59,37 +72,44 @@ namespace CZToolKit.GraphProcessor.Editors
                     continue;
                 menu.AddItem(new GUIContent(dataType.Name), false, () =>
                 {
-                    string rawName = "New " + dataType.Name + "Param";
-                    string name = rawName;
+                    string name = dataType.Name;
 
                     int i = 0;
-                    while (GraphView.Graph.Blackboard.TryGetData(name, out ICZType param))
+                    while (GraphView.Model.ContainsName_BB(name))
                     {
-                        name = rawName + " " + i++;
+                        name = dataType.Name + " " + i++;
                     }
-                    AddParam(name, dataType);
+                    GraphView.Model.AddData_BB(name, CZTypeFactory.TypeCreator[dataType]());
                 });
             }
 
             menu.ShowAsContext();
         }
 
-        public void AddParam(string _name, Type _dataType)
+        public void AddFieldView(string _name, ICZType _data)
         {
-            if (CZTypeFactory.TypeCreator.TryGetValue(_dataType, out Func<ICZType> creator))
-            {
-                ICZType data = creator();
-                GraphView.Graph.Blackboard.SetData(_name, data);
-                fields[_name] = AddParamView(_name, data);
-            }
-        }
-
-        public VisualElement AddParamView(string _name, ICZType _data)
-        {
-            VisualElement property = new VisualElement();
             BlackboardField blackboardField = new BlackboardField() { text = _name, typeText = _data.ValueType.Name, userData = _data };
-            property.Add(blackboardField);
+            blackboardField.RegisterCallback<MouseEnterEvent>(evt =>
+            {
+                GraphView.nodes.ForEach(node =>
+                {
+                    if (node is ParameterNodeView parameterNodeView && parameterNodeView.T_Model.Name == blackboardField.text)
+                    {
+                        parameterNodeView.HighlightOn();
+                    }
+                });
+            });
 
+            blackboardField.RegisterCallback<MouseLeaveEvent>(evt =>
+            {
+                GraphView.nodes.ForEach(node =>
+                {
+                    if (node is ParameterNodeView parameterNodeView && parameterNodeView.T_Model.Name == blackboardField.text)
+                    {
+                        parameterNodeView.HighlightOff();
+                    }
+                });
+            });
             VisualElement fieldDrawer = UIElementsFactory.CreateField("", _data.ValueType, _data.GetValue(), _newValue =>
              {
                  _data.SetValue(_newValue);
@@ -97,32 +117,29 @@ namespace CZToolKit.GraphProcessor.Editors
                      blackboardField.typeText = _data.ValueType.Name;
              });
             BlackboardRow blackboardRow = new BlackboardRow(blackboardField, fieldDrawer);
-            property.Add(blackboardRow);
-            contentContainer.Add(property);
-            return property;
+            contentContainer.Add(blackboardRow);
+            fields[_name] = blackboardRow;
         }
 
-        public void RemoveField(BlackboardField blackboardField)
+        public void RemoveFieldView(string _name)
         {
-            contentContainer.Remove(fields[blackboardField.text]);
-            fields.Remove(blackboardField.text);
+            contentContainer.Remove(fields[_name]);
+            fields.Remove(_name);
         }
 
         public override void UpdatePresenterPosition()
         {
             base.UpdatePresenterPosition();
-            GraphView.RegisterCompleteObjectUndo("Modify ExposedParameterView");
-            GraphView.Graph.BlackboardPosition = GetPosition();
-            GraphView.SetDirty();
+            GraphView.Model.BlackboardPosition = GetPosition();
         }
 
         protected virtual void UpdateParameterList()
         {
             contentContainer.Clear();
-            foreach (var kv in GraphView.Graph.Blackboard.GUIDMap)
+            foreach (var kv in GraphView.Model.Blackboard.GUIDMap)
             {
-                if (GraphView.Graph.Blackboard.TryGetData(kv.Key, out ICZType data))
-                    fields[kv.Key] = AddParamView(kv.Key, data);
+                if (GraphView.Model.TryGetData_BB(kv.Key, out ICZType data))
+                    AddFieldView(kv.Key, data);
             }
         }
     }

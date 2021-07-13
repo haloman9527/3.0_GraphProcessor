@@ -1,14 +1,19 @@
-﻿using UnityEngine.UIElements;
+﻿using System.Linq;
+using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
     [CustomNodeView(typeof(RelayNode))]
-    public class RelayNodeView : BaseNodeView
+    public class RelayNodeView : SimpleNodeView<RelayNode>
     {
-        protected override void OnInitialized()
+        public RelayNodeView() : base()
         {
             styleSheets.Add(GraphProcessorStyles.RelayNodeViewStyle);
+        }
 
+        protected override void OnInitialized()
+        {
             RegisterCallback<MouseDownEvent>(OnMouseDown);
         }
 
@@ -16,7 +21,7 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             // 双击删除
             if (evt.clickCount == 2)
-                Owner.RemoveRelayNode(this);
+                Owner.Model.RemoveRelayNode(T_Model);
         }
     }
 }

@@ -11,7 +11,7 @@ namespace CZToolKit.GraphProcessor
         public static List<UnityObject> objectReferences;
 
         public List<BaseNode> copiedNodes = new List<BaseNode>();
-        public List<SerializableEdge> copiedEdges = new List<SerializableEdge>();
+        public List<BaseEdge> copiedEdges = new List<BaseEdge>();
         public List<BaseStack> copiedStacks = new List<BaseStack>();
         public List<BaseGroup> copiedGroups = new List<BaseGroup>();
     }

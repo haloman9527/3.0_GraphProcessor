@@ -33,6 +33,11 @@ namespace CZToolKit.GraphProcessor.Editors
             });
         }
 
+        public class A
+        {
+            public int i;
+        }
+        A a = new A();
         public override void OnInspectorGUI()
         {
             base.OnInspectorGUI();

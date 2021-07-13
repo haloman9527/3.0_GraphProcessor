@@ -32,11 +32,12 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             base.OnInspectorGUI();
             EditorGUILayout.BeginHorizontal();
-            if (GUILayout.Button(new GUIContent("Flush", "清理空数据(空节点，空连接等)"), GUILayout.Height(30)))
-            {
-                (target as BaseGraphAsset).Graph.Flush();
-                EditorUtility.SetDirty(target);
-            }
+            // *****
+            //if (GUILayout.Button(new GUIContent("Flush", "清理空数据(空节点，空连接等)"), GUILayout.Height(30)))
+            //{
+            //    (target as BaseGraphAsset).Graph.Flush();
+            //    EditorUtility.SetDirty(target);
+            //}
             if (GUILayout.Button("Open", GUILayout.Height(30)))
             {
                 BaseGraphWindow.LoadGraphFromAsset(target as BaseGraphAsset);
