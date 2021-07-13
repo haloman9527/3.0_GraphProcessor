@@ -22,7 +22,7 @@ namespace CZToolKit.GraphProcessor
         [SerializeField] Rect position;
 
         [SerializeField] List<string> innerNodeGUIDs = new List<string>();
-        [SerializeField] List<string> innerStackGUIDs = new List<string>();
+        //[SerializeField] List<string> innerStackGUIDs = new List<string>();
         #endregion
 
         #region ViewModel
@@ -48,7 +48,7 @@ namespace CZToolKit.GraphProcessor
             set { SetPropertyValue(nameof(Position), value); }
         }
         public List<string> InnerNodeGUIDs { get { return innerNodeGUIDs; } }
-        public List<string> InnerStackGUIDs { get { return innerStackGUIDs; } }
+        //public List<string> InnerStackGUIDs { get { return innerStackGUIDs; } }
 
         public void Enable(BaseGraph _graph)
         {
@@ -70,14 +70,14 @@ namespace CZToolKit.GraphProcessor
         {
             innerNodeGUIDs.Remove(_guid);
         }
-        public void AddStack(string _guid)
-        {
-            innerStackGUIDs.Add(_guid);
-        }
-        public void RemoveStack(string _guid)
-        {
-            innerStackGUIDs.Remove(_guid);
-        }
+        //public void AddStack(string _guid)
+        //{
+        //    innerStackGUIDs.Add(_guid);
+        //}
+        //public void RemoveStack(string _guid)
+        //{
+        //    innerStackGUIDs.Remove(_guid);
+        //}
         #endregion
     }
 }

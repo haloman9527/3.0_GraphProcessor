@@ -26,8 +26,6 @@ namespace CZToolKit.GraphProcessor
 
     public interface IBindableProperty<T>
     {
-        event Action<T> onValueChanged;
-
         T Value { get; set; }
 
         void ValueChanged();

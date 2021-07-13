@@ -71,11 +71,7 @@ namespace CZToolKit.GraphProcessor
             direction = port.direction;
             multiple = port.multiple;
             typeConstraint = port.typeConstraint;
-            Type tempDisplayType = Owner.PortDynamicType(FieldName);
-            if (tempDisplayType != null)
-                DisplayType = tempDisplayType;
-            else
-                DisplayType = port.DisplayType;
+            typeQualifiedName = port.typeQualifiedName;
         }
         #endregion
 

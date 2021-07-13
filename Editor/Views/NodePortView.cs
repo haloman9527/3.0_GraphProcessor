@@ -5,7 +5,7 @@ using System;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
-    public class NodePortView : Port
+    public sealed class NodePortView : Port, IBindableView<NodePort>
     {
         public static NodePortView CreatePV(Orientation _orientation, Direction _direction, NodePort _viewModel)
         {
@@ -22,9 +22,9 @@ namespace CZToolKit.GraphProcessor.Editors
 
         public Image Icon { get; }
         public BaseGraphView GraphView { get; private set; }
-        public NodePort ViewModel { get; private set; }
+        public NodePort Model { get; private set; }
 
-        protected NodePortView(Orientation _orientation, Direction _direction, NodePort _nodePort, Type _displayType)
+        NodePortView(Orientation _orientation, Direction _direction, NodePort _nodePort, Type _displayType)
             : base(_orientation, _direction, _nodePort.Multiple ? Capacity.Multi : Capacity.Single, _displayType)
         {
             styleSheets.Add(GraphProcessorStyles.PortViewStyle);
@@ -51,43 +51,59 @@ namespace CZToolKit.GraphProcessor.Editors
                 AddToClassList("vertical");
         }
 
-        protected NodePortView(Orientation _orientation, Direction _direction, NodePort _nodePort)
+        NodePortView(Orientation _orientation, Direction _direction, NodePort _nodePort)
             : this(_orientation, _direction, _nodePort, _nodePort.DisplayType) { }
 
         public void SetUp(NodePort _port, CommandDispatcher _commandDispatcher, BaseGraphView _graphView)
         {
             GraphView = _graphView;
 
-            ViewModel = _port;
-            BindingProperties();
-            ViewModel.UpdateProperties();
+            Model = _port;
+            BindingPropertiesBeforeUpdate();
+            Model.UpdateProperties();
+            BindingPropertiesAfterUpdate();
 
-            ViewModel.RegisterValueChangedEvent<Color>(nameof(ViewModel.PortColor), v =>
-            {
-                portColor = v;
-            });
-            if (orientation == Orientation.Vertical && string.IsNullOrEmpty(ViewModel.Tooltip))
-                ViewModel.Tooltip = GraphProcessorEditorUtility.GetDisplayName(ViewModel.FieldName);
+            if (orientation == Orientation.Vertical && string.IsNullOrEmpty(Model.Tooltip))
+                Model.Tooltip = GraphProcessorEditorUtility.GetDisplayName(Model.FieldName);
 
 
             m_EdgeConnector = new EdgeConnector<BaseEdgeView>(new EdgeConnectorListener(GraphView));
             this.AddManipulator(m_EdgeConnector);
 
-            AddToClassList(ViewModel.FieldName);
+            AddToClassList(Model.FieldName);
             visualClass = "Port_" + portType.Name;
         }
-
-        public virtual void BindingProperties()
+        #region 数据监听回调
+        void OnPortNameChanged(string _name)
         {
-            ViewModel.RegisterValueChangedEvent<string>(nameof(ViewModel.PortName), v =>
-            {
-                portName = v;
-            });
-            ViewModel.RegisterValueChangedEvent<string>(nameof(ViewModel.Tooltip), v =>
-            {
-                tooltip = v;
-            });
+            portName = _name;
         }
+        void OnToolTipChanged(string _tooltip)
+        {
+            tooltip = _tooltip;
+        }
+        void OnColorChanged(Color _color)
+        {
+            portColor = _color;
+        }
+        void BindingPropertiesBeforeUpdate()
+        {
+            Model.RegisterValueChangedEvent<string>(nameof(Model.PortName), OnPortNameChanged);
+            Model.RegisterValueChangedEvent<string>(nameof(Model.Tooltip), OnToolTipChanged);
+        }
+
+        void BindingPropertiesAfterUpdate()
+        {
+            Model.RegisterValueChangedEvent<Color>(nameof(Model.PortColor), OnColorChanged);
+        }
+
+        public void UnBindingProperties()
+        {
+            Model.UnregisterValueChangedEvent<string>(nameof(Model.PortName), OnPortNameChanged);
+            Model.UnregisterValueChangedEvent<string>(nameof(Model.Tooltip), OnToolTipChanged);
+            Model.UnregisterValueChangedEvent<Color>(nameof(Model.PortColor), OnColorChanged);
+        }
+        #endregion
 
         #region API
         public override void Connect(Edge _edge)

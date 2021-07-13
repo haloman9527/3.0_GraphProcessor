@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
-    public class BaseEdgeView : Edge
+    public class BaseEdgeView : Edge, IBindableView<BaseEdge>
     {
         protected BaseGraphView Owner { get; private set; }
         protected CommandDispatcher CommandDispatcher { get; private set; }
@@ -25,13 +25,24 @@ namespace CZToolKit.GraphProcessor.Editors
             Owner = _graphView;
 
             Model = _edge;
-            BindingProperties();
+            BindingPropertiesBeforeUpdate();
             Model.UpdateProperties();
+            BindingPropertiesAfterUpdate();
 
             RegisterCallback<MouseDownEvent>(OnMouseDown);
         }
 
-        protected virtual void BindingProperties()
+        protected virtual void BindingPropertiesBeforeUpdate()
+        {
+
+        }
+
+        protected virtual void BindingPropertiesAfterUpdate()
+        {
+
+        }
+
+        public virtual void UnBindingProperties()
         {
 
         }

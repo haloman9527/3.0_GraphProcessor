@@ -313,9 +313,6 @@ namespace CZToolKit.GraphProcessor
 
         }
 
-        /// <summary> 动态返回接口类型 </summary>
-        public virtual Type PortDynamicType(string _localPortName) { return null; }
-
         /// <summary> 清理连接(不通知) </summary>
         public void ClearConnectionsWithoutNotification()
         {

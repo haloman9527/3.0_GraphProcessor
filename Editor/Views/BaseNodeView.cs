@@ -13,7 +13,7 @@ using Status = UnityEngine.UIElements.DropdownMenuAction.Status;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
-    public abstract class BaseNodeView : NodeView
+    public abstract class BaseNodeView : NodeView, IBindableView<BaseNode>
     {
         Label titleLabel;
         [NonSerialized]
@@ -97,7 +97,6 @@ namespace CZToolKit.GraphProcessor.Editors
             inputContainerElement.SendToBack();
             Add(inputContainerElement);
 
-
             TitleLabel.style.flexWrap = Wrap.Wrap;
         }
 
@@ -107,13 +106,9 @@ namespace CZToolKit.GraphProcessor.Editors
             Owner = _graphView;
 
             Model = _nodeViewModel;
-            BindingProperties();
+            BindingPropertiesBeforeUpdate();
             Model.UpdateProperties();
-            Model.RegisterValueChangedEvent<Color>(nameof(Model.TitleTint), v =>
-            {
-                titleContainer.style.backgroundColor = v;
-                TitleLabel.style.color = v.GetLuminance() > 0.5f && v.a > 0.5f ? Color.black : Color.white * 0.9f;
-            });
+            BindingPropertiesAfterUpdate();
 
             InitializePorts();
             RefreshPorts();
@@ -147,48 +142,79 @@ namespace CZToolKit.GraphProcessor.Editors
             //}
         }
 
-
-        protected virtual void BindingProperties()
+        #region 数据监听回调
+        void OnExpandedChanged(bool _expanded)
         {
-            Model.RegisterValueChangedEvent<bool>(nameof(Model.Expanded), v =>
-            {
-                expanded = v;
-                inputContainerElement.style.display = v ? DisplayStyle.Flex : DisplayStyle.None;
-
-            });
-            Model.RegisterValueChangedEvent<string>(nameof(Model.Title), v =>
-            {
-                title = v;
-            });
-            Model.Title = GraphProcessorEditorUtility.GetNodeDisplayName(Model.GetType());
-            Model.RegisterValueChangedEvent<Texture>(nameof(Model.Icon), v =>
-            {
-                if (v != null)
-                {
-                    icon.style.display = DisplayStyle.Flex;
-                    icon.image = v;
-                    icon.style.width = Model.IconSize.x;
-                    icon.style.height = Model.IconSize.y;
-                }
-                else
-                {
-                    icon.style.display = DisplayStyle.None;
-                }
-            });
-            Model.RegisterValueChangedEvent<Vector2>(nameof(Model.IconSize), v =>
-            {
-                icon.style.width = v.x;
-                icon.style.height = v.y;
-            });
-            Model.RegisterValueChangedEvent<string>(nameof(Model.Tooltip), v =>
-            {
-                tooltip = v;
-            });
-            Model.RegisterValueChangedEvent<Vector2>(nameof(Model.Position), v =>
-            {
-                base.SetPosition(new Rect(v, GetPosition().size));
-            });
+            expanded = _expanded;
+            inputContainerElement.style.display = _expanded ? DisplayStyle.Flex : DisplayStyle.None;
         }
+        void OnTitleChanged(string _title)
+        {
+            title = _title;
+        }
+        void OnIconChanged(Texture _icon)
+        {
+            if (_icon != null)
+            {
+                icon.style.display = DisplayStyle.Flex;
+                icon.image = _icon;
+                icon.style.width = Model.IconSize.x;
+                icon.style.height = Model.IconSize.y;
+            }
+            else
+            {
+                icon.style.display = DisplayStyle.None;
+            }
+        }
+        void OnIconSizeChanged(Vector2 _size)
+        {
+            icon.style.width = _size.x;
+            icon.style.height = _size.y;
+        }
+        void OnTooltipChanged(string _tooltip)
+        {
+            tooltip = _tooltip;
+        }
+        void OnPositionChanged(Vector2 _position)
+        {
+            base.SetPosition(new Rect(_position, GetPosition().size));
+        }
+        void OnTitleColorChanged(Color _color)
+        {
+            titleContainer.style.backgroundColor = _color;
+            TitleLabel.style.color = _color.GetLuminance() > 0.5f && _color.a > 0.5f ? Color.black : Color.white * 0.9f;
+        }
+        protected virtual void BindingPropertiesBeforeUpdate()
+        {
+            Model.RegisterValueChangedEvent<bool>(nameof(Model.Expanded), OnExpandedChanged);
+            Model.RegisterValueChangedEvent<string>(nameof(Model.Title), OnTitleChanged);
+            Model.Title = GraphProcessorEditorUtility.GetNodeDisplayName(Model.GetType());
+            Model.RegisterValueChangedEvent<Texture>(nameof(Model.Icon), OnIconChanged);
+            Model.RegisterValueChangedEvent<Vector2>(nameof(Model.IconSize), OnIconSizeChanged);
+            Model.RegisterValueChangedEvent<string>(nameof(Model.Tooltip), OnTooltipChanged);
+            Model.RegisterValueChangedEvent<Vector2>(nameof(Model.Position), OnPositionChanged);
+        }
+
+        protected virtual void BindingPropertiesAfterUpdate()
+        {
+            //Model.RegisterValueChangedEvent<Color>(nameof(Model.TitleTint), OnTitleColorChanged);
+        }
+
+        public virtual void UnBindingProperties()
+        {
+            foreach (var portView in PortViews.Values)
+            {
+                portView.UnBindingProperties();
+            }
+            Model.UnregisterValueChangedEvent<bool>(nameof(Model.Expanded), OnExpandedChanged);
+            Model.UnregisterValueChangedEvent<string>(nameof(Model.Title), OnTitleChanged);
+            Model.UnregisterValueChangedEvent<Texture>(nameof(Model.Icon), OnIconChanged);
+            Model.UnregisterValueChangedEvent<Vector2>(nameof(Model.IconSize), OnIconSizeChanged);
+            Model.UnregisterValueChangedEvent<string>(nameof(Model.Tooltip), OnTooltipChanged);
+            Model.UnregisterValueChangedEvent<Vector2>(nameof(Model.Position), OnPositionChanged);
+            //Model.UnregisterValueChangedEvent<Color>(nameof(Model.TitleTint), OnTitleColorChanged);
+        }
+        #endregion
 
         void InitializePorts()
         {

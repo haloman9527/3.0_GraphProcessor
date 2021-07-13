@@ -12,15 +12,13 @@
  */
 #endregion
 using CZToolKit.Core.Editors;
-using CZToolKit.MVVM;
 using System.Collections.Generic;
 using UnityEditor;
-using UnityEngine;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
     [CustomObjectEditor(typeof(BaseGraphElement))]
-    public class BaseNodeViewModelObjectEditor : ObjectEditor
+    public class BaseNodeObjectEditor : ObjectEditor
     {
         public static HashSet<string> IgnoreProperty = new HashSet<string>() {
             nameof(BaseNode.Title),

@@ -64,9 +64,14 @@ namespace CZToolKit.GraphProcessor
                         continue;
                     }
 
+                    if (!(_node is ParameterNode) && portKV.Value.typeQualifiedName != cachePort.typeQualifiedName)
+                    {
+                        portKV.Value.Reload(cachePort);
+                        continue;
+                    }
+
                     // 如果端口特性发生了更改，则重载端口
-                    if (portKV.Value.typeQualifiedName != cachePort.typeQualifiedName ||
-                        portKV.Value.Multiple != cachePort.Multiple ||
+                    if (portKV.Value.Multiple != cachePort.Multiple ||
                         portKV.Value.TypeConstraint != cachePort.TypeConstraint)
                     {
                         portKV.Value.Reload(cachePort);

@@ -18,10 +18,10 @@ namespace CZToolKit.GraphProcessor.Editors
             BaseGraphView graphView = _graphView as BaseGraphView;
 
             BaseNode inputNode = (_edge.input.node as BaseNodeView).Model;
-            NodePort inputPort = (_edge.input as NodePortView).ViewModel;
+            NodePort inputPort = (_edge.input as NodePortView).Model;
 
             BaseNode outputNode = (_edge.output.node as BaseNodeView).Model;
-            NodePort outputPort = (_edge.output as NodePortView).ViewModel;
+            NodePort outputPort = (_edge.output as NodePortView).Model;
 
             graphView.Model.Connect(inputNode.Ports[inputPort.FieldName], outputNode.Ports[outputPort.FieldName]);
         }

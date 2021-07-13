@@ -5,6 +5,7 @@ using System;
 namespace CZToolKit.GraphProcessor
 {
     [Serializable]
+    [Obsolete("Stack移除，不再使用，使用场景少")]
     public class StackPanel : BaseGraphElement
     {
         public static StackPanel CreateStack(Vector2 _position, string _title = "Stack")

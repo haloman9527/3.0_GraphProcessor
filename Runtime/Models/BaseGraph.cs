@@ -33,7 +33,7 @@ namespace CZToolKit.GraphProcessor
 
         [SerializeField] Dictionary<string, BaseNode> nodes = new Dictionary<string, BaseNode>();
         [SerializeField] Dictionary<string, BaseEdge> edges = new Dictionary<string, BaseEdge>();
-        [SerializeField] Dictionary<string, StackPanel> stacks = new Dictionary<string, StackPanel>();
+        //[SerializeField] Dictionary<string, StackPanel> stacks = new Dictionary<string, StackPanel>();
         [SerializeField] List<GroupPanel> groups = new List<GroupPanel>();
 
         [SerializeField] CZBlackboard blackboard = new CZBlackboard();
@@ -47,8 +47,8 @@ namespace CZToolKit.GraphProcessor
         public event Action<BaseEdge> onEdgeAdded;
         public event Action<BaseEdge> onEdgeRemoved;
 
-        public event Action<StackPanel> onStackAdded;
-        public event Action<StackPanel> onStackRemoved;
+        //public event Action<StackPanel> onStackAdded;
+        //public event Action<StackPanel> onStackRemoved;
 
         public event Action<GroupPanel> onGroupAdded;
         public event Action<GroupPanel> onGroupRemoved;
@@ -84,7 +84,7 @@ namespace CZToolKit.GraphProcessor
         public IReadOnlyCZBlackboard Blackboard { get { return blackboard; } }
         public IReadOnlyDictionary<string, BaseNode> Nodes { get { return nodes; } }
         public IReadOnlyDictionary<string, BaseEdge> Edges { get { return edges; } }
-        public IReadOnlyDictionary<string, StackPanel> Stacks { get { return stacks; } }
+        //public IReadOnlyDictionary<string, StackPanel> Stacks { get { return stacks; } }
         public IReadOnlyList<GroupPanel> Groups { get { return groups; } }
         public IVariableOwner VarialbeOwner { get; private set; }
         public IReadOnlyList<SharedVariable> Variables
@@ -150,6 +150,11 @@ namespace CZToolKit.GraphProcessor
         {
             ParameterNode parameterNode = BaseNode.CreateNew<ParameterNode>(_position);
             parameterNode.Name = _dataName;
+            foreach (var port in parameterNode.Ports.Values)
+            {
+                if (TryGetData_BB(_dataName, out ICZType data))
+                    port.typeQualifiedName = data.ValueType.AssemblyQualifiedName;
+            }
             AddNode(parameterNode);
         }
 
@@ -265,18 +270,18 @@ namespace CZToolKit.GraphProcessor
             }
         }
 
-        public void AddStackNode(StackPanel _stack)
-        {
-            _stack.Enable(this);
-            stacks[_stack.GUID] = _stack;
-            onStackAdded?.Invoke(_stack);
-        }
+        //public void AddStackNode(StackPanel _stack)
+        //{
+        //    _stack.Enable(this);
+        //    stacks[_stack.GUID] = _stack;
+        //    onStackAdded?.Invoke(_stack);
+        //}
 
-        public void RemoveStackNode(StackPanel _stack)
-        {
-            stacks.Remove(_stack.GUID);
-            onStackRemoved?.Invoke(_stack);
-        }
+        //public void RemoveStackNode(StackPanel _stack)
+        //{
+        //    stacks.Remove(_stack.GUID);
+        //    onStackRemoved?.Invoke(_stack);
+        //}
 
         public void AddGroup(GroupPanel _group)
         {

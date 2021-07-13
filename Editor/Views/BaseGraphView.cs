@@ -16,7 +16,7 @@ using UnityObject = UnityEngine.Object;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
-    public abstract class BaseGraphView : GraphView
+    public abstract class BaseGraphView : GraphView, IBindableView<BaseGraph>
     {
         #region 属性
         public bool IsDirty { get; private set; } = false;
@@ -53,15 +53,19 @@ namespace CZToolKit.GraphProcessor.Editors
             CommandDispatcher = _commandDispatcher;
             GraphWindow = _window;
 
-            BindingProperties();
-            InitializeCallbacks();
             Blackboard = new BlackboardView(this);
             Add(Blackboard);
+
+            InitializeCallbacks();
             GenerateNodeViews();
             GenerateGroupViews();
             LinkNodeViews();
 
+            BindingPropertiesBeforeUpdate();
             Model.UpdateProperties();
+            BindingPropertiesAfterUpdate();
+            RegisterCallback<DetachFromPanelEvent>(evt => { UnBindingProperties(); });
+
             NotifyNodeViewsInitialized();
             InitializeToolbarButtons();
 
@@ -78,6 +82,105 @@ namespace CZToolKit.GraphProcessor.Editors
                 }
             }));
         }
+
+        #region 数据监听回调
+        void OnPositionChanged(Vector3 _position)
+        {
+            viewTransform.position = _position;
+        }
+        void OnScaleChanged(Vector3 _scale)
+        {
+            viewTransform.scale = _scale;
+        }
+        void OnNodeAdded(BaseNode _node)
+        {
+            BaseNodeView nodeView = AddNodeView(_node);
+            nodeView.RefreshExpandedState();
+            nodeView.Initialized();
+        }
+        void OnNodeRemoved(BaseNode _node)
+        {
+            RemoveNodeView(NodeViews[_node.GUID]);
+        }
+        void OnEdgeAdded(BaseEdge _edge)
+        {
+            var input = NodeViews[_edge.InputNodeGUID].PortViews[_edge.InputFieldName];
+            var output = NodeViews[_edge.OutputNodeGUID].PortViews[_edge.OutputFieldName];
+            ConnectView(input, output, _edge);
+        }
+        void OnEdgeRemoved(BaseEdge _edge)
+        {
+            edges.ForEach(edge =>
+            {
+                if (edge.userData != _edge) return;
+                DisconnectView(edge as BaseEdgeView);
+            });
+        }
+        void OnStackAdded(StackPanel _stack)
+        {
+            AddStackNodeView(_stack);
+        }
+        void OnStackRemoved(StackPanel _stack)
+        {
+            RemoveStackNodeView(StackViews[_stack.GUID]);
+        }
+        void OnGroupAdded(GroupPanel _group)
+        {
+            AddGroupView(_group);
+        }
+        void OnGroupRemoved(GroupPanel _group)
+        {
+            RemoveGroupView(_group);
+        }
+
+        // 在数据首次更新前绑定
+        protected virtual void BindingPropertiesBeforeUpdate()
+        {
+            Model.RegisterValueChangedEvent<Vector3>(nameof(Model.Position), OnPositionChanged);
+            Model.RegisterValueChangedEvent<Vector3>(nameof(Model.Scale), OnScaleChanged);
+
+            Model.onNodeAdded += OnNodeAdded;
+            Model.onNodeRemoved += OnNodeRemoved;
+
+            Model.onEdgeAdded += OnEdgeAdded;
+            Model.onEdgeRemoved += OnEdgeRemoved;
+
+            //Model.onStackAdded += OnStackAdded;
+            //Model.onStackRemoved += OnStackRemoved;
+
+            Model.onGroupAdded += OnGroupAdded;
+            Model.onGroupRemoved += OnGroupRemoved;
+        }
+
+        // 在数据首次更新后绑定
+        protected virtual void BindingPropertiesAfterUpdate() { }
+
+        public virtual void UnBindingProperties()
+        {
+            this.Query<GraphElement>().ForEach(element =>
+            {
+                if (element is IBindableView bindableView)
+                {
+                    bindableView.UnBindingProperties();
+                }
+            });
+
+            Model.UnregisterValueChangedEvent<Vector3>(nameof(Model.Position), OnPositionChanged);
+            Model.UnregisterValueChangedEvent<Vector3>(nameof(Model.Scale), OnScaleChanged);
+
+            Model.onNodeAdded -= OnNodeAdded;
+            Model.onNodeRemoved -= OnNodeRemoved;
+
+            Model.onEdgeAdded -= OnEdgeAdded;
+            Model.onEdgeRemoved -= OnEdgeRemoved;
+
+            //Model.onStackAdded -= OnStackAdded;
+            //Model.onStackRemoved -= OnStackRemoved;
+
+            Model.onGroupAdded -= OnGroupAdded;
+            Model.onGroupRemoved -= OnGroupRemoved;
+        }
+        #endregion
 
         #region Initialize
         /// <summary> 初始化ToolbarButton </summary>
@@ -114,62 +217,6 @@ namespace CZToolKit.GraphProcessor.Editors
             GraphWindow.Toolbar.AddToggleToLeft(toggleBlackboard, 100);
         }
 
-        protected virtual void BindingProperties()
-        {
-            Model.RegisterValueChangedEvent<Vector3>(nameof(Model.Position), v =>
-            {
-                viewTransform.position = v;
-            });
-            Model.RegisterValueChangedEvent<Vector3>(nameof(Model.Scale), v =>
-            {
-                viewTransform.scale = v;
-            });
-
-            Model.onNodeAdded += v =>
-            {
-                BaseNodeView nodeView = AddNodeView(v);
-                nodeView.RefreshExpandedState();
-                nodeView.Initialized();
-            };
-            Model.onNodeRemoved += v =>
-            {
-                RemoveNodeView(NodeViews[v.GUID]);
-            };
-
-            Model.onEdgeAdded += v =>
-            {
-                var input = NodeViews[v.InputNodeGUID].PortViews[v.InputFieldName];
-                var output = NodeViews[v.OutputNodeGUID].PortViews[v.OutputFieldName];
-                ConnectView(input, output, v);
-            };
-            Model.onEdgeRemoved += v =>
-            {
-                edges.ForEach(edge =>
-                {
-                    if (edge.userData != v) return;
-                    DisconnectView(edge as BaseEdgeView);
-                });
-            };
-
-            Model.onStackAdded += v =>
-            {
-                AddStackNodeView(v);
-            };
-            Model.onStackRemoved += v =>
-            {
-                RemoveStackNodeView(StackViews[v.GUID]);
-            };
-
-            Model.onGroupAdded += v =>
-            {
-                AddGroupView(v);
-            };
-            Model.onGroupRemoved += v =>
-            {
-                RemoveGroupView(v);
-            };
-        }
-
         void InitializeCallbacks()
         {
             graphViewChanged = GraphViewChangedCallback;
@@ -198,12 +245,12 @@ namespace CZToolKit.GraphProcessor.Editors
             }
         }
 
-        /// <summary> 生成所有StackView </summary>
-        void GenerateStackViews()
-        {
-            foreach (var stack in Model.Stacks.Values)
-                AddStackNodeView(stack);
-        }
+        ///// <summary> 生成所有StackView </summary>
+        //void GenerateStackViews()
+        //{
+        //    foreach (var stack in Model.Stacks.Values)
+        //        AddStackNodeView(stack);
+        //}
 
         /// <summary> 生成所有GroupView </summary>
         void GenerateGroupViews()
@@ -280,9 +327,9 @@ namespace CZToolKit.GraphProcessor.Editors
                             Model.RemoveData_BB(blackboardField.text);
                             RemoveFromSelection(blackboardField);
                             return true;
-                        case StackView stackNodeView:
-                            Model.RemoveStackNode(Model.Stacks[stackNodeView.Model.GUID]);
-                            return true;
+                        //case StackView stackNodeView:
+                        //    Model.RemoveStackNode(Model.Stacks[stackNodeView.Model.GUID]);
+                        //    return true;
                         case GroupView groupView:
                             Model.RemoveGroup(groupView.Model);
                             return true;
@@ -337,13 +384,13 @@ namespace CZToolKit.GraphProcessor.Editors
             {
                 if (node == null)
                     continue;
-                node.Position += new Vector2(20, 20);
                 string sourceGUID = node.GUID;
                 // 新节点重置id
                 BaseNode.IDAllocation(node);
                 // 新节点与旧id存入字典
                 copiedNodesMap[sourceGUID] = node;
                 Model.AddNode(node).ClearConnectionsWithoutNotification();
+                node.Position += new Vector2(20, 20);
                 AddToSelection(NodeViews[node.GUID]);
             }
 
@@ -364,6 +411,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
             foreach (var edge in data.copiedEdges)
             {
+                //edge.Enable(Model);
                 copiedNodesMap.TryGetValue(edge.InputNodeGUID, out var inputNode);
                 copiedNodesMap.TryGetValue(edge.OutputNodeGUID, out var outputNode);
 
@@ -380,7 +428,7 @@ namespace CZToolKit.GraphProcessor.Editors
                 if (NodeViews.TryGetValue(inputNode.GUID, out BaseNodeView inputNodeView)
                     && NodeViews.TryGetValue(outputNode.GUID, out BaseNodeView outputNodeView))
                 {
-                    Model.Connect(outputNodeView.Model.Ports[edge.OutputFieldName], inputNodeView.Model.Ports[edge.InputFieldName]);
+                    Model.Connect(inputNodeView.Model.Ports[edge.InputFieldName], outputNodeView.Model.Ports[edge.OutputFieldName]);
                 }
             }
 
@@ -489,7 +537,7 @@ namespace CZToolKit.GraphProcessor.Editors
             ports.ForEach(_portView =>
             {
                 if (_portView is NodePortView portView
-                    && NodePort.IsCompatible(startPortView.ViewModel, portView.ViewModel))
+                    && NodePort.IsCompatible(startPortView.Model, portView.Model))
                 {
                     compatiblePorts.Add(_portView);
                 }
@@ -529,10 +577,14 @@ namespace CZToolKit.GraphProcessor.Editors
                         EditorGUILayoutExtension.DrawFieldsInInspector(nodeView.title, nodeView.Model);
                         Selection.activeObject = ObjectInspector.Instance;
                         return;
-                    //case BaseEdgeView edgeView:
-                    //    EditorGUILayoutExtension.DrawFieldsInInspector(edgeView.title, edgeView.ViewModel);
-                    //    Selection.activeObject = ObjectInspector.Instance;
-                    //    return;
+                    case BaseEdgeView edgeView:
+                        EditorGUILayoutExtension.DrawFieldsInInspector(edgeView.title, edgeView.Model);
+                        Selection.activeObject = ObjectInspector.Instance;
+                        return;
+                    case GroupView groupView:
+                        EditorGUILayoutExtension.DrawFieldsInInspector(groupView.title, groupView.Model);
+                        Selection.activeObject = ObjectInspector.Instance;
+                        return;
                     default:
                         break;
                 }

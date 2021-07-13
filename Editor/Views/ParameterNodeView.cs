@@ -6,13 +6,19 @@ namespace CZToolKit.GraphProcessor.Editors
     [CustomNodeView(typeof(ParameterNode))]
     public class ParameterNodeView : SimpleNodeView<ParameterNode>
     {
-        protected override void BindingProperties()
+        void OnDataNameChanged(string _dataName)
         {
-            base.BindingProperties();
-            T_Model.RegisterValueChangedEvent<string>(nameof(T_Model.Name), v =>
-            {
-                title = v;
-            });
+            title = _dataName;
+        }
+        protected override void BindingPropertiesBeforeUpdate()
+        {
+            base.BindingPropertiesBeforeUpdate();
+            T_Model.RegisterValueChangedEvent<string>(nameof(T_Model.Name), OnDataNameChanged);
+        }
+        public override void UnBindingProperties()
+        {
+            base.UnBindingProperties();
+            T_Model.UnregisterValueChangedEvent<string>(nameof(T_Model.Name), OnDataNameChanged);
         }
 
         protected override void OnInitialized()
@@ -46,17 +52,5 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             (Owner.Blackboard.Fields[T_Model.Name].Q(className: "blackboardField") as BlackboardField).highlighted = false;
         }
-
-        //public override void OnSelected()
-        //{
-        //    base.OnSelected();
-        //    (Owner.Blackboard.Fields[TViewModel.Name].Q(className: "blackboardField") as BlackboardField).highlighted = true;
-        //}
-
-        //public override void OnUnselected()
-        //{
-        //    base.OnUnselected();
-        //    (Owner.Blackboard.Fields[TViewModel.Name].Q(className: "blackboardField") as BlackboardField).highlighted = false;
-        //}
     }
 }

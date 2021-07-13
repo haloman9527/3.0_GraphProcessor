@@ -9,7 +9,6 @@ using UnityEditor.UIElements;
 using UnityEngine.Profiling;
 
 using UnityObject = UnityEngine.Object;
-using System.Reflection;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
@@ -132,7 +131,9 @@ namespace CZToolKit.GraphProcessor.Editors
         protected virtual void OnDisable()
         {
             if (GraphView != null && GraphAsset != null && EditorUtility.IsDirty(GraphAsset))
+            {
                 GraphView.SaveGraphToDisk();
+            }
             EditorApplication.playModeStateChanged -= OnPlayModeChanged;
         }
 

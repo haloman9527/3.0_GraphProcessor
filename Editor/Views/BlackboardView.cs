@@ -12,7 +12,7 @@ using Blackboard = UnityEditor.Experimental.GraphView.Blackboard;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
-    public class BlackboardView : Blackboard
+    public sealed class BlackboardView : Blackboard, IBindableView
     {
         Dictionary<string, BlackboardRow> fields = new Dictionary<string, BlackboardRow>();
 
@@ -27,33 +27,53 @@ namespace CZToolKit.GraphProcessor.Editors
             addItemRequested = OnAddClicked;
             editTextRequested = Rename;
 
-            UpdateParameterList();
+            BindingPropertiesBeforeUpdate();
 
-            GraphView.Model.RegisterValueChangedEvent<Rect>(nameof(GraphView.Model.BlackboardPosition), v =>
-            {
-                base.SetPosition(v);
-            });
-            GraphView.Model.RegisterValueChangedEvent<bool>(nameof(GraphView.Model.BlackboardVisible), v =>
-            {
-                style.display = v ? DisplayStyle.Flex : DisplayStyle.None;
-            });
-            GraphView.Model.onBlackboardDataAdded += (name, data) =>
-            {
-                AddFieldView(name, data);
-            };
-            GraphView.Model.onBlackboardDataRemoved += name =>
-            {
-                RemoveFieldView(name);
-            };
-            GraphView.Model.onBlackboardDataRenamed += (oldName, newName) =>
-            {
-                BlackboardRow blackboardRow = fields[oldName];
-                (blackboardRow.Q(className: "blackboardField") as BlackboardField).text = newName;
-                fields.Remove(oldName);
-                fields[newName] = blackboardRow;
-                MarkDirtyRepaint();
-            };
+            UpdateParameterList();
         }
+
+        #region 数据监听回调
+        void OnPositionChanged(Rect _position)
+        {
+            base.SetPosition(_position);
+        }
+        void OnVisibleChanged(bool _visible)
+        {
+            style.display = _visible ? DisplayStyle.Flex : DisplayStyle.None;
+        }
+        void OnBlackboardDataAdded(string _dataName, ICZType _data)
+        {
+            AddFieldView(_dataName, _data);
+        }
+        void OnBlackboardDataRemoved(string _dataName)
+        {
+            RemoveFieldView(_dataName);
+        }
+        void OnBlackboardDataRenamed(string _oldName, string _newName)
+        {
+            BlackboardRow blackboardRow = fields[_oldName];
+            (blackboardRow.Q(className: "blackboardField") as BlackboardField).text = _newName;
+            fields.Remove(_oldName);
+            fields[_newName] = blackboardRow;
+            MarkDirtyRepaint();
+        }
+        void BindingPropertiesBeforeUpdate()
+        {
+            GraphView.Model.RegisterValueChangedEvent<Rect>(nameof(GraphView.Model.BlackboardPosition), OnPositionChanged);
+            GraphView.Model.RegisterValueChangedEvent<bool>(nameof(GraphView.Model.BlackboardVisible), OnVisibleChanged);
+            GraphView.Model.onBlackboardDataAdded += OnBlackboardDataAdded;
+            GraphView.Model.onBlackboardDataRemoved += OnBlackboardDataRemoved;
+            GraphView.Model.onBlackboardDataRenamed += OnBlackboardDataRenamed;
+        }
+        public void UnBindingProperties()
+        {
+            GraphView.Model.UnregisterValueChangedEvent<Rect>(nameof(GraphView.Model.BlackboardPosition), OnPositionChanged);
+            GraphView.Model.UnregisterValueChangedEvent<bool>(nameof(GraphView.Model.BlackboardVisible), OnVisibleChanged);
+            GraphView.Model.onBlackboardDataAdded -= OnBlackboardDataAdded;
+            GraphView.Model.onBlackboardDataRemoved -= OnBlackboardDataRemoved;
+            GraphView.Model.onBlackboardDataRenamed -= OnBlackboardDataRenamed;
+        }
+        #endregion
 
         void Rename(Blackboard _blackboard, VisualElement _field, string _newName)
         {
@@ -61,7 +81,7 @@ namespace CZToolKit.GraphProcessor.Editors
             GraphView.Model.RenameData_BB(blackboardField.text, _newName);
         }
 
-        protected virtual void OnAddClicked(Blackboard t)
+        void OnAddClicked(Blackboard t)
         {
             GenericMenu menu = new GenericMenu();
 
@@ -133,7 +153,7 @@ namespace CZToolKit.GraphProcessor.Editors
             GraphView.Model.BlackboardPosition = GetPosition();
         }
 
-        protected virtual void UpdateParameterList()
+        void UpdateParameterList()
         {
             contentContainer.Clear();
             foreach (var kv in GraphView.Model.Blackboard.GUIDMap)

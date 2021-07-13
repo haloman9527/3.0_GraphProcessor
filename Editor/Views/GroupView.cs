@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
-    public sealed class GroupView : Group
+    public sealed class GroupView : Group, IBindableView<GroupPanel>
     {
         public Label titleLabel { get; private set; }
         public ColorField colorField { get; private set; }
@@ -37,30 +37,40 @@ namespace CZToolKit.GraphProcessor.Editors
 
             InitializeInnerNodes();
         }
+        #region 数据监听回调
+        void OnTitleChanged(string _title)
+        {
+            title = _title;
+            Owner.SetDirty();
+        }
+        void OnPositionChanged(Rect _position)
+        {
+            base.SetPosition(_position);
+            Owner.SetDirty();
+        }
+        void OnColorChanged(Color _color)
+        {
+            headerContainer.style.backgroundColor = _color;
+            // 当明度大于0.5f,且透明度大于0.5f，文字颜色为黑色，否则为白色
+            titleLabel.style.color = _color.GetLuminance() > 0.5f && _color.a > 0.5f ? Color.black : Color.white * 0.9f;
+            colorField.SetValueWithoutNotify(_color);
+            Owner.SetDirty();
+        }
 
         void BindingProperties()
         {
-            Model.RegisterValueChangedEvent<string>(nameof(Model.Title), v =>
-            {
-                title = v;
-                Owner.SetDirty();
-            });
-
-            Model.RegisterValueChangedEvent<Rect>(nameof(Model.Position), v =>
-            {
-                base.SetPosition(v);
-                Owner.SetDirty();
-            });
-
-            Model.RegisterValueChangedEvent<Color>(nameof(Model.Color), newColor =>
-            {
-                headerContainer.style.backgroundColor = newColor;
-                // 当明度大于0.5f,且透明度大于0.5f，文字颜色为黑色，否则为白色
-                titleLabel.style.color = newColor.GetLuminance() > 0.5f && newColor.a > 0.5f ? Color.black : Color.white * 0.9f;
-                colorField.SetValueWithoutNotify(newColor);
-                Owner.SetDirty();
-            });
+            Model.RegisterValueChangedEvent<string>(nameof(Model.Title), OnTitleChanged);
+            Model.RegisterValueChangedEvent<Rect>(nameof(Model.Position), OnPositionChanged);
+            Model.RegisterValueChangedEvent<Color>(nameof(Model.Color), OnColorChanged);
         }
+
+        public void UnBindingProperties()
+        {
+            Model.UnregisterValueChangedEvent<string>(nameof(Model.Title), OnTitleChanged);
+            Model.UnregisterValueChangedEvent<Rect>(nameof(Model.Position), OnPositionChanged);
+            Model.UnregisterValueChangedEvent<Color>(nameof(Model.Color), OnColorChanged);
+        }
+        #endregion
 
         public override bool AcceptsElement(GraphElement element, ref string reasonWhyNotAccepted)
         {
@@ -77,13 +87,13 @@ namespace CZToolKit.GraphProcessor.Editors
                 AddElement(nodeView);
             }
 
-            foreach (var stackGUID in Model.InnerStackGUIDs)
-            {
-                if (!Owner.Model.Stacks.ContainsKey(stackGUID)) continue;
+            //foreach (var stackGUID in Model.InnerStackGUIDs)
+            //{
+            //    if (!Owner.Model.Stacks.ContainsKey(stackGUID)) continue;
 
-                var stackView = Owner.StackViews[stackGUID];
-                AddElement(stackView);
-            }
+            //    var stackView = Owner.StackViews[stackGUID];
+            //    AddElement(stackView);
+            //}
         }
 
         protected override void OnGroupRenamed(string _oldName, string _newName)
@@ -110,9 +120,9 @@ namespace CZToolKit.GraphProcessor.Editors
                 BaseNodeView nodeView = element as BaseNodeView;
                 if (nodeView != null && !Model.InnerNodeGUIDs.Contains(nodeView.Model.GUID))
                     Model.AddNode(nodeView.Model.GUID);
-                StackView stackNodeView = element as StackView;
-                if (stackNodeView != null && !Model.InnerStackGUIDs.Contains(stackNodeView.Model.GUID))
-                    Model.AddStack(stackNodeView.Model.GUID);
+                //StackView stackNodeView = element as StackView;
+                //if (stackNodeView != null && !Model.InnerStackGUIDs.Contains(stackNodeView.Model.GUID))
+                //    Model.AddStack(stackNodeView.Model.GUID);
             }
             base.OnElementsAdded(elements);
         }
