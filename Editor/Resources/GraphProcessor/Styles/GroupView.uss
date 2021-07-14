@@ -1,9 +1,18 @@
-#headerColorPicker {
-    position: absolute;
-    margin: 8px;
-    width: 50px;
+
+.mainContainer > #headerContainer {
+    flex-direction: row;
 }
 
-#titleContainer > #titleLabel, #titleContainer > #titleField {
-    margin-left: 55px;
+.mainContainer > #headerContainer > #titleContainer {
+    flex-grow: 1;
+}
+
+#headerColorPicker {
+    margin: 8px;
+    width: 50px;
+    flex-grow: 0;
+}
+
+#expanded {
+    flex-grow: 0;
 }

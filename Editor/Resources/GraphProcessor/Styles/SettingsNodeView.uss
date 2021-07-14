@@ -8,7 +8,7 @@
 
 #settings-button > #icon {
     -unity-background-scale-mode: scale-to-fit;
-    background-image: resource("GraphProcessor/Icons/Settings");
+    background-image: resource("GraphProcessor/Textures/Settings");
     flex-grow: 1;
 }
 

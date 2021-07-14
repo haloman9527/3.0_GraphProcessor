@@ -10,6 +10,8 @@ namespace CZToolKit.GraphProcessor.Editors
     public sealed class GroupView : Group, IBindableView<GroupPanel>
     {
         public Label titleLabel { get; private set; }
+        public VisualElement titleContainer { get; private set; }
+        public VisualElement centralContainer { get; private set; }
         public ColorField colorField { get; private set; }
         public BaseGraphView Owner { get; private set; }
         public GroupPanel Model { get; private set; }
@@ -17,9 +19,26 @@ namespace CZToolKit.GraphProcessor.Editors
         public GroupView() : base()
         {
             styleSheets.Add(GraphProcessorStyles.GroupViewStyle);
+
+            headerContainer.style.flexDirection = FlexDirection.Row;
+            titleContainer = headerContainer.Q("titleContainer");
             titleLabel = headerContainer.Q("titleLabel") as Label;
+            centralContainer = this.Q("centralContainer");
+
             colorField = new ColorField { name = "headerColorPicker" };
-            headerContainer.Add(colorField);
+            headerContainer.Insert(0, colorField);
+
+            //ToolbarToggle toggle = new ToolbarToggle() { name = "expanded", text = "expanded" };
+            //toggle.style.flexGrow = 0;
+            //toggle.RegisterValueChangedCallback(_ =>
+            //{
+            //    foreach (var item in containedElements)
+            //    {
+            //        item.style.display = _.newValue ? DisplayStyle.Flex : DisplayStyle.None;
+            //    }
+            //    centralContainer.style.display = _.newValue ? DisplayStyle.Flex : DisplayStyle.None;
+            //});
+            //headerContainer.Add(toggle);
         }
 
         public void SetUp(GroupPanel _group, CommandDispatcher _commandDispatcher, BaseGraphView _graphView)
@@ -34,8 +53,13 @@ namespace CZToolKit.GraphProcessor.Editors
             {
                 Model.Color = e.newValue;
             });
-
             InitializeInnerNodes();
+
+            //NodePort nodeport = new NodePort() { direction = PortDirection.Output, fieldName = "output", multiple = true, typeConstraint = PortTypeConstraint.None, typeQualifiedName = typeof(object).AssemblyQualifiedName };
+            //NodePortView n = NodePortView.CreatePV(Orientation.Horizontal, Direction.Output, nodeport);
+            //n.SetUp(nodeport, Owner.CommandDispatcher, Owner);
+            //n.style.marginLeft = 100;
+            //this.Add(n);
         }
         #region 数据监听回调
         void OnTitleChanged(string _title)

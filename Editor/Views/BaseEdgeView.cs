@@ -7,24 +7,24 @@ namespace CZToolKit.GraphProcessor.Editors
 {
     public class BaseEdgeView : Edge, IBindableView<BaseEdge>
     {
+        public BaseEdge Model { get; private set; }
         protected BaseGraphView Owner { get; private set; }
         protected CommandDispatcher CommandDispatcher { get; private set; }
-        public BaseEdge Model { get; private set; }
 
         public BaseEdgeView() : base()
         {
             styleSheets.Add(GraphProcessorStyles.EdgeViewStyle);
 
             // 添加流程点
-            this.AddManipulator(new ProcessPoint());
+            this.AddManipulator(new FlowPoint());
         }
 
         public void SetUp(BaseEdge _edge, CommandDispatcher _commandDispatcher, BaseGraphView _graphView)
         {
+            Model = _edge;
             CommandDispatcher = _commandDispatcher;
             Owner = _graphView;
 
-            Model = _edge;
             BindingPropertiesBeforeUpdate();
             Model.UpdateProperties();
             BindingPropertiesAfterUpdate();
@@ -61,61 +61,61 @@ namespace CZToolKit.GraphProcessor.Editors
         }
     }
 
-    public class ProcessPoint : Manipulator
+    public class FlowPoint : Manipulator
     {
-        VisualElement capPoint { get; set; }
+        VisualElement point { get; set; }
 
         protected override void RegisterCallbacksOnTarget()
         {
             if (target is Edge edge)
             {
-                capPoint = new VisualElement();
-                capPoint.AddToClassList("cap-point");
-                capPoint.style.left = 0;
-                capPoint.style.top = 0;
-                target.Add(capPoint);
+                point = new VisualElement();
+                point.AddToClassList("flow-point");
+                point.style.left = 0;
+                point.style.top = 0;
+                target.Add(point);
 
-                target.schedule.Execute(_ =>
+                target.schedule.Execute(() =>
                 {
                     UpdateCapPoint(edge, (float)(EditorApplication.timeSinceStartup % 3 / 3));
-                }).Until(() => capPoint == null);
+                }).Until(() => point == null);
             }
         }
 
         protected override void UnregisterCallbacksFromTarget()
         {
-            if (capPoint != null)
+            if (point != null)
             {
-                target.Remove(capPoint);
-                capPoint = null;
+                target.Remove(point);
+                point = null;
             }
         }
 
         public void UpdateCapPoint(Edge _edge, float _t)
         {
             Vector3 v = Lerp(_edge.edgeControl.controlPoints, _t);
-            capPoint.style.left = v.x;
-            capPoint.style.top = v.y;
+            point.style.left = v.x;
+            point.style.top = v.y;
         }
 
         Vector2 Lerp(Vector2[] points, float t)
         {
             t = Mathf.Clamp01(t);
-            float length = 0;
+            float totalLength = 0;
             for (int i = 0; i < points.Length - 1; i++)
             {
-                length += Vector2.Distance(points[i], points[i + 1]);
+                totalLength += Vector2.Distance(points[i], points[i + 1]);
             }
 
-            float p = Mathf.Lerp(0, length, t);
+            float pointLength = Mathf.Lerp(0, totalLength, t);
 
-            float n = 0;
+            float tempLength = 0;
             for (int i = 0; i < points.Length - 1; i++)
             {
                 float d = Vector2.Distance(points[i], points[i + 1]);
-                if (p <= n + d)
-                    return Vector2.Lerp(points[i], points[i + 1], (p - n) / d);
-                n += d;
+                if (pointLength <= tempLength + d)
+                    return Vector2.Lerp(points[i], points[i + 1], (pointLength - tempLength) / d);
+                tempLength += d;
             }
             return points[0];
         }

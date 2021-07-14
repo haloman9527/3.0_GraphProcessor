@@ -13,6 +13,7 @@ using UnityEngine.UIElements;
 
 using GraphElement = UnityEditor.Experimental.GraphView.GraphElement;
 using UnityObject = UnityEngine.Object;
+using System.Collections;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
@@ -47,27 +48,25 @@ namespace CZToolKit.GraphProcessor.Editors
             this.StretchToParentSize();
         }
 
-        public BaseGraphView(BaseGraph _graph, CommandDispatcher _commandDispatcher, BaseGraphWindow _window) : this()
+        IEnumerator Init()
         {
-            Model = _graph;
-            CommandDispatcher = _commandDispatcher;
-            GraphWindow = _window;
-
             Blackboard = new BlackboardView(this);
             Add(Blackboard);
-
             InitializeCallbacks();
-            GenerateNodeViews();
-            GenerateGroupViews();
-            LinkNodeViews();
 
+            yield return new WaitForSeconds_E(0.3f);
             BindingPropertiesBeforeUpdate();
             Model.UpdateProperties();
             BindingPropertiesAfterUpdate();
+
+            yield return GlobalEditorCoroutineMachine.StartCoroutine(GenerateNodeViews());
+            yield return GlobalEditorCoroutineMachine.StartCoroutine(GenerateGroupViews());
+            yield return GlobalEditorCoroutineMachine.StartCoroutine(LinkNodeViews());
+            InitializeToolbarButtons();
+
             RegisterCallback<DetachFromPanelEvent>(evt => { UnBindingProperties(); });
 
-            NotifyNodeViewsInitialized();
-            InitializeToolbarButtons();
+            yield return GlobalEditorCoroutineMachine.StartCoroutine(NotifyNodeViewsInitialized());
 
             OnInitialized();
 
@@ -81,6 +80,42 @@ namespace CZToolKit.GraphProcessor.Editors
                     time += 1;
                 }
             }));
+        }
+
+        public BaseGraphView(BaseGraph _graph, CommandDispatcher _commandDispatcher, BaseGraphWindow _window) : this()
+        {
+            Model = _graph;
+            CommandDispatcher = _commandDispatcher;
+            GraphWindow = _window;
+            GlobalEditorCoroutineMachine.StartCoroutine(Init());
+            //Blackboard = new BlackboardView(this);
+            //Add(Blackboard);
+
+            //InitializeCallbacks();
+            //GenerateNodeViews();
+            //GenerateGroupViews();
+            //LinkNodeViews();
+
+            //BindingPropertiesBeforeUpdate();
+            //Model.UpdateProperties();
+            //BindingPropertiesAfterUpdate();
+            //RegisterCallback<DetachFromPanelEvent>(evt => { UnBindingProperties(); });
+
+            //NotifyNodeViewsInitialized();
+            //InitializeToolbarButtons();
+
+            //OnInitialized();
+
+            //double time = EditorApplication.timeSinceStartup;
+            //Add(new IMGUIContainer(() =>
+            //{
+            //    if (IsDirty && EditorApplication.timeSinceStartup > time && GraphAsset != null)
+            //    {
+            //        IsDirty = false;
+            //        EditorUtility.SetDirty(GraphAsset);
+            //        time += 1;
+            //    }
+            //}));
         }
 
         #region 数据监听回调
@@ -116,14 +151,14 @@ namespace CZToolKit.GraphProcessor.Editors
                 DisconnectView(edge as BaseEdgeView);
             });
         }
-        void OnStackAdded(StackPanel _stack)
-        {
-            AddStackNodeView(_stack);
-        }
-        void OnStackRemoved(StackPanel _stack)
-        {
-            RemoveStackNodeView(StackViews[_stack.GUID]);
-        }
+        //void OnStackAdded(StackPanel _stack)
+        //{
+        //    AddStackNodeView(_stack);
+        //}
+        //void OnStackRemoved(StackPanel _stack)
+        //{
+        //    RemoveStackNodeView(StackViews[_stack.GUID]);
+        //}
         void OnGroupAdded(GroupPanel _group)
         {
             AddGroupView(_group);
@@ -236,10 +271,11 @@ namespace CZToolKit.GraphProcessor.Editors
         }
 
         /// <summary> 生成所有NodeView </summary>
-        void GenerateNodeViews()
+        IEnumerator GenerateNodeViews()
         {
             foreach (var node in Model.Nodes)
             {
+                yield return 0;
                 if (node.Value == null) continue;
                 AddNodeView(node.Value);
             }
@@ -253,31 +289,36 @@ namespace CZToolKit.GraphProcessor.Editors
         //}
 
         /// <summary> 生成所有GroupView </summary>
-        void GenerateGroupViews()
+        IEnumerator GenerateGroupViews()
         {
             foreach (var group in Model.Groups)
+            {
+                yield return 0;
                 AddGroupView(group);
+            }
         }
 
         /// <summary> 连接节点 </summary>
-        void LinkNodeViews()
+        IEnumerator LinkNodeViews()
         {
             foreach (var serializedEdge in Model.Edges)
             {
+                yield return 0;
                 if (serializedEdge.Value == null) continue;
                 BaseNodeView inputNodeView, outputNodeView;
-                if (!NodeViews.TryGetValue(serializedEdge.Value.InputNodeGUID, out inputNodeView)) return;
-                if (!NodeViews.TryGetValue(serializedEdge.Value.OutputNodeGUID, out outputNodeView)) return;
+                if (!NodeViews.TryGetValue(serializedEdge.Value.InputNodeGUID, out inputNodeView)) yield break;
+                if (!NodeViews.TryGetValue(serializedEdge.Value.OutputNodeGUID, out outputNodeView)) yield break;
                 ConnectView(inputNodeView.PortViews[serializedEdge.Value.InputFieldName]
                     , outputNodeView.PortViews[serializedEdge.Value.OutputFieldName]
                     , serializedEdge.Value);
             }
         }
 
-        void NotifyNodeViewsInitialized()
+        IEnumerator NotifyNodeViewsInitialized()
         {
             foreach (var nodeView in NodeViews.Values)
             {
+                yield return 0;
                 nodeView.Initialized();
             }
         }

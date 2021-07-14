@@ -35,13 +35,14 @@ namespace CZToolKit.GraphProcessor
 
 
         #region Model
-        [SerializeField] string ownerGUID;
-        [SerializeField] string fieldName;
+        [SerializeField] public string fieldName;
         [SerializeField] public string typeQualifiedName;
-        [SerializeField] bool multiple = false;
-        [SerializeField] PortDirection direction = PortDirection.Input;
-        [SerializeField] PortTypeConstraint typeConstraint = PortTypeConstraint.Inherited;
-        [SerializeField] List<string> edgeGUIDs = new List<string>();
+        [SerializeField] public bool multiple = false;
+        [SerializeField] public PortDirection direction = PortDirection.Input;
+        [SerializeField] public PortTypeConstraint typeConstraint = PortTypeConstraint.Inherited;
+        [SerializeField] public List<string> edgeGUIDs = new List<string>();
+
+        public NodePort() { }
 
         public NodePort(FieldInfo _fieldInfo, PortAttribute _portAttribute)
         {
@@ -154,22 +155,22 @@ namespace CZToolKit.GraphProcessor
 
         public override void InitializeBindableProperties()
         {
-            SetBindableProperty(nameof(PortName), new BindableProperty<string>(fieldName));
+            SetBindableProperty(nameof(PortName), new BindableProperty<string>(UnityEditor.ObjectNames.NicifyVariableName(fieldName)));
             SetBindableProperty(nameof(Tooltip), new BindableProperty<string>());
             SetBindableProperty(nameof(PortColor), new BindableProperty<Color>());
 
-            if (Utility_Attribute.TryGetFieldAttribute(Owner.GetType(), fieldName, out InspectorNameAttribute inspectorName))
-                GetBindableProperty<string>(nameof(PortName)).SetValueWithoutNotify(inspectorName.displayName);
-#if UNITY_EDITOR
-            else
-                GetBindableProperty<string>(nameof(PortName)).SetValueWithoutNotify(UnityEditor.ObjectNames.NicifyVariableName(fieldName));
-#endif
+//            if (Utility_Attribute.TryGetFieldAttribute(Owner.GetType(), fieldName, out InspectorNameAttribute inspectorName))
+//                GetBindableProperty<string>(nameof(PortName)).SetValueWithoutNotify(inspectorName.displayName);
+//#if UNITY_EDITOR
+//            else
+//                GetBindableProperty<string>(nameof(PortName)).SetValueWithoutNotify(UnityEditor.ObjectNames.NicifyVariableName(fieldName));
+//#endif
 
-            if (Utility_Attribute.TryGetFieldAttribute(Owner.GetType(), fieldName, out TooltipAttribute tooltip))
-                GetBindableProperty<string>(nameof(Tooltip)).SetValueWithoutNotify(tooltip.tooltip);
+            //if (Utility_Attribute.TryGetFieldAttribute(Owner.GetType(), fieldName, out TooltipAttribute tooltip))
+            //    GetBindableProperty<string>(nameof(Tooltip)).SetValueWithoutNotify(tooltip.tooltip);
 
-            if (Utility_Attribute.TryGetFieldAttribute(Owner.GetType(), fieldName, out PortColorAttribute color))
-                GetBindableProperty<Color>(nameof(PortColor)).SetValueWithoutNotify(color.Color);
+            //if (Utility_Attribute.TryGetFieldAttribute(Owner.GetType(), fieldName, out PortColorAttribute color))
+            //    GetBindableProperty<Color>(nameof(PortColor)).SetValueWithoutNotify(color.Color);
         }
 
         public object GetValue()
