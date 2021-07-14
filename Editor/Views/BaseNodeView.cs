@@ -102,13 +102,18 @@ namespace CZToolKit.GraphProcessor.Editors
 
         public void SetUp(BaseNode _nodeViewModel, CommandDispatcher _commandDispatcher, BaseGraphView _graphView)
         {
+            Model = _nodeViewModel;
             CommandDispatcher = _commandDispatcher;
             Owner = _graphView;
 
-            Model = _nodeViewModel;
+            // 初始化
+            base.expanded = Model.Expanded;
+            title = Model.Title;
+            OnIconChanged(Model.Icon);
+            tooltip = Model.Tooltip; base.SetPosition(new Rect(Model.Position, GetPosition().size));
+
+            // 绑定
             BindingPropertiesBeforeUpdate();
-            Model.UpdateProperties();
-            BindingPropertiesAfterUpdate();
 
             InitializePorts();
             RefreshPorts();
@@ -193,10 +198,6 @@ namespace CZToolKit.GraphProcessor.Editors
             Model.RegisterValueChangedEvent<Vector2>(nameof(Model.IconSize), OnIconSizeChanged);
             Model.RegisterValueChangedEvent<string>(nameof(Model.Tooltip), OnTooltipChanged);
             Model.RegisterValueChangedEvent<Vector2>(nameof(Model.Position), OnPositionChanged);
-        }
-
-        protected virtual void BindingPropertiesAfterUpdate()
-        {
             //Model.RegisterValueChangedEvent<Color>(nameof(Model.TitleTint), OnTitleColorChanged);
         }
 

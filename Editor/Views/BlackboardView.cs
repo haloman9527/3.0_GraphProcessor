@@ -27,6 +27,11 @@ namespace CZToolKit.GraphProcessor.Editors
             addItemRequested = OnAddClicked;
             editTextRequested = Rename;
 
+            // ≥ı ºªØ
+            base.SetPosition(GraphView.Model.BlackboardPosition);
+            style.display = GraphView.Model.BlackboardVisible ? DisplayStyle.Flex : DisplayStyle.None;
+
+            // ∞Û∂®
             BindingPropertiesBeforeUpdate();
 
             UpdateParameterList();
@@ -36,18 +41,22 @@ namespace CZToolKit.GraphProcessor.Editors
         void OnPositionChanged(Rect _position)
         {
             base.SetPosition(_position);
+            GraphView.SetDirty();
         }
         void OnVisibleChanged(bool _visible)
         {
             style.display = _visible ? DisplayStyle.Flex : DisplayStyle.None;
+            GraphView.SetDirty();
         }
         void OnBlackboardDataAdded(string _dataName, ICZType _data)
         {
             AddFieldView(_dataName, _data);
+            GraphView.SetDirty();
         }
         void OnBlackboardDataRemoved(string _dataName)
         {
             RemoveFieldView(_dataName);
+            GraphView.SetDirty();
         }
         void OnBlackboardDataRenamed(string _oldName, string _newName)
         {

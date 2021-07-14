@@ -25,21 +25,7 @@ namespace CZToolKit.GraphProcessor.Editors
             CommandDispatcher = _commandDispatcher;
             Owner = _graphView;
 
-            BindingPropertiesBeforeUpdate();
-            Model.UpdateProperties();
-            BindingPropertiesAfterUpdate();
-
             RegisterCallback<MouseDownEvent>(OnMouseDown);
-        }
-
-        protected virtual void BindingPropertiesBeforeUpdate()
-        {
-
-        }
-
-        protected virtual void BindingPropertiesAfterUpdate()
-        {
-
         }
 
         public virtual void UnBindingProperties()

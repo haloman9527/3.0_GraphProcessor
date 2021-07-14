@@ -49,6 +49,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
             if (_orientation == Orientation.Vertical)
                 AddToClassList("vertical");
+
         }
 
         NodePortView(Orientation _orientation, Direction _direction, NodePort _nodePort)
@@ -56,22 +57,23 @@ namespace CZToolKit.GraphProcessor.Editors
 
         public void SetUp(NodePort _port, CommandDispatcher _commandDispatcher, BaseGraphView _graphView)
         {
-            GraphView = _graphView;
-
             Model = _port;
-            BindingPropertiesBeforeUpdate();
-            Model.UpdateProperties();
-            BindingPropertiesAfterUpdate();
-
-            if (orientation == Orientation.Vertical && string.IsNullOrEmpty(Model.Tooltip))
-                Model.Tooltip = GraphProcessorEditorUtility.GetDisplayName(Model.FieldName);
-
+            GraphView = _graphView;
 
             m_EdgeConnector = new EdgeConnector<BaseEdgeView>(new EdgeConnectorListener(GraphView));
             this.AddManipulator(m_EdgeConnector);
 
             AddToClassList(Model.FieldName);
             visualClass = "Port_" + portType.Name;
+
+            // 初始化
+            portName = Model.PortName;
+            tooltip = Model.Tooltip;
+            if (orientation == Orientation.Vertical && string.IsNullOrEmpty(Model.Tooltip))
+                Model.Tooltip = GraphProcessorEditorUtility.GetDisplayName(Model.FieldName);
+
+            // 绑定
+            BindingPropertiesBeforeUpdate();
         }
         #region 数据监听回调
         void OnPortNameChanged(string _name)
@@ -90,10 +92,6 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             Model.RegisterValueChangedEvent<string>(nameof(Model.PortName), OnPortNameChanged);
             Model.RegisterValueChangedEvent<string>(nameof(Model.Tooltip), OnToolTipChanged);
-        }
-
-        void BindingPropertiesAfterUpdate()
-        {
             Model.RegisterValueChangedEvent<Color>(nameof(Model.PortColor), OnColorChanged);
         }
 

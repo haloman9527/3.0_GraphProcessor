@@ -43,16 +43,20 @@ namespace CZToolKit.GraphProcessor.Editors
 
         public void SetUp(GroupPanel _group, CommandDispatcher _commandDispatcher, BaseGraphView _graphView)
         {
+            Model = _group;
             Owner = _graphView;
 
-            Model = _group;
-            BindingProperties();
-            Model.UpdateProperties();
+            // 初始化
+            title = Model.Title;
+            base.SetPosition(Model.Position);
+            headerContainer.style.backgroundColor = Model.Color;
+            // 当明度大于0.5f,且透明度大于0.5f，文字颜色为黑色，否则为白色
+            titleLabel.style.color = Model.Color.GetLuminance() > 0.5f && Model.Color.a > 0.5f ? Color.black : Color.white * 0.9f;
+            colorField.SetValueWithoutNotify(Model.Color);
 
-            colorField.RegisterValueChangedCallback(e =>
-            {
-                Model.Color = e.newValue;
-            });
+            // 绑定
+            BindingProperties();
+
             InitializeInnerNodes();
 
             //NodePort nodeport = new NodePort() { direction = PortDirection.Output, fieldName = "output", multiple = true, typeConstraint = PortTypeConstraint.None, typeQualifiedName = typeof(object).AssemblyQualifiedName };
@@ -83,6 +87,11 @@ namespace CZToolKit.GraphProcessor.Editors
 
         void BindingProperties()
         {
+            colorField.RegisterValueChangedCallback(e =>
+            {
+                Model.Color = e.newValue;
+            });
+
             Model.RegisterValueChangedEvent<string>(nameof(Model.Title), OnTitleChanged);
             Model.RegisterValueChangedEvent<Rect>(nameof(Model.Position), OnPositionChanged);
             Model.RegisterValueChangedEvent<Color>(nameof(Model.Color), OnColorChanged);

@@ -52,20 +52,21 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             Blackboard = new BlackboardView(this);
             Add(Blackboard);
-            InitializeCallbacks();
 
-            yield return new WaitForSeconds_E(0.3f);
-            BindingPropertiesBeforeUpdate();
-            Model.UpdateProperties();
-            BindingPropertiesAfterUpdate();
+            InitializeCallbacks();
+            InitializeToolbarButtons();
+
+            // 初始化
+            viewTransform.position = Model.Position;
+            viewTransform.scale = Model.Scale;
+
+            // 绑定
+            BindingProperties();
+            RegisterCallback<DetachFromPanelEvent>(evt => { UnBindingProperties(); });
 
             yield return GlobalEditorCoroutineMachine.StartCoroutine(GenerateNodeViews());
             yield return GlobalEditorCoroutineMachine.StartCoroutine(GenerateGroupViews());
             yield return GlobalEditorCoroutineMachine.StartCoroutine(LinkNodeViews());
-            InitializeToolbarButtons();
-
-            RegisterCallback<DetachFromPanelEvent>(evt => { UnBindingProperties(); });
-
             yield return GlobalEditorCoroutineMachine.StartCoroutine(NotifyNodeViewsInitialized());
 
             OnInitialized();
@@ -87,7 +88,8 @@ namespace CZToolKit.GraphProcessor.Editors
             Model = _graph;
             CommandDispatcher = _commandDispatcher;
             GraphWindow = _window;
-            GlobalEditorCoroutineMachine.StartCoroutine(Init());
+            GraphWindow.StartCoroutine(Init());
+
             //Blackboard = new BlackboardView(this);
             //Add(Blackboard);
 
@@ -168,8 +170,7 @@ namespace CZToolKit.GraphProcessor.Editors
             RemoveGroupView(_group);
         }
 
-        // 在数据首次更新前绑定
-        protected virtual void BindingPropertiesBeforeUpdate()
+        protected virtual void BindingProperties()
         {
             Model.RegisterValueChangedEvent<Vector3>(nameof(Model.Position), OnPositionChanged);
             Model.RegisterValueChangedEvent<Vector3>(nameof(Model.Scale), OnScaleChanged);
@@ -186,9 +187,6 @@ namespace CZToolKit.GraphProcessor.Editors
             Model.onGroupAdded += OnGroupAdded;
             Model.onGroupRemoved += OnGroupRemoved;
         }
-
-        // 在数据首次更新后绑定
-        protected virtual void BindingPropertiesAfterUpdate() { }
 
         public virtual void UnBindingProperties()
         {
