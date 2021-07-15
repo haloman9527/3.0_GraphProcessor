@@ -11,15 +11,34 @@ namespace CZToolKit.GraphProcessor.Editors
     public class CreateNodeMenuWindow : ScriptableObject, ISearchWindowProvider
     {
         BaseGraphView graphView;
-
+        NodePort port;
         IEnumerable<Type> nodeTypes;
         List<SearchTreeEntry> tree;
+        Action<BaseNode> onNodeCreated;
+
         public void Initialize(BaseGraphView _graphView, IEnumerable<Type> _nodeTypes)
         {
             graphView = _graphView;
             nodeTypes = _nodeTypes;
             tree = CreateSearchTree();
+            onNodeCreated = null;
         }
+
+        //public void Initialize(BaseGraphView _graphView, IEnumerable<Type> _nodeTypes, NodePort _port, Action<BaseNode> _onNodeCreated)
+        //{
+        //    graphView = _graphView;
+        //    port = _port;
+        //    nodeTypes = _nodeTypes;
+        //    tree = foreach (var item in GraphProcessorCache.PortCache)
+        //    {
+        //        foreach (var cachedPort in item.Value)
+        //        {
+        //            if (NodePort.IsCompatible(port, cachedPort))
+        //                yield return item.Key;
+        //        }
+        //    }
+        //    onNodeCreated = _onNodeCreated;
+        //}
 
         private List<SearchTreeEntry> CreateSearchTree()
         {
@@ -77,6 +96,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
             graphView.Model.AddNode(BaseNode.CreateNew(searchTreeEntry.userData as Type, graphMousePosition));
             graphView.GraphWindow.Focus();
+
             return true;
         }
 

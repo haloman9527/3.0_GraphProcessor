@@ -27,10 +27,6 @@ namespace CZToolKit.GraphProcessor.Editors
             addItemRequested = OnAddClicked;
             editTextRequested = Rename;
 
-            // 初始化
-            base.SetPosition(GraphView.Model.BlackboardPosition);
-            style.display = GraphView.Model.BlackboardVisible ? DisplayStyle.Flex : DisplayStyle.None;
-
             // 绑定
             BindingPropertiesBeforeUpdate();
 
@@ -68,6 +64,10 @@ namespace CZToolKit.GraphProcessor.Editors
         }
         void BindingPropertiesBeforeUpdate()
         {
+            // 初始化
+            base.SetPosition(GraphView.Model.BlackboardPosition);
+            style.display = GraphView.Model.BlackboardVisible ? DisplayStyle.Flex : DisplayStyle.None;
+
             GraphView.Model.RegisterValueChangedEvent<Rect>(nameof(GraphView.Model.BlackboardPosition), OnPositionChanged);
             GraphView.Model.RegisterValueChangedEvent<bool>(nameof(GraphView.Model.BlackboardVisible), OnVisibleChanged);
             GraphView.Model.onBlackboardDataAdded += OnBlackboardDataAdded;

@@ -5,12 +5,15 @@
     align-items: stretch;
     justify-content: center;
 }
+#title > #top{
+    flex-direction: row;
+}
 
 #title > #title-button-container {
     display: none;
 }
 
-#title > Label {
+#title > #title-label {
     margin-left: 2px;
     margin-right: 2px;
     font-size: 11px;

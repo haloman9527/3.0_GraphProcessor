@@ -13,10 +13,10 @@ namespace CZToolKit.GraphProcessor
         /// <summary> 接口兼容性查询 </summary>
         public static bool IsCompatible(NodePort _port1, NodePort _port2)
         {
-            if (_port1 == null || _port2 == null) return false;
+            if (_port1 == null || _port2 == null) 
+                return false;
             if (_port1 == _port2 || _port1.Owner == _port2.Owner)
                 return false;
-
             if (_port1.Direction == _port2.Direction)
                 return false;
 
@@ -24,8 +24,10 @@ namespace CZToolKit.GraphProcessor
 
             bool Compatible(NodePort portA, NodePort portB)
             {
-                if (portA.TypeConstraint == PortTypeConstraint.Inherited && portA.DisplayType.IsAssignableFrom(portB.DisplayType)) return true;
-                if (portA.TypeConstraint == PortTypeConstraint.Strict && portA.DisplayType == portB.DisplayType) return true;
+                if (portA.TypeConstraint == PortTypeConstraint.Inherited && portA.DisplayType.IsAssignableFrom(portB.DisplayType)) 
+                    return true;
+                if (portA.TypeConstraint == PortTypeConstraint.Strict && portA.DisplayType == portB.DisplayType) 
+                    return true;
                 return false;
             }
 
@@ -265,6 +267,11 @@ namespace CZToolKit.GraphProcessor
         public void DisconnectToEdge(BaseEdge _edge)
         {
             DisconnectToEdge(_edge.GUID);
+        }
+
+        public void ClearEdgeGUIDs()
+        {
+            edgeGUIDs.Clear();
         }
         #endregion
     }

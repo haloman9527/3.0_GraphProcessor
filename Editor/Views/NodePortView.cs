@@ -66,14 +66,8 @@ namespace CZToolKit.GraphProcessor.Editors
             AddToClassList(Model.FieldName);
             visualClass = "Port_" + portType.Name;
 
-            // 初始化
-            portName = Model.PortName;
-            tooltip = Model.Tooltip;
-            if (orientation == Orientation.Vertical && string.IsNullOrEmpty(Model.Tooltip))
-                Model.Tooltip = GraphProcessorEditorUtility.GetDisplayName(Model.FieldName);
-
             // 绑定
-            BindingPropertiesBeforeUpdate();
+            BindingProperties();
         }
         #region 数据监听回调
         void OnPortNameChanged(string _name)
@@ -88,8 +82,14 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             portColor = _color;
         }
-        void BindingPropertiesBeforeUpdate()
+        void BindingProperties()
         {
+            // 初始化
+            portName = Model.PortName;
+            tooltip = Model.Tooltip;
+            if (orientation == Orientation.Vertical && string.IsNullOrEmpty(Model.Tooltip))
+                Model.Tooltip = GraphProcessorEditorUtility.GetDisplayName(Model.FieldName);
+
             Model.RegisterValueChangedEvent<string>(nameof(Model.PortName), OnPortNameChanged);
             Model.RegisterValueChangedEvent<string>(nameof(Model.Tooltip), OnToolTipChanged);
             Model.RegisterValueChangedEvent<Color>(nameof(Model.PortColor), OnColorChanged);

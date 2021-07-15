@@ -8,12 +8,12 @@ namespace CZToolKit.GraphProcessor
         #region ViewModel
         [NonSerialized] Dictionary<string, IBindableProperty> bindableProperties;
 
-        public IReadOnlyDictionary<string, IBindableProperty> BindableProperties { get { return bindableProperties; } }
+        public IReadOnlyDictionary<string, IBindableProperty> BindableProperties { get { CheckPropertiesIsNull(); return bindableProperties; } }
 
         void CheckPropertiesIsNull()
         {
             if (bindableProperties != null) return;
-            bindableProperties = new Dictionary<string, IBindableProperty>(); 
+            bindableProperties = new Dictionary<string, IBindableProperty>();
             InitializeBindableProperties();
         }
 

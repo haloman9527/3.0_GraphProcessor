@@ -9,11 +9,13 @@ namespace CZToolKit.GraphProcessor
     /// <summary> 节点端口数据缓存 </summary>
     public static class GraphProcessorCache
     {
-        static Dictionary<Type, List<NodePort>> PortCache = null;
+        static Dictionary<Type, List<NodePort>> portCache = null;
+
+        public static IReadOnlyDictionary<Type, List<NodePort>> PortCache { get { return portCache; } }
 
         static GraphProcessorCache()
         {
-            PortCache = new Dictionary<Type, List<NodePort>>();
+            portCache = new Dictionary<Type, List<NodePort>>();
             foreach (var nodeType in Utility_Reflection.GetChildrenTypes<BaseNode>())
             {
                 if (nodeType.IsAbstract) continue;
@@ -31,9 +33,9 @@ namespace CZToolKit.GraphProcessor
                 // 获取接口特性
                 if (!Utility_Attribute.TryGetFieldAttribute(_nodeType, fieldInfo.Name, out PortAttribute portAttribute)) continue;
 
-                if (!PortCache.ContainsKey(_nodeType)) PortCache.Add(_nodeType, new List<NodePort>());
+                if (!portCache.ContainsKey(_nodeType)) portCache.Add(_nodeType, new List<NodePort>());
 
-                PortCache[_nodeType].Add(new NodePort(fieldInfo, portAttribute));
+                portCache[_nodeType].Add(new NodePort(fieldInfo, portAttribute));
             }
         }
 
@@ -43,7 +45,7 @@ namespace CZToolKit.GraphProcessor
             Type nodeType = _node.GetType();
 
             Dictionary<string, NodePort> staticPorts = new Dictionary<string, NodePort>();
-            if (PortCache.TryGetValue(nodeType, out List<NodePort> typePortCache))
+            if (portCache.TryGetValue(nodeType, out List<NodePort> typePortCache))
             {
                 foreach (var nodePort in typePortCache)
                 {
@@ -64,14 +66,15 @@ namespace CZToolKit.GraphProcessor
                         continue;
                     }
 
-                    if (!(_node is ParameterNode) && portKV.Value.typeQualifiedName != cachePort.typeQualifiedName)
-                    {
-                        portKV.Value.Reload(cachePort);
-                        continue;
-                    }
+                    //if (!(_node is ParameterNode) && )
+                    //{
+                    //    portKV.Value.Reload(cachePort);
+                    //    continue;
+                    //}
 
                     // 如果端口特性发生了更改，则重载端口
-                    if (portKV.Value.Multiple != cachePort.Multiple ||
+                    if (portKV.Value.typeQualifiedName != cachePort.typeQualifiedName ||
+                        portKV.Value.Multiple != cachePort.Multiple ||
                         portKV.Value.TypeConstraint != cachePort.TypeConstraint)
                     {
                         portKV.Value.Reload(cachePort);

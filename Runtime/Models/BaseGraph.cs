@@ -151,11 +151,6 @@ namespace CZToolKit.GraphProcessor
         {
             ParameterNode parameterNode = BaseNode.CreateNew<ParameterNode>(_position);
             parameterNode.Name = _dataName;
-            foreach (var port in parameterNode.Ports.Values)
-            {
-                if (TryGetData_BB(_dataName, out ICZType data))
-                    port.typeQualifiedName = data.ValueType.AssemblyQualifiedName;
-            }
             AddNode(parameterNode);
         }
 

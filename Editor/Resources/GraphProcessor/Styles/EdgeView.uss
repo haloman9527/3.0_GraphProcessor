@@ -1,7 +1,4 @@
 .edge {
-    --selected-edge-color: #44C0FF;
-    --ghost-edge-color: #555555;
-    --edge-color: #929292;
     --edge-width: 2;
     --layer:-10;
 }
@@ -10,10 +7,14 @@
     --edge-width: 4;
 }
 
+.edge:selected {
+    --edge-color: #00FFDE;
+}
+
 .flow-point{
     width:6px;
     height:6px;
-    background-color:rgba(255,255,255,1);
+    background-color:#FFFF00;
     margin-top: -3px;
     margin-bottom: -3px;
     margin-left: -3px;

@@ -22,7 +22,7 @@ namespace CZToolKit.GraphProcessor.Editors
     {
         public static HashSet<string> IgnoreProperty = new HashSet<string>() {
             nameof(BaseNode.Title),
-            nameof(BaseNode.TitleTint),
+            nameof(BaseNode.TitleColor),
             nameof(BaseNode.Tooltip),
             nameof(BaseNode.Icon),
             nameof(BaseNode.IconSize),
@@ -33,12 +33,14 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             EditorGUI.BeginChangeCheck();
 
-            BaseGraphElement graphElement = Target as BaseGraphElement;
-            foreach (var property in graphElement.BindableProperties)
+            if (Target is BaseGraphElement graphElement)
             {
-                if (IgnoreProperty.Contains(property.Key)) continue;
+                foreach (var property in graphElement.BindableProperties)
+                {
+                    if (IgnoreProperty.Contains(property.Key)) continue;
 
-                property.Value.ValueBoxed = EditorGUILayoutExtension.DrawField(property.Key, property.Value.ValueType, property.Value.ValueBoxed);
+                    property.Value.ValueBoxed = EditorGUILayoutExtension.DrawField(property.Key, property.Value.ValueType, property.Value.ValueBoxed);
+                }
             }
 
             if (EditorGUI.EndChangeCheck())

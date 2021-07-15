@@ -21,7 +21,10 @@ namespace CZToolKit.GraphProcessor
         public string Name
         {
             get { return GetPropertyValue<string>(nameof(Name)); }
-            set { SetPropertyValue(nameof(Name), value); }
+            set
+            {
+                SetPropertyValue(nameof(Name), value);
+            }
         }
 
         public ICZType Parameter
@@ -29,14 +32,19 @@ namespace CZToolKit.GraphProcessor
             get { return Owner.Blackboard.TryGetData(Name, out ICZType param) ? param : null; }
         }
 
-        public override void InitializeBindableProperties()
+        public override void Enable(BaseGraph _graph)
         {
-            base.InitializeBindableProperties();
-            SetBindableProperty(nameof(Name), new BindableProperty<string>(name, v => name = v));
+            base.Enable(_graph);
             foreach (var port in Ports)
             {
                 port.Value.DisplayType = Parameter.ValueType;
             }
+        }
+
+        public override void InitializeBindableProperties()
+        {
+            base.InitializeBindableProperties();
+            SetBindableProperty(nameof(Name), new BindableProperty<string>(name, v => name = v));
         }
 
         public override object GetValue(NodePort _localPort)

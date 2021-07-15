@@ -106,45 +106,39 @@ namespace CZToolKit.GraphProcessor.Editors
             CommandDispatcher = _commandDispatcher;
             Owner = _graphView;
 
-            // 初始化
-            base.expanded = Model.Expanded;
-            title = Model.Title;
-            OnIconChanged(Model.Icon);
-            tooltip = Model.Tooltip; base.SetPosition(new Rect(Model.Position, GetPosition().size));
-
             // 绑定
-            BindingPropertiesBeforeUpdate();
+            BindingProperties();
 
             InitializePorts();
             RefreshPorts();
 
-            //foreach (var fieldInfo in ViewModel.GetNodeFieldInfos())
-            //{
-            //    // 如果不是接口，跳过
-            //    if (!PortViews.TryGetValue(fieldInfo.Name, out NodePortView portView)) continue;
-            //    if (portView.direction != Direction.Input) continue;
-            //    if (portView.orientation != Orientation.Horizontal) continue;
+            foreach (var fieldInfo in Model.GetNodeFieldInfos())
+            {
+                // 如果不是接口，跳过
+                if (!PortViews.TryGetValue(fieldInfo.Name, out NodePortView portView)) continue;
+                if (portView.direction != Direction.Input) continue;
+                if (portView.orientation != Orientation.Horizontal) continue;
 
-            //    var box = new VisualElement { name = fieldInfo.Name };
-            //    box.AddToClassList("port-input-element");
-            //    if (Utility_Attribute.TryGetFieldInfoAttribute(fieldInfo, out ShowAsDrawer showAsDrawer))
-            //    {
-            //        VisualElement fieldDrawer = CreateControlField(fieldInfo, string.Empty, null);
-            //        if (fieldDrawer != null)
-            //        {
-            //            box.Add(fieldDrawer);
-            //            box.visible = !portView.ViewModel.IsConnected;
-            //            portView.onConnected += () => { box.visible = false; };
-            //            portView.onDisconnected += () => { box.visible = !portView.connected; };
-            //        }
-            //    }
-            //    else
-            //    {
-            //        box.visible = false;
-            //        box.style.height = portView.style.height;
-            //    }
-            //    inputContainerElement.Add(box);
-            //}
+                var box = new VisualElement { name = fieldInfo.Name };
+                box.AddToClassList("port-input-element");
+                if (Utility_Attribute.TryGetFieldInfoAttribute(fieldInfo, out ShowAsDrawer showAsDrawer))
+                {
+                    VisualElement fieldDrawer = CreateControlField(fieldInfo, string.Empty, null);
+                    if (fieldDrawer != null)
+                    {
+                        box.Add(fieldDrawer);
+                        box.visible = !portView.Model.IsConnected;
+                        portView.onConnected += () => { box.visible = false; };
+                        portView.onDisconnected += () => { box.visible = !portView.connected; };
+                    }
+                }
+                else
+                {
+                    box.visible = false;
+                    box.style.height = portView.style.height;
+                }
+                inputContainerElement.Add(box);
+            }
         }
 
         #region 数据监听回调
@@ -189,8 +183,17 @@ namespace CZToolKit.GraphProcessor.Editors
             titleContainer.style.backgroundColor = _color;
             TitleLabel.style.color = _color.GetLuminance() > 0.5f && _color.a > 0.5f ? Color.black : Color.white * 0.9f;
         }
-        protected virtual void BindingPropertiesBeforeUpdate()
+        protected virtual void BindingProperties()
         {
+            // 初始化
+            base.expanded = Model.Expanded;
+            title = Model.Title;
+            OnIconChanged(Model.Icon);
+            tooltip = Model.Tooltip; base.SetPosition(new Rect(Model.Position, GetPosition().size));
+            titleContainer.style.backgroundColor = Model.TitleColor;
+            TitleLabel.style.color = Model.TitleColor.GetLuminance() > 0.5f && Model.TitleColor.a > 0.5f ? Color.black : Color.white * 0.9f;
+
+
             Model.RegisterValueChangedEvent<bool>(nameof(Model.Expanded), OnExpandedChanged);
             Model.RegisterValueChangedEvent<string>(nameof(Model.Title), OnTitleChanged);
             Model.Title = GraphProcessorEditorUtility.GetNodeDisplayName(Model.GetType());
@@ -198,7 +201,7 @@ namespace CZToolKit.GraphProcessor.Editors
             Model.RegisterValueChangedEvent<Vector2>(nameof(Model.IconSize), OnIconSizeChanged);
             Model.RegisterValueChangedEvent<string>(nameof(Model.Tooltip), OnTooltipChanged);
             Model.RegisterValueChangedEvent<Vector2>(nameof(Model.Position), OnPositionChanged);
-            //Model.RegisterValueChangedEvent<Color>(nameof(Model.TitleTint), OnTitleColorChanged);
+            Model.RegisterValueChangedEvent<Color>(nameof(Model.TitleColor), OnTitleColorChanged);
         }
 
         public virtual void UnBindingProperties()
@@ -213,7 +216,7 @@ namespace CZToolKit.GraphProcessor.Editors
             Model.UnregisterValueChangedEvent<Vector2>(nameof(Model.IconSize), OnIconSizeChanged);
             Model.UnregisterValueChangedEvent<string>(nameof(Model.Tooltip), OnTooltipChanged);
             Model.UnregisterValueChangedEvent<Vector2>(nameof(Model.Position), OnPositionChanged);
-            //Model.UnregisterValueChangedEvent<Color>(nameof(Model.TitleTint), OnTitleColorChanged);
+            Model.UnregisterValueChangedEvent<Color>(nameof(Model.TitleColor), OnTitleColorChanged);
         }
         #endregion
 
@@ -442,10 +445,5 @@ namespace CZToolKit.GraphProcessor.Editors
     public abstract class BaseNodeView<M> : BaseNodeView where M : BaseNode
     {
         public M T_Model { get { return Model as M; } }
-    }
-
-    public sealed class DefaultNodeView : BaseNodeView<BaseNode>
-    {
-
     }
 }

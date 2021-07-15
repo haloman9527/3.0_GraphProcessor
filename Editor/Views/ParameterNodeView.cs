@@ -11,10 +11,12 @@ namespace CZToolKit.GraphProcessor.Editors
             title = _dataName;
         }
 
-        protected override void BindingPropertiesBeforeUpdate()
+        protected override void BindingProperties()
         {
-            base.BindingPropertiesBeforeUpdate();
+            base.BindingProperties();
             T_Model.RegisterValueChangedEvent<string>(nameof(T_Model.Name), OnDataNameChanged);
+
+            title = T_Model.Name;
         }
         public override void UnBindingProperties()
         {
@@ -25,7 +27,6 @@ namespace CZToolKit.GraphProcessor.Editors
         protected override void OnInitialized()
         {
             base.OnInitialized();
-            title = T_Model.Name;
 
             RegisterCallback<MouseEnterEvent>(_ => { OnMouseEnter(); });
             RegisterCallback<MouseLeaveEvent>(_ => { OnMouseLeave(); });

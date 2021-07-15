@@ -2,6 +2,7 @@
 using CZToolKit.Core.Editors;
 using OdinSerializer;
 using System;
+using System.Collections;
 using System.Text;
 using System.Linq;
 using System.Collections.Generic;
@@ -13,7 +14,6 @@ using UnityEngine.UIElements;
 
 using GraphElement = UnityEditor.Experimental.GraphView.GraphElement;
 using UnityObject = UnityEngine.Object;
-using System.Collections;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
@@ -48,102 +48,44 @@ namespace CZToolKit.GraphProcessor.Editors
             this.StretchToParentSize();
         }
 
-        IEnumerator Init()
-        {
-            Blackboard = new BlackboardView(this);
-            Add(Blackboard);
-
-            InitializeCallbacks();
-            InitializeToolbarButtons();
-
-            // 初始化
-            viewTransform.position = Model.Position;
-            viewTransform.scale = Model.Scale;
-
-            // 绑定
-            BindingProperties();
-            RegisterCallback<DetachFromPanelEvent>(evt => { UnBindingProperties(); });
-
-            yield return GlobalEditorCoroutineMachine.StartCoroutine(GenerateNodeViews());
-            yield return GlobalEditorCoroutineMachine.StartCoroutine(GenerateGroupViews());
-            yield return GlobalEditorCoroutineMachine.StartCoroutine(LinkNodeViews());
-            yield return GlobalEditorCoroutineMachine.StartCoroutine(NotifyNodeViewsInitialized());
-
-            OnInitialized();
-
-            double time = EditorApplication.timeSinceStartup;
-            Add(new IMGUIContainer(() =>
-            {
-                if (IsDirty && EditorApplication.timeSinceStartup > time && GraphAsset != null)
-                {
-                    IsDirty = false;
-                    EditorUtility.SetDirty(GraphAsset);
-                    time += 1;
-                }
-            }));
-        }
-
         public BaseGraphView(BaseGraph _graph, CommandDispatcher _commandDispatcher, BaseGraphWindow _window) : this()
         {
             Model = _graph;
             CommandDispatcher = _commandDispatcher;
             GraphWindow = _window;
-            GraphWindow.StartCoroutine(Init());
-
-            //Blackboard = new BlackboardView(this);
-            //Add(Blackboard);
-
-            //InitializeCallbacks();
-            //GenerateNodeViews();
-            //GenerateGroupViews();
-            //LinkNodeViews();
-
-            //BindingPropertiesBeforeUpdate();
-            //Model.UpdateProperties();
-            //BindingPropertiesAfterUpdate();
-            //RegisterCallback<DetachFromPanelEvent>(evt => { UnBindingProperties(); });
-
-            //NotifyNodeViewsInitialized();
-            //InitializeToolbarButtons();
-
-            //OnInitialized();
-
-            //double time = EditorApplication.timeSinceStartup;
-            //Add(new IMGUIContainer(() =>
-            //{
-            //    if (IsDirty && EditorApplication.timeSinceStartup > time && GraphAsset != null)
-            //    {
-            //        IsDirty = false;
-            //        EditorUtility.SetDirty(GraphAsset);
-            //        time += 1;
-            //    }
-            //}));
+            EditorCoroutine coroutine = GraphWindow.StartCoroutine(Init());
+            RegisterCallback<DetachFromPanelEvent>(evt => { GraphWindow.StopCoroutine(coroutine); });
         }
 
         #region 数据监听回调
         void OnPositionChanged(Vector3 _position)
         {
             viewTransform.position = _position;
+            SetDirty();
         }
         void OnScaleChanged(Vector3 _scale)
         {
             viewTransform.scale = _scale;
+            SetDirty();
         }
         void OnNodeAdded(BaseNode _node)
         {
             BaseNodeView nodeView = AddNodeView(_node);
-            nodeView.RefreshExpandedState();
+            //nodeView.RefreshExpandedState();
             nodeView.Initialized();
+            SetDirty();
         }
         void OnNodeRemoved(BaseNode _node)
         {
             RemoveNodeView(NodeViews[_node.GUID]);
+            SetDirty();
         }
         void OnEdgeAdded(BaseEdge _edge)
         {
             var input = NodeViews[_edge.InputNodeGUID].PortViews[_edge.InputFieldName];
             var output = NodeViews[_edge.OutputNodeGUID].PortViews[_edge.OutputFieldName];
             ConnectView(input, output, _edge);
+            SetDirty();
         }
         void OnEdgeRemoved(BaseEdge _edge)
         {
@@ -152,6 +94,7 @@ namespace CZToolKit.GraphProcessor.Editors
                 if (edge.userData != _edge) return;
                 DisconnectView(edge as BaseEdgeView);
             });
+            SetDirty();
         }
         //void OnStackAdded(StackPanel _stack)
         //{
@@ -164,14 +107,20 @@ namespace CZToolKit.GraphProcessor.Editors
         void OnGroupAdded(GroupPanel _group)
         {
             AddGroupView(_group);
+            SetDirty();
         }
         void OnGroupRemoved(GroupPanel _group)
         {
             RemoveGroupView(_group);
+            SetDirty();
         }
 
         protected virtual void BindingProperties()
         {
+            // 初始化
+            viewTransform.position = Model.Position;
+            viewTransform.scale = Model.Scale;
+
             Model.RegisterValueChangedEvent<Vector3>(nameof(Model.Position), OnPositionChanged);
             Model.RegisterValueChangedEvent<Vector3>(nameof(Model.Scale), OnScaleChanged);
 
@@ -216,6 +165,38 @@ namespace CZToolKit.GraphProcessor.Editors
         #endregion
 
         #region Initialize
+        IEnumerator Init()
+        {
+            Blackboard = new BlackboardView(this);
+            Add(Blackboard);
+
+            InitializeCallbacks();
+            InitializeToolbarButtons();
+
+            // 绑定
+            BindingProperties();
+            RegisterCallback<DetachFromPanelEvent>(evt => { UnBindingProperties(); });
+
+            yield return GlobalEditorCoroutineMachine.StartCoroutine(GenerateNodeViews());
+            yield return GlobalEditorCoroutineMachine.StartCoroutine(GenerateGroupViews());
+            yield return GlobalEditorCoroutineMachine.StartCoroutine(LinkNodeViews());
+            yield return GlobalEditorCoroutineMachine.StartCoroutine(NotifyNodeViewsInitialized());
+
+            OnInitialized();
+
+            double time = EditorApplication.timeSinceStartup;
+            Add(new IMGUIContainer(() =>
+            {
+                if (IsDirty && EditorApplication.timeSinceStartup > time && GraphAsset != null)
+                {
+                    IsDirty = false;
+                    EditorUtility.SetDirty(GraphAsset);
+                    time += 1;
+                }
+            }));
+            MarkDirtyRepaint();
+        }
+
         /// <summary> 初始化ToolbarButton </summary>
         void InitializeToolbarButtons()
         {
@@ -396,9 +377,9 @@ namespace CZToolKit.GraphProcessor.Editors
                     case BaseEdgeView edgeView:
                         data.copiedEdges.Add(edgeView.Model);
                         continue;
-                    case StackView stackView:
-                        data.copiedStacks.Add(stackView.Model);
-                        continue;
+                    //case StackView stackView:
+                    //    data.copiedStacks.Add(stackView.Model);
+                    //    continue;
                     case GroupView groupView:
                         data.copiedGroups.Add(groupView.Model);
                         continue;
@@ -751,6 +732,14 @@ namespace CZToolKit.GraphProcessor.Editors
             outputNodeView.RefreshPorts();
         }
 
+        public virtual void ResetPositionAndZoom()
+        {
+            Model.Position = Vector3.zero;
+            Model.Scale = Vector3.one;
+        }
+
+        #region 帮助方法
+
         public void SaveGraphToDisk()
         {
             (GraphAsset as IGraphAsset)?.SaveGraph();
@@ -761,17 +750,14 @@ namespace CZToolKit.GraphProcessor.Editors
             }
             SetDirty(true);
             AssetDatabase.SaveAssets();
+            if (GraphWindow.titleContent.text.EndsWith(" *"))
+                GraphWindow.titleContent.text = GraphWindow.titleContent.text.Replace(" *", "");
         }
 
-        public virtual void ResetPositionAndZoom()
-        {
-            Model.Position = Vector3.zero;
-            Model.Scale = Vector3.one;
-        }
-
-        #region 帮助方法
         public void SetDirty(bool _immediately = false)
         {
+            if (!GraphWindow.titleContent.text.EndsWith(" *"))
+                GraphWindow.titleContent.text += " *";
             if (_immediately)
                 EditorUtility.SetDirty(GraphAsset);
             else

@@ -9,7 +9,7 @@
     border-radius: 9px;
 }
 
-#title
+#title > #title-label
 {
     display: none;
 }

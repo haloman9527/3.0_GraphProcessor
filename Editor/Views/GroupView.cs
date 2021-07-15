@@ -46,14 +46,6 @@ namespace CZToolKit.GraphProcessor.Editors
             Model = _group;
             Owner = _graphView;
 
-            // 初始化
-            title = Model.Title;
-            base.SetPosition(Model.Position);
-            headerContainer.style.backgroundColor = Model.Color;
-            // 当明度大于0.5f,且透明度大于0.5f，文字颜色为黑色，否则为白色
-            titleLabel.style.color = Model.Color.GetLuminance() > 0.5f && Model.Color.a > 0.5f ? Color.black : Color.white * 0.9f;
-            colorField.SetValueWithoutNotify(Model.Color);
-
             // 绑定
             BindingProperties();
 
@@ -87,6 +79,15 @@ namespace CZToolKit.GraphProcessor.Editors
 
         void BindingProperties()
         {
+            // 初始化
+            title = Model.Title;
+            base.SetPosition(Model.Position);
+            headerContainer.style.backgroundColor = Model.Color;
+            // 当明度大于0.5f,且透明度大于0.5f，文字颜色为黑色，否则为白色
+            titleLabel.style.color = Model.Color.GetLuminance() > 0.5f && Model.Color.a > 0.5f ? Color.black : Color.white * 0.9f;
+            colorField.SetValueWithoutNotify(Model.Color);
+
+
             colorField.RegisterValueChangedCallback(e =>
             {
                 Model.Color = e.newValue;

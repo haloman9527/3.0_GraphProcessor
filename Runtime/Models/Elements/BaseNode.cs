@@ -79,10 +79,10 @@ namespace CZToolKit.GraphProcessor
             get { return GetPropertyValue<Vector2>(nameof(IconSize)); }
             set { SetPropertyValue(nameof(IconSize), value); }
         }
-        public Color TitleTint
+        public Color TitleColor
         {
-            get { return GetPropertyValue<Color>(nameof(TitleTint)); }
-            set { SetPropertyValue(nameof(TitleTint), value); }
+            get { return GetPropertyValue<Color>(nameof(TitleColor)); }
+            set { SetPropertyValue(nameof(TitleColor), value); }
         }
         public string Tooltip
         {
@@ -105,7 +105,7 @@ namespace CZToolKit.GraphProcessor
             set { SetPropertyValue(nameof(Expanded), value); }
         }
 
-        public void Enable(BaseGraph _graph)
+        public virtual void Enable(BaseGraph _graph)
         {
             Owner = _graph;
             foreach (var port in ports.Values)
@@ -117,7 +117,7 @@ namespace CZToolKit.GraphProcessor
         public override void InitializeBindableProperties()
         {
             SetBindableProperty(nameof(Title), new BindableProperty<string>());
-            SetBindableProperty(nameof(TitleTint), new BindableProperty<Color>(new Color(0.2f, 0.2f, 0.2f, 0.8f)));
+            SetBindableProperty(nameof(TitleColor), new BindableProperty<Color>(new Color(0.2f, 0.2f, 0.2f, 0.8f)));
             SetBindableProperty(nameof(Icon), new BindableProperty<Texture>());
             SetBindableProperty(nameof(IconSize), new BindableProperty<Vector2>(new Vector2(20, 20)));
             SetBindableProperty(nameof(Tooltip), new BindableProperty<string>());
@@ -135,8 +135,8 @@ namespace CZToolKit.GraphProcessor
             else
                 Title = type.Name;
 
-            if (Utility_Attribute.TryGetTypeAttribute(type, out NodeTitleColorAttribute nodeTitleTint))
-                TitleTint = nodeTitleTint.color;
+            if (Utility_Attribute.TryGetTypeAttribute(type, out NodeTitleColorAttribute nodeTitleColor))
+                TitleColor = nodeTitleColor.color;
 
             if (Utility_Attribute.TryGetTypeAttribute(type, out NodeIconAttribute iconAttribute))
             {
