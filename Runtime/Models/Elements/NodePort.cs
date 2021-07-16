@@ -1,3 +1,18 @@
+#region æ³¨ é‡Š
+/***
+ *
+ *  Title:
+ *  
+ *  Description:
+ *  
+ *  Date:
+ *  Version:
+ *  Writer: åŠåªé¾™è™¾äºº
+ *  Github: https://github.com/HalfLobsterMan
+ *  Blog: https://www.crosshair.top/
+ *
+ */
+#endregion
 using CZToolKit.Core;
 using UnityEngine;
 using System;
@@ -9,8 +24,8 @@ namespace CZToolKit.GraphProcessor
     [Serializable]
     public class NodePort : BaseGraphElement
     {
-        #region ¾²Ì¬·½·¨
-        /// <summary> ½Ó¿Ú¼æÈİĞÔ²éÑ¯ </summary>
+        #region ï¿½ï¿½Ì¬ï¿½ï¿½ï¿½ï¿½
+        /// <summary> ï¿½Ó¿Ú¼ï¿½ï¿½ï¿½ï¿½Ô²ï¿½Ñ¯ </summary>
         public static bool IsCompatible(NodePort _port1, NodePort _port2)
         {
             if (_port1 == null || _port2 == null) 
@@ -105,7 +120,7 @@ namespace CZToolKit.GraphProcessor
             }
         }
 
-        /// <summary> µÚÒ»¸ö²»Îª¿ÕµÄÁ¬½Ó </summary>
+        /// <summary> ï¿½ï¿½Ò»ï¿½ï¿½Îªï¿½Õµï¿½ï¿½ï¿½ </summary>
         public NodePort Connection
         {
             get
@@ -122,7 +137,7 @@ namespace CZToolKit.GraphProcessor
                 return null;
             }
         }
-        /// <summary> µÚÒ»¸ö²»Îª¿ÕµÄ½Úµã </summary>
+        /// <summary> ï¿½ï¿½Ò»ï¿½ï¿½Îªï¿½ÕµÄ½Úµï¿½ </summary>
         public BaseNode ConnectionNode
         {
             get
@@ -185,7 +200,7 @@ namespace CZToolKit.GraphProcessor
             Owner.Execute(this, _params);
         }
 
-        /// <summary> ·µ»ØËùÓĞÁ¬½Ó </summary>
+        /// <summary> ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ </summary>
         public IEnumerable<BaseEdge> GetEdges()
         {
             foreach (string edge in edgeGUIDs)
@@ -194,7 +209,7 @@ namespace CZToolKit.GraphProcessor
             }
         }
 
-        /// <summary> Í¨¹ıEdgeGUID»ñÈ¡Á¬½ÓµÄÔ¶³Ì¶Ë¿Ú </summary>
+        /// <summary> Í¨ï¿½ï¿½EdgeGUIDï¿½ï¿½È¡ï¿½Óµï¿½Ô¶ï¿½Ì¶Ë¿ï¿½ </summary>
         public NodePort GetConnection(int _edgeGUID)
         {
             BaseEdge edge = GetEdge(_edgeGUID);
@@ -203,7 +218,7 @@ namespace CZToolKit.GraphProcessor
             return Direction == PortDirection.Input ? edge.OutputPort : edge.InputPort;
         }
 
-        /// <summary> ·µ»ØËùÓĞÁ¬½ÓµÄÔ¶³Ì¶Ë¿Ú </summary>
+        /// <summary> ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Óµï¿½Ô¶ï¿½Ì¶Ë¿ï¿½ </summary>
         /// <returns></returns>
         public IEnumerable<NodePort> GetConnections()
         {
@@ -213,7 +228,7 @@ namespace CZToolKit.GraphProcessor
             }
         }
 
-        /// <summary> ³¢ÊÔ»ñÈ¡µÚÒ»¸öÁ¬½ÓµÄÔ¶³Ì¶Ë¿ÚµÄÖµ </summary>
+        /// <summary> ï¿½ï¿½ï¿½Ô»ï¿½È¡ï¿½ï¿½Ò»ï¿½ï¿½ï¿½Óµï¿½Ô¶ï¿½Ì¶Ë¿Úµï¿½Öµ </summary>
         public object GetConnectValue()
         {
             NodePort connection = Connection;
@@ -221,7 +236,7 @@ namespace CZToolKit.GraphProcessor
             return connection.GetValue();
         }
 
-        /// <summary> ·µ»ØËùÓĞÁ¬½ÓµÄÔ¶³Ì¶Ë¿ÚµÄÖµ </summary>
+        /// <summary> ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Óµï¿½Ô¶ï¿½Ì¶Ë¿Úµï¿½Öµ </summary>
         public IEnumerable<object> GetConnectValues()
         {
             foreach (var port in GetConnections())
@@ -232,20 +247,20 @@ namespace CZToolKit.GraphProcessor
             }
         }
 
-        /// <summary> µÚ¶ş¸ö²ÎÊıÊÇÖĞ¼äÖµ(¿ìÅÅ) </summary>
+        /// <summary> ï¿½Ú¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ğ¼ï¿½Öµ(ï¿½ï¿½ï¿½ï¿½) </summary>
         public void SortEdge(Func<string, string, bool> _comparison)
         {
             edgeGUIDs.QuickSort(_comparison);
         }
 
-        /// <summary> ¸ù¾İË÷Òı·µ»ØÁ¬½Ó </summary>
+        /// <summary> ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ </summary>
         public BaseEdge GetEdge(int _index)
         {
             if (Owner.Owner.Edges.TryGetValue(edgeGUIDs[_index], out BaseEdge edge)) return edge;
             return null;
         }
 
-        /// <summary> ¸ù¾İGUID·µ»ØÁ¬½Ó </summary>
+        /// <summary> ï¿½ï¿½ï¿½ï¿½GUIDï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ </summary>
         public BaseEdge GetEdge(string _edgeGUID)
         {
             if (Owner.Owner.Edges.TryGetValue(_edgeGUID, out BaseEdge edge)) return edge;

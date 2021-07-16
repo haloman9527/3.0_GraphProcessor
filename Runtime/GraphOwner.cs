@@ -1,3 +1,18 @@
+#region æ³¨ é‡Š
+/***
+ *
+ *  Title:
+ *  
+ *  Description:
+ *  
+ *  Date:
+ *  Version:
+ *  Writer: åŠåªé¾™è™¾äºº
+ *  Github: https://github.com/HalfLobsterMan
+ *  Blog: https://www.crosshair.top/
+ *
+ */
+#endregion
 using CZToolKit.Core.SharedVariable;
 using OdinSerializer;
 using System;
@@ -11,12 +26,12 @@ namespace CZToolKit.GraphProcessor
 {
     public abstract class GraphOwner : MonoBehaviour, IGraphOwner, IGraphAsset, IVariableOwner
     {
-        #region ×Ö¶Î
+        #region ï¿½Ö¶ï¿½
         protected List<SharedVariable> variables = new List<SharedVariable>();
         protected Dictionary<string, int> sharedVariableIndex;
         #endregion
 
-        #region ÊôĞÔ
+        #region ï¿½ï¿½ï¿½ï¿½
         public abstract BaseGraph Graph { get; }
         public abstract Type GraphType { get; }
         #endregion
@@ -129,13 +144,13 @@ namespace CZToolKit.GraphProcessor
     public abstract class GraphOwner<TGraph> : GraphOwner, ISerializationCallbackReceiver
         where TGraph : BaseGraph, new()
     {
-        #region ×Ö¶Î
+        #region ï¿½Ö¶ï¿½
         [HideInInspector]
         [SerializeField]
         TGraph graph = new TGraph();
         #endregion
 
-        #region ÊôĞÔ
+        #region ï¿½ï¿½ï¿½ï¿½
         public override BaseGraph Graph
         {
             get { return graph; }

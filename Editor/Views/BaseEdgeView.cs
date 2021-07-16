@@ -1,3 +1,18 @@
+#region æ³¨ é‡Š
+/***
+ *
+ *  Title:
+ *  
+ *  Description:
+ *  
+ *  Date:
+ *  Version:
+ *  Writer: åŠåªé¾™è™¾äºº
+ *  Github: https://github.com/HalfLobsterMan
+ *  Blog: https://www.crosshair.top/
+ *
+ */
+#endregion
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine.UIElements;
@@ -15,7 +30,7 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             styleSheets.Add(GraphProcessorStyles.EdgeViewStyle);
 
-            // Ìí¼ÓÁ÷³Ìµã
+            // ï¿½ï¿½ï¿½ï¿½ï¿½Ìµï¿½
             this.AddManipulator(new FlowPoint());
         }
 
@@ -35,7 +50,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
         void OnMouseDown(MouseDownEvent e)
         {
-            // Ë«»÷´´½¨Ò»¸öRelayNode
+            // Ë«ï¿½ï¿½Ò»ï¿½ï¿½RelayNode
             if (e.clickCount == 2)
             {
                 var position = e.mousePosition;

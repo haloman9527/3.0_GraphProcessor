@@ -4,10 +4,12 @@
  *  Title:
  *  
  *  Description:
- *  提供GraphOwner的相关接口
+ *  
  *  Date:
  *  Version:
- *  Writer: 
+ *  Writer: 半只龙虾人
+ *  Github: https://github.com/HalfLobsterMan
+ *  Blog: https://www.crosshair.top/
  *
  */
 #endregion

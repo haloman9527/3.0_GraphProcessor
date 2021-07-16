@@ -1,3 +1,18 @@
+#region æ³¨ é‡Š
+/***
+ *
+ *  Title:
+ *  
+ *  Description:
+ *  
+ *  Date:
+ *  Version:
+ *  Writer: åŠåªé¾™è™¾äºº
+ *  Github: https://github.com/HalfLobsterMan
+ *  Blog: https://www.crosshair.top/
+ *
+ */
+#endregion
 using CZToolKit.Core;
 using CZToolKit.Core.Blackboards;
 using CZToolKit.Core.Editors;
@@ -27,13 +42,13 @@ namespace CZToolKit.GraphProcessor.Editors
             addItemRequested = OnAddClicked;
             editTextRequested = Rename;
 
-            // °ó¶¨
+            // ï¿½ï¿½
             BindingPropertiesBeforeUpdate();
 
             UpdateParameterList();
         }
 
-        #region Êı¾İ¼àÌı»Øµ÷
+        #region ï¿½ï¿½ï¿½İ¼ï¿½ï¿½ï¿½ï¿½Øµï¿½
         void OnPositionChanged(Rect _position)
         {
             base.SetPosition(_position);
@@ -64,7 +79,7 @@ namespace CZToolKit.GraphProcessor.Editors
         }
         void BindingPropertiesBeforeUpdate()
         {
-            // ³õÊ¼»¯
+            // ï¿½ï¿½Ê¼ï¿½ï¿½
             base.SetPosition(GraphView.Model.BlackboardPosition);
             style.display = GraphView.Model.BlackboardVisible ? DisplayStyle.Flex : DisplayStyle.None;
 

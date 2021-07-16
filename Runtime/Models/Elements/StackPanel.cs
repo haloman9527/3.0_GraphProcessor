@@ -1,3 +1,18 @@
+#region æ³¨ é‡Š
+/***
+ *
+ *  Title:
+ *  
+ *  Description:
+ *  
+ *  Date:
+ *  Version:
+ *  Writer: åŠåªé¾™è™¾äºº
+ *  Github: https://github.com/HalfLobsterMan
+ *  Blog: https://www.crosshair.top/
+ *
+ */
+#endregion
 using UnityEngine;
 using System.Collections.Generic;
 using System;
@@ -5,7 +20,7 @@ using System;
 namespace CZToolKit.GraphProcessor
 {
     [Serializable]
-    [Obsolete("StackÒÆ³ı£¬²»ÔÙÊ¹ÓÃ£¬Ê¹ÓÃ³¡¾°ÉÙ")]
+    [Obsolete("Stackï¿½Æ³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¹ï¿½Ã£ï¿½Ê¹ï¿½Ã³ï¿½ï¿½ï¿½ï¿½ï¿½")]
     public class StackPanel : BaseGraphElement
     {
         public static StackPanel CreateStack(Vector2 _position, string _title = "Stack")
@@ -25,8 +40,8 @@ namespace CZToolKit.GraphProcessor
         #endregion
 
         #region ViewModel
-        #region ¾²Ì¬·½·¨
-        /// <summary> ½Ó¿Ú¼æÈİĞÔ¼ì²é </summary>
+        #region ï¿½ï¿½Ì¬ï¿½ï¿½ï¿½ï¿½
+        /// <summary> ï¿½Ó¿Ú¼ï¿½ï¿½ï¿½ï¿½Ô¼ï¿½ï¿½ </summary>
         public static bool IsCompatible(NodePort _port1, NodePort _port2)
         {
             if (_port1 == null || _port2 == null) return false;
