@@ -41,6 +41,26 @@ namespace CZToolKit.GraphProcessor.Editors
 
             Insert(0, new GridBackground());
 
+            Image img = new Image();
+            img.AddToClassList("PreviewImage");
+            img.StretchToParentSize();
+
+            RenderTexture rt = new RenderTexture(300, 300, 1);
+            Material mat = AssetDatabase.LoadAssetAtPath<Material>("Assets/mat.mat");
+            Texture2D texture = AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/CZToolKit/3.0_GraphProcessor/Editor/Rerources/GraphProcessor/Textures/angle-down.png");
+
+            img.image = rt;
+            img.StretchToParentSize();
+            Insert(1, img);
+            schedule.Execute(() =>
+            {
+                Debug.Log(1);
+                rt.Release();
+                Graphics.Blit(texture, rt, mat);
+                img.MarkDirtyRepaint();
+            }).Until(() => false);
+
+
             this.AddManipulator(new ContentZoomer() { minScale = 0.05f, maxScale = 2f });
             this.AddManipulator(new ContentDragger());
             this.AddManipulator(new SelectionDragger());

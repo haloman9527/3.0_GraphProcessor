@@ -178,7 +178,7 @@ MonoBehaviour:
     \"5|CZToolKit.GraphProcessor.Examples.SharedVariableNode, Assembly-CSharp\",\r\n                   
     \"guid\": \"fdf5fa67-97c7-4da1-8081-c08a39229729\",\r\n                    \"position\":
     {\r\n                        \"$type\": \"6|UnityEngine.Vector2, UnityEngine.CoreModule\",\r\n                       
-    -1753.569,\r\n                        681.352\r\n                    },\r\n                   
+    -1695.5,\r\n                        707.5\r\n                    },\r\n                   
     \"expanded\": true,\r\n                    \"locked\": false,\r\n                   
     \"ports\": {\r\n                        \"$id\": 4,\r\n                       
     \"$type\": \"7|System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[CZToolKit.GraphProcessor.NodePort,
@@ -188,10 +188,9 @@ MonoBehaviour:
     [\r\n                            {\r\n                                \"$k\":
     \"value\",\r\n                                \"$v\": {\r\n                                   
     \"$id\": 6,\r\n                                    \"$type\": \"8|CZToolKit.GraphProcessor.NodePort,
-    Assembly-CSharp\",\r\n                                    \"ownerGUID\": null,\r\n                                   
-    \"fieldName\": \"value\",\r\n                                    \"typeQualifiedName\":
-    \"CZToolKit.Core.SharedVariable.SharedGameObject, CZToolKit.Core, Version=0.0.0.0,
-    Culture=neutral, PublicKeyToken=null\",\r\n                                   
+    Assembly-CSharp\",\r\n                                    \"fieldName\": \"value\",\r\n                                   
+    \"typeQualifiedName\": \"CZToolKit.Core.SharedVariable.SharedGameObject, CZToolKit.Core,
+    Version=0.0.0.0, Culture=neutral, PublicKeyToken=null\",\r\n                                   
     \"multiple\": true,\r\n                                    \"direction\": 1,\r\n                                   
     \"typeConstraint\": 1,\r\n                                    \"edgeGUIDs\":
     {\r\n                                        \"$id\": 7,\r\n                                       
@@ -206,21 +205,17 @@ MonoBehaviour:
     }\r\n        ]\r\n    },\r\n    \"edges\": {\r\n        \"$id\": 9,\r\n       
     \"$type\": \"11|System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[CZToolKit.GraphProcessor.BaseEdge,
     Assembly-CSharp]], mscorlib\",\r\n        \"comparer\": $iref:2,\r\n        \"$rlength\":
-    0,\r\n        \"$rcontent\": [\r\n        ]\r\n    },\r\n    \"stacks\": {\r\n       
-    \"$id\": 10,\r\n        \"$type\": \"12|System.Collections.Generic.Dictionary`2[[System.String,
-    mscorlib],[CZToolKit.GraphProcessor.BaseStack, Assembly-CSharp]], mscorlib\",\r\n       
-    \"comparer\": $iref:2,\r\n        \"$rlength\": 0,\r\n        \"$rcontent\":
-    [\r\n        ]\r\n    },\r\n    \"groups\": {\r\n        \"$id\": 11,\r\n       
-    \"$type\": \"13|System.Collections.Generic.List`1[[CZToolKit.GraphProcessor.BaseGroup,
+    0,\r\n        \"$rcontent\": [\r\n        ]\r\n    },\r\n    \"groups\": {\r\n       
+    \"$id\": 10,\r\n        \"$type\": \"12|System.Collections.Generic.List`1[[CZToolKit.GraphProcessor.GroupPanel,
     Assembly-CSharp]], mscorlib\",\r\n        \"$rlength\": 0,\r\n        \"$rcontent\":
-    [\r\n        ]\r\n    },\r\n    \"blackboard\": {\r\n        \"$id\": 12,\r\n       
-    \"$type\": \"14|CZToolKit.Core.Blackboards.CZBlackboard, CZToolKit.Core\",\r\n       
-    \"dataMap\": {\r\n            \"$id\": 13,\r\n            \"$type\": \"15|CZToolKit.Core.Blackboards.CZDataDictionary,
+    [\r\n        ]\r\n    },\r\n    \"blackboard\": {\r\n        \"$id\": 11,\r\n       
+    \"$type\": \"13|CZToolKit.Core.Blackboards.CZBlackboard, CZToolKit.Core\",\r\n       
+    \"dataMap\": {\r\n            \"$id\": 12,\r\n            \"$type\": \"14|CZToolKit.Core.Blackboards.CZDataDictionary,
     CZToolKit.Core\",\r\n            \"comparer\": {\r\n                \"$id\":
-    14,\r\n                \"$type\": 4\r\n            },\r\n            \"$rlength\":
+    13,\r\n                \"$type\": 4\r\n            },\r\n            \"$rlength\":
     0,\r\n            \"$rcontent\": [\r\n            ]\r\n        },\r\n       
-    \"guidMap\": {\r\n            \"$id\": 15,\r\n            \"$type\": \"16|CZToolKit.Core.Blackboards.CZGUIDMapDictionary,
-    CZToolKit.Core\",\r\n            \"comparer\": $iref:14,\r\n            \"$rlength\":
+    \"guidMap\": {\r\n            \"$id\": 14,\r\n            \"$type\": \"15|CZToolKit.Core.Blackboards.CZGUIDMapDictionary,
+    CZToolKit.Core\",\r\n            \"comparer\": $iref:13,\r\n            \"$rlength\":
     0,\r\n            \"$rcontent\": [\r\n            ]\r\n        }\r\n    }\r\n}"
   graphUnityReferences: []
   serializedVariables: 
@@ -238,6 +233,631 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &444662076
+GameObject:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 444662078}
+  - component: {fileID: 444662077}
+  m_Layer: 0
+  m_Name: UndoProRecords
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &444662077
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 444662076}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0ec064185206f494c8f61c85085d333a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  undoProRecords: []
+  undoState:
+    redoRecords: []
+    undoRecords:
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Create Image
+    - Add Image
+    - Create Canvas
+    - Add Canvas
+    - Add CanvasScaler
+    - Add GraphicRaycaster
+    - Create Image
+    - Create EventSystem
+    - Add EventSystem
+    - Add StandaloneInputModule
+    - Create EventSystem
+    - 
+    - 
+    - 
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Inspector
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Change m_BlockingMask on Canvas
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Delete Game Objects
+    - Delete Game Objects
+    - Selection Change
+    - Selection Change
+    - Delete Game Objects
+    - Delete Game Objects
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - AddComponent
+    - Change enableOdinInInspector on InspectorConfig
+    - Inspector
+    - Reset GameObject test
+    - Inspector
+    - Inspector
+    - Reset GameObject test
+    - Inspector
+    - Inspector
+    - Reset GameObject test
+    - Inspector
+    - Reset GameObject test
+    - Inspector
+    - Reset GameObject test
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Inspector
+    - Change enableOdinInInspector on InspectorConfig
+    - Change obj on GameObject
+    - Reset GameObject test
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - 'Change GameObject: Clicked Button ''S'''
+    - 'Change GameObject: Clicked Button ''S'''
+    - Change enableOdinInInspector on InspectorConfig
+    - Inspector
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Selection Change
+    - Remove MonoBehaviour
+--- !u!4 &444662078
+Transform:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 444662076}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &576272909
 GameObject:
