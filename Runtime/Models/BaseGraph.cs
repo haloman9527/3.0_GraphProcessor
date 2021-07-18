@@ -38,7 +38,7 @@ namespace CZToolKit.GraphProcessor
         //[SerializeField] Dictionary<string, StackPanel> stacks = new Dictionary<string, StackPanel>();
         [SerializeField] List<GroupPanel> groups = new List<GroupPanel>();
 
-        [SerializeField] CZBlackboard blackboard = new CZBlackboard();
+        [SerializeField] CZBlackboardWithGUID blackboard = new CZBlackboardWithGUID();
         #endregion
 
         #region ViewModel
@@ -83,7 +83,15 @@ namespace CZToolKit.GraphProcessor
             get { return GetPropertyValue<Rect>(nameof(BlackboardPosition)); }
             set { SetPropertyValue(nameof(BlackboardPosition), value); }
         }
-        public IReadOnlyCZBlackboard Blackboard { get { return blackboard; } }
+        public IReadOnlyBlackboardWithGUID Blackboard
+        {
+            get
+            {
+                if (blackboard == null)
+                    blackboard = new CZBlackboardWithGUID();
+                return blackboard;
+            }
+        }
         public IReadOnlyDictionary<string, BaseNode> Nodes { get { return nodes; } }
         public IReadOnlyDictionary<string, BaseEdge> Edges { get { return edges; } }
         //public IReadOnlyDictionary<string, StackPanel> Stacks { get { return stacks; } }

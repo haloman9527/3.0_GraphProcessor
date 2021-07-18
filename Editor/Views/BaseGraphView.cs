@@ -69,7 +69,6 @@ namespace CZToolKit.GraphProcessor.Editors
             Insert(1, img);
             schedule.Execute(() =>
             {
-                Debug.Log(1);
                 rt.Release();
                 Graphics.Blit(texture, rt, mat);
                 img.MarkDirtyRepaint();

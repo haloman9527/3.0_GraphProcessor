@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: New Math Graph 1
   m_EditorClassIdentifier: 
   graph:
-    position: {x: -38, y: 659, z: 0}
-    scale: {x: 0.57175326, y: 0.57175326, z: 1}
-    blackboardVisible: 0
+    position: {x: 57.999992, y: 564, z: 0}
+    scale: {x: 0.43232757, y: 0.43232757, z: 1}
+    blackboardVisible: 1
     blackboardPosition:
       serializedVersion: 2
-      x: 0
-      y: 0
+      x: 30
+      y: 7
       width: 343
       height: 410
     groups:
@@ -48,9 +48,9 @@ MonoBehaviour:
     blackboard: {}
   serializedGraph: "{\r\n    \"$id\": 0,\r\n    \"$type\": \"0|CZToolKit.GraphProcessor.Examples.MathGraph,
     Assembly-CSharp\",\r\n    \"position\": {\r\n        \"$type\": \"1|UnityEngine.Vector3,
-    UnityEngine.CoreModule\",\r\n        -38,\r\n        659,\r\n        0\r\n   
-    },\r\n    \"scale\": {\r\n        \"$type\": 1,\r\n        0.571753263,\r\n       
-    0.571753263,\r\n        1\r\n    },\r\n    \"blackboardVisible\": false,\r\n   
+    UnityEngine.CoreModule\",\r\n        -1660,\r\n        1045,\r\n        0\r\n   
+    },\r\n    \"scale\": {\r\n        \"$type\": 1,\r\n        1.74900627,\r\n       
+    1.74900627,\r\n        1\r\n    },\r\n    \"blackboardVisible\": false,\r\n   
     \"blackboardPosition\": {\r\n        \"$type\": \"2|UnityEngine.Rect, UnityEngine.CoreModule\",\r\n       
     0,\r\n        0,\r\n        343,\r\n        410\r\n    },\r\n    \"nodes\": {\r\n       
     \"$id\": 1,\r\n        \"$type\": \"3|System.Collections.Generic.Dictionary`2[[System.String,
@@ -552,8 +552,8 @@ MonoBehaviour:
     \"$k\": \"80c88ccd-0278-4cd8-acfe-6e94357e69e8\",\r\n                \"$v\":
     {\r\n                    \"$id\": 89,\r\n                    \"$type\": 10,\r\n                   
     \"guid\": \"80c88ccd-0278-4cd8-acfe-6e94357e69e8\",\r\n                    \"position\":
-    {\r\n                        \"$type\": 6,\r\n                        1248.58447,\r\n                       
-    -425.290283\r\n                    },\r\n                    \"expanded\": true,\r\n                   
+    {\r\n                        \"$type\": 6,\r\n                        1264.43738,\r\n                       
+    -425.0001\r\n                    },\r\n                    \"expanded\": true,\r\n                   
     \"locked\": false,\r\n                    \"ports\": {\r\n                       
     \"$id\": 90,\r\n                        \"$type\": 7,\r\n                       
     \"comparer\": $iref:30,\r\n                        \"$rlength\": 1,\r\n                       
@@ -735,8 +735,8 @@ MonoBehaviour:
     \"$k\": \"9e89e393-f17b-4a83-b087-45423a7a512c\",\r\n                \"$v\":
     {\r\n                    \"$id\": 124,\r\n                    \"$type\": 18,\r\n                   
     \"guid\": \"9e89e393-f17b-4a83-b087-45423a7a512c\",\r\n                    \"position\":
-    {\r\n                        \"$type\": 6,\r\n                        935.4525,\r\n                       
-    20.63935\r\n                    },\r\n                    \"expanded\": true,\r\n                   
+    {\r\n                        \"$type\": 6,\r\n                        941.5825,\r\n                       
+    1.22860932\r\n                    },\r\n                    \"expanded\": true,\r\n                   
     \"locked\": false,\r\n                    \"ports\": {\r\n                       
     \"$id\": 125,\r\n                        \"$type\": 7,\r\n                       
     \"comparer\": {\r\n                            \"$id\": 126,\r\n                           
@@ -760,8 +760,8 @@ MonoBehaviour:
     \"$k\": \"9ebc7692-4f3e-47f2-910e-f1c1ba1422c8\",\r\n                \"$v\":
     {\r\n                    \"$id\": 129,\r\n                    \"$type\": 18,\r\n                   
     \"guid\": \"9ebc7692-4f3e-47f2-910e-f1c1ba1422c8\",\r\n                    \"position\":
-    {\r\n                        \"$type\": 6,\r\n                        852.6775,\r\n                       
-    -54.09733\r\n                    },\r\n                    \"expanded\": true,\r\n                   
+    {\r\n                        \"$type\": 6,\r\n                        859.5825,\r\n                       
+    -73.77139\r\n                    },\r\n                    \"expanded\": true,\r\n                   
     \"locked\": false,\r\n                    \"ports\": {\r\n                       
     \"$id\": 130,\r\n                        \"$type\": 7,\r\n                       
     \"comparer\": {\r\n                            \"$id\": 131,\r\n                           

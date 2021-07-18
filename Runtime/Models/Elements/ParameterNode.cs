@@ -50,9 +50,10 @@ namespace CZToolKit.GraphProcessor
         public override void Enable(BaseGraph _graph)
         {
             base.Enable(_graph);
+            Debug.Log(Parameter == null);
             foreach (var port in Ports)
             {
-                port.Value.DisplayType = Parameter.ValueType;
+                port.Value.DisplayType = Parameter?.ValueType;
             }
         }
 
