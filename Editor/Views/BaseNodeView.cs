@@ -138,7 +138,15 @@ namespace CZToolKit.GraphProcessor.Editors
                 box.AddToClassList("port-input-element");
                 if (Utility_Attribute.TryGetFieldInfoAttribute(fieldInfo, out ShowAsDrawer showAsDrawer))
                 {
-                    VisualElement fieldDrawer = CreateControlField(fieldInfo, string.Empty, null);
+                    BindableElement fieldDrawer = UIElementsFactory.CreateField(String.Empty, fieldInfo.FieldType, Model.GetFieldInfoValue(fieldInfo), (newValue) =>
+                    {
+                        IBindableProperty property;
+                        if (!string.IsNullOrEmpty(showAsDrawer.targetBindablePropertyName) && (property = Model.GetBindableProperty(showAsDrawer.targetBindablePropertyName)) != null)
+                        {
+                            property.ValueBoxed = newValue;
+                            Owner.SetDirty();
+                        }
+                    });
                     if (fieldDrawer != null)
                     {
                         box.Add(fieldDrawer);
@@ -209,14 +217,14 @@ namespace CZToolKit.GraphProcessor.Editors
             TitleLabel.style.color = Model.TitleColor.GetLuminance() > 0.5f && Model.TitleColor.a > 0.5f ? Color.black : Color.white * 0.9f;
 
 
-            Model.RegisterValueChangedEvent<bool>(nameof(Model.Expanded), OnExpandedChanged);
-            Model.RegisterValueChangedEvent<string>(nameof(Model.Title), OnTitleChanged);
+            Model.BindingProperty<bool>(nameof(Model.Expanded), OnExpandedChanged);
+            Model.BindingProperty<string>(nameof(Model.Title), OnTitleChanged);
             Model.Title = GraphProcessorEditorUtility.GetNodeDisplayName(Model.GetType());
-            Model.RegisterValueChangedEvent<Texture>(nameof(Model.Icon), OnIconChanged);
-            Model.RegisterValueChangedEvent<Vector2>(nameof(Model.IconSize), OnIconSizeChanged);
-            Model.RegisterValueChangedEvent<string>(nameof(Model.Tooltip), OnTooltipChanged);
-            Model.RegisterValueChangedEvent<Vector2>(nameof(Model.Position), OnPositionChanged);
-            Model.RegisterValueChangedEvent<Color>(nameof(Model.TitleColor), OnTitleColorChanged);
+            Model.BindingProperty<Texture>(nameof(Model.Icon), OnIconChanged);
+            Model.BindingProperty<Vector2>(nameof(Model.IconSize), OnIconSizeChanged);
+            Model.BindingProperty<string>(nameof(Model.Tooltip), OnTooltipChanged);
+            Model.BindingProperty<Vector2>(nameof(Model.Position), OnPositionChanged);
+            Model.BindingProperty<Color>(nameof(Model.TitleColor), OnTitleColorChanged);
         }
 
         public virtual void UnBindingProperties()
@@ -225,13 +233,13 @@ namespace CZToolKit.GraphProcessor.Editors
             {
                 portView.UnBindingProperties();
             }
-            Model.UnregisterValueChangedEvent<bool>(nameof(Model.Expanded), OnExpandedChanged);
-            Model.UnregisterValueChangedEvent<string>(nameof(Model.Title), OnTitleChanged);
-            Model.UnregisterValueChangedEvent<Texture>(nameof(Model.Icon), OnIconChanged);
-            Model.UnregisterValueChangedEvent<Vector2>(nameof(Model.IconSize), OnIconSizeChanged);
-            Model.UnregisterValueChangedEvent<string>(nameof(Model.Tooltip), OnTooltipChanged);
-            Model.UnregisterValueChangedEvent<Vector2>(nameof(Model.Position), OnPositionChanged);
-            Model.UnregisterValueChangedEvent<Color>(nameof(Model.TitleColor), OnTitleColorChanged);
+            Model.UnBindingProperty<bool>(nameof(Model.Expanded), OnExpandedChanged);
+            Model.UnBindingProperty<string>(nameof(Model.Title), OnTitleChanged);
+            Model.UnBindingProperty<Texture>(nameof(Model.Icon), OnIconChanged);
+            Model.UnBindingProperty<Vector2>(nameof(Model.IconSize), OnIconSizeChanged);
+            Model.UnBindingProperty<string>(nameof(Model.Tooltip), OnTooltipChanged);
+            Model.UnBindingProperty<Vector2>(nameof(Model.Position), OnPositionChanged);
+            Model.UnBindingProperty<Color>(nameof(Model.TitleColor), OnTitleColorChanged);
         }
         #endregion
 
@@ -254,7 +262,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
         public void Initialized()
         {
-            Model.UpdateExpanded();
+            base.expanded = Model.Expanded;
             //foreach (var item in ViewModel.BindableProperties)
             //{
             //    BindableElement element = UIElementsFactory.CreateField(item.Key, item.Value.ValueType, item.Value.ValueBoxed, newValue =>

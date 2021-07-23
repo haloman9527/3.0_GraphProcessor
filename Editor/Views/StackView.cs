@@ -50,12 +50,12 @@ namespace CZToolKit.GraphProcessor.Editors
 
         void BindingProperties()
         {
-            Model.RegisterValueChangedEvent<string>(nameof(Model.Title), v =>
+            Model.BindingProperty<string>(nameof(Model.Title), v =>
             {
                 title = v;
             });
 
-            Model.RegisterValueChangedEvent<Vector2>(nameof(Model.Position), v =>
+            Model.BindingProperty<Vector2>(nameof(Model.Position), v =>
             {
                 base.SetPosition(new Rect(v, Vector2.one));
             });

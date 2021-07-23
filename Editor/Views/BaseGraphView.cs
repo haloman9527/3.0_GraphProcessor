@@ -56,25 +56,6 @@ namespace CZToolKit.GraphProcessor.Editors
 
             Insert(0, new GridBackground());
 
-            Image img = new Image();
-            img.AddToClassList("PreviewImage");
-            img.StretchToParentSize();
-
-            RenderTexture rt = new RenderTexture(300, 300, 1);
-            Material mat = AssetDatabase.LoadAssetAtPath<Material>("Assets/mat.mat");
-            Texture2D texture = AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/CZToolKit/3.0_GraphProcessor/Editor/Rerources/GraphProcessor/Textures/angle-down.png");
-
-            img.image = rt;
-            img.StretchToParentSize();
-            Insert(1, img);
-            schedule.Execute(() =>
-            {
-                rt.Release();
-                Graphics.Blit(texture, rt, mat);
-                img.MarkDirtyRepaint();
-            }).Until(() => false);
-
-
             this.AddManipulator(new ContentZoomer() { minScale = 0.05f, maxScale = 2f });
             this.AddManipulator(new ContentDragger());
             this.AddManipulator(new SelectionDragger());
@@ -155,8 +136,8 @@ namespace CZToolKit.GraphProcessor.Editors
             viewTransform.position = Model.Position;
             viewTransform.scale = Model.Scale;
 
-            Model.RegisterValueChangedEvent<Vector3>(nameof(Model.Position), OnPositionChanged);
-            Model.RegisterValueChangedEvent<Vector3>(nameof(Model.Scale), OnScaleChanged);
+            Model.BindingProperty<Vector3>(nameof(Model.Position), OnPositionChanged);
+            Model.BindingProperty<Vector3>(nameof(Model.Scale), OnScaleChanged);
 
             Model.onNodeAdded += OnNodeAdded;
             Model.onNodeRemoved += OnNodeRemoved;
@@ -181,8 +162,8 @@ namespace CZToolKit.GraphProcessor.Editors
                 }
             });
 
-            Model.UnregisterValueChangedEvent<Vector3>(nameof(Model.Position), OnPositionChanged);
-            Model.UnregisterValueChangedEvent<Vector3>(nameof(Model.Scale), OnScaleChanged);
+            Model.UnBindingProperty<Vector3>(nameof(Model.Position), OnPositionChanged);
+            Model.UnBindingProperty<Vector3>(nameof(Model.Scale), OnScaleChanged);
 
             Model.onNodeAdded -= OnNodeAdded;
             Model.onNodeRemoved -= OnNodeRemoved;
@@ -371,7 +352,8 @@ namespace CZToolKit.GraphProcessor.Editors
                     switch (element)
                     {
                         case BaseEdgeView edgeView:
-                            Model.DisconnectEdge(edgeView.Model.GUID);
+                            if (edgeView.selected)
+                                Model.DisconnectEdge(edgeView.Model.GUID);
                             return true;
                         case BaseNodeView nodeView:
                             if (nodeView.selected)
@@ -702,35 +684,31 @@ namespace CZToolKit.GraphProcessor.Editors
             if (!GroupViews.TryGetValue(_group, out GroupView _groupView))
                 return;
 
-            foreach (var item in _groupView.containedElements)
-            {
-                AddElement(item);
-            }
             RemoveElement(_groupView);
             GroupViews.Remove(_group);
         }
 
-        public StackView AddStackNodeView(StackPanel _stackNode)
-        {
-            var stackView = new StackView();
-            stackView.SetUp(_stackNode, CommandDispatcher, this);
-            AddElement(stackView);
-            StackViews[_stackNode.GUID] = stackView;
-            return stackView;
-        }
+        //public StackView AddStackNodeView(StackPanel _stackNode)
+        //{
+        //    var stackView = new StackView();
+        //    stackView.SetUp(_stackNode, CommandDispatcher, this);
+        //    AddElement(stackView);
+        //    StackViews[_stackNode.GUID] = stackView;
+        //    return stackView;
+        //}
 
-        public void RemoveStackNodeView(StackView _stackNodeView)
-        {
-            RemoveElement(_stackNodeView);
-            StackViews.Remove(_stackNodeView.Model.GUID);
-        }
+        //public void RemoveStackNodeView(StackView _stackNodeView)
+        //{
+        //    RemoveElement(_stackNodeView);
+        //    StackViews.Remove(_stackNodeView.Model.GUID);
+        //}
 
-        public void RemoveStackNodeViews()
-        {
-            foreach (var stackView in StackViews)
-                RemoveElement(stackView.Value);
-            StackViews.Clear();
-        }
+        //public void RemoveStackNodeViews()
+        //{
+        //    foreach (var stackView in StackViews)
+        //        RemoveElement(stackView.Value);
+        //    StackViews.Clear();
+        //}
 
         public BaseEdgeView ConnectView(NodePortView _inputPortView, NodePortView _outputPortView, BaseEdge _serializableEdge)
         {

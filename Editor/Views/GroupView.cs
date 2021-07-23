@@ -72,6 +72,7 @@ namespace CZToolKit.GraphProcessor.Editors
             //n.style.marginLeft = 100;
             //this.Add(n);
         }
+
         #region 数据监听回调
         void OnTitleChanged(string _title)
         {
@@ -108,16 +109,16 @@ namespace CZToolKit.GraphProcessor.Editors
                 Model.Color = e.newValue;
             });
 
-            Model.RegisterValueChangedEvent<string>(nameof(Model.Title), OnTitleChanged);
-            Model.RegisterValueChangedEvent<Rect>(nameof(Model.Position), OnPositionChanged);
-            Model.RegisterValueChangedEvent<Color>(nameof(Model.Color), OnColorChanged);
+            Model.BindingProperty<string>(nameof(Model.Title), OnTitleChanged);
+            Model.BindingProperty<Rect>(nameof(Model.Position), OnPositionChanged);
+            Model.BindingProperty<Color>(nameof(Model.Color), OnColorChanged);
         }
 
         public void UnBindingProperties()
         {
-            Model.UnregisterValueChangedEvent<string>(nameof(Model.Title), OnTitleChanged);
-            Model.UnregisterValueChangedEvent<Rect>(nameof(Model.Position), OnPositionChanged);
-            Model.UnregisterValueChangedEvent<Color>(nameof(Model.Color), OnColorChanged);
+            Model.UnBindingProperty<string>(nameof(Model.Title), OnTitleChanged);
+            Model.UnBindingProperty<Rect>(nameof(Model.Position), OnPositionChanged);
+            Model.UnBindingProperty<Color>(nameof(Model.Color), OnColorChanged);
         }
         #endregion
 
@@ -130,7 +131,7 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             foreach (var nodeGUID in Model.InnerNodeGUIDs)
             {
-                if (!Owner.Model.Nodes.ContainsKey(nodeGUID)) continue;
+                if (!Owner.NodeViews.ContainsKey(nodeGUID)) continue;
 
                 BaseNodeView nodeView = Owner.NodeViews[nodeGUID];
                 AddElement(nodeView);
@@ -182,10 +183,10 @@ namespace CZToolKit.GraphProcessor.Editors
             {
                 BaseNodeView nodeView = element as BaseNodeView;
                 if (nodeView != null)
-                    Model.AddNode(nodeView.Model.GUID);
-                StackView stackNodeView = element as StackView;
-                if (stackNodeView != null)
-                    Model.RemoveNode(stackNodeView.Model.GUID);
+                    Model.RemoveNode(nodeView.Model.GUID);
+                //StackView stackNodeView = element as StackView;
+                //if (stackNodeView != null)
+                //    Model.RemoveNode(stackNodeView.Model.GUID);
             }
             base.OnElementsRemoved(elements);
         }

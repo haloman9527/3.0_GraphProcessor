@@ -18,5 +18,12 @@ using System;
 namespace CZToolKit.GraphProcessor
 {
     [AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]
-    public class ShowAsDrawer : Attribute { }
+    public class ShowAsDrawer : Attribute
+    {
+        public string targetBindablePropertyName;
+        public ShowAsDrawer(string _targetBindablePropertyName = "")
+        {
+            targetBindablePropertyName = _targetBindablePropertyName;
+        }
+    }
 }

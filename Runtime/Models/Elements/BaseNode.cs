@@ -14,6 +14,7 @@
  */
 #endregion
 using CZToolKit.Core;
+using CZToolKit.Core.SharedVariable;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -162,6 +163,8 @@ namespace CZToolKit.GraphProcessor
             if (Utility_Attribute.TryGetTypeAttribute(type, out NodeTooltipAttribute tooltip))
                 Tooltip = tooltip.Tooltip;
         }
+
+        public virtual void OnInitializedPropertyMapping(IVariableOwner variableOwner) { }
 
         public void UpdateExpanded()
         {

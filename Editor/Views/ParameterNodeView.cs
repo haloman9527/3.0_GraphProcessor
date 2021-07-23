@@ -29,14 +29,14 @@ namespace CZToolKit.GraphProcessor.Editors
         protected override void BindingProperties()
         {
             base.BindingProperties();
-            T_Model.RegisterValueChangedEvent<string>(nameof(T_Model.Name), OnDataNameChanged);
+            T_Model.BindingProperty<string>(nameof(T_Model.Name), OnDataNameChanged);
 
             title = T_Model.Name;
         }
         public override void UnBindingProperties()
         {
             base.UnBindingProperties();
-            T_Model.UnregisterValueChangedEvent<string>(nameof(T_Model.Name), OnDataNameChanged);
+            T_Model.UnBindingProperty<string>(nameof(T_Model.Name), OnDataNameChanged);
         }
 
         protected override void OnInitialized()

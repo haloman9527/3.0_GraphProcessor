@@ -62,12 +62,12 @@ namespace CZToolKit.GraphProcessor
             return null;
         }
 
-        public virtual void RegisterValueChangedEvent<T>(string _propertyName, Action<T> _onValueChangedCallback)
+        public virtual void BindingProperty<T>(string _propertyName, Action<T> _onValueChangedCallback)
         {
             GetBindableProperty<T>(_propertyName).RegesterValueChangedEvent(_onValueChangedCallback);
         }
 
-        public virtual void UnregisterValueChangedEvent<T>(string _propertyName, Action<T> _onValueChangedCallback)
+        public virtual void UnBindingProperty<T>(string _propertyName, Action<T> _onValueChangedCallback)
         {
             GetBindableProperty<T>(_propertyName).UnregesterValueChangedEvent(_onValueChangedCallback);
         }

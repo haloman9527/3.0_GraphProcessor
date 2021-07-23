@@ -122,7 +122,6 @@ namespace CZToolKit.GraphProcessor
         public override void InitializeBindableProperties()
         {
             SetBindableProperty(nameof(Position), new BindableProperty<Vector3>(position, v => { position = v; }));
-
             SetBindableProperty(nameof(Scale), new BindableProperty<Vector3>(scale, v => scale = v));
             SetBindableProperty(nameof(BlackboardVisible), new BindableProperty<bool>(blackboardVisible, v => blackboardVisible = v));
             SetBindableProperty(nameof(BlackboardPosition), new BindableProperty<Rect>(blackboardPosition, v => blackboardPosition = v));
@@ -154,6 +153,11 @@ namespace CZToolKit.GraphProcessor
             foreach (var variable in variables)
             {
                 variable.InitializePropertyMapping(VarialbeOwner);
+            }
+
+            foreach (var node in Nodes.Values)
+            {
+                node.OnInitializedPropertyMapping(_variableOwner);
             }
         }
 
@@ -304,7 +308,7 @@ namespace CZToolKit.GraphProcessor
 
         public void RemoveGroup(GroupPanel _group)
         {
-            if (groups.Remove(_group))
+            if (groups.Remove(_group)) { }
                 onGroupRemoved?.Invoke(_group);
         }
         #endregion

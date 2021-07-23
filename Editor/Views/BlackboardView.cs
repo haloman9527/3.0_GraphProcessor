@@ -43,7 +43,7 @@ namespace CZToolKit.GraphProcessor.Editors
             editTextRequested = Rename;
 
             // ��
-            BindingPropertiesBeforeUpdate();
+            BindingProperties();
 
             UpdateParameterList();
         }
@@ -77,22 +77,22 @@ namespace CZToolKit.GraphProcessor.Editors
             fields[_newName] = blackboardRow;
             MarkDirtyRepaint();
         }
-        void BindingPropertiesBeforeUpdate()
+        void BindingProperties()
         {
             // ��ʼ��
             base.SetPosition(GraphView.Model.BlackboardPosition);
             style.display = GraphView.Model.BlackboardVisible ? DisplayStyle.Flex : DisplayStyle.None;
 
-            GraphView.Model.RegisterValueChangedEvent<Rect>(nameof(GraphView.Model.BlackboardPosition), OnPositionChanged);
-            GraphView.Model.RegisterValueChangedEvent<bool>(nameof(GraphView.Model.BlackboardVisible), OnVisibleChanged);
+            GraphView.Model.BindingProperty<Rect>(nameof(GraphView.Model.BlackboardPosition), OnPositionChanged);
+            GraphView.Model.BindingProperty<bool>(nameof(GraphView.Model.BlackboardVisible), OnVisibleChanged);
             GraphView.Model.onBlackboardDataAdded += OnBlackboardDataAdded;
             GraphView.Model.onBlackboardDataRemoved += OnBlackboardDataRemoved;
             GraphView.Model.onBlackboardDataRenamed += OnBlackboardDataRenamed;
         }
         public void UnBindingProperties()
         {
-            GraphView.Model.UnregisterValueChangedEvent<Rect>(nameof(GraphView.Model.BlackboardPosition), OnPositionChanged);
-            GraphView.Model.UnregisterValueChangedEvent<bool>(nameof(GraphView.Model.BlackboardVisible), OnVisibleChanged);
+            GraphView.Model.UnBindingProperty<Rect>(nameof(GraphView.Model.BlackboardPosition), OnPositionChanged);
+            GraphView.Model.UnBindingProperty<bool>(nameof(GraphView.Model.BlackboardVisible), OnVisibleChanged);
             GraphView.Model.onBlackboardDataAdded -= OnBlackboardDataAdded;
             GraphView.Model.onBlackboardDataRemoved -= OnBlackboardDataRemoved;
             GraphView.Model.onBlackboardDataRenamed -= OnBlackboardDataRenamed;
@@ -154,7 +154,7 @@ namespace CZToolKit.GraphProcessor.Editors
                     }
                 });
             });
-            VisualElement fieldDrawer = UIElementsFactory.CreateField("", _data.ValueType, _data.GetValue(), _newValue =>
+            BindableElement fieldDrawer = UIElementsFactory.CreateField("", _data.ValueType, _data.GetValue(), _newValue =>
              {
                  _data.SetValue(_newValue);
                  if (_data.GetValue() != null)

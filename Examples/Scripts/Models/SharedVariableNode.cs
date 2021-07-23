@@ -33,9 +33,8 @@ namespace CZToolKit.GraphProcessor.Examples
             set { SetPropertyValue(nameof(Value), value); }
         }
 
-        public override void InitializeBindableProperties()
+        public override void OnInitializedPropertyMapping(IVariableOwner variableOwner)
         {
-            base.InitializeBindableProperties();
             SetBindableProperty(nameof(Value), new BindableProperty<GameObject>(value.Value, v => value.Value = v));
         }
 

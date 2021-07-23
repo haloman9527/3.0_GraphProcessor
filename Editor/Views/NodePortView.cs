@@ -105,16 +105,16 @@ namespace CZToolKit.GraphProcessor.Editors
             if (orientation == Orientation.Vertical && string.IsNullOrEmpty(Model.Tooltip))
                 Model.Tooltip = GraphProcessorEditorUtility.GetDisplayName(Model.FieldName);
 
-            Model.RegisterValueChangedEvent<string>(nameof(Model.PortName), OnPortNameChanged);
-            Model.RegisterValueChangedEvent<string>(nameof(Model.Tooltip), OnToolTipChanged);
-            Model.RegisterValueChangedEvent<Color>(nameof(Model.PortColor), OnColorChanged);
+            Model.BindingProperty<string>(nameof(Model.PortName), OnPortNameChanged);
+            Model.BindingProperty<string>(nameof(Model.Tooltip), OnToolTipChanged);
+            Model.BindingProperty<Color>(nameof(Model.PortColor), OnColorChanged);
         }
 
         public void UnBindingProperties()
         {
-            Model.UnregisterValueChangedEvent<string>(nameof(Model.PortName), OnPortNameChanged);
-            Model.UnregisterValueChangedEvent<string>(nameof(Model.Tooltip), OnToolTipChanged);
-            Model.UnregisterValueChangedEvent<Color>(nameof(Model.PortColor), OnColorChanged);
+            Model.UnBindingProperty<string>(nameof(Model.PortName), OnPortNameChanged);
+            Model.UnBindingProperty<string>(nameof(Model.Tooltip), OnToolTipChanged);
+            Model.UnBindingProperty<Color>(nameof(Model.PortColor), OnColorChanged);
         }
         #endregion
 

@@ -28,7 +28,7 @@ namespace CZToolKit.GraphProcessor
         /// <summary> �ӿڼ����Բ�ѯ </summary>
         public static bool IsCompatible(NodePort _port1, NodePort _port2)
         {
-            if (_port1 == null || _port2 == null) 
+            if (_port1 == null || _port2 == null)
                 return false;
             if (_port1 == _port2 || _port1.Owner == _port2.Owner)
                 return false;
@@ -39,9 +39,9 @@ namespace CZToolKit.GraphProcessor
 
             bool Compatible(NodePort portA, NodePort portB)
             {
-                if (portA.TypeConstraint == PortTypeConstraint.Inherited && portA.DisplayType.IsAssignableFrom(portB.DisplayType)) 
+                if (portA.TypeConstraint == PortTypeConstraint.Inherited && portA.DisplayType.IsAssignableFrom(portB.DisplayType))
                     return true;
-                if (portA.TypeConstraint == PortTypeConstraint.Strict && portA.DisplayType == portB.DisplayType) 
+                if (portA.TypeConstraint == PortTypeConstraint.Strict && portA.DisplayType == portB.DisplayType)
                     return true;
                 return false;
             }
@@ -172,16 +172,16 @@ namespace CZToolKit.GraphProcessor
 
         public override void InitializeBindableProperties()
         {
-            SetBindableProperty(nameof(PortName), new BindableProperty<string>(UnityEditor.ObjectNames.NicifyVariableName(fieldName)));
+            SetBindableProperty(nameof(PortName), new BindableProperty<string>(fieldName));
             SetBindableProperty(nameof(Tooltip), new BindableProperty<string>());
             SetBindableProperty(nameof(PortColor), new BindableProperty<Color>());
 
-//            if (Utility_Attribute.TryGetFieldAttribute(Owner.GetType(), fieldName, out InspectorNameAttribute inspectorName))
-//                GetBindableProperty<string>(nameof(PortName)).SetValueWithoutNotify(inspectorName.displayName);
-//#if UNITY_EDITOR
-//            else
-//                GetBindableProperty<string>(nameof(PortName)).SetValueWithoutNotify(UnityEditor.ObjectNames.NicifyVariableName(fieldName));
-//#endif
+            //            if (Utility_Attribute.TryGetFieldAttribute(Owner.GetType(), fieldName, out InspectorNameAttribute inspectorName))
+            //                GetBindableProperty<string>(nameof(PortName)).SetValueWithoutNotify(inspectorName.displayName);
+            //#if UNITY_EDITOR
+            //            else
+            //                GetBindableProperty<string>(nameof(PortName)).SetValueWithoutNotify(UnityEditor.ObjectNames.NicifyVariableName(fieldName));
+            //#endif
 
             //if (Utility_Attribute.TryGetFieldAttribute(Owner.GetType(), fieldName, out TooltipAttribute tooltip))
             //    GetBindableProperty<string>(nameof(Tooltip)).SetValueWithoutNotify(tooltip.tooltip);

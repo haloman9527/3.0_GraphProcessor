@@ -19,11 +19,9 @@ using UnityEngine.UIElements;
 namespace CZToolKit.GraphProcessor.Editors
 {
     [CustomNodeView(typeof(DebugNode))]
-    public sealed class DebugNodeView : BaseNodeView
+    public sealed class DebugNodeView : BaseNodeView<DebugNode>
     {
         Label label;
-
-        public DebugNode TViewModel { get { return Model as DebugNode; } }
 
         public DebugNodeView() : base()
         {
@@ -51,7 +49,7 @@ namespace CZToolKit.GraphProcessor.Editors
             }
             else
             {
-                label.text = TViewModel.Input;
+                label.text = T_Model.Input;
             }
         }
     }

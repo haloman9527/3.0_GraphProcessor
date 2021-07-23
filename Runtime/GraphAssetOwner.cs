@@ -65,7 +65,13 @@ namespace CZToolKit.GraphProcessor
 
         void DeserializeVariables()
         {
-            variables = SerializationUtility.DeserializeValue<List<SharedVariable>>(Encoding.UTF8.GetBytes(serializedVariables), DataFormat.JSON, variablesUnityReference);
+            if (string.IsNullOrEmpty(serializedVariables))
+                variables = new List<SharedVariable>();
+            else
+                variables = SerializationUtility.DeserializeValue<List<SharedVariable>>(Encoding.UTF8.GetBytes(serializedVariables), DataFormat.JSON, variablesUnityReference);
+            if (variables == null)
+                variables = new List<SharedVariable>();
+
             UpdateVariablesIndex();
         }
 

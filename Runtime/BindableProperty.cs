@@ -22,6 +22,7 @@ namespace CZToolKit.GraphProcessor
     {
         T value;
         public event Action<T> onValueChanged;
+        public event Action<object> onBoxedValueChanged;
         event Action<T> updateModel;
 
         public T Value
@@ -37,13 +38,11 @@ namespace CZToolKit.GraphProcessor
                 }
             }
         }
-
         public object ValueBoxed
         {
             get { return Value; }
             set { Value = (T)value; }
         }
-
         public Type ValueType { get { return typeof(T); } }
 
         public BindableProperty() { }
@@ -55,23 +54,22 @@ namespace CZToolKit.GraphProcessor
         {
             if (onValueChanged != null)
                 onValueChanged.Invoke(Value);
-        }
+            if (onBoxedValueChanged != null)
+                onBoxedValueChanged.Invoke(Value);
 
+        }
         public void RegesterValueChangedEvent(Action<T> _onValueChanged)
         {
             onValueChanged += _onValueChanged;
         }
-
         public void UnregesterValueChangedEvent(Action<T> _onValueChanged)
         {
             onValueChanged -= _onValueChanged;
         }
-
         public void SetValueWithoutNotify(T _value)
         {
             value = _value;
         }
-
         public override string ToString()
         {
             return (Value != null ? Value.ToString() : "null");

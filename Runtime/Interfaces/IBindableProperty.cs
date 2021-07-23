@@ -19,8 +19,9 @@ namespace CZToolKit.GraphProcessor
 {
     public interface IBindableProperty
     {
-        object ValueBoxed { get; set; }
+        event Action<object> onBoxedValueChanged;
 
+        object ValueBoxed { get; set; }
         Type ValueType { get; }
 
         void ValueChanged();
@@ -28,6 +29,8 @@ namespace CZToolKit.GraphProcessor
 
     public interface IBindableProperty<T>
     {
+        event Action<T> onValueChanged;
+
         T Value { get; set; }
 
         void ValueChanged();
