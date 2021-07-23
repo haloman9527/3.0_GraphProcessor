@@ -46,7 +46,6 @@ namespace CZToolKit.GraphProcessor.Editors
             Icon = new Image();
             Icon.AddToClassList("port-icon");
             Insert(1, Icon);
-            portName = _nodePort.FieldName;
 
             var portLabel = this.Q("type");
             if (portLabel != null)
@@ -87,7 +86,7 @@ namespace CZToolKit.GraphProcessor.Editors
         #region 数据监听回调
         void OnPortNameChanged(string _name)
         {
-            portName = _name;
+            portName = GraphProcessorEditorUtility.GetDisplayName(_name);
         }
         void OnToolTipChanged(string _tooltip)
         {
@@ -100,7 +99,7 @@ namespace CZToolKit.GraphProcessor.Editors
         void BindingProperties()
         {
             // 初始化
-            portName = Model.PortName;
+            portName = GraphProcessorEditorUtility.GetDisplayName(Model.FieldName);
             tooltip = Model.Tooltip;
             if (orientation == Orientation.Vertical && string.IsNullOrEmpty(Model.Tooltip))
                 Model.Tooltip = GraphProcessorEditorUtility.GetDisplayName(Model.FieldName);

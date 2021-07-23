@@ -112,6 +112,7 @@ namespace CZToolKit.GraphProcessor
             foreach (var node in nodes.Values)
             {
                 node.Enable(this);
+                GraphProcessorCache.UpdateStaticPorts(node);
             }
             foreach (var edge in edges.Values)
             {
