@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: New Math Graph 1
   m_EditorClassIdentifier: 
   graph:
-    position: {x: 10.999995, y: 270, z: 0}
-    scale: {x: 0.57175326, y: 0.57175326, z: 1}
-    blackboardVisible: 1
+    position: {x: -83, y: -185, z: 0}
+    scale: {x: 0.8695652, y: 0.8695652, z: 1}
+    blackboardVisible: 0
     blackboardPosition:
       serializedVersion: 2
-      x: 697
-      y: 17
+      x: 18
+      y: 19
       width: 223
       height: 258
     groups:
@@ -48,11 +48,11 @@ MonoBehaviour:
     blackboard: {}
   serializedGraph: "{\r\n    \"$id\": 0,\r\n    \"$type\": \"0|CZToolKit.GraphProcessor.Examples.MathGraph,
     Assembly-CSharp\",\r\n    \"position\": {\r\n        \"$type\": \"1|UnityEngine.Vector3,
-    UnityEngine.CoreModule\",\r\n        10.9999952,\r\n        270,\r\n        0\r\n   
-    },\r\n    \"scale\": {\r\n        \"$type\": 1,\r\n        0.571753263,\r\n       
-    0.571753263,\r\n        1\r\n    },\r\n    \"blackboardVisible\": true,\r\n   
+    UnityEngine.CoreModule\",\r\n        -83,\r\n        -185,\r\n        0\r\n   
+    },\r\n    \"scale\": {\r\n        \"$type\": 1,\r\n        0.8695652,\r\n       
+    0.8695652,\r\n        1\r\n    },\r\n    \"blackboardVisible\": false,\r\n   
     \"blackboardPosition\": {\r\n        \"$type\": \"2|UnityEngine.Rect, UnityEngine.CoreModule\",\r\n       
-    697,\r\n        17,\r\n        223,\r\n        258\r\n    },\r\n    \"nodes\":
+    18,\r\n        19,\r\n        223,\r\n        258\r\n    },\r\n    \"nodes\":
     {\r\n        \"$id\": 1,\r\n        \"$type\": \"3|System.Collections.Generic.Dictionary`2[[System.String,
     mscorlib],[CZToolKit.GraphProcessor.BaseNode, CZToolKit.GraphProcessor]], mscorlib\",\r\n       
     \"comparer\": {\r\n            \"$id\": 2,\r\n            \"$type\": \"4|System.Collections.Generic.GenericEqualityComparer`1[[System.String,
@@ -113,7 +113,7 @@ MonoBehaviour:
     \"$v\": {\r\n                    \"$id\": 13,\r\n                    \"$type\":
     10,\r\n                    \"guid\": \"338da42e-740f-4dc8-a730-7a9f0662e953\",\r\n                   
     \"position\": {\r\n                        \"$type\": 6,\r\n                       
-    41.2459145,\r\n                        285.879883\r\n                    },\r\n                   
+    56.29685,\r\n                        273.50592\r\n                    },\r\n                   
     \"expanded\": true,\r\n                    \"locked\": false,\r\n                   
     \"ports\": {\r\n                        \"$id\": 14,\r\n                       
     \"$type\": 7,\r\n                        \"comparer\": {\r\n                           
@@ -570,7 +570,6 @@ MonoBehaviour:
     \"$type\": 9,\r\n                                        \"$rlength\": 11,\r\n                                       
     \"$rcontent\": [\r\n                                            \"ca2f88cb-4cbf-4636-aa03-b6393de1c779\",\r\n                                           
     \"5590b6ee-6c3b-4fd6-9ed7-b708b326d409\",\r\n                                           
-    \"cbfe0291-8e0a-4068-b0a2-9f76ba781e1a\",\r\n                                           
     \"7d57b06a-12ef-4142-a5bb-9513cd4f0b72\",\r\n                                           
     \"67f5621c-fa0a-423f-afc1-84b929857341\",\r\n                                           
     \"a52caede-38f2-4fc1-860a-e1bdd2780e72\",\r\n                                           
@@ -578,7 +577,8 @@ MonoBehaviour:
     \"71557fea-7b26-4555-b3cb-0f11499b3278\",\r\n                                           
     \"536dacbc-b93f-4997-991e-e73ec8bf458f\",\r\n                                           
     \"a1d4f0e3-9e7b-4c9c-994b-ca9a5e357cc3\",\r\n                                           
-    \"bff5edf1-057b-4ab6-bacf-33f499974a16\"\r\n                                       
+    \"bff5edf1-057b-4ab6-bacf-33f499974a16\",\r\n                                           
+    \"b9eae148-8283-4de2-8631-28337c1376b8\"\r\n                                       
     ]\r\n                                    }\r\n                               
     }\r\n                            },\r\n                            {\r\n                               
     \"$k\": \"output\",\r\n                                \"$v\": {\r\n                                   
@@ -658,8 +658,8 @@ MonoBehaviour:
     \"typeConstraint\": 1,\r\n                                    \"edgeGUIDs\":
     {\r\n                                        \"$id\": 108,\r\n                                       
     \"$type\": 9,\r\n                                        \"$rlength\": 2,\r\n                                       
-    \"$rcontent\": [\r\n                                            \"cbfe0291-8e0a-4068-b0a2-9f76ba781e1a\",\r\n                                           
-    \"13138dc4-43d6-4906-99ce-6d8e2d00e5bf\"\r\n                                       
+    \"$rcontent\": [\r\n                                            \"13138dc4-43d6-4906-99ce-6d8e2d00e5bf\",\r\n                                           
+    \"b9eae148-8283-4de2-8631-28337c1376b8\"\r\n                                       
     ]\r\n                                    }\r\n                               
     }\r\n                            }\r\n                        ]\r\n                   
     },\r\n                    \"value\": 112\r\n                }\r\n           
@@ -690,8 +690,8 @@ MonoBehaviour:
     \"$v\": {\r\n                    \"$id\": 114,\r\n                    \"$type\":
     \"18|CZToolKit.GraphProcessor.ParameterNode, CZToolKit.GraphProcessor\",\r\n                   
     \"guid\": \"5c5c6aec-d9c5-48a3-b143-30e62912ea45\",\r\n                    \"position\":
-    {\r\n                        \"$type\": 6,\r\n                        152.727631,\r\n                       
-    75.75279\r\n                    },\r\n                    \"expanded\": true,\r\n                   
+    {\r\n                        \"$type\": 6,\r\n                        165.243027,\r\n                       
+    82.9960251\r\n                    },\r\n                    \"expanded\": true,\r\n                   
     \"locked\": false,\r\n                    \"ports\": {\r\n                       
     \"$id\": 115,\r\n                        \"$type\": 7,\r\n                       
     \"comparer\": {\r\n                            \"$id\": 116,\r\n                           
@@ -700,7 +700,7 @@ MonoBehaviour:
     {\r\n                                \"$k\": \"output\",\r\n                               
     \"$v\": {\r\n                                    \"$id\": 117,\r\n                                   
     \"$type\": 8,\r\n                                    \"fieldName\": \"output\",\r\n                                   
-    \"typeQualifiedName\": \"System.Single, mscorlib, Version=4.0.0.0, Culture=neutral,
+    \"typeQualifiedName\": \"System.Object, mscorlib, Version=4.0.0.0, Culture=neutral,
     PublicKeyToken=b77a5c561934e089\",\r\n                                    \"multiple\":
     true,\r\n                                    \"direction\": 1,\r\n                                   
     \"typeConstraint\": 1,\r\n                                    \"edgeGUIDs\":
@@ -715,8 +715,8 @@ MonoBehaviour:
     \"$k\": \"9e89e393-f17b-4a83-b087-45423a7a512c\",\r\n                \"$v\":
     {\r\n                    \"$id\": 119,\r\n                    \"$type\": 18,\r\n                   
     \"guid\": \"9e89e393-f17b-4a83-b087-45423a7a512c\",\r\n                    \"position\":
-    {\r\n                        \"$type\": 6,\r\n                        176.245926,\r\n                       
-    834.8797\r\n                    },\r\n                    \"expanded\": true,\r\n                   
+    {\r\n                        \"$type\": 6,\r\n                        162.007935,\r\n                       
+    830.3826\r\n                    },\r\n                    \"expanded\": true,\r\n                   
     \"locked\": false,\r\n                    \"ports\": {\r\n                       
     \"$id\": 120,\r\n                        \"$type\": 7,\r\n                       
     \"comparer\": {\r\n                            \"$id\": 121,\r\n                           
@@ -725,7 +725,7 @@ MonoBehaviour:
     {\r\n                                \"$k\": \"output\",\r\n                               
     \"$v\": {\r\n                                    \"$id\": 122,\r\n                                   
     \"$type\": 8,\r\n                                    \"fieldName\": \"output\",\r\n                                   
-    \"typeQualifiedName\": \"System.Single, mscorlib, Version=4.0.0.0, Culture=neutral,
+    \"typeQualifiedName\": \"System.Object, mscorlib, Version=4.0.0.0, Culture=neutral,
     PublicKeyToken=b77a5c561934e089\",\r\n                                    \"multiple\":
     true,\r\n                                    \"direction\": 1,\r\n                                   
     \"typeConstraint\": 1,\r\n                                    \"edgeGUIDs\":
@@ -750,7 +750,7 @@ MonoBehaviour:
     {\r\n                                \"$k\": \"output\",\r\n                               
     \"$v\": {\r\n                                    \"$id\": 127,\r\n                                   
     \"$type\": 8,\r\n                                    \"fieldName\": \"output\",\r\n                                   
-    \"typeQualifiedName\": \"System.Single, mscorlib, Version=4.0.0.0, Culture=neutral,
+    \"typeQualifiedName\": \"System.Object, mscorlib, Version=4.0.0.0, Culture=neutral,
     PublicKeyToken=b77a5c561934e089\",\r\n                                    \"multiple\":
     true,\r\n                                    \"direction\": 1,\r\n                                   
     \"typeConstraint\": 1,\r\n                                    \"edgeGUIDs\":
@@ -1140,8 +1140,8 @@ MonoBehaviour:
     \"$k\": \"19b0aa61-2409-42c1-af0f-06d4cc046fa1\",\r\n                \"$v\":
     {\r\n                    \"$id\": 190,\r\n                    \"$type\": 18,\r\n                   
     \"guid\": \"19b0aa61-2409-42c1-af0f-06d4cc046fa1\",\r\n                    \"position\":
-    {\r\n                        \"$type\": 6,\r\n                        123.245895,\r\n                       
-    129.87973\r\n                    },\r\n                    \"expanded\": true,\r\n                   
+    {\r\n                        \"$type\": 6,\r\n                        135.243042,\r\n                       
+    136.995987\r\n                    },\r\n                    \"expanded\": true,\r\n                   
     \"locked\": false,\r\n                    \"ports\": {\r\n                       
     \"$id\": 191,\r\n                        \"$type\": 7,\r\n                       
     \"comparer\": {\r\n                            \"$id\": 192,\r\n                           
@@ -1150,7 +1150,7 @@ MonoBehaviour:
     {\r\n                                \"$k\": \"output\",\r\n                               
     \"$v\": {\r\n                                    \"$id\": 193,\r\n                                   
     \"$type\": 8,\r\n                                    \"fieldName\": \"output\",\r\n                                   
-    \"typeQualifiedName\": \"System.Single, mscorlib, Version=4.0.0.0, Culture=neutral,
+    \"typeQualifiedName\": \"System.Object, mscorlib, Version=4.0.0.0, Culture=neutral,
     PublicKeyToken=b77a5c561934e089\",\r\n                                    \"multiple\":
     true,\r\n                                    \"direction\": 1,\r\n                                   
     \"typeConstraint\": 1,\r\n                                    \"edgeGUIDs\":
@@ -1210,188 +1210,188 @@ MonoBehaviour:
     \"inputNodeGUID\": \"b73f7635-cb8d-47d7-bfaf-6d5719b1c48e\",\r\n                   
     \"inputFieldName\": \"input\",\r\n                    \"outputNodeGUID\": \"6bd826b9-b0ff-4a6f-b2b4-fafcb62d58ed\",\r\n                   
     \"outputFieldName\": \"value\"\r\n                }\r\n            },\r\n           
-    {\r\n                \"$k\": \"cbfe0291-8e0a-4068-b0a2-9f76ba781e1a\",\r\n               
-    \"$v\": {\r\n                    \"$id\": 205,\r\n                    \"$type\":
-    22,\r\n                    \"guid\": \"cbfe0291-8e0a-4068-b0a2-9f76ba781e1a\",\r\n                   
-    \"inputNodeGUID\": \"b73f7635-cb8d-47d7-bfaf-6d5719b1c48e\",\r\n                   
-    \"inputFieldName\": \"input\",\r\n                    \"outputNodeGUID\": \"60a76c7a-6ad0-4cf3-9575-32393d81aefa\",\r\n                   
-    \"outputFieldName\": \"value\"\r\n                }\r\n            },\r\n           
     {\r\n                \"$k\": \"a52caede-38f2-4fc1-860a-e1bdd2780e72\",\r\n               
-    \"$v\": {\r\n                    \"$id\": 206,\r\n                    \"$type\":
+    \"$v\": {\r\n                    \"$id\": 205,\r\n                    \"$type\":
     22,\r\n                    \"guid\": \"a52caede-38f2-4fc1-860a-e1bdd2780e72\",\r\n                   
     \"inputNodeGUID\": \"b73f7635-cb8d-47d7-bfaf-6d5719b1c48e\",\r\n                   
     \"inputFieldName\": \"input\",\r\n                    \"outputNodeGUID\": \"bda01026-4353-483d-b503-cb449b497f8e\",\r\n                   
     \"outputFieldName\": \"value\"\r\n                }\r\n            },\r\n           
     {\r\n                \"$k\": \"97a95941-49ea-44c5-ad4f-32d1dc0e0bec\",\r\n               
-    \"$v\": {\r\n                    \"$id\": 207,\r\n                    \"$type\":
+    \"$v\": {\r\n                    \"$id\": 206,\r\n                    \"$type\":
     22,\r\n                    \"guid\": \"97a95941-49ea-44c5-ad4f-32d1dc0e0bec\",\r\n                   
     \"inputNodeGUID\": \"b73f7635-cb8d-47d7-bfaf-6d5719b1c48e\",\r\n                   
     \"inputFieldName\": \"input\",\r\n                    \"outputNodeGUID\": \"1a39a316-646f-4264-9dee-90a3d45724ec\",\r\n                   
     \"outputFieldName\": \"value\"\r\n                }\r\n            },\r\n           
     {\r\n                \"$k\": \"5590b6ee-6c3b-4fd6-9ed7-b708b326d409\",\r\n               
-    \"$v\": {\r\n                    \"$id\": 208,\r\n                    \"$type\":
+    \"$v\": {\r\n                    \"$id\": 207,\r\n                    \"$type\":
     22,\r\n                    \"guid\": \"5590b6ee-6c3b-4fd6-9ed7-b708b326d409\",\r\n                   
     \"inputNodeGUID\": \"b73f7635-cb8d-47d7-bfaf-6d5719b1c48e\",\r\n                   
     \"inputFieldName\": \"input\",\r\n                    \"outputNodeGUID\": \"08de5b98-e217-4bed-ba04-05c1f8374734\",\r\n                   
     \"outputFieldName\": \"value\"\r\n                }\r\n            },\r\n           
     {\r\n                \"$k\": \"67f5621c-fa0a-423f-afc1-84b929857341\",\r\n               
-    \"$v\": {\r\n                    \"$id\": 209,\r\n                    \"$type\":
+    \"$v\": {\r\n                    \"$id\": 208,\r\n                    \"$type\":
     22,\r\n                    \"guid\": \"67f5621c-fa0a-423f-afc1-84b929857341\",\r\n                   
     \"inputNodeGUID\": \"b73f7635-cb8d-47d7-bfaf-6d5719b1c48e\",\r\n                   
     \"inputFieldName\": \"input\",\r\n                    \"outputNodeGUID\": \"338da42e-740f-4dc8-a730-7a9f0662e953\",\r\n                   
     \"outputFieldName\": \"value\"\r\n                }\r\n            },\r\n           
     {\r\n                \"$k\": \"2dcc71e3-1cf9-424c-a95c-524b355a95d3\",\r\n               
-    \"$v\": {\r\n                    \"$id\": 210,\r\n                    \"$type\":
+    \"$v\": {\r\n                    \"$id\": 209,\r\n                    \"$type\":
     22,\r\n                    \"guid\": \"2dcc71e3-1cf9-424c-a95c-524b355a95d3\",\r\n                   
     \"inputNodeGUID\": \"b6522be0-2482-44bf-b0ea-c4a37831fea9\",\r\n                   
     \"inputFieldName\": \"s\",\r\n                    \"outputNodeGUID\": \"405d4bb2-7251-43f3-8d0d-9eb76c456551\",\r\n                   
     \"outputFieldName\": \"s1\"\r\n                }\r\n            },\r\n           
     {\r\n                \"$k\": \"3eb41346-3cb2-4896-9cd6-a851250db13e\",\r\n               
-    \"$v\": {\r\n                    \"$id\": 211,\r\n                    \"$type\":
+    \"$v\": {\r\n                    \"$id\": 210,\r\n                    \"$type\":
     22,\r\n                    \"guid\": \"3eb41346-3cb2-4896-9cd6-a851250db13e\",\r\n                   
     \"inputNodeGUID\": \"405d4bb2-7251-43f3-8d0d-9eb76c456551\",\r\n                   
     \"inputFieldName\": \"f\",\r\n                    \"outputNodeGUID\": \"19b0aa61-2409-42c1-af0f-06d4cc046fa1\",\r\n                   
     \"outputFieldName\": \"output\"\r\n                }\r\n            },\r\n           
     {\r\n                \"$k\": \"e87f51ee-feaa-4072-b9ce-4cd354056cce\",\r\n               
-    \"$v\": {\r\n                    \"$id\": 212,\r\n                    \"$type\":
+    \"$v\": {\r\n                    \"$id\": 211,\r\n                    \"$type\":
     22,\r\n                    \"guid\": \"e87f51ee-feaa-4072-b9ce-4cd354056cce\",\r\n                   
     \"inputNodeGUID\": \"405d4bb2-7251-43f3-8d0d-9eb76c456551\",\r\n                   
     \"inputFieldName\": \"f\",\r\n                    \"outputNodeGUID\": \"9ebc7692-4f3e-47f2-910e-f1c1ba1422c8\",\r\n                   
     \"outputFieldName\": \"output\"\r\n                }\r\n            },\r\n           
     {\r\n                \"$k\": \"c4d05074-dcaa-4238-90e1-8e956b9be5b4\",\r\n               
-    \"$v\": {\r\n                    \"$id\": 213,\r\n                    \"$type\":
+    \"$v\": {\r\n                    \"$id\": 212,\r\n                    \"$type\":
     22,\r\n                    \"guid\": \"c4d05074-dcaa-4238-90e1-8e956b9be5b4\",\r\n                   
     \"inputNodeGUID\": \"80c88ccd-0278-4cd8-acfe-6e94357e69e8\",\r\n                   
     \"inputFieldName\": \"input\",\r\n                    \"outputNodeGUID\": \"b73f7635-cb8d-47d7-bfaf-6d5719b1c48e\",\r\n                   
     \"outputFieldName\": \"output\"\r\n                }\r\n            },\r\n           
     {\r\n                \"$k\": \"8f429678-fa19-44f0-a491-cd5cb5fab31f\",\r\n               
-    \"$v\": {\r\n                    \"$id\": 214,\r\n                    \"$type\":
+    \"$v\": {\r\n                    \"$id\": 213,\r\n                    \"$type\":
     22,\r\n                    \"guid\": \"8f429678-fa19-44f0-a491-cd5cb5fab31f\",\r\n                   
     \"inputNodeGUID\": \"b6522be0-2482-44bf-b0ea-c4a37831fea9\",\r\n                   
     \"inputFieldName\": \"d\",\r\n                    \"outputNodeGUID\": \"405d4bb2-7251-43f3-8d0d-9eb76c456551\",\r\n                   
     \"outputFieldName\": \"d1\"\r\n                }\r\n            },\r\n           
     {\r\n                \"$k\": \"4878be8a-af5a-49a9-9cd1-c017656da025\",\r\n               
-    \"$v\": {\r\n                    \"$id\": 215,\r\n                    \"$type\":
+    \"$v\": {\r\n                    \"$id\": 214,\r\n                    \"$type\":
     22,\r\n                    \"guid\": \"4878be8a-af5a-49a9-9cd1-c017656da025\",\r\n                   
     \"inputNodeGUID\": \"b6522be0-2482-44bf-b0ea-c4a37831fea9\",\r\n                   
     \"inputFieldName\": \"f\",\r\n                    \"outputNodeGUID\": \"405d4bb2-7251-43f3-8d0d-9eb76c456551\",\r\n                   
     \"outputFieldName\": \"f1\"\r\n                }\r\n            },\r\n           
     {\r\n                \"$k\": \"620517e7-8a33-45d8-ba95-4a233e8362fa\",\r\n               
-    \"$v\": {\r\n                    \"$id\": 216,\r\n                    \"$type\":
+    \"$v\": {\r\n                    \"$id\": 215,\r\n                    \"$type\":
     22,\r\n                    \"guid\": \"620517e7-8a33-45d8-ba95-4a233e8362fa\",\r\n                   
     \"inputNodeGUID\": \"b6522be0-2482-44bf-b0ea-c4a37831fea9\",\r\n                   
     \"inputFieldName\": \"l\",\r\n                    \"outputNodeGUID\": \"405d4bb2-7251-43f3-8d0d-9eb76c456551\",\r\n                   
     \"outputFieldName\": \"l1\"\r\n                }\r\n            },\r\n           
     {\r\n                \"$k\": \"a867dab9-dc7d-4add-8c28-718468eaaeac\",\r\n               
-    \"$v\": {\r\n                    \"$id\": 217,\r\n                    \"$type\":
+    \"$v\": {\r\n                    \"$id\": 216,\r\n                    \"$type\":
     22,\r\n                    \"guid\": \"a867dab9-dc7d-4add-8c28-718468eaaeac\",\r\n                   
     \"inputNodeGUID\": \"b6522be0-2482-44bf-b0ea-c4a37831fea9\",\r\n                   
     \"inputFieldName\": \"i\",\r\n                    \"outputNodeGUID\": \"405d4bb2-7251-43f3-8d0d-9eb76c456551\",\r\n                   
     \"outputFieldName\": \"i1\"\r\n                }\r\n            },\r\n           
     {\r\n                \"$k\": \"68bbf062-f288-43c4-90d3-7de3a6bf818d\",\r\n               
-    \"$v\": {\r\n                    \"$id\": 218,\r\n                    \"$type\":
+    \"$v\": {\r\n                    \"$id\": 217,\r\n                    \"$type\":
     22,\r\n                    \"guid\": \"68bbf062-f288-43c4-90d3-7de3a6bf818d\",\r\n                   
     \"inputNodeGUID\": \"b6522be0-2482-44bf-b0ea-c4a37831fea9\",\r\n                   
     \"inputFieldName\": \"obj\",\r\n                    \"outputNodeGUID\": \"405d4bb2-7251-43f3-8d0d-9eb76c456551\",\r\n                   
     \"outputFieldName\": \"obj1\"\r\n                }\r\n            },\r\n           
     {\r\n                \"$k\": \"27ed99a4-9757-4528-a6f6-275d620cd87d\",\r\n               
-    \"$v\": {\r\n                    \"$id\": 219,\r\n                    \"$type\":
+    \"$v\": {\r\n                    \"$id\": 218,\r\n                    \"$type\":
     22,\r\n                    \"guid\": \"27ed99a4-9757-4528-a6f6-275d620cd87d\",\r\n                   
     \"inputNodeGUID\": \"b6522be0-2482-44bf-b0ea-c4a37831fea9\",\r\n                   
     \"inputFieldName\": \"gameObject\",\r\n                    \"outputNodeGUID\":
     \"405d4bb2-7251-43f3-8d0d-9eb76c456551\",\r\n                    \"outputFieldName\":
     \"gameObject1\"\r\n                }\r\n            },\r\n            {\r\n               
     \"$k\": \"bdf683f0-2762-4714-aa44-b511b05299cf\",\r\n                \"$v\":
-    {\r\n                    \"$id\": 220,\r\n                    \"$type\": 22,\r\n                   
+    {\r\n                    \"$id\": 219,\r\n                    \"$type\": 22,\r\n                   
     \"guid\": \"bdf683f0-2762-4714-aa44-b511b05299cf\",\r\n                    \"inputNodeGUID\":
     \"b6522be0-2482-44bf-b0ea-c4a37831fea9\",\r\n                    \"inputFieldName\":
     \"mat\",\r\n                    \"outputNodeGUID\": \"405d4bb2-7251-43f3-8d0d-9eb76c456551\",\r\n                   
     \"outputFieldName\": \"mat1\"\r\n                }\r\n            },\r\n           
     {\r\n                \"$k\": \"122aee98-d07f-42ee-afca-8f80cb96f309\",\r\n               
-    \"$v\": {\r\n                    \"$id\": 221,\r\n                    \"$type\":
+    \"$v\": {\r\n                    \"$id\": 220,\r\n                    \"$type\":
     22,\r\n                    \"guid\": \"122aee98-d07f-42ee-afca-8f80cb96f309\",\r\n                   
     \"inputNodeGUID\": \"b6522be0-2482-44bf-b0ea-c4a37831fea9\",\r\n                   
     \"inputFieldName\": \"color\",\r\n                    \"outputNodeGUID\": \"405d4bb2-7251-43f3-8d0d-9eb76c456551\",\r\n                   
     \"outputFieldName\": \"color1\"\r\n                }\r\n            },\r\n           
     {\r\n                \"$k\": \"a18319c8-68b3-4b0c-85a9-24952348685c\",\r\n               
-    \"$v\": {\r\n                    \"$id\": 222,\r\n                    \"$type\":
+    \"$v\": {\r\n                    \"$id\": 221,\r\n                    \"$type\":
     22,\r\n                    \"guid\": \"a18319c8-68b3-4b0c-85a9-24952348685c\",\r\n                   
     \"inputNodeGUID\": \"b6522be0-2482-44bf-b0ea-c4a37831fea9\",\r\n                   
     \"inputFieldName\": \"vector2\",\r\n                    \"outputNodeGUID\": \"405d4bb2-7251-43f3-8d0d-9eb76c456551\",\r\n                   
     \"outputFieldName\": \"vector21\"\r\n                }\r\n            },\r\n           
     {\r\n                \"$k\": \"6a4775dc-0863-41f1-ac4b-7e0588bef426\",\r\n               
-    \"$v\": {\r\n                    \"$id\": 223,\r\n                    \"$type\":
+    \"$v\": {\r\n                    \"$id\": 222,\r\n                    \"$type\":
     22,\r\n                    \"guid\": \"6a4775dc-0863-41f1-ac4b-7e0588bef426\",\r\n                   
     \"inputNodeGUID\": \"b6522be0-2482-44bf-b0ea-c4a37831fea9\",\r\n                   
     \"inputFieldName\": \"vector2Int\",\r\n                    \"outputNodeGUID\":
     \"405d4bb2-7251-43f3-8d0d-9eb76c456551\",\r\n                    \"outputFieldName\":
     \"vector2Int1\"\r\n                }\r\n            },\r\n            {\r\n               
     \"$k\": \"b71e3a95-5bd2-496e-a3a5-ca1245f05208\",\r\n                \"$v\":
-    {\r\n                    \"$id\": 224,\r\n                    \"$type\": 22,\r\n                   
+    {\r\n                    \"$id\": 223,\r\n                    \"$type\": 22,\r\n                   
     \"guid\": \"b71e3a95-5bd2-496e-a3a5-ca1245f05208\",\r\n                    \"inputNodeGUID\":
     \"b6522be0-2482-44bf-b0ea-c4a37831fea9\",\r\n                    \"inputFieldName\":
     \"vector3\",\r\n                    \"outputNodeGUID\": \"405d4bb2-7251-43f3-8d0d-9eb76c456551\",\r\n                   
     \"outputFieldName\": \"vector31\"\r\n                }\r\n            },\r\n           
     {\r\n                \"$k\": \"04d74a1d-faf4-460f-bf43-5f3121d7f73e\",\r\n               
-    \"$v\": {\r\n                    \"$id\": 225,\r\n                    \"$type\":
+    \"$v\": {\r\n                    \"$id\": 224,\r\n                    \"$type\":
     22,\r\n                    \"guid\": \"04d74a1d-faf4-460f-bf43-5f3121d7f73e\",\r\n                   
     \"inputNodeGUID\": \"b6522be0-2482-44bf-b0ea-c4a37831fea9\",\r\n                   
     \"inputFieldName\": \"vector3Int\",\r\n                    \"outputNodeGUID\":
     \"405d4bb2-7251-43f3-8d0d-9eb76c456551\",\r\n                    \"outputFieldName\":
     \"vector3Int1\"\r\n                }\r\n            },\r\n            {\r\n               
     \"$k\": \"b6f665fa-3f8d-4b78-8f79-ddb9bde2c448\",\r\n                \"$v\":
-    {\r\n                    \"$id\": 226,\r\n                    \"$type\": 22,\r\n                   
+    {\r\n                    \"$id\": 225,\r\n                    \"$type\": 22,\r\n                   
     \"guid\": \"b6f665fa-3f8d-4b78-8f79-ddb9bde2c448\",\r\n                    \"inputNodeGUID\":
     \"b6522be0-2482-44bf-b0ea-c4a37831fea9\",\r\n                    \"inputFieldName\":
     \"vector4\",\r\n                    \"outputNodeGUID\": \"405d4bb2-7251-43f3-8d0d-9eb76c456551\",\r\n                   
     \"outputFieldName\": \"vector41\"\r\n                }\r\n            },\r\n           
     {\r\n                \"$k\": \"71557fea-7b26-4555-b3cb-0f11499b3278\",\r\n               
-    \"$v\": {\r\n                    \"$id\": 227,\r\n                    \"$type\":
+    \"$v\": {\r\n                    \"$id\": 226,\r\n                    \"$type\":
     22,\r\n                    \"guid\": \"71557fea-7b26-4555-b3cb-0f11499b3278\",\r\n                   
     \"inputNodeGUID\": \"b73f7635-cb8d-47d7-bfaf-6d5719b1c48e\",\r\n                   
     \"inputFieldName\": \"input\",\r\n                    \"outputNodeGUID\": \"19b0aa61-2409-42c1-af0f-06d4cc046fa1\",\r\n                   
     \"outputFieldName\": \"output\"\r\n                }\r\n            },\r\n           
     {\r\n                \"$k\": \"536dacbc-b93f-4997-991e-e73ec8bf458f\",\r\n               
-    \"$v\": {\r\n                    \"$id\": 228,\r\n                    \"$type\":
+    \"$v\": {\r\n                    \"$id\": 227,\r\n                    \"$type\":
     22,\r\n                    \"guid\": \"536dacbc-b93f-4997-991e-e73ec8bf458f\",\r\n                   
     \"inputNodeGUID\": \"b73f7635-cb8d-47d7-bfaf-6d5719b1c48e\",\r\n                   
     \"inputFieldName\": \"input\",\r\n                    \"outputNodeGUID\": \"9ebc7692-4f3e-47f2-910e-f1c1ba1422c8\",\r\n                   
     \"outputFieldName\": \"output\"\r\n                }\r\n            },\r\n           
     {\r\n                \"$k\": \"952e73ae-5021-4a83-881e-94dab8dbb853\",\r\n               
-    \"$v\": {\r\n                    \"$id\": 229,\r\n                    \"$type\":
+    \"$v\": {\r\n                    \"$id\": 228,\r\n                    \"$type\":
     22,\r\n                    \"guid\": \"952e73ae-5021-4a83-881e-94dab8dbb853\",\r\n                   
     \"inputNodeGUID\": \"405d4bb2-7251-43f3-8d0d-9eb76c456551\",\r\n                   
     \"inputFieldName\": \"f\",\r\n                    \"outputNodeGUID\": \"9e89e393-f17b-4a83-b087-45423a7a512c\",\r\n                   
     \"outputFieldName\": \"output\"\r\n                }\r\n            },\r\n           
     {\r\n                \"$k\": \"a1d4f0e3-9e7b-4c9c-994b-ca9a5e357cc3\",\r\n               
-    \"$v\": {\r\n                    \"$id\": 230,\r\n                    \"$type\":
+    \"$v\": {\r\n                    \"$id\": 229,\r\n                    \"$type\":
     22,\r\n                    \"guid\": \"a1d4f0e3-9e7b-4c9c-994b-ca9a5e357cc3\",\r\n                   
     \"inputNodeGUID\": \"b73f7635-cb8d-47d7-bfaf-6d5719b1c48e\",\r\n                   
     \"inputFieldName\": \"input\",\r\n                    \"outputNodeGUID\": \"9e89e393-f17b-4a83-b087-45423a7a512c\",\r\n                   
     \"outputFieldName\": \"output\"\r\n                }\r\n            },\r\n           
     {\r\n                \"$k\": \"8e2ecc2a-bace-484f-aac0-52238e71075b\",\r\n               
-    \"$v\": {\r\n                    \"$id\": 231,\r\n                    \"$type\":
+    \"$v\": {\r\n                    \"$id\": 230,\r\n                    \"$type\":
     22,\r\n                    \"guid\": \"8e2ecc2a-bace-484f-aac0-52238e71075b\",\r\n                   
     \"inputNodeGUID\": \"405d4bb2-7251-43f3-8d0d-9eb76c456551\",\r\n                   
     \"inputFieldName\": \"f\",\r\n                    \"outputNodeGUID\": \"5c5c6aec-d9c5-48a3-b143-30e62912ea45\",\r\n                   
     \"outputFieldName\": \"output\"\r\n                }\r\n            },\r\n           
     {\r\n                \"$k\": \"bff5edf1-057b-4ab6-bacf-33f499974a16\",\r\n               
-    \"$v\": {\r\n                    \"$id\": 232,\r\n                    \"$type\":
+    \"$v\": {\r\n                    \"$id\": 231,\r\n                    \"$type\":
     22,\r\n                    \"guid\": \"bff5edf1-057b-4ab6-bacf-33f499974a16\",\r\n                   
     \"inputNodeGUID\": \"b73f7635-cb8d-47d7-bfaf-6d5719b1c48e\",\r\n                   
     \"inputFieldName\": \"input\",\r\n                    \"outputNodeGUID\": \"5c5c6aec-d9c5-48a3-b143-30e62912ea45\",\r\n                   
     \"outputFieldName\": \"output\"\r\n                }\r\n            },\r\n           
     {\r\n                \"$k\": \"7e88166b-b87b-461a-9082-ae23295d4c74\",\r\n               
-    \"$v\": {\r\n                    \"$id\": 233,\r\n                    \"$type\":
+    \"$v\": {\r\n                    \"$id\": 232,\r\n                    \"$type\":
     22,\r\n                    \"guid\": \"7e88166b-b87b-461a-9082-ae23295d4c74\",\r\n                   
     \"inputNodeGUID\": \"405d4bb2-7251-43f3-8d0d-9eb76c456551\",\r\n                   
     \"inputFieldName\": \"f\",\r\n                    \"outputNodeGUID\": \"08de5b98-e217-4bed-ba04-05c1f8374734\",\r\n                   
     \"outputFieldName\": \"value\"\r\n                }\r\n            },\r\n           
     {\r\n                \"$k\": \"d03d90d8-c086-4008-afd1-b6c570ec4f4d\",\r\n               
-    \"$v\": {\r\n                    \"$id\": 234,\r\n                    \"$type\":
+    \"$v\": {\r\n                    \"$id\": 233,\r\n                    \"$type\":
     22,\r\n                    \"guid\": \"d03d90d8-c086-4008-afd1-b6c570ec4f4d\",\r\n                   
     \"inputNodeGUID\": \"405d4bb2-7251-43f3-8d0d-9eb76c456551\",\r\n                   
     \"inputFieldName\": \"s\",\r\n                    \"outputNodeGUID\": \"fd0fb68e-2a79-45b0-9c0c-a3b03d9d028c\",\r\n                   
+    \"outputFieldName\": \"value\"\r\n                }\r\n            },\r\n           
+    {\r\n                \"$k\": \"b9eae148-8283-4de2-8631-28337c1376b8\",\r\n               
+    \"$v\": {\r\n                    \"$id\": 234,\r\n                    \"$type\":
+    22,\r\n                    \"guid\": \"b9eae148-8283-4de2-8631-28337c1376b8\",\r\n                   
+    \"inputNodeGUID\": \"b73f7635-cb8d-47d7-bfaf-6d5719b1c48e\",\r\n                   
+    \"inputFieldName\": \"input\",\r\n                    \"outputNodeGUID\": \"60a76c7a-6ad0-4cf3-9575-32393d81aefa\",\r\n                   
     \"outputFieldName\": \"value\"\r\n                }\r\n            }\r\n       
     ]\r\n    },\r\n    \"groups\": {\r\n        \"$id\": 235,\r\n        \"$type\":
     \"23|System.Collections.Generic.List`1[[CZToolKit.GraphProcessor.GroupPanel,

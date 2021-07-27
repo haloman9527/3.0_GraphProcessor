@@ -2,5 +2,4 @@
     <ui:VisualElement name="mainContainer">
         <ui:VisualElement name="contentContainer" />
     </ui:VisualElement>
-    <RenameLabel style="height: 24px;" />
 </ui:UXML>

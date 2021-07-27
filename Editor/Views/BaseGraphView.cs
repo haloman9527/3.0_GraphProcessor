@@ -182,15 +182,19 @@ namespace CZToolKit.GraphProcessor.Editors
         #region Initialize
         IEnumerator Init()
         {
-            Blackboard = new BlackboardView(this);
-            Add(Blackboard);
+            Add(Blackboard = new BlackboardView(this));
+            yield return 0;
 
             InitializeCallbacks();
+            yield return 0;
+
             InitializeToolbarButtons();
+            yield return 0;
 
             // 绑定
             BindingProperties();
             RegisterCallback<DetachFromPanelEvent>(evt => { UnBindingProperties(); });
+            yield return 0;
 
             yield return GlobalEditorCoroutineMachine.StartCoroutine(GenerateNodeViews());
             yield return GlobalEditorCoroutineMachine.StartCoroutine(GenerateGroupViews());

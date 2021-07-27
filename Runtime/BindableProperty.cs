@@ -66,7 +66,7 @@ namespace CZToolKit.GraphProcessor
         {
             onValueChanged -= _onValueChanged;
         }
-        public void SetValueWithoutNotify(T _value)
+        public virtual void SetValueWithoutNotify(T _value)
         {
             value = _value;
         }
