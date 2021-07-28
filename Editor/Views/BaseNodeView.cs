@@ -141,7 +141,7 @@ namespace CZToolKit.GraphProcessor.Editors
                     BindableElement fieldDrawer = UIElementsFactory.CreateField(String.Empty, fieldInfo.FieldType, Model.GetFieldInfoValue(fieldInfo), (newValue) =>
                     {
                         IBindableProperty property;
-                        if (!string.IsNullOrEmpty(showAsDrawer.targetBindablePropertyName) && (property = Model.GetBindableProperty(showAsDrawer.targetBindablePropertyName)) != null)
+                        if (!string.IsNullOrEmpty(showAsDrawer.targetBindablePropertyName) && (property = Model[showAsDrawer.targetBindablePropertyName]) != null)
                         {
                             property.ValueBoxed = newValue;
                             Owner.SetDirty();

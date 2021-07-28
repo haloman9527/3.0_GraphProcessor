@@ -172,9 +172,9 @@ namespace CZToolKit.GraphProcessor
 
         public override void InitializeBindableProperties()
         {
-            SetBindableProperty(nameof(PortName), new BindableProperty<string>(fieldName));
-            SetBindableProperty(nameof(Tooltip), new BindableProperty<string>());
-            SetBindableProperty(nameof(PortColor), new BindableProperty<Color>());
+            this[nameof(PortName)] = new BindableProperty<string>(fieldName);
+            this[nameof(Tooltip)] = new BindableProperty<string>();
+            this[nameof(PortColor)] = new BindableProperty<Color>();
 
             //            if (Utility_Attribute.TryGetFieldAttribute(Owner.GetType(), fieldName, out InspectorNameAttribute inspectorName))
             //                GetBindableProperty<string>(nameof(PortName)).SetValueWithoutNotify(inspectorName.displayName);

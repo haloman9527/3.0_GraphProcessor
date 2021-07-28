@@ -37,11 +37,11 @@ namespace CZToolKit.GraphProcessor.Editors
 
             if (Target is BaseGraphElement graphElement)
             {
-                foreach (var property in graphElement.BindableProperties)
+                foreach (var property in graphElement)
                 {
                     if (IgnoreProperty.Contains(property.Key)) continue;
 
-                    property.Value.ValueBoxed = EditorGUILayoutExtension.DrawField(property.Key, property.Value.ValueType, property.Value.ValueBoxed);
+                    property.Value.ValueBoxed = EditorGUILayoutExtension.DrawField(GraphProcessorEditorUtility.GetDisplayName(property.Key), property.Value.ValueType, property.Value.ValueBoxed);
                 }
             }
 

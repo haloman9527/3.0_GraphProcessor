@@ -72,9 +72,9 @@ namespace CZToolKit.GraphProcessor
 
         public override void InitializeBindableProperties()
         {
-            SetBindableProperty(nameof(Title), new BindableProperty<string>(title, v => title = v));
-            SetBindableProperty(nameof(Color), new BindableProperty<Color>(color, v => color = v));
-            SetBindableProperty(nameof(Position), new BindableProperty<Rect>(position, v => position = v));
+            this[nameof(Title)] = new BindableProperty<string>(title, v => title = v);
+            this[nameof(Color)] = new BindableProperty<Color>(color, v => color = v);
+            this[nameof(Position)] = new BindableProperty<Rect>(position, v => position = v);
         }
 
         public void AddNode(string _guid)

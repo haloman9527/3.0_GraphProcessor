@@ -14,6 +14,7 @@
  */
 #endregion
 using System;
+using System.Collections.Generic;
 
 namespace CZToolKit.GraphProcessor
 {
@@ -58,6 +59,10 @@ namespace CZToolKit.GraphProcessor
                 onBoxedValueChanged.Invoke(Value);
 
         }
+        public IBindableProperty<T1> AsBindableProperty<T1>()
+        {
+            return this as BindableProperty<T1>;
+        }
         public void RegesterValueChangedEvent(Action<T> _onValueChanged)
         {
             onValueChanged += _onValueChanged;
@@ -69,6 +74,10 @@ namespace CZToolKit.GraphProcessor
         public virtual void SetValueWithoutNotify(T _value)
         {
             value = _value;
+        }
+        public void SetValueWithoutNotify(object _value)
+        {
+
         }
         public override string ToString()
         {

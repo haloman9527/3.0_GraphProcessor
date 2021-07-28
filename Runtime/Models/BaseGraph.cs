@@ -122,10 +122,10 @@ namespace CZToolKit.GraphProcessor
 
         public override void InitializeBindableProperties()
         {
-            SetBindableProperty(nameof(Position), new BindableProperty<Vector3>(position, v => { position = v; }));
-            SetBindableProperty(nameof(Scale), new BindableProperty<Vector3>(scale, v => scale = v));
-            SetBindableProperty(nameof(BlackboardVisible), new BindableProperty<bool>(blackboardVisible, v => blackboardVisible = v));
-            SetBindableProperty(nameof(BlackboardPosition), new BindableProperty<Rect>(blackboardPosition, v => blackboardPosition = v));
+            this[nameof(Position)] = new BindableProperty<Vector3>(position, v => position = v);
+            this[nameof(Scale)] = new BindableProperty<Vector3>(scale, v => scale = v);
+            this[nameof(BlackboardVisible)] = new BindableProperty<bool>(blackboardVisible, v => blackboardVisible = v);
+            this[nameof(BlackboardPosition)] = new BindableProperty<Rect>(blackboardPosition, v => blackboardPosition = v);
         }
 
         #region API

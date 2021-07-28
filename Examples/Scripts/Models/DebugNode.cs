@@ -38,7 +38,7 @@ namespace CZToolKit.GraphProcessor
         public override void InitializeBindableProperties()
         {
             base.InitializeBindableProperties();
-            SetBindableProperty(nameof(Input), new BindableProperty<string>(input, v => input = v));
+            this[nameof(Input)] = new BindableProperty<string>(input, v => input = v);
         }
         #endregion
     }

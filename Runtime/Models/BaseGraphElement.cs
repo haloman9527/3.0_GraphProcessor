@@ -14,16 +14,28 @@
  */
 #endregion
 using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace CZToolKit.GraphProcessor
 {
-    public abstract class BaseGraphElement
+    public abstract class BaseGraphElement : IEnumerable<KeyValuePair<string, IBindableProperty>>, IEnumerable, IReadOnlyCollection<KeyValuePair<string, IBindableProperty>>
     {
         #region ViewModel
         [NonSerialized] Dictionary<string, IBindableProperty> bindableProperties;
 
-        public IReadOnlyDictionary<string, IBindableProperty> BindableProperties { get { CheckPropertiesIsNull(); return bindableProperties; } }
+        Dictionary<string, IBindableProperty> InternalBindableProperties { get { CheckPropertiesIsNull(); return bindableProperties; } set { bindableProperties = value; } }
+        public IReadOnlyDictionary<string, IBindableProperty> BindableProperties { get { return InternalBindableProperties; } }
+
+        public int Count { get { return InternalBindableProperties.Count; } }
+
+        public IBindableProperty this[string _propertyName]
+        {
+            get { return InternalBindableProperties[_propertyName]; }
+            set { InternalBindableProperties[_propertyName] = value; }
+        }
+
+        public abstract void InitializeBindableProperties();
 
         void CheckPropertiesIsNull()
         {
@@ -32,63 +44,34 @@ namespace CZToolKit.GraphProcessor
             InitializeBindableProperties();
         }
 
-        public abstract void InitializeBindableProperties();
-
-        public virtual void SetBindableProperty(string _propertyName, IBindableProperty _value)
-        {
-            CheckPropertiesIsNull();
-            bindableProperties[_propertyName] = _value;
-        }
-
-        public virtual BindableProperty<T> GetBindableProperty<T>(string _propertyName)
-        {
-            CheckPropertiesIsNull();
-            if (bindableProperties.TryGetValue(_propertyName, out IBindableProperty bindableProperty))
-            {
-                BindableProperty<T> tBindableProperty = bindableProperty as BindableProperty<T>;
-                if (tBindableProperty != null)
-                    return tBindableProperty;
-                else
-                    throw new Exception($"类型不一致，请检查！  {bindableProperty.GetType()}");
-            }
-            return null;
-        }
-
-        public virtual IBindableProperty GetBindableProperty(string _propertyName)
-        {
-            CheckPropertiesIsNull();
-            if (bindableProperties.TryGetValue(_propertyName, out IBindableProperty bindableProperty))
-                return bindableProperty;
-            return null;
-        }
-
         public virtual void BindingProperty<T>(string _propertyName, Action<T> _onValueChangedCallback)
         {
-            GetBindableProperty<T>(_propertyName).RegesterValueChangedEvent(_onValueChangedCallback);
+            this[_propertyName].AsBindableProperty<T>().RegesterValueChangedEvent(_onValueChangedCallback);
         }
 
         public virtual void UnBindingProperty<T>(string _propertyName, Action<T> _onValueChangedCallback)
         {
-            GetBindableProperty<T>(_propertyName).UnregesterValueChangedEvent(_onValueChangedCallback);
+            this[_propertyName].AsBindableProperty<T>().UnregesterValueChangedEvent(_onValueChangedCallback);
         }
 
         protected virtual T GetPropertyValue<T>(string _propertyName)
         {
-            return GetBindableProperty<T>(_propertyName).Value;
+            return this[_propertyName].AsBindableProperty<T>().Value;
         }
 
         protected virtual void SetPropertyValue<T>(string _propertyName, T _value)
         {
-            GetBindableProperty<T>(_propertyName).Value = _value;
+            this[_propertyName].AsBindableProperty<T>().Value = _value;
         }
 
-        public virtual void UpdateProperties()
+        public IEnumerator<KeyValuePair<string, IBindableProperty>> GetEnumerator()
         {
-            CheckPropertiesIsNull();
-            foreach (var property in bindableProperties.Values)
-            {
-                property.ValueChanged();
-            }
+            return InternalBindableProperties.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return InternalBindableProperties.GetEnumerator();
         }
         #endregion
     }

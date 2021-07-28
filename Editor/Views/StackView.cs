@@ -38,12 +38,11 @@ namespace CZToolKit.GraphProcessor.Editors
 
         public void SetUp(StackPanel _stack, CommandDispatcher _commandDispatcher, BaseGraphView _graphView)
         {
+            Model = _stack;
             CommandDispatcher = _commandDispatcher;
             Owner = _graphView;
 
-            Model = _stack;
             BindingProperties();
-            Model.UpdateProperties();
 
             InitializeInnerNodes();
         }

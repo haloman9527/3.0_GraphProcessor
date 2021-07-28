@@ -59,7 +59,7 @@ namespace CZToolKit.GraphProcessor
         public override void InitializeBindableProperties()
         {
             base.InitializeBindableProperties();
-            SetBindableProperty(nameof(Name), new BindableProperty<string>(name, v => name = v));
+            this[nameof(Name)]= new BindableProperty<string>(name, v => name = v);
         }
 
         public override object GetValue(NodePort _localPort)

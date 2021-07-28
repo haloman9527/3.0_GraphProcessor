@@ -132,14 +132,14 @@ namespace CZToolKit.GraphProcessor
 
         public override void InitializeBindableProperties()
         {
-            SetBindableProperty(nameof(Title), new BindableProperty<string>());
-            SetBindableProperty(nameof(TitleColor), new BindableProperty<Color>(new Color(0.2f, 0.2f, 0.2f, 0.8f)));
-            SetBindableProperty(nameof(Icon), new BindableProperty<Texture>());
-            SetBindableProperty(nameof(IconSize), new BindableProperty<Vector2>(new Vector2(20, 20)));
-            SetBindableProperty(nameof(Tooltip), new BindableProperty<string>());
-            SetBindableProperty(nameof(Locked), new BindableProperty<bool>(locked, v => locked = v));
-            SetBindableProperty(nameof(Position), new BindableProperty<Vector2>(position, v => position = v));
-            SetBindableProperty(nameof(Expanded), new BindableProperty<bool>(true, v => expanded = v));
+            this[nameof(Title)] = new BindableProperty<string>();
+            this[nameof(TitleColor)] = new BindableProperty<Color>(new Color(0.2f, 0.2f, 0.2f, 0.8f));
+            this[nameof(Icon)] = new BindableProperty<Texture>();
+            this[nameof(IconSize)] = new BindableProperty<Vector2>(new Vector2(20, 20));
+            this[nameof(Tooltip)] = new BindableProperty<string>();
+            this[nameof(Locked)] = new BindableProperty<bool>(locked, v => locked = v);
+            this[nameof(Position)] = new BindableProperty<Vector2>(position, v => position = v);
+            this[nameof(Expanded)] = new BindableProperty<bool>(true, v => expanded = v);
 
             Type type = GetType();
 
