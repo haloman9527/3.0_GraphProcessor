@@ -22,8 +22,7 @@ using UnityEngine;
 
 namespace CZToolKit.GraphProcessor
 {
-    [Serializable]
-    public abstract class BaseNode : BaseGraphElement
+    public abstract partial class BaseNode : IntegratedViewModel
     {
         #region 静态
         /// <summary> 根据T创建一个节点，并设置位置 </summary>
@@ -50,20 +49,6 @@ namespace CZToolKit.GraphProcessor
         }
         #endregion
 
-        #region Model
-        /// <summary> 唯一标识 </summary>
-        [SerializeField] string guid;
-        /// <summary> 位置坐标 </summary>
-        [SerializeField] Vector2 position;
-        /// <summary> 展开状态 </summary>
-        [SerializeField] bool expanded = true;
-        /// <summary> 锁定状态 </summary>
-        [SerializeField] bool locked = false;
-
-        [SerializeField] Dictionary<string, NodePort> ports = new Dictionary<string, NodePort>();
-        #endregion
-
-        #region ViewModel
         public event Action<NodePort, NodePort> onPortConnected;
         public event Action<NodePort, NodePort> onPortDisconnected;
         public event Action<NodePort> onPortAdded;
@@ -129,6 +114,8 @@ namespace CZToolKit.GraphProcessor
                 port.Enable(this);
             }
         }
+
+        public const string LockedName = nameof(locked);
 
         public override void InitializeBindableProperties()
         {
@@ -358,7 +345,6 @@ namespace CZToolKit.GraphProcessor
             ports.Remove(_fieldName);
             onPortRemoved?.Invoke(port);
         }
-        #endregion
         #endregion
     }
 }

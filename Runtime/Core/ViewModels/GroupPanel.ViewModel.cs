@@ -19,8 +19,7 @@ using UnityEngine;
 
 namespace CZToolKit.GraphProcessor
 {
-    [Serializable]
-    public sealed class GroupPanel : BaseGraphElement
+    public sealed partial class GroupPanel : IntegratedViewModel
     {
         public static GroupPanel Create(string _title, Vector2 _position)
         {
@@ -31,16 +30,6 @@ namespace CZToolKit.GraphProcessor
             return group;
         }
 
-        #region Model
-        [SerializeField] string title;
-        [SerializeField] Color color = new Color(0, 0, 0, 0.7f);
-        [SerializeField] Rect position;
-
-        [SerializeField] List<string> innerNodeGUIDs = new List<string>();
-        //[SerializeField] List<string> innerStackGUIDs = new List<string>();
-        #endregion
-
-        #region ViewModel
         [NonSerialized] BaseGraph owner;
         public BaseGraph Owner
         {
@@ -93,6 +82,5 @@ namespace CZToolKit.GraphProcessor
         //{
         //    innerStackGUIDs.Remove(_guid);
         //}
-        #endregion
     }
 }

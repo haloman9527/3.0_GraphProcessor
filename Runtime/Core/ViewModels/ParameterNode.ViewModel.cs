@@ -14,25 +14,11 @@
  */
 #endregion
 using CZToolKit.Core.Blackboards;
-using System;
-using UnityEngine;
 
 namespace CZToolKit.GraphProcessor
 {
-    [Serializable]
-    [NodeMenuItem("Parameter", showInList = false)]
-    public class ParameterNode : BaseNode
+    public partial class ParameterNode : BaseNode
     {
-        #region Model
-        [Port(PortDirection.Output)]
-        [InspectorName("Value")]
-        [SerializeField] object output;
-
-        [HideInInspector]
-        [SerializeField] string name;
-        #endregion
-
-        #region ViewModel
         public string Name
         {
             get { return GetPropertyValue<string>(nameof(Name)); }
@@ -68,6 +54,5 @@ namespace CZToolKit.GraphProcessor
                 return null;
             return Parameter.GetValue();
         }
-        #endregion
     }
 }

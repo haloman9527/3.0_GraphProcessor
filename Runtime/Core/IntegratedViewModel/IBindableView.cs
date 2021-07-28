@@ -21,7 +21,7 @@ namespace CZToolKit.GraphProcessor
         void UnBindingProperties();
     }
 
-    public interface IBindableView<VM> : IBindableView where VM : BaseGraphElement
+    public interface IBindableView<VM> : IBindableView where VM : IntegratedViewModel
     {
         VM Model { get; }
     }

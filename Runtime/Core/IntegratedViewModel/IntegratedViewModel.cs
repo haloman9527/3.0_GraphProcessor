@@ -19,15 +19,26 @@ using System.Collections.Generic;
 
 namespace CZToolKit.GraphProcessor
 {
-    public abstract class BaseGraphElement : IEnumerable<KeyValuePair<string, IBindableProperty>>, IEnumerable, IReadOnlyCollection<KeyValuePair<string, IBindableProperty>>
+    public interface IReadOnlyIntegratedViewModel<TKey, TValue> : IEnumerable<KeyValuePair<TKey, TValue>>, IEnumerable
     {
-        #region ViewModel
+        TValue this[TKey key] { get; }
+
+        IEnumerable<TKey> Keys { get; }
+        IEnumerable<TValue> Values { get; }
+
+        bool ContainsKey(TKey key);
+        bool TryGetValue(TKey key, out TValue value);
+    }
+
+    public abstract class IntegratedViewModel : IReadOnlyIntegratedViewModel<string, IBindableProperty>
+    {
         [NonSerialized] Dictionary<string, IBindableProperty> bindableProperties;
 
         Dictionary<string, IBindableProperty> InternalBindableProperties { get { CheckPropertiesIsNull(); return bindableProperties; } set { bindableProperties = value; } }
-        public IReadOnlyDictionary<string, IBindableProperty> BindableProperties { get { return InternalBindableProperties; } }
 
-        public int Count { get { return InternalBindableProperties.Count; } }
+        public IEnumerable<string> Keys { get { return InternalBindableProperties.Keys; } }
+
+        public IEnumerable<IBindableProperty> Values { get { return InternalBindableProperties.Values; } }
 
         public IBindableProperty this[string _propertyName]
         {
@@ -35,6 +46,27 @@ namespace CZToolKit.GraphProcessor
             set { InternalBindableProperties[_propertyName] = value; }
         }
 
+        public IEnumerator<KeyValuePair<string, IBindableProperty>> GetEnumerator()
+        {
+            return InternalBindableProperties.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return InternalBindableProperties.GetEnumerator();
+        }
+
+        public bool ContainsKey(string key)
+        {
+            return InternalBindableProperties.ContainsKey(key);
+        }
+
+        public bool TryGetValue(string key, out IBindableProperty value)
+        {
+            return InternalBindableProperties.TryGetValue(key, out value);
+        }
+
+        #region API
         public abstract void InitializeBindableProperties();
 
         void CheckPropertiesIsNull()
@@ -62,16 +94,6 @@ namespace CZToolKit.GraphProcessor
         protected virtual void SetPropertyValue<T>(string _propertyName, T _value)
         {
             this[_propertyName].AsBindableProperty<T>().Value = _value;
-        }
-
-        public IEnumerator<KeyValuePair<string, IBindableProperty>> GetEnumerator()
-        {
-            return InternalBindableProperties.GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return InternalBindableProperties.GetEnumerator();
         }
         #endregion
     }

@@ -1,4 +1,4 @@
-#region æ³¨ é‡Š
+#region ×¢ ÊÍ
 /***
  *
  *  Title:
@@ -7,29 +7,35 @@
  *  
  *  Date:
  *  Version:
- *  Writer: åŠåªé¾™è™¾äºº
+ *  Writer: °ëÖ»ÁúÏºÈË
  *  Github: https://github.com/HalfLobsterMan
  *  Blog: https://www.crosshair.top/
  *
  */
 #endregion
-//using UnityEditor;
-//using UnityEngine;
-//using System.Linq;
+using UnityEditor;
+using UnityEngine;
+using System.Linq;
 
-//namespace CZToolKit.GraphProcessor.Editors
-//{
-//    public class NodeEditorAssetModProcessor : UnityEditor.AssetModificationProcessor
-//    {
-//        /// <summary> åˆ é™¤èŠ‚ç‚¹è„šæœ¬ä¹‹å‰è‡ªåŠ¨åˆ é™¤èŠ‚ç‚¹ </summary> 
+namespace CZToolKit.GraphProcessor.Editors
+{
+    public class NodeEditorAssetModProcessor : UnityEditor.AssetModificationProcessor
+    {
+        [MenuItem("Assets/Graph Processor/Generate Node Script")]
+        public static void GenerateNodeScript()
+        {
+
+        }
+
+//        /// <summary> É¾³ı½Úµã½Å±¾Ö®Ç°×Ô¶¯É¾³ı½Úµã </summary> 
 //        private static AssetDeleteResult OnWillDeleteAsset(string path, RemoveAssetOptions options)
 //        {
-//            // å³å°†è¢«åˆ é™¤çš„èµ„æºè·¯å¾„
+//            // ¼´½«±»É¾³ıµÄ×ÊÔ´Â·¾¶
 //            UnityEngine.Object obj = AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(path);
 
 //            if (obj is MonoScript)
 //            {
-//                // æ£€æŸ¥è„šæœ¬ç±»å‹ï¼Œå¦‚æœä¸æ˜¯èŠ‚ç‚¹ç±»åˆ™è¿”å›
+//                // ¼ì²é½Å±¾ÀàĞÍ£¬Èç¹û²»ÊÇ½ÚµãÀàÔò·µ»Ø
 //                MonoScript script = obj as MonoScript;
 //                System.Type scriptType = script.GetClass();
 //                if (scriptType != null && (scriptType == typeof(BaseNode) || scriptType.IsSubclassOf(typeof(BaseNode))))
@@ -59,8 +65,8 @@
 //                }
 //            }
 
-//            // ç»§ç»­è®©unityåˆ é™¤åº”è¯¥åˆ é™¤çš„è„šæœ¬
+//            // ¼ÌĞøÈÃunityÉ¾³ıÓ¦¸ÃÉ¾³ıµÄ½Å±¾
 //            return AssetDeleteResult.DidNotDelete;
 //        }
-//    }
-//}
+    }
+}

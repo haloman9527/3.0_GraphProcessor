@@ -77,7 +77,7 @@ namespace CZToolKit.GraphProcessor
         }
         public void SetValueWithoutNotify(object _value)
         {
-
+            SetValueWithoutNotify((T)_value);
         }
         public override string ToString()
         {

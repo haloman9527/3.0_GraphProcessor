@@ -17,21 +17,8 @@ using System;
 
 namespace CZToolKit.GraphProcessor
 {
-    [Serializable]
-    [NodeMenuItem("Utils", "Relay")]
-    public class RelayNode : BaseNode
+    public partial class RelayNode : BaseNode
     {
-        #region Model
-        [Port(PortDirection.Input, IsMulti = false, TypeConstraint = PortTypeConstraint.None)]
-        [PortColor(0, 0.7f, 0.3f)]
-        public object input;
-
-        [Port(PortDirection.Output, IsMulti = false, TypeConstraint = PortTypeConstraint.None)]
-        [PortColor(0, 0.7f, 0.3f)]
-        public object output;
-        #endregion
-
-        #region ViewModel
         public override object GetValue(NodePort _localPort)
         {
             switch (_localPort.FieldName)
@@ -61,6 +48,5 @@ namespace CZToolKit.GraphProcessor
                     break;
             }
         }
-        #endregion
     }
 }

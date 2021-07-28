@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: New Math Graph 1
   m_EditorClassIdentifier: 
   graph:
-    position: {x: -83, y: -185, z: 0}
-    scale: {x: 0.8695652, y: 0.8695652, z: 1}
+    position: {x: 418, y: 117, z: 0}
+    scale: {x: 0.375937, y: 0.375937, z: 1}
     blackboardVisible: 0
     blackboardPosition:
       serializedVersion: 2
@@ -27,9 +27,9 @@ MonoBehaviour:
       color: {r: 0.81960785, g: 0.23567137, b: 0.20392154, a: 1}
       position:
         serializedVersion: 2
-        x: 987.246
-        y: 268.87988
-        width: 658
+        x: 1207.7766
+        y: 263.67993
+        width: 759
         height: 519
       innerNodeGUIDs:
       - 7b77527d-3d6a-425c-9fa1-25e5cc9f6ac1
@@ -48,9 +48,9 @@ MonoBehaviour:
     blackboard: {}
   serializedGraph: "{\r\n    \"$id\": 0,\r\n    \"$type\": \"0|CZToolKit.GraphProcessor.Examples.MathGraph,
     Assembly-CSharp\",\r\n    \"position\": {\r\n        \"$type\": \"1|UnityEngine.Vector3,
-    UnityEngine.CoreModule\",\r\n        -83,\r\n        -185,\r\n        0\r\n   
-    },\r\n    \"scale\": {\r\n        \"$type\": 1,\r\n        0.8695652,\r\n       
-    0.8695652,\r\n        1\r\n    },\r\n    \"blackboardVisible\": false,\r\n   
+    UnityEngine.CoreModule\",\r\n        418,\r\n        117,\r\n        0\r\n   
+    },\r\n    \"scale\": {\r\n        \"$type\": 1,\r\n        0.375937,\r\n       
+    0.375937,\r\n        1\r\n    },\r\n    \"blackboardVisible\": false,\r\n   
     \"blackboardPosition\": {\r\n        \"$type\": \"2|UnityEngine.Rect, UnityEngine.CoreModule\",\r\n       
     18,\r\n        19,\r\n        223,\r\n        258\r\n    },\r\n    \"nodes\":
     {\r\n        \"$id\": 1,\r\n        \"$type\": \"3|System.Collections.Generic.Dictionary`2[[System.String,
@@ -62,7 +62,7 @@ MonoBehaviour:
     \"5|CZToolKit.GraphProcessor.StringNode, Assembly-CSharp\",\r\n                   
     \"guid\": \"fd0fb68e-2a79-45b0-9c0c-a3b03d9d028c\",\r\n                    \"position\":
     {\r\n                        \"$type\": \"6|UnityEngine.Vector2, UnityEngine.CoreModule\",\r\n                       
-    685.2459,\r\n                        475.8798\r\n                    },\r\n                   
+    678.39,\r\n                        475.8798\r\n                    },\r\n                   
     \"expanded\": true,\r\n                    \"locked\": false,\r\n                   
     \"ports\": {\r\n                        \"$id\": 4,\r\n                       
     \"$type\": \"7|System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[CZToolKit.GraphProcessor.NodePort,
@@ -159,7 +159,7 @@ MonoBehaviour:
     \"$v\": {\r\n                    \"$id\": 23,\r\n                    \"$type\":
     \"11|SampleNode, Assembly-CSharp\",\r\n                    \"guid\": \"b6522be0-2482-44bf-b0ea-c4a37831fea9\",\r\n                   
     \"position\": {\r\n                        \"$type\": 6,\r\n                       
-    1381.246,\r\n                        331.8798\r\n                    },\r\n                   
+    1699.77673,\r\n                        326.6799\r\n                    },\r\n                   
     \"expanded\": true,\r\n                    \"locked\": false,\r\n                   
     \"ports\": {\r\n                        \"$id\": 24,\r\n                       
     \"$type\": 7,\r\n                        \"comparer\": {\r\n                           
@@ -532,7 +532,7 @@ MonoBehaviour:
     {\r\n                    \"$id\": 84,\r\n                    \"$type\": \"16|CZToolKit.GraphProcessor.DebugNode,
     Assembly-CSharp\",\r\n                    \"guid\": \"80c88ccd-0278-4cd8-acfe-6e94357e69e8\",\r\n                   
     \"position\": {\r\n                        \"$type\": 6,\r\n                       
-    522.246033,\r\n                        431.8797\r\n                    },\r\n                   
+    540.347839,\r\n                        431.000031\r\n                    },\r\n                   
     \"expanded\": true,\r\n                    \"locked\": false,\r\n                   
     \"ports\": {\r\n                        \"$id\": 85,\r\n                       
     \"$type\": 7,\r\n                        \"comparer\": $iref:25,\r\n                       
@@ -765,8 +765,8 @@ MonoBehaviour:
     \"$k\": \"405d4bb2-7251-43f3-8d0d-9eb76c456551\",\r\n                \"$v\":
     {\r\n                    \"$id\": 129,\r\n                    \"$type\": 11,\r\n                   
     \"guid\": \"405d4bb2-7251-43f3-8d0d-9eb76c456551\",\r\n                    \"position\":
-    {\r\n                        \"$type\": 6,\r\n                        1012.246,\r\n                       
-    355.8799\r\n                    },\r\n                    \"expanded\": false,\r\n                   
+    {\r\n                        \"$type\": 6,\r\n                        1232.77673,\r\n                       
+    350.6799\r\n                    },\r\n                    \"expanded\": false,\r\n                   
     \"locked\": false,\r\n                    \"ports\": {\r\n                       
     \"$id\": 130,\r\n                        \"$type\": 7,\r\n                       
     \"comparer\": {\r\n                            \"$id\": 131,\r\n                           
@@ -1401,8 +1401,8 @@ MonoBehaviour:
     \"title\": \"Group\",\r\n                \"color\": {\r\n                   
     \"$type\": 12,\r\n                    0.819607854,\r\n                    0.235671371,\r\n                   
     0.203921542,\r\n                    1\r\n                },\r\n               
-    \"position\": {\r\n                    \"$type\": 2,\r\n                    987.246,\r\n                   
-    268.879883,\r\n                    658,\r\n                    519\r\n               
+    \"position\": {\r\n                    \"$type\": 2,\r\n                    1207.77661,\r\n                   
+    263.679932,\r\n                    759,\r\n                    519\r\n               
     },\r\n                \"innerNodeGUIDs\": {\r\n                    \"$id\": 237,\r\n                   
     \"$type\": 9,\r\n                    \"$rlength\": 13,\r\n                   
     \"$rcontent\": [\r\n                        \"7b77527d-3d6a-425c-9fa1-25e5cc9f6ac1\",\r\n                       

@@ -21,11 +21,9 @@ using System.Collections.Generic;
 
 namespace CZToolKit.GraphProcessor
 {
-    [Serializable]
-    public class NodePort : BaseGraphElement
+    public partial class NodePort : IntegratedViewModel
     {
-        #region ��̬����
-        /// <summary> �ӿڼ����Բ�ѯ </summary>
+        /// <summary> 兼容性检测 </summary>
         public static bool IsCompatible(NodePort _port1, NodePort _port2)
         {
             if (_port1 == null || _port2 == null)
@@ -48,52 +46,7 @@ namespace CZToolKit.GraphProcessor
 
             return Compatible(_port1, _port2) && Compatible(_port2, _port1);
         }
-        #endregion
 
-
-        #region Model
-        [SerializeField] public string fieldName;
-        [SerializeField] public string typeQualifiedName;
-        [SerializeField] public bool multiple = false;
-        [SerializeField] public PortDirection direction = PortDirection.Input;
-        [SerializeField] public PortTypeConstraint typeConstraint = PortTypeConstraint.Inherited;
-        [SerializeField] public List<string> edgeGUIDs = new List<string>();
-
-        public NodePort() { }
-
-        public NodePort(FieldInfo _fieldInfo, PortAttribute _portAttribute)
-        {
-            fieldName = _fieldInfo.Name;
-            multiple = _portAttribute.IsMulti;
-            direction = _portAttribute.Direction;
-            typeConstraint = _portAttribute.TypeConstraint;
-
-            if (Utility_Attribute.TryGetFieldAttribute(_fieldInfo.DeclaringType, _fieldInfo.Name, out PortTypeAttribute typeAttribute))
-                typeQualifiedName = typeAttribute.portType.AssemblyQualifiedName;
-            else
-                typeQualifiedName = _fieldInfo.FieldType.AssemblyQualifiedName;
-        }
-
-        public NodePort(NodePort _port)
-        {
-            fieldName = _port.fieldName;
-            direction = _port.direction;
-            multiple = _port.multiple;
-            typeConstraint = _port.typeConstraint;
-            typeQualifiedName = _port.typeQualifiedName;
-        }
-
-        public void Reload(NodePort port)
-        {
-            fieldName = port.fieldName;
-            direction = port.direction;
-            multiple = port.multiple;
-            typeConstraint = port.typeConstraint;
-            typeQualifiedName = port.typeQualifiedName;
-        }
-        #endregion
-
-        #region ViewModel
         [NonSerialized] Type dataType;
 
         [NonSerialized] BaseNode owner;
@@ -219,7 +172,6 @@ namespace CZToolKit.GraphProcessor
         }
 
         /// <summary> ���������ӵ�Զ�̶˿� </summary>
-        /// <returns></returns>
         public IEnumerable<NodePort> GetConnections()
         {
             foreach (var edge in GetEdges())
@@ -288,6 +240,5 @@ namespace CZToolKit.GraphProcessor
         {
             edgeGUIDs.Clear();
         }
-        #endregion
     }
 }

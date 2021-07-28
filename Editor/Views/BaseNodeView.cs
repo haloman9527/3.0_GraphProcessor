@@ -169,6 +169,7 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             expanded = _expanded;
             inputContainerElement.style.display = _expanded ? DisplayStyle.Flex : DisplayStyle.None;
+            Owner.SetDirty();
         }
         void OnTitleChanged(string _title)
         {
@@ -200,6 +201,7 @@ namespace CZToolKit.GraphProcessor.Editors
         void OnPositionChanged(Vector2 _position)
         {
             base.SetPosition(new Rect(_position, GetPosition().size));
+            Owner.SetDirty();
         }
         void OnTitleColorChanged(Color _color)
         {
@@ -356,7 +358,7 @@ namespace CZToolKit.GraphProcessor.Editors
         #region ContextMenu
         public override void BuildContextualMenu(ContextualMenuPopulateEvent evt)
         {
-            evt.menu.AppendAction("Open Node Script", (e) => OpenNodeScript(), OpenNodeScriptStatus);
+            evt.menu.AppendAction("Open Node.Model Script", (e) => OpenNodeScript(), OpenNodeScriptStatus);
             evt.menu.AppendAction("Open Node View Script", (e) => OpenNodeViewScript(), OpenNodeViewScriptStatus);
             evt.menu.AppendAction(Model.Locked ? "Unlock" : "Lock", (e) => ChangeLockStatus(), Status.Normal);
             evt.menu.AppendSeparator();
@@ -372,7 +374,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
         void OpenNodeViewScript()
         {
-            var script = EditorUtilityExtension.FindScriptFromType(GetType());
+            var script = EditorUtilityExtension.FindScriptFromType(GetType(),null);
 
             if (script != null)
                 AssetDatabase.OpenAsset(script.GetInstanceID(), 0, 0);

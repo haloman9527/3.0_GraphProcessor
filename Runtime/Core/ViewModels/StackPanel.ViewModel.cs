@@ -19,9 +19,7 @@ using System;
 
 namespace CZToolKit.GraphProcessor
 {
-    [Serializable]
-    [Obsolete("Stack�Ƴ�������ʹ�ã�ʹ�ó�����")]
-    public class StackPanel : BaseGraphElement
+    public partial class StackPanel : IntegratedViewModel
     {
         public static StackPanel CreateStack(Vector2 _position, string _title = "Stack")
         {
@@ -32,14 +30,6 @@ namespace CZToolKit.GraphProcessor
             return stack;
         }
 
-        #region Model
-        [SerializeField] string guid;
-        [SerializeField] Vector2 position;
-        [SerializeField] string title = "New Stack";
-        [SerializeField] List<string> nodeGUIDs = new List<string>();
-        #endregion
-
-        #region ViewModel
         #region ��̬����
         /// <summary> �ӿڼ����Լ�� </summary>
         public static bool IsCompatible(NodePort _port1, NodePort _port2)
@@ -130,6 +120,5 @@ namespace CZToolKit.GraphProcessor
         {
             return nodeGUIDs.FindIndex(p);
         }
-        #endregion
     }
 }

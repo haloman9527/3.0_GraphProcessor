@@ -14,12 +14,10 @@
  */
 #endregion
 using System;
-using UnityEngine;
 
 namespace CZToolKit.GraphProcessor
 {
-    [Serializable]
-    public class BaseEdge : BaseGraphElement
+    public partial class BaseEdge : IntegratedViewModel
     {
         #region 静态方法
         public static BaseEdge CreateNewEdge(NodePort _inputPort, NodePort _outputPort)
@@ -38,18 +36,7 @@ namespace CZToolKit.GraphProcessor
         }
         #endregion
 
-        #region Model
-        /// <summary> 自身GUID </summary>
-        [SerializeField] string guid;
 
-        [SerializeField] string inputNodeGUID;
-        [SerializeField] string inputFieldName;
-
-        [SerializeField] string outputNodeGUID;
-        [SerializeField] string outputFieldName;
-        #endregion
-
-        #region ViewModel
         [NonSerialized] BaseGraph owner;
         public BaseGraph Owner
         {
@@ -88,7 +75,5 @@ namespace CZToolKit.GraphProcessor
         }
 
         public override void InitializeBindableProperties() { }
-
-        #endregion
     }
 }

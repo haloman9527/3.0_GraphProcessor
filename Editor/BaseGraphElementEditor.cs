@@ -19,7 +19,7 @@ using UnityEditor;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
-    [CustomObjectEditor(typeof(BaseGraphElement))]
+    [CustomObjectEditor(typeof(IntegratedViewModel))]
     public class BaseNodeObjectEditor : ObjectEditor
     {
         public static HashSet<string> IgnoreProperty = new HashSet<string>() {
@@ -35,9 +35,9 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             EditorGUI.BeginChangeCheck();
 
-            if (Target is BaseGraphElement graphElement)
+            if (Target is IntegratedViewModel vm)
             {
-                foreach (var property in graphElement)
+                foreach (var property in vm)
                 {
                     if (IgnoreProperty.Contains(property.Key)) continue;
 

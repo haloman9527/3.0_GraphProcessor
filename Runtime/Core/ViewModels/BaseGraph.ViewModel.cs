@@ -22,26 +22,8 @@ using UnityEngine;
 
 namespace CZToolKit.GraphProcessor
 {
-    [Serializable]
-    public class BaseGraph : BaseGraphElement
+    public partial class BaseGraph : IntegratedViewModel
     {
-        public static readonly Vector2 DefaultBlackboardSize = new Vector2(150, 200);
-
-        #region Model
-        [SerializeField] Vector3 position = Vector3.zero;
-        [SerializeField] Vector3 scale = Vector3.one;
-        [SerializeField] bool blackboardVisible = true;
-        [SerializeField] Rect blackboardPosition = new Rect(Vector2.zero, DefaultBlackboardSize);
-
-        [SerializeField] Dictionary<string, BaseNode> nodes = new Dictionary<string, BaseNode>();
-        [SerializeField] Dictionary<string, BaseEdge> edges = new Dictionary<string, BaseEdge>();
-        //[SerializeField] Dictionary<string, StackPanel> stacks = new Dictionary<string, StackPanel>();
-        [SerializeField] List<GroupPanel> groups = new List<GroupPanel>();
-
-        [SerializeField] CZBlackboardWithGUID blackboard = new CZBlackboardWithGUID();
-        #endregion
-
-        #region ViewModel
         #region 字段
         public event Action<BaseNode> onNodeAdded;
         public event Action<BaseNode> onNodeRemoved;
@@ -310,7 +292,7 @@ namespace CZToolKit.GraphProcessor
         public void RemoveGroup(GroupPanel _group)
         {
             if (groups.Remove(_group)) { }
-                onGroupRemoved?.Invoke(_group);
+            onGroupRemoved?.Invoke(_group);
         }
         #endregion
 
@@ -382,7 +364,6 @@ namespace CZToolKit.GraphProcessor
             }
             return false;
         }
-        #endregion
         #endregion
     }
 }
