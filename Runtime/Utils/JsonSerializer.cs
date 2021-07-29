@@ -13,12 +13,21 @@
  *
  */
 #endregion
+#define USE_ODIN
+
 using System;
 using UnityEngine;
 
 #if UNITY_EDITOR
 using UnityEditor;
+using System.Collections.Generic;
 #endif
+
+#if USE_ODIN
+using OdinSerializer;
+#endif
+
+using UnityObject = UnityEngine.Object;
 
 namespace CZToolKit.GraphProcessor
 {
@@ -31,6 +40,18 @@ namespace CZToolKit.GraphProcessor
 
     public static class JsonSerializer
     {
+#if USE_ODIN
+        public static string SerializeValue<T>(T _targetObject, out List<UnityObject> _referencedUnityObjects)
+        {
+            return System.Text.Encoding.UTF8.GetString(SerializationUtility.SerializeValue(_targetObject, DataFormat.JSON, out _referencedUnityObjects));
+        }
+
+
+        public static T DeserializeValue<T>(string _json, List<UnityObject> _referencedUnityObjects)
+        {
+            return SerializationUtility.DeserializeValue<T>(System.Text.Encoding.UTF8.GetBytes(_json), DataFormat.JSON, _referencedUnityObjects);
+        }
+#else
         public static string SerializeToJson(object _targetObject)
         {
 #if UNITY_EDITOR
@@ -87,5 +108,6 @@ namespace CZToolKit.GraphProcessor
             if (type == null) return null;
             return Deserialize(_serializeData.json, type);
         }
+#endif
     }
 }

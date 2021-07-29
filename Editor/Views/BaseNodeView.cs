@@ -358,38 +358,26 @@ namespace CZToolKit.GraphProcessor.Editors
         #region ContextMenu
         public override void BuildContextualMenu(ContextualMenuPopulateEvent evt)
         {
-            evt.menu.AppendAction("Open Node.Model Script", (e) => OpenNodeScript(), OpenNodeScriptStatus);
-            evt.menu.AppendAction("Open Node View Script", (e) => OpenNodeViewScript(), OpenNodeViewScriptStatus);
+            foreach (var script in EditorUtilityExtension.FindAllScriptFromType(Model.GetType()))
+            {
+                evt.menu.AppendAction($"Open Script/" + script.name, _ => { AssetDatabase.OpenAsset(script); });
+            }
+            //evt.menu.AppendAction("Open Node View Script", (e) => OpenNodeViewScript(), OpenNodeViewScriptStatus);
             evt.menu.AppendAction(Model.Locked ? "Unlock" : "Lock", (e) => ChangeLockStatus(), Status.Normal);
             evt.menu.AppendSeparator();
         }
 
-        void OpenNodeScript()
-        {
-            var script = EditorUtilityExtension.FindScriptFromType(Model.GetType());
-
-            if (script != null)
-                AssetDatabase.OpenAsset(script.GetInstanceID(), 0, 0);
-        }
-
         void OpenNodeViewScript()
         {
-            var script = EditorUtilityExtension.FindScriptFromType(GetType(),null);
+            var script = EditorUtilityExtension.FindScriptFromType(GetType(), s => s.name.Contains("View"));
 
             if (script != null)
                 AssetDatabase.OpenAsset(script.GetInstanceID(), 0, 0);
-        }
-
-        Status OpenNodeScriptStatus(DropdownMenuAction action)
-        {
-            if (EditorUtilityExtension.FindScriptFromType(Model.GetType()) != null)
-                return Status.Normal;
-            return Status.Disabled;
         }
 
         Status OpenNodeViewScriptStatus(DropdownMenuAction action)
         {
-            if (EditorUtilityExtension.FindScriptFromType(GetType()) != null)
+            if (EditorUtilityExtension.FindScriptFromType(GetType(), s => s.name.Contains("View")) != null)
                 return Status.Normal;
             return Status.Disabled;
         }

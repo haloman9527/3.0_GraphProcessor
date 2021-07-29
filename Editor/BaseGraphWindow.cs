@@ -15,13 +15,13 @@
 #endregion
 using CZToolKit.Core.Editors;
 using System;
-using System.Diagnostics;
+//using System.Diagnostics;
 using UnityEngine;
 using UnityEditor;
 using UnityEngine.UIElements;
 using UnityEditor.Callbacks;
 using UnityEditor.UIElements;
-using UnityEngine.Profiling;
+//using UnityEngine.Profiling;
 
 using UnityObject = UnityEngine.Object;
 
@@ -152,18 +152,18 @@ namespace CZToolKit.GraphProcessor.Editors
             EditorApplication.playModeStateChanged -= OnPlayModeChanged;
         }
 
-        protected override void Update()
-        {
-            base.Update();
+        //protected override void Update()
+        //{
+        //    base.Update();
 
-            Profiler.BeginSample("CZToolKit.GraphProcessor");
-            Stopwatch sw = new Stopwatch();
+        //    Profiler.BeginSample("CZToolKit.GraphProcessor");
+        //    Stopwatch sw = new Stopwatch();
 
-            CommandDispatcher.NotifyObservers();
+        //    CommandDispatcher.NotifyObservers();
 
-            sw.Stop();
-            Profiler.EndSample();
-        }
+        //    sw.Stop();
+        //    Profiler.EndSample();
+        //}
 
         protected virtual void OnDestroy()
         {

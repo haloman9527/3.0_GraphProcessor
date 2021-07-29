@@ -14,7 +14,6 @@
  */
 #endregion
 using CZToolKit.Core.SharedVariable;
-using OdinSerializer;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -60,7 +59,7 @@ namespace CZToolKit.GraphProcessor
 
         public void SaveVariables()
         {
-            serializedVariables = Encoding.UTF8.GetString(SerializationUtility.SerializeValue(variables, DataFormat.JSON, out variablesUnityReference));
+            serializedVariables = JsonSerializer.SerializeValue(variables, out variablesUnityReference);
         }
 
         void DeserializeVariables()
@@ -68,7 +67,7 @@ namespace CZToolKit.GraphProcessor
             if (string.IsNullOrEmpty(serializedVariables))
                 variables = new List<SharedVariable>();
             else
-                variables = SerializationUtility.DeserializeValue<List<SharedVariable>>(Encoding.UTF8.GetBytes(serializedVariables), DataFormat.JSON, variablesUnityReference);
+                variables = JsonSerializer.DeserializeValue<List<SharedVariable>>(serializedVariables, variablesUnityReference);
             if (variables == null)
                 variables = new List<SharedVariable>();
 

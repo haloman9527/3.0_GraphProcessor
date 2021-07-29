@@ -13,9 +13,7 @@
  *
  */
 #endregion
-using OdinSerializer;
 using System;
-using System.Text;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -71,12 +69,12 @@ namespace CZToolKit.GraphProcessor
 
         public override void SaveGraph()
         {
-            serializedGraph = Encoding.UTF8.GetString(SerializationUtility.SerializeValue(graph, DataFormat.JSON, out graphUnityReferences));
+            serializedGraph = JsonSerializer.SerializeValue(graph, out graphUnityReferences);
         }
 
         void DeserializeGraph()
         {
-            graph = SerializationUtility.DeserializeValue<GraphClass>(Encoding.UTF8.GetBytes(serializedGraph), DataFormat.JSON, graphUnityReferences);
+            graph = JsonSerializer.DeserializeValue<GraphClass>(serializedGraph, graphUnityReferences);
             if (graph == null)
                 graph = new GraphClass();
             graph.Enable();

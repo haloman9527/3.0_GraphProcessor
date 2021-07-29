@@ -15,7 +15,6 @@
 #endregion
 using CZToolKit.Core;
 using CZToolKit.Core.Editors;
-using OdinSerializer;
 using System;
 using System.Collections;
 using System.Text;
@@ -407,7 +406,7 @@ namespace CZToolKit.GraphProcessor.Editors
                         continue;
                 }
             }
-            return Encoding.UTF8.GetString(SerializationUtility.SerializeValue(data, DataFormat.JSON, out ClipBoard.objectReferences));
+            return JsonSerializer.SerializeValue(data, out ClipBoard.objectReferences);
         }
 
         bool CanPasteSerializedDataCallback(string _serializedData)
@@ -418,7 +417,7 @@ namespace CZToolKit.GraphProcessor.Editors
         void DeserializeAndPasteCallback(string _operationName, string _serializedData)
         {
             ClearSelection();
-            var data = SerializationUtility.DeserializeValue<ClipBoard>(Encoding.UTF8.GetBytes(_serializedData), DataFormat.JSON, ClipBoard.objectReferences);
+            var data = JsonSerializer.DeserializeValue<ClipBoard>(_serializedData, ClipBoard.objectReferences);
             Dictionary<string, BaseNode> copiedNodesMap = new Dictionary<string, BaseNode>();
             foreach (var node in data.copiedNodes)
             {

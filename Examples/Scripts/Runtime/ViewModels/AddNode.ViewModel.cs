@@ -17,18 +17,8 @@ using UnityEngine;
 
 namespace CZToolKit.GraphProcessor
 {
-    [NodeMenuItem("Math", "Add")]
-    public class AddNode : BaseNode
+    public partial class AddNode : BaseNode
     {
-        #region Model
-        [Input]
-        [SerializeField] float input;
-
-        [Output]
-        [SerializeField] float output;
-        #endregion
-
-        #region ViewModel
         public override object GetValue(NodePort _port)
         {
             switch (_port.FieldName)
@@ -44,6 +34,5 @@ namespace CZToolKit.GraphProcessor
 
             return false;
         }
-        #endregion
     }
 }

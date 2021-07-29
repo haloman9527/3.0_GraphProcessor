@@ -13,14 +13,16 @@
  *
  */
 #endregion
-using System.Collections;
-using System.Collections.Generic;
+using System;
 using UnityEngine;
 
 namespace CZToolKit.GraphProcessor
 {
-    public class DeleteGraphElementsCommand : Command
+    [Serializable]
+    [NodeMenuItem("Math", "Float")]
+    public partial class FloatNode : BaseNode
     {
-        public override string UndoString => "Delete GraphElements";
+        [Port(PortDirection.Output)]
+        [SerializeField] float value;
     }
 }

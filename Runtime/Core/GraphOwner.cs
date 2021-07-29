@@ -1,4 +1,4 @@
-#region 注 释
+﻿#region 注 释
 /***
  *
  *  Title:
@@ -14,10 +14,8 @@
  */
 #endregion
 using CZToolKit.Core.SharedVariable;
-using OdinSerializer;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using UnityEngine;
 
 using UnityObject = UnityEngine.Object;
@@ -176,12 +174,12 @@ namespace CZToolKit.GraphProcessor
 
         public override void SaveGraph()
         {
-            serializedGraph = Encoding.UTF8.GetString(SerializationUtility.SerializeValue(graph, DataFormat.JSON, out graphUnityReferences));
+            serializedGraph = JsonSerializer.SerializeValue(graph, out graphUnityReferences);
         }
 
         void DeserializeGraph()
         {
-            graph = SerializationUtility.DeserializeValue<TGraph>(Encoding.UTF8.GetBytes(serializedGraph), DataFormat.JSON, graphUnityReferences);
+            graph = JsonSerializer.DeserializeValue<TGraph>(serializedGraph, graphUnityReferences);
             graph.Enable();
             graph.InitializePropertyMapping(this);
         }
@@ -206,12 +204,12 @@ namespace CZToolKit.GraphProcessor
 
         public override void SaveVariables()
         {
-            serializedVariables = Encoding.UTF8.GetString(SerializationUtility.SerializeValue(variables, DataFormat.JSON, out variablesUnityReferences));
+            serializedVariables = JsonSerializer.SerializeValue(variables, out variablesUnityReferences);
         }
 
         void DeserializeVariables()
         {
-            variables = SerializationUtility.DeserializeValue<List<SharedVariable>>(Encoding.UTF8.GetBytes(serializedVariables), DataFormat.JSON, variablesUnityReferences);
+            variables = JsonSerializer.DeserializeValue<List<SharedVariable>>(serializedVariables, variablesUnityReferences);
             UpdateVariablesIndex();
         }
 

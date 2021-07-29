@@ -32,8 +32,6 @@ namespace CZToolKit.GraphProcessor
         public bool IsReadOnly { get { return false; } }
 
         public BindableList() { Value = new List<T>(); }
-        public BindableList(List<T> _default) : this(_default as IEnumerable<T>) { }
-        public BindableList(IEnumerable<T> _enumerable) { Value = new List<T>(_enumerable); }
 
         public override void SetValueWithoutNotify(List<T> _value)
         {
@@ -91,7 +89,9 @@ namespace CZToolKit.GraphProcessor
 
         public void RemoveAt(int index)
         {
+            T v = Value[index];
             Remove(Value[index]);
+            onRemoved?.Invoke(v);
         }
 
         public bool Contains(T item)

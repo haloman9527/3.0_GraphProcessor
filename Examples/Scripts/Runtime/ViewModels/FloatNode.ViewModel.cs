@@ -13,35 +13,28 @@
  *
  */
 #endregion
+using System;
 using UnityEngine;
 
 namespace CZToolKit.GraphProcessor
 {
-    [NodeMenuItem("String")]
-    public class StringNode : BaseNode
+    public partial class FloatNode : BaseNode
     {
-        #region Model
-        [Output]
-        [SerializeField] string value = "";
-        #endregion
-
-        #region ViewModel
-        public string Value
+        public float Value
         {
-            get { return GetPropertyValue<string>(nameof(Value)); }
-            set { SetPropertyValue(nameof(Value), value); }
+            get { return GetPropertyValue<float>(nameof(Value)); }
+            set { SetPropertyValue(nameof(FloatNode.value), value); }
         }
 
         public override void InitializeBindableProperties()
         {
             base.InitializeBindableProperties();
-            this[nameof(Value)] = new BindableProperty<string>(value, v => value = v);
+            this[nameof(Value)] = new BindableProperty<float>(value, v => value = v);
         }
 
         public override object GetValue(NodePort _localPort)
         {
             return Value;
         }
-        #endregion
     }
 }
