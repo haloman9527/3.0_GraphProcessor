@@ -22,13 +22,6 @@ namespace CZToolKit.GraphProcessor.Editors
     [CustomEditor(typeof(GraphOwner), true)]
     public class GraphOwnerEditor : BasicEditor
     {
-        GUIContent graphContent;
-        protected override void OnEnable()
-        {
-            base.OnEnable();
-            graphContent = new GUIContent("Graph");
-        }
-
         protected override void RegisterDrawers()
         {
             base.RegisterDrawers();
@@ -48,11 +41,6 @@ namespace CZToolKit.GraphProcessor.Editors
             });
         }
 
-        public class A
-        {
-            public int i;
-        }
-        A a = new A();
         public override void OnInspectorGUI()
         {
             base.OnInspectorGUI();

@@ -16,5 +16,7 @@
 
 namespace CZToolKit.GraphProcessor.Examples
 {
-    public class MathGraphAssetOwner : GraphAssetOwner<MathGraphAsset, MathGraph> { }
+    public class MathGraphAssetOwner : GraphAssetOwner<MathGraphAsset, MathGraph>
+    {
+    }
 }
