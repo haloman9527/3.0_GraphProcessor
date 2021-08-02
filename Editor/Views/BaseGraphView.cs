@@ -613,15 +613,15 @@ namespace CZToolKit.GraphProcessor.Editors
                 switch (element)
                 {
                     case BaseNodeView nodeView:
-                        EditorGUILayoutExtension.DrawFieldsInInspector(nodeView.title, nodeView.Model);
+                        EditorGUILayoutExtension.DrawFieldsInInspector(nodeView.title, nodeView.Model, GraphAsset);
                         Selection.activeObject = ObjectInspector.Instance;
                         return;
                     case BaseEdgeView edgeView:
-                        EditorGUILayoutExtension.DrawFieldsInInspector(edgeView.title, edgeView.Model);
+                        EditorGUILayoutExtension.DrawFieldsInInspector(edgeView.title, edgeView.Model, GraphAsset);
                         Selection.activeObject = ObjectInspector.Instance;
                         return;
                     case GroupView groupView:
-                        EditorGUILayoutExtension.DrawFieldsInInspector(groupView.title, groupView.Model);
+                        EditorGUILayoutExtension.DrawFieldsInInspector(groupView.title, groupView.Model, GraphAsset);
                         Selection.activeObject = ObjectInspector.Instance;
                         return;
                     default:

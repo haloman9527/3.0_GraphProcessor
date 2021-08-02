@@ -116,7 +116,7 @@ namespace CZToolKit.GraphProcessor.Editors
         public IGraphOwner GraphOwner
         {
             get { return graphOwner; }
-            private set { graphOwner = value; if (graphOwner != null) graphOwnerInstanceID = graphOwner.GetInstanceID(); }
+            private set { graphOwner = value; if (graphOwner != null) graphOwnerInstanceID = (graphOwner as UnityObject) ? GetInstanceID() : -1; }
         }
         public UnityObject GraphAsset { get { return graphAsset; } private set { graphAsset = value; } }
         public BaseGraph Graph { get; private set; }

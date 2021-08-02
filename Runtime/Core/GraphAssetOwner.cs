@@ -84,16 +84,6 @@ namespace CZToolKit.GraphProcessor
         #endregion
 
         #region API
-        public UnityObject Self()
-        {
-            return this;
-        }
-
-        public string GetOwnerName()
-        {
-            return name;
-        }
-
         public SharedVariable GetVariable(string _guid)
         {
             if (string.IsNullOrEmpty(_guid)) return null;
