@@ -24,6 +24,11 @@ namespace CZToolKit.GraphProcessor
 {
     public partial class BaseGraph : IntegratedViewModel
     {
+        public const string POSITION_NAME = nameof(position);
+        public const string SCALE_NAME = nameof(scale);
+        public const string BLACKBOARD_VISIBLE_NAME = nameof(blackboardVisible);
+        public const string BLACKBOARD_POSITION_NAME = nameof(blackboardPosition);
+
         #region 字段
         public event Action<BaseNode> onNodeAdded;
         public event Action<BaseNode> onNodeRemoved;
@@ -47,23 +52,23 @@ namespace CZToolKit.GraphProcessor
         #region 属性
         public Vector3 Position
         {
-            get { return GetPropertyValue<Vector3>(nameof(Position)); }
-            set { SetPropertyValue(nameof(Position), value); }
+            get { return GetPropertyValue<Vector3>(POSITION_NAME); }
+            set { SetPropertyValue(POSITION_NAME, value); }
         }
         public Vector3 Scale
         {
-            get { return GetPropertyValue<Vector3>(nameof(Scale)); }
-            set { SetPropertyValue(nameof(Scale), value); }
+            get { return GetPropertyValue<Vector3>(SCALE_NAME); }
+            set { SetPropertyValue(SCALE_NAME, value); }
         }
         public bool BlackboardVisible
         {
-            get { return GetPropertyValue<bool>(nameof(BlackboardVisible)); }
-            set { SetPropertyValue(nameof(BlackboardVisible), value); }
+            get { return GetPropertyValue<bool>(BLACKBOARD_VISIBLE_NAME); }
+            set { SetPropertyValue(BLACKBOARD_VISIBLE_NAME, value); }
         }
         public Rect BlackboardPosition
         {
-            get { return GetPropertyValue<Rect>(nameof(BlackboardPosition)); }
-            set { SetPropertyValue(nameof(BlackboardPosition), value); }
+            get { return GetPropertyValue<Rect>(BLACKBOARD_POSITION_NAME); }
+            set { SetPropertyValue(BLACKBOARD_POSITION_NAME, value); }
         }
         public IReadOnlyBlackboardWithGUID Blackboard
         {
@@ -104,10 +109,10 @@ namespace CZToolKit.GraphProcessor
 
         public override void InitializeBindableProperties()
         {
-            this[nameof(Position)] = new BindableProperty<Vector3>(position, v => position = v);
-            this[nameof(Scale)] = new BindableProperty<Vector3>(scale, v => scale = v);
-            this[nameof(BlackboardVisible)] = new BindableProperty<bool>(blackboardVisible, v => blackboardVisible = v);
-            this[nameof(BlackboardPosition)] = new BindableProperty<Rect>(blackboardPosition, v => blackboardPosition = v);
+            this[POSITION_NAME] = new BindableProperty<Vector3>(position, v => position = v);
+            this[SCALE_NAME] = new BindableProperty<Vector3>(scale, v => scale = v);
+            this[BLACKBOARD_VISIBLE_NAME] = new BindableProperty<bool>(blackboardVisible, v => blackboardVisible = v);
+            this[BLACKBOARD_POSITION_NAME] = new BindableProperty<Rect>(blackboardPosition, v => blackboardPosition = v);
         }
 
         #region API

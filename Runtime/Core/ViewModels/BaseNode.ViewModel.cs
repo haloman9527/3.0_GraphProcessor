@@ -24,6 +24,15 @@ namespace CZToolKit.GraphProcessor
 {
     public abstract partial class BaseNode : IntegratedViewModel
     {
+        public const string TITLE_NAME = nameof(Title);
+        public const string TITLE_COLOR_NAME = nameof(TitleColor);
+        public const string ICON_NAME = nameof(Icon);
+        public const string ICON_SIZE_NAME = nameof(IconSize);
+        public const string TOOLTIP_NAME = nameof(Tooltip);
+        public const string LOCKED_NAME = nameof(locked);
+        public const string POSITION_NAME = nameof(position);
+        public const string EXPANDED_NAME = nameof(expanded);
+
         #region 静态
         /// <summary> 根据T创建一个节点，并设置位置 </summary>
         public static T CreateNew<T>(Vector2 _position) where T : BaseNode
@@ -67,43 +76,43 @@ namespace CZToolKit.GraphProcessor
         }
         public string Title
         {
-            get { return GetPropertyValue<string>(nameof(Title)); }
-            set { SetPropertyValue(nameof(Title), value); }
-        }
-        public Texture Icon
-        {
-            get { return GetPropertyValue<Texture>(nameof(Icon)); }
-            set { SetPropertyValue(nameof(Icon), value); }
-        }
-        public Vector2 IconSize
-        {
-            get { return GetPropertyValue<Vector2>(nameof(IconSize)); }
-            set { SetPropertyValue(nameof(IconSize), value); }
+            get { return GetPropertyValue<string>(TITLE_NAME); }
+            set { SetPropertyValue(TITLE_NAME, value); }
         }
         public Color TitleColor
         {
-            get { return GetPropertyValue<Color>(nameof(TitleColor)); }
-            set { SetPropertyValue(nameof(TitleColor), value); }
+            get { return GetPropertyValue<Color>(TITLE_COLOR_NAME); }
+            set { SetPropertyValue(TITLE_COLOR_NAME, value); }
+        }
+        public Texture Icon
+        {
+            get { return GetPropertyValue<Texture>(ICON_NAME); }
+            set { SetPropertyValue(ICON_NAME, value); }
+        }
+        public Vector2 IconSize
+        {
+            get { return GetPropertyValue<Vector2>(ICON_SIZE_NAME); }
+            set { SetPropertyValue(ICON_SIZE_NAME, value); }
         }
         public string Tooltip
         {
-            get { return GetPropertyValue<string>(nameof(Tooltip)); }
-            set { SetPropertyValue(nameof(Tooltip), value); }
+            get { return GetPropertyValue<string>(TOOLTIP_NAME); }
+            set { SetPropertyValue(TOOLTIP_NAME, value); }
         }
         public bool Locked
         {
-            get { return GetPropertyValue<bool>(nameof(Locked)); }
-            set { SetPropertyValue(nameof(Locked), value); }
+            get { return GetPropertyValue<bool>(LOCKED_NAME); }
+            set { SetPropertyValue(LOCKED_NAME, value); }
         }
         public Vector2 Position
         {
-            get { return GetPropertyValue<Vector2>(nameof(Position)); }
-            set { if (!Locked) SetPropertyValue(nameof(Position), value); }
+            get { return GetPropertyValue<Vector2>(POSITION_NAME); }
+            set { if (!Locked) SetPropertyValue(POSITION_NAME, value); }
         }
         public bool Expanded
         {
-            get { return GetPropertyValue<bool>(nameof(Expanded)); }
-            set { SetPropertyValue(nameof(Expanded), value); }
+            get { return GetPropertyValue<bool>(EXPANDED_NAME); }
+            set { SetPropertyValue(EXPANDED_NAME, value); }
         }
 
         public virtual void Enable(BaseGraph _graph)
@@ -115,18 +124,16 @@ namespace CZToolKit.GraphProcessor
             }
         }
 
-        public const string LockedName = nameof(locked);
-
         public override void InitializeBindableProperties()
         {
-            this[nameof(Title)] = new BindableProperty<string>();
-            this[nameof(TitleColor)] = new BindableProperty<Color>(new Color(0.2f, 0.2f, 0.2f, 0.8f));
-            this[nameof(Icon)] = new BindableProperty<Texture>();
-            this[nameof(IconSize)] = new BindableProperty<Vector2>(new Vector2(20, 20));
-            this[nameof(Tooltip)] = new BindableProperty<string>();
-            this[nameof(Locked)] = new BindableProperty<bool>(locked, v => locked = v);
-            this[nameof(Position)] = new BindableProperty<Vector2>(position, v => position = v);
-            this[nameof(Expanded)] = new BindableProperty<bool>(true, v => expanded = v);
+            this[TITLE_NAME] = new BindableProperty<string>();
+            this[TITLE_COLOR_NAME] = new BindableProperty<Color>(new Color(0.2f, 0.2f, 0.2f, 0.8f));
+            this[ICON_NAME] = new BindableProperty<Texture>();
+            this[ICON_SIZE_NAME] = new BindableProperty<Vector2>(new Vector2(20, 20));
+            this[TOOLTIP_NAME] = new BindableProperty<string>();
+            this[LOCKED_NAME] = new BindableProperty<bool>(locked, v => locked = v);
+            this[POSITION_NAME] = new BindableProperty<Vector2>(position, v => position = v);
+            this[EXPANDED_NAME] = new BindableProperty<bool>(true, v => expanded = v);
 
             Type type = GetType();
 
@@ -152,11 +159,6 @@ namespace CZToolKit.GraphProcessor
         }
 
         public virtual void OnInitializedPropertyMapping(IVariableOwner variableOwner) { }
-
-        public void UpdateExpanded()
-        {
-            Expanded = expanded;
-        }
 
         public object GetFieldInfoValue(FieldInfo _fieldInfo)
         {

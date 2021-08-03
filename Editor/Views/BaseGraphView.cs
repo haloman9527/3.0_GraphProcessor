@@ -135,8 +135,8 @@ namespace CZToolKit.GraphProcessor.Editors
             viewTransform.position = Model.Position;
             viewTransform.scale = Model.Scale;
 
-            Model.BindingProperty<Vector3>(nameof(Model.Position), OnPositionChanged);
-            Model.BindingProperty<Vector3>(nameof(Model.Scale), OnScaleChanged);
+            Model.BindingProperty<Vector3>(BaseGraph.POSITION_NAME, OnPositionChanged);
+            Model.BindingProperty<Vector3>(BaseGraph.SCALE_NAME, OnScaleChanged);
 
             Model.onNodeAdded += OnNodeAdded;
             Model.onNodeRemoved += OnNodeRemoved;
@@ -161,8 +161,8 @@ namespace CZToolKit.GraphProcessor.Editors
                 }
             });
 
-            Model.UnBindingProperty<Vector3>(nameof(Model.Position), OnPositionChanged);
-            Model.UnBindingProperty<Vector3>(nameof(Model.Scale), OnScaleChanged);
+            Model.UnBindingProperty<Vector3>(BaseGraph.POSITION_NAME, OnPositionChanged);
+            Model.UnBindingProperty<Vector3>(BaseGraph.SCALE_NAME, OnScaleChanged);
 
             Model.onNodeAdded -= OnNodeAdded;
             Model.onNodeRemoved -= OnNodeRemoved;

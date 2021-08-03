@@ -219,14 +219,15 @@ namespace CZToolKit.GraphProcessor.Editors
             TitleLabel.style.color = Model.TitleColor.GetLuminance() > 0.5f && Model.TitleColor.a > 0.5f ? Color.black : Color.white * 0.9f;
 
 
-            Model.BindingProperty<bool>(nameof(Model.Expanded), OnExpandedChanged);
-            Model.BindingProperty<string>(nameof(Model.Title), OnTitleChanged);
+            Model.BindingProperty<string>(BaseNode.TITLE_NAME, OnTitleChanged);
+            Model.BindingProperty<Color>(BaseNode.TITLE_COLOR_NAME, OnTitleColorChanged);
+            Model.BindingProperty<Texture>(BaseNode.ICON_NAME, OnIconChanged);
+            Model.BindingProperty<Vector2>(BaseNode.ICON_SIZE_NAME, OnIconSizeChanged);
+            Model.BindingProperty<string>(BaseNode.TOOLTIP_NAME, OnTooltipChanged);
+            Model.BindingProperty<Vector2>(BaseNode.POSITION_NAME, OnPositionChanged);
+            Model.BindingProperty<bool>(BaseNode.EXPANDED_NAME, OnExpandedChanged);
+
             Model.Title = GraphProcessorEditorUtility.GetNodeDisplayName(Model.GetType());
-            Model.BindingProperty<Texture>(nameof(Model.Icon), OnIconChanged);
-            Model.BindingProperty<Vector2>(nameof(Model.IconSize), OnIconSizeChanged);
-            Model.BindingProperty<string>(nameof(Model.Tooltip), OnTooltipChanged);
-            Model.BindingProperty<Vector2>(nameof(Model.Position), OnPositionChanged);
-            Model.BindingProperty<Color>(nameof(Model.TitleColor), OnTitleColorChanged);
         }
 
         public virtual void UnBindingProperties()
@@ -235,13 +236,13 @@ namespace CZToolKit.GraphProcessor.Editors
             {
                 portView.UnBindingProperties();
             }
-            Model.UnBindingProperty<bool>(nameof(Model.Expanded), OnExpandedChanged);
-            Model.UnBindingProperty<string>(nameof(Model.Title), OnTitleChanged);
-            Model.UnBindingProperty<Texture>(nameof(Model.Icon), OnIconChanged);
-            Model.UnBindingProperty<Vector2>(nameof(Model.IconSize), OnIconSizeChanged);
-            Model.UnBindingProperty<string>(nameof(Model.Tooltip), OnTooltipChanged);
-            Model.UnBindingProperty<Vector2>(nameof(Model.Position), OnPositionChanged);
-            Model.UnBindingProperty<Color>(nameof(Model.TitleColor), OnTitleColorChanged);
+            Model.UnBindingProperty<string>(BaseNode.TITLE_NAME, OnTitleChanged);
+            Model.UnBindingProperty<Color>(BaseNode.TITLE_COLOR_NAME, OnTitleColorChanged);
+            Model.UnBindingProperty<Texture>(BaseNode.ICON_NAME, OnIconChanged);
+            Model.UnBindingProperty<Vector2>(BaseNode.ICON_SIZE_NAME, OnIconSizeChanged);
+            Model.UnBindingProperty<string>(BaseNode.TOOLTIP_NAME, OnTooltipChanged);
+            Model.UnBindingProperty<Vector2>(BaseNode.POSITION_NAME, OnPositionChanged);
+            Model.UnBindingProperty<bool>(BaseNode.EXPANDED_NAME, OnExpandedChanged);
         }
         #endregion
 

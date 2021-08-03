@@ -83,16 +83,16 @@ namespace CZToolKit.GraphProcessor.Editors
             base.SetPosition(GraphView.Model.BlackboardPosition);
             style.display = GraphView.Model.BlackboardVisible ? DisplayStyle.Flex : DisplayStyle.None;
 
-            GraphView.Model.BindingProperty<Rect>(nameof(GraphView.Model.BlackboardPosition), OnPositionChanged);
-            GraphView.Model.BindingProperty<bool>(nameof(GraphView.Model.BlackboardVisible), OnVisibleChanged);
+            GraphView.Model.BindingProperty<bool>(BaseGraph.BLACKBOARD_VISIBLE_NAME, OnVisibleChanged);
+            GraphView.Model.BindingProperty<Rect>(BaseGraph.BLACKBOARD_POSITION_NAME, OnPositionChanged);
             GraphView.Model.onBlackboardDataAdded += OnBlackboardDataAdded;
             GraphView.Model.onBlackboardDataRemoved += OnBlackboardDataRemoved;
             GraphView.Model.onBlackboardDataRenamed += OnBlackboardDataRenamed;
         }
         public void UnBindingProperties()
         {
-            GraphView.Model.UnBindingProperty<Rect>(nameof(GraphView.Model.BlackboardPosition), OnPositionChanged);
-            GraphView.Model.UnBindingProperty<bool>(nameof(GraphView.Model.BlackboardVisible), OnVisibleChanged);
+            GraphView.Model.UnBindingProperty<bool>(BaseGraph.BLACKBOARD_VISIBLE_NAME, OnVisibleChanged);
+            GraphView.Model.UnBindingProperty<Rect>(BaseGraph.BLACKBOARD_POSITION_NAME, OnPositionChanged);
             GraphView.Model.onBlackboardDataAdded -= OnBlackboardDataAdded;
             GraphView.Model.onBlackboardDataRemoved -= OnBlackboardDataRemoved;
             GraphView.Model.onBlackboardDataRenamed -= OnBlackboardDataRenamed;
