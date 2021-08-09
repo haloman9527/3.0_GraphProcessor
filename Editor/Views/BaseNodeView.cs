@@ -218,7 +218,6 @@ namespace CZToolKit.GraphProcessor.Editors
             titleContainer.style.backgroundColor = Model.TitleColor;
             TitleLabel.style.color = Model.TitleColor.GetLuminance() > 0.5f && Model.TitleColor.a > 0.5f ? Color.black : Color.white * 0.9f;
 
-
             Model.BindingProperty<string>(BaseNode.TITLE_NAME, OnTitleChanged);
             Model.BindingProperty<Color>(BaseNode.TITLE_COLOR_NAME, OnTitleColorChanged);
             Model.BindingProperty<Texture>(BaseNode.ICON_NAME, OnIconChanged);
@@ -365,6 +364,7 @@ namespace CZToolKit.GraphProcessor.Editors
             }
             //evt.menu.AppendAction("Open Node View Script", (e) => OpenNodeViewScript(), OpenNodeViewScriptStatus);
             evt.menu.AppendAction(Model.Locked ? "Unlock" : "Lock", (e) => ChangeLockStatus(), Status.Normal);
+            //evt.menu.AppendAction("Open Node View Script", (e) => OpenNodeViewScript(), OpenNodeViewScriptStatus);
             evt.menu.AppendSeparator();
         }
 
