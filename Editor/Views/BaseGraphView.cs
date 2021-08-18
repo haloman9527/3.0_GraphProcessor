@@ -195,10 +195,10 @@ namespace CZToolKit.GraphProcessor.Editors
             RegisterCallback<DetachFromPanelEvent>(evt => { UnBindingProperties(); });
             yield return 0;
 
-            yield return GlobalEditorCoroutineMachine.StartCoroutine(GenerateNodeViews());
-            yield return GlobalEditorCoroutineMachine.StartCoroutine(GenerateGroupViews());
-            yield return GlobalEditorCoroutineMachine.StartCoroutine(LinkNodeViews());
-            yield return GlobalEditorCoroutineMachine.StartCoroutine(NotifyNodeViewsInitialized());
+            yield return GraphWindow.StartCoroutine(GenerateNodeViews());
+            yield return GraphWindow.StartCoroutine(GenerateGroupViews());
+            yield return GraphWindow.StartCoroutine(LinkNodeViews());
+            yield return GraphWindow.StartCoroutine(NotifyNodeViewsInitialized());
 
             OnInitialized();
 
