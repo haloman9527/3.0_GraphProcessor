@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: New Math Graph 1
   m_EditorClassIdentifier: 
   graph:
-    position: {x: 244, y: 233, z: 0}
-    scale: {x: 0.32690176, y: 0.32690176, z: 1}
+    position: {x: 283, y: 254, z: 0}
+    scale: {x: 0.57175326, y: 0.57175326, z: 1}
     blackboardVisible: 0
     blackboardPosition:
       serializedVersion: 2
@@ -48,9 +48,9 @@ MonoBehaviour:
     blackboard: {}
   serializedGraph: "{\r\n    \"$id\": 0,\r\n    \"$type\": \"0|CZToolKit.GraphProcessor.Examples.MathGraph,
     Assembly-CSharp\",\r\n    \"position\": {\r\n        \"$type\": \"1|UnityEngine.Vector3,
-    UnityEngine.CoreModule\",\r\n        244,\r\n        233,\r\n        0\r\n   
-    },\r\n    \"scale\": {\r\n        \"$type\": 1,\r\n        0.326901764,\r\n       
-    0.326901764,\r\n        1\r\n    },\r\n    \"blackboardVisible\": false,\r\n   
+    UnityEngine.CoreModule\",\r\n        283,\r\n        254,\r\n        0\r\n   
+    },\r\n    \"scale\": {\r\n        \"$type\": 1,\r\n        0.571753263,\r\n       
+    0.571753263,\r\n        1\r\n    },\r\n    \"blackboardVisible\": false,\r\n   
     \"blackboardPosition\": {\r\n        \"$type\": \"2|UnityEngine.Rect, UnityEngine.CoreModule\",\r\n       
     18,\r\n        19,\r\n        223,\r\n        258\r\n    },\r\n    \"nodes\":
     {\r\n        \"$id\": 1,\r\n        \"$type\": \"3|System.Collections.Generic.Dictionary`2[[System.String,
@@ -766,7 +766,7 @@ MonoBehaviour:
     {\r\n                    \"$id\": 129,\r\n                    \"$type\": 11,\r\n                   
     \"guid\": \"405d4bb2-7251-43f3-8d0d-9eb76c456551\",\r\n                    \"position\":
     {\r\n                        \"$type\": 6,\r\n                        1232.77673,\r\n                       
-    350.6799\r\n                    },\r\n                    \"expanded\": false,\r\n                   
+    350.6799\r\n                    },\r\n                    \"expanded\": true,\r\n                   
     \"locked\": false,\r\n                    \"ports\": {\r\n                       
     \"$id\": 130,\r\n                        \"$type\": 7,\r\n                       
     \"comparer\": {\r\n                            \"$id\": 131,\r\n                           

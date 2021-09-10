@@ -54,9 +54,9 @@ namespace CZToolKit.GraphProcessor.Editors
 
         private void DrawSerialziedVaraibles(SerializedProperty property)
         {
-            GUIHelper.SetFoldoutBool("SerializedVariablesPreview",
-                EditorGUILayout.BeginFoldoutHeaderGroup(GUIHelper.GetFoldoutBool("SerializedVariablesPreview", false), property.displayName));
-            if (GUIHelper.GetFoldoutBool("SerializedVariablesPreview"))
+            GUIHelper.CacheBool("SerializedVariablesPreview",
+                EditorGUILayout.BeginFoldoutHeaderGroup(GUIHelper.GetCachedBool("SerializedVariablesPreview", false), property.displayName));
+            if (GUIHelper.GetCachedBool("SerializedVariablesPreview"))
                 GUILayout.TextArea(property.stringValue, EditorStyles.wordWrappedLabel);
             EditorGUILayout.EndFoldoutHeaderGroup();
         }

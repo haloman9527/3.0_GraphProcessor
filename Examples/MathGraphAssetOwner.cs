@@ -14,6 +14,9 @@
  */
 #endregion
 
+using System.Collections.Generic;
+using UnityEngine;
+
 namespace CZToolKit.GraphProcessor.Examples
 {
     public class MathGraphAssetOwner : GraphAssetOwner<MathGraphAsset, MathGraph>
