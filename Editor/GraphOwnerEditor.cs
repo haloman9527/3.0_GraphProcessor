@@ -50,9 +50,10 @@ namespace CZToolKit.GraphProcessor.Editors
 
         private void DrawSerialziedVaraibles(SerializedProperty property)
         {
-            GUIHelper.CacheBool(property.displayName,
-                EditorGUILayout.BeginFoldoutHeaderGroup(GUIHelper.GetCachedBool(property.displayName, false), property.displayName));
-            if (GUIHelper.GetCachedBool(property.displayName))
+            var @bool = GUIHelper.TryGetContextData(property.displayName, false);
+            @bool.value = EditorGUILayout.BeginFoldoutHeaderGroup(@bool.value, property.displayName);
+
+            if (@bool.value)
                 GUILayout.TextArea(property.stringValue, EditorStyles.wordWrappedLabel);
             EditorGUILayout.EndFoldoutHeaderGroup();
         }

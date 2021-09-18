@@ -36,9 +36,9 @@ namespace CZToolKit.GraphProcessor.Editors
 
         private void DrawSerializedGraph(SerializedProperty property)
         {
-            GUIHelper.CacheBool("SerializedGraphPreview",
-                EditorGUILayout.BeginFoldoutHeaderGroup(GUIHelper.GetCachedBool("SerializedGraphPreview", false), property.displayName));
-            if (GUIHelper.GetCachedBool("SerializedGraphPreview"))
+            var @bool = GUIHelper.TryGetContextData("SerializedGraphPreview", false);
+            @bool.value = EditorGUILayout.BeginFoldoutHeaderGroup(@bool.value, property.displayName);
+            if (@bool.value)
                 GUILayout.TextArea(property.stringValue, EditorStyles.wordWrappedLabel);
             EditorGUILayout.EndFoldoutHeaderGroup();
         }
