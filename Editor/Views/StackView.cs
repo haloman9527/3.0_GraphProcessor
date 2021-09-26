@@ -17,6 +17,7 @@ using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UIElements;
 using System.Collections.Generic;
+using CZToolKit.Core;
 
 namespace CZToolKit.GraphProcessor.Editors
 {

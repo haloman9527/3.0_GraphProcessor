@@ -13,6 +13,7 @@
  *
  */
 #endregion
+using CZToolKit.Core;
 using CZToolKit.GraphProcessor.Editors;
 using System;
 using System.Collections.Generic;

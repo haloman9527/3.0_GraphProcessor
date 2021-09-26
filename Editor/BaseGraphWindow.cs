@@ -24,6 +24,7 @@ using UnityEditor.UIElements;
 //using UnityEngine.Profiling;
 
 using UnityObject = UnityEngine.Object;
+using CZToolKit.Core;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
@@ -124,7 +125,7 @@ namespace CZToolKit.GraphProcessor.Editors
         public GraphViewParentElement GraphViewParent { get; private set; }
         public ToolbarView Toolbar { get { return GraphViewParent.Toolbar; } }
         public VisualElement GraphViewElement { get { return GraphViewParent.GraphViewElement; } }
-        public CommandDispatcher CommandDispatcher { get; private set; }
+        public CommandDispatcher CommandDispatcher { get; private set; } = new CommandDispatcher();
         #endregion
 
         #region Unity
@@ -132,9 +133,6 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             titleContent = new GUIContent("Graph Processor");
             rootVisualElement.styleSheets.Add(GraphProcessorStyles.BasicStyle);
-
-            CommandDispatcher = new CommandDispatcher(CreateGraphState());
-            CommandDispatcherHelper.RegisterDefaultCommandHandlers(CommandDispatcher);
 
             GraphOwner = EditorUtility.InstanceIDToObject(graphOwnerInstanceID) as IGraphOwner;
 
@@ -255,11 +253,6 @@ namespace CZToolKit.GraphProcessor.Editors
         }
 
         protected virtual void OnLoadedGraph() { }
-
-        protected virtual GraphState CreateGraphState()
-        {
-            return new GraphState();
-        }
         #endregion
     }
 }

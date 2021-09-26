@@ -883,7 +883,7 @@ MonoBehaviour:
     CZToolKit.Core\",\r\n            \"guid\": \"52c5eb68-4b55-4488-be9d-babfe773f1a8\",\r\n           
     \"value\": $eref:0\r\n        }\r\n    ]\r\n}"
   variablesUnityReference:
-  - {fileID: 0}
+  - {fileID: 576272909}
   graphAsset: {fileID: 11400000, guid: a584fdc37b6d2ad4da59f02d6a9313ed, type: 2}
 --- !u!114 &1056614260217815109
 MonoBehaviour:
@@ -917,7 +917,7 @@ MonoBehaviour:
     {\r\n        \"$type\": \"2|UnityEngine.Rect, UnityEngine.CoreModule\",\r\n       
     0,\r\n        0,\r\n        150,\r\n        200\r\n    },\r\n    \"nodes\": {\r\n       
     \"$id\": 1,\r\n        \"$type\": \"3|System.Collections.Generic.Dictionary`2[[System.String,
-    mscorlib],[CZToolKit.GraphProcessor.BaseNode, Assembly-CSharp]], mscorlib\",\r\n       
+    mscorlib],[CZToolKit.GraphProcessor.BaseNode, CZToolKit.GraphProcessor]], mscorlib\",\r\n       
     \"comparer\": {\r\n            \"$id\": 2,\r\n            \"$type\": \"4|System.Collections.Generic.GenericEqualityComparer`1[[System.String,
     mscorlib]], mscorlib\"\r\n        },\r\n        \"$rlength\": 1,\r\n        \"$rcontent\":
     [\r\n            {\r\n                \"$k\": \"fdf5fa67-97c7-4da1-8081-c08a39229729\",\r\n               
@@ -929,15 +929,15 @@ MonoBehaviour:
     \"expanded\": true,\r\n                    \"locked\": false,\r\n                   
     \"ports\": {\r\n                        \"$id\": 4,\r\n                       
     \"$type\": \"7|System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[CZToolKit.GraphProcessor.NodePort,
-    Assembly-CSharp]], mscorlib\",\r\n                        \"comparer\": {\r\n                           
-    \"$id\": 5,\r\n                            \"$type\": 4\r\n                       
-    },\r\n                        \"$rlength\": 1,\r\n                        \"$rcontent\":
-    [\r\n                            {\r\n                                \"$k\":
-    \"value\",\r\n                                \"$v\": {\r\n                                   
+    CZToolKit.GraphProcessor]], mscorlib\",\r\n                        \"comparer\":
+    {\r\n                            \"$id\": 5,\r\n                            \"$type\":
+    4\r\n                        },\r\n                        \"$rlength\": 1,\r\n                       
+    \"$rcontent\": [\r\n                            {\r\n                               
+    \"$k\": \"value\",\r\n                                \"$v\": {\r\n                                   
     \"$id\": 6,\r\n                                    \"$type\": \"8|CZToolKit.GraphProcessor.NodePort,
-    Assembly-CSharp\",\r\n                                    \"fieldName\": \"value\",\r\n                                   
-    \"typeQualifiedName\": \"CZToolKit.Core.SharedVariable.SharedGameObject, CZToolKit.Core,
-    Version=0.0.0.0, Culture=neutral, PublicKeyToken=null\",\r\n                                   
+    CZToolKit.GraphProcessor\",\r\n                                    \"fieldName\":
+    \"value\",\r\n                                    \"typeQualifiedName\": \"CZToolKit.Core.SharedVariable.SharedGameObject,
+    CZToolKit.Core, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null\",\r\n                                   
     \"multiple\": true,\r\n                                    \"direction\": 1,\r\n                                   
     \"typeConstraint\": 1,\r\n                                    \"edgeGUIDs\":
     {\r\n                                        \"$id\": 7,\r\n                                       
@@ -951,17 +951,18 @@ MonoBehaviour:
     \"value\": null\r\n                    }\r\n                }\r\n           
     }\r\n        ]\r\n    },\r\n    \"edges\": {\r\n        \"$id\": 9,\r\n       
     \"$type\": \"11|System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[CZToolKit.GraphProcessor.BaseEdge,
-    Assembly-CSharp]], mscorlib\",\r\n        \"comparer\": $iref:2,\r\n        \"$rlength\":
-    0,\r\n        \"$rcontent\": [\r\n        ]\r\n    },\r\n    \"groups\": {\r\n       
-    \"$id\": 10,\r\n        \"$type\": \"12|System.Collections.Generic.List`1[[CZToolKit.GraphProcessor.GroupPanel,
-    Assembly-CSharp]], mscorlib\",\r\n        \"$rlength\": 0,\r\n        \"$rcontent\":
-    [\r\n        ]\r\n    },\r\n    \"blackboard\": {\r\n        \"$id\": 11,\r\n       
-    \"$type\": \"13|CZToolKit.Core.Blackboards.CZBlackboard, CZToolKit.Core\",\r\n       
-    \"dataMap\": {\r\n            \"$id\": 12,\r\n            \"$type\": \"14|CZToolKit.Core.Blackboards.CZDataDictionary,
-    CZToolKit.Core\",\r\n            \"comparer\": {\r\n                \"$id\":
-    13,\r\n                \"$type\": 4\r\n            },\r\n            \"$rlength\":
-    0,\r\n            \"$rcontent\": [\r\n            ]\r\n        },\r\n       
-    \"guidMap\": {\r\n            \"$id\": 14,\r\n            \"$type\": \"15|CZToolKit.Core.Blackboards.CZGUIDMapDictionary,
+    CZToolKit.GraphProcessor]], mscorlib\",\r\n        \"comparer\": $iref:2,\r\n       
+    \"$rlength\": 0,\r\n        \"$rcontent\": [\r\n        ]\r\n    },\r\n    \"groups\":
+    {\r\n        \"$id\": 10,\r\n        \"$type\": \"12|System.Collections.Generic.List`1[[CZToolKit.GraphProcessor.GroupPanel,
+    CZToolKit.GraphProcessor]], mscorlib\",\r\n        \"$rlength\": 0,\r\n       
+    \"$rcontent\": [\r\n        ]\r\n    },\r\n    \"blackboard\": {\r\n        \"$id\":
+    11,\r\n        \"$type\": \"13|CZToolKit.Core.Blackboards.CZBlackboardWithGUID,
+    CZToolKit.Core\",\r\n        \"dataMap\": {\r\n            \"$id\": 12,\r\n           
+    \"$type\": \"14|CZToolKit.Core.Blackboards.CZDataDictionary, CZToolKit.Core\",\r\n           
+    \"comparer\": {\r\n                \"$id\": 13,\r\n                \"$type\":
+    4\r\n            },\r\n            \"$rlength\": 0,\r\n            \"$rcontent\":
+    [\r\n            ]\r\n        },\r\n        \"guidMap\": {\r\n            \"$id\":
+    14,\r\n            \"$type\": \"15|CZToolKit.Core.Blackboards.CZGUIDMapDictionary,
     CZToolKit.Core\",\r\n            \"comparer\": $iref:13,\r\n            \"$rlength\":
     0,\r\n            \"$rcontent\": [\r\n            ]\r\n        }\r\n    }\r\n}"
   graphUnityReferences: []

@@ -170,7 +170,7 @@ namespace CZToolKit.GraphProcessor
             _fieldInfo.SetValue(this, _value);
         }
 
-        public List<FieldInfo> GetNodeFieldInfos()
+        public IEnumerable<FieldInfo> GetNodeFieldInfos()
         {
             return Utility_Reflection.GetFieldInfos(GetType());
         }

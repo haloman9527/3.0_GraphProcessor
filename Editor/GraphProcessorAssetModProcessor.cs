@@ -83,7 +83,6 @@ public partial class #ClassName# : BaseNode
         [MenuItem("Assets/Create/Graph Processor/Generate Node Script")]
         public static void GenerateNodeScript()
         {
-
             PopupWindow.Show(new Rect(Screen.width / 2, Screen.width / 2, 0, 0), new ScriptCreatorPopupWindow());
         }
 

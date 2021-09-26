@@ -782,7 +782,7 @@ namespace CZToolKit.GraphProcessor.Editors
         #endregion
     }
 
-    public class BaseGraphView<M> : BaseGraphView where M : BaseGraph
+    public abstract class BaseGraphView<M> : BaseGraphView where M : BaseGraph
     {
         public BaseGraphView(BaseGraph _graph, CommandDispatcher _commandDispatcher, BaseGraphWindow _window) : base(_graph, _commandDispatcher, _window) { }
 

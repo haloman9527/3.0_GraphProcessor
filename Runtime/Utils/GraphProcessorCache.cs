@@ -41,9 +41,7 @@ namespace CZToolKit.GraphProcessor
         #region Ports
         static void CachePorts(Type _nodeType)
         {
-            List<FieldInfo> fieldInfos = Utility_Reflection.GetFieldInfos(_nodeType);
-
-            foreach (var fieldInfo in fieldInfos)
+            foreach (var fieldInfo in Utility_Reflection.GetFieldInfos(_nodeType))
             {
                 // 获取接口特性
                 if (!Utility_Attribute.TryGetFieldAttribute(_nodeType, fieldInfo.Name, out PortAttribute portAttribute)) continue;
