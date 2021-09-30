@@ -598,7 +598,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
         protected virtual IEnumerable<Type> GetNodeTypes()
         {
-            foreach (var type in Utility_Reflection.GetChildrenTypes<BaseNode>())
+            foreach (var type in Utility_Reflection.GetChildTypes<BaseNode>())
             {
                 if (type.IsAbstract) continue;
                 Debug.Log(type.Name);

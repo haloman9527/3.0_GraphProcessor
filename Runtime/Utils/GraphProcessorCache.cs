@@ -31,7 +31,7 @@ namespace CZToolKit.GraphProcessor
         static GraphProcessorCache()
         {
             portCache = new Dictionary<Type, List<NodePort>>();
-            foreach (var nodeType in Utility_Reflection.GetChildrenTypes<BaseNode>())
+            foreach (var nodeType in Utility_Reflection.GetChildTypes<BaseNode>())
             {
                 if (nodeType.IsAbstract) continue;
                 CachePorts(nodeType);
