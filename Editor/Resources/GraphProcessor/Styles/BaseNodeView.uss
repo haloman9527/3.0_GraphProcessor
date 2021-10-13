@@ -22,7 +22,7 @@
     border-radius: 7px
 }
 
-#input-container {
+/*#input-container {
     position: absolute;
     right: 100%;
     top: 40px;
@@ -112,4 +112,4 @@
     width: 17px;
     border-top-right-radius: 2px;
     border-bottom-right-radius: 2px;
-}
+}*/

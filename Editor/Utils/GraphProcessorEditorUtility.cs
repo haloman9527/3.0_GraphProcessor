@@ -16,77 +16,84 @@
 using CZToolKit.Core;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using UnityEditor;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
     public static class GraphProcessorEditorUtility
     {
-        #region GraphViewTypeCache
-        /// <summary> GraphEditorWindow类型缓存 Key:Graph类型 Value:Graph视图类型 </summary>
-        static Dictionary<Type, Type> GRAPH_EDITOR_WINDOW_TYPE_CACHE;
+        #region GraphWindowTypeCache
+        static Dictionary<Type, Type> WindowTypeCache;
 
-        /// <summary> 根据Graph类型返回对应窗口类型 </summary>
-        /// <param name="_graphType"> Graph类型 </param>
-        /// <returns> 窗口类型 </returns>
-        public static Type GetGraphWindowType(Type _graphType)
+        public static Type GetGraphWindowType(Type graphType)
         {
-            if (GRAPH_EDITOR_WINDOW_TYPE_CACHE == null)
+            if (WindowTypeCache == null)
             {
-                GRAPH_EDITOR_WINDOW_TYPE_CACHE = new Dictionary<Type, Type>();
-
-                foreach (var type in TypeCache.GetTypesWithAttribute<CustomGraphWindowAttribute>())
+                WindowTypeCache = new Dictionary<Type, Type>();
+                foreach (var type in TypeCache.GetTypesDerivedFrom<BaseGraphWindow>())
                 {
-                    if (Utility_Attribute.TryGetTypeAttribute(type, out CustomGraphWindowAttribute attribute))
-                        GRAPH_EDITOR_WINDOW_TYPE_CACHE[attribute.graphType] = type;
+                    if (type.IsAbstract) continue;
+
+                    foreach (var att in Utility_Attribute.GetTypeAttributes(type, true))
+                    {
+                        if (att is CustomGraphWindowAttribute sAtt)
+                            WindowTypeCache[sAtt.targetGraphType] = type;
+                    }
                 }
             }
-            if (GRAPH_EDITOR_WINDOW_TYPE_CACHE.TryGetValue(_graphType, out Type graphWindowType))
-                return graphWindowType;
-
-            return typeof(BaseGraphWindow);
+            if (WindowTypeCache.TryGetValue(graphType, out Type windowType))
+                return windowType;
+            if (graphType.BaseType != null)
+                return GetGraphWindowType(graphType.BaseType);
+            else
+                return typeof(BaseGraphWindow);
         }
+
         #endregion
 
         #region NodeViewTypeCache
-        /// <summary> NodeView类型缓存 Key:节点类型，Value:节点视图类型 </summary>
-        static Dictionary<Type, Type> NODE_VIEW_TYPE_CACHE;
+        static Dictionary<Type, Type> NodeViewTypeCache;
 
-        /// <summary> 根据节点类型返回对应节点视图类型 </summary>
-        /// <param name="_nodeType"> 节点类型 </param>
-        /// <returns> 节点视图类型 </returns>
-        public static Type GetNodeViewType(Type _nodeDataType)
+        public static Type GetNodeViewType(Type nodeType)
         {
-            if (NODE_VIEW_TYPE_CACHE == null)
+            if (NodeViewTypeCache == null)
             {
-                NODE_VIEW_TYPE_CACHE = new Dictionary<Type, Type>();
-                foreach (var _nodeViewType in TypeCache.GetTypesWithAttribute<CustomNodeViewAttribute>())
+                NodeViewTypeCache = new Dictionary<Type, Type>();
+                foreach (var type in TypeCache.GetTypesDerivedFrom<BaseNodeView>())
                 {
-                    if (Utility_Attribute.TryGetTypeAttribute(_nodeViewType, out CustomNodeViewAttribute attri))
-                        NODE_VIEW_TYPE_CACHE[attri.nodeType] = _nodeViewType;
+                    if (type.IsAbstract) continue;
+                    foreach (var att in Utility_Attribute.GetTypeAttributes(type, true))
+                    {
+                        if (att is CustomNodeViewAttribute sAtt)
+                            NodeViewTypeCache[sAtt.targetNodeType] = type;
+                    }
                 }
             }
-            if (NODE_VIEW_TYPE_CACHE.TryGetValue(_nodeDataType, out Type nodeViewType))
+            if (NodeViewTypeCache.TryGetValue(nodeType, out Type nodeViewType))
                 return nodeViewType;
-
-            return null;
+            if (nodeType.BaseType != null)
+                return GetNodeViewType(nodeType.BaseType);
+            else
+                return typeof(DefaultNodeView);
         }
         #endregion
 
         #region NodeNames
-        public static string GetNodeDisplayName(Type _nodeType)
+        public static string GetNodeDisplayName(Type nodeType)
         {
-            if (Utility_Attribute.TryGetTypeAttribute(_nodeType, out NodeMenuItemAttribute attri))
+            if (Utility_Attribute.TryGetTypeAttribute(nodeType, out NodeMenuItemAttribute attri))
             {
                 if (attri.titles != null && attri.titles.Length != 0)
                     return attri.titles[attri.titles.Length - 1];
             }
-            return _nodeType.Name;
+            return nodeType.Name;
         }
 
-        public static string GetDisplayName(string _fieldName)
+        public static string GetDisplayName(string fieldName)
         {
-            return ObjectNames.NicifyVariableName(_fieldName);
+            return ObjectNames.NicifyVariableName(fieldName);
         }
         #endregion
     }

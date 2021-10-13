@@ -24,7 +24,7 @@ using System.Collections.Generic;
 #endif
 
 #if USE_ODIN
-using OdinSerializer;
+using Sirenix.Serialization;
 #endif
 
 using UnityObject = UnityEngine.Object;
@@ -41,9 +41,9 @@ namespace CZToolKit.GraphProcessor
     public static class JsonSerializer
     {
 #if USE_ODIN
-        public static string SerializeValue<T>(T _targetObject, out List<UnityObject> _referencedUnityObjects)
+        public static string SerializeValue<T>(T targetObject, out List<UnityObject> referencedUnityObjects)
         {
-            return System.Text.Encoding.UTF8.GetString(SerializationUtility.SerializeValue(_targetObject, DataFormat.JSON, out _referencedUnityObjects));
+            return System.Text.Encoding.UTF8.GetString(SerializationUtility.SerializeValue(targetObject, DataFormat.JSON, out referencedUnityObjects));
         }
 
 

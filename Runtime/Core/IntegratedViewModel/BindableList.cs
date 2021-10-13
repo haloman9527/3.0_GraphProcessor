@@ -33,28 +33,28 @@ namespace CZToolKit.GraphProcessor
 
         public BindableList() { Value = new List<T>(); }
 
-        public override void SetValueWithoutNotify(List<T> _value)
+        public override void SetValueWithoutNotify(List<T> value)
         {
-            base.SetValueWithoutNotify(new List<T>(_value));
+            base.SetValueWithoutNotify(new List<T>(value));
         }
 
-        public void Add(T _item)
+        public void Add(T item)
         {
-            Value.Add(_item);
+            Value.Add(item);
             onAdded?.Invoke();
         }
 
-        public void Insert(int _index, T _item)
+        public void Insert(int index, T item)
         {
-            Value.Insert(_index, _item);
-            onInserted?.Invoke(_index);
+            Value.Insert(index, item);
+            onInserted?.Invoke(index);
         }
 
-        public bool Remove(T _item)
+        public bool Remove(T item)
         {
-            if (Value.Remove(_item))
+            if (Value.Remove(item))
             {
-                onRemoved?.Invoke(_item);
+                onRemoved?.Invoke(item);
                 return true;
             }
             return false;

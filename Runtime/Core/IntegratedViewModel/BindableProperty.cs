@@ -14,7 +14,6 @@
  */
 #endregion
 using System;
-using System.Collections.Generic;
 
 namespace CZToolKit.GraphProcessor
 {
@@ -47,9 +46,9 @@ namespace CZToolKit.GraphProcessor
         public Type ValueType { get { return typeof(T); } }
 
         public BindableProperty() { }
-        public BindableProperty(T _default) { value = _default; }
-        public BindableProperty(Action<T> _updateModel) { updateModel = _updateModel; }
-        public BindableProperty(T _default, Action<T> _updateModel) { value = _default; updateModel = _updateModel; }
+        public BindableProperty(T defaultValue) { value = defaultValue; }
+        public BindableProperty(Action<T> updateModel) { this.updateModel = updateModel; }
+        public BindableProperty(T defaultValue, Action<T> updateModel) { value = defaultValue; this.updateModel = updateModel; }
 
         public void ValueChanged()
         {
@@ -63,21 +62,21 @@ namespace CZToolKit.GraphProcessor
         {
             return this as BindableProperty<T1>;
         }
-        public void RegesterValueChangedEvent(Action<T> _onValueChanged)
+        public void RegesterValueChangedEvent(Action<T> onValueChanged)
         {
-            onValueChanged += _onValueChanged;
+            onValueChanged += onValueChanged;
         }
-        public void UnregesterValueChangedEvent(Action<T> _onValueChanged)
+        public void UnregesterValueChangedEvent(Action<T> onValueChanged)
         {
-            onValueChanged -= _onValueChanged;
+            onValueChanged -= onValueChanged;
         }
-        public virtual void SetValueWithoutNotify(T _value)
+        public virtual void SetValueWithoutNotify(T value)
         {
-            value = _value;
+            this.value = value;
         }
-        public void SetValueWithoutNotify(object _value)
+        public void SetValueWithoutNotify(object value)
         {
-            SetValueWithoutNotify((T)_value);
+            SetValueWithoutNotify((T)value);
         }
         public override string ToString()
         {

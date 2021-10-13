@@ -16,7 +16,7 @@
 
 namespace CZToolKit.GraphProcessor.Editors
 {
-    public sealed class DefaultNodeView : BaseNodeView<BaseNode>
+    public sealed class DefaultSimpleNodeView : SimpleNodeView<BaseNode>
     {
         public override PortView NewPortView(Slot slot)
         {

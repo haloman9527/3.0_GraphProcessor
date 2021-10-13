@@ -1,19 +1,11 @@
-PortView {
-    height: 24px;
+.port {
+    flex-direction: row;
     align-items: center;
     padding-left: 4px;
     padding-right: 4px;
 }
 
-PortView.input {
-    flex-direction: row;
-}
-
-PortView.output {
-    flex-direction: row;
-}
-
-PortView > #connector {
+.port > #connector {
     border-color: rgb(255, 255, 0);
     background-color: #212121;
     width: 8px;
@@ -30,19 +22,18 @@ PortView > #connector {
     border-bottom-width:1px;
 }
 
-PortView > #connector:hover {
+.port > #connector:hover {
     border-color:  #f0f0f0
 }
 
-PortView > #connector > #cap
+.port > #connector > #cap
 {
-    background-color: #212121;
     width: 4px;
     height: 4px;
     border-radius: 4px;
 }
 
-PortView > #connector > #cap:hover
+.port > #connector > #cap:hover
 {
     background-color: #f0f0f0;
 }

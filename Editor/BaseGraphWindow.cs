@@ -13,104 +13,26 @@
  *
  */
 #endregion
+using CZToolKit.Core;
 using CZToolKit.Core.Editors;
 using System;
-//using System.Diagnostics;
 using UnityEngine;
-using UnityEditor;
 using UnityEngine.UIElements;
+using UnityEditor;
 using UnityEditor.Callbacks;
 using UnityEditor.UIElements;
-//using UnityEngine.Profiling;
 
 using UnityObject = UnityEngine.Object;
-using CZToolKit.Core;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
     [Serializable]
     public class BaseGraphWindow : BasicEditorWindow
     {
-        #region 静态方法
-        [OnOpenAsset(0)]
-        static bool OnGraphAssetOpened(int _instanceID, int _line)
-        {
-            var graphAsset = EditorUtility.InstanceIDToObject(_instanceID) as BaseGraphAsset;
-
-            if (graphAsset != null)
-            {
-                LoadGraphFromAsset(graphAsset);
-                return true;
-            }
-
-            return false;
-        }
-
-        /// <summary> 从GraphAssetOwner中加载 </summary>
-        public static BaseGraphWindow LoadGraphFromOwner(GraphOwner _graphOwner)
-        {
-            BaseGraphWindow graphWindow = LoadGraph(_graphOwner.Graph);
-            graphWindow.GraphAsset = _graphOwner;
-            graphWindow.GraphView.Model.InitializePropertyMapping(_graphOwner);
-            graphWindow.GraphOwner = _graphOwner;
-            return graphWindow;
-        }
-
-        /// <summary> 从GraphAssetOwner中加载 </summary>
-        public static BaseGraphWindow LoadGraphFromAssetOwner(GraphAssetOwner _graphAssetOwner)
-        {
-            BaseGraphWindow graphWindow = LoadGraph(_graphAssetOwner.Graph);
-            graphWindow.GraphAsset = _graphAssetOwner.GraphAsset;
-            graphWindow.GraphView.Model.InitializePropertyMapping(_graphAssetOwner);
-            graphWindow.GraphOwner = _graphAssetOwner;
-            return graphWindow;
-        }
-
-        /// <summary> 从GraphAsset中加载 </summary>
-        public static BaseGraphWindow LoadGraphFromAsset(IGraphAsset _graphAsset)
-        {
-            BaseGraphWindow graphWindow = LoadGraph(_graphAsset.Graph);
-            graphWindow.GraphAsset = _graphAsset as UnityObject;
-            return graphWindow;
-        }
-
-        /// <summary> 加载Graph </summary>
-        /// <param name="_graph"></param>
-        public static BaseGraphWindow LoadGraph(BaseGraph _graph)
-        {
-            Type windowType = GraphProcessorEditorUtility.GetGraphWindowType(_graph.GetType());
-
-            UnityObject[] objs = Resources.FindObjectsOfTypeAll(windowType);
-            BaseGraphWindow window = null;
-            foreach (var obj in objs)
-            {
-                if (obj.GetType() == windowType)
-                {
-                    window = obj as BaseGraphWindow;
-                    break;
-                }
-            }
-            if (window == null)
-            {
-                window = CreateInstance(windowType) as BaseGraphWindow;
-                window.SetUp(_graph);
-                window.Show();
-            }
-            else
-            {
-                window.Focus();
-                if (window.Graph != _graph)
-                    window.SetUp(_graph);
-            }
-
-            return window;
-        }
-        #endregion
-
         #region 字段
-        [SerializeField] int graphOwnerInstanceID;
-        [SerializeField] IGraphOwner graphOwner;
-        [SerializeField] UnityObject graphAsset;
+        protected int graphOwnerInstanceID;
+        protected IGraphOwner graphOwner;
+        protected UnityObject graphAsset;
         #endregion
 
         #region 属性
@@ -125,7 +47,6 @@ namespace CZToolKit.GraphProcessor.Editors
         public GraphViewParentElement GraphViewParent { get; private set; }
         public ToolbarView Toolbar { get { return GraphViewParent.Toolbar; } }
         public VisualElement GraphViewElement { get { return GraphViewParent.GraphViewElement; } }
-        public CommandDispatcher CommandDispatcher { get; private set; } = new CommandDispatcher();
         #endregion
 
         #region Unity
@@ -137,7 +58,7 @@ namespace CZToolKit.GraphProcessor.Editors
             GraphOwner = EditorUtility.InstanceIDToObject(graphOwnerInstanceID) as IGraphOwner;
 
             if (GraphView == null && GraphAsset != null)
-                EditorApplication.delayCall += ReloadGraph;
+                EditorApplication.delayCall += Reload;
             EditorApplication.playModeStateChanged += OnPlayModeChanged;
         }
 
@@ -150,19 +71,6 @@ namespace CZToolKit.GraphProcessor.Editors
             EditorApplication.playModeStateChanged -= OnPlayModeChanged;
         }
 
-        //protected override void Update()
-        //{
-        //    base.Update();
-
-        //    Profiler.BeginSample("CZToolKit.GraphProcessor");
-        //    Stopwatch sw = new Stopwatch();
-
-        //    CommandDispatcher.NotifyObservers();
-
-        //    sw.Stop();
-        //    Profiler.EndSample();
-        //}
-
         protected virtual void OnDestroy()
         {
             if (Selection.activeObject is ObjectInspector objectInspector
@@ -174,9 +82,9 @@ namespace CZToolKit.GraphProcessor.Editors
         #endregion
 
         #region 回调
-        void OnPlayModeChanged(PlayModeStateChange _playMode)
+        void OnPlayModeChanged(PlayModeStateChange playMode)
         {
-            switch (_playMode)
+            switch (playMode)
             {
                 case PlayModeStateChange.EnteredEditMode:
                 case PlayModeStateChange.EnteredPlayMode:
@@ -188,7 +96,12 @@ namespace CZToolKit.GraphProcessor.Editors
         }
         #endregion
 
-        #region 帮助方法
+        #region 方法
+        protected virtual BaseGraphView NewGraphView(BaseGraph graph)
+        {
+            return new DefaultGraphView(graph, this, new CommandDispatcher());
+        }
+
         public void Clear()
         {
             if (GraphViewParent != null)
@@ -200,19 +113,19 @@ namespace CZToolKit.GraphProcessor.Editors
             GraphOwner = null;
         }
 
-        void SetUp(BaseGraph _graph)
+        void InternalLoad(BaseGraph graph)
         {
             if (GraphView != null && GraphAsset != null && EditorUtility.IsDirty(GraphAsset))
                 GraphView.SaveGraphToDisk();
             Clear();
 
-            Graph = _graph;
+            Graph = graph;
 
             GraphViewParent = new GraphViewParentElement();
             GraphViewParent.StretchToParentSize();
             rootVisualElement.Add(GraphViewParent);
 
-            GraphView = GenerateGraphView(Graph);
+            GraphView = NewGraphView(Graph);
             if (GraphView == null) return;
 
             ToolbarButton btnPing = new ToolbarButton()
@@ -228,31 +141,144 @@ namespace CZToolKit.GraphProcessor.Editors
                 text = "Reload",
                 style = { width = 70 }
             };
-            btnReload.clicked += ReloadGraph;
+            btnReload.clicked += Reload;
             GraphViewParent.Toolbar.AddButtonToRight(btnReload);
 
             GraphViewParent.GraphViewElement.Add(GraphView);
-
-            OnLoadedGraph();
         }
 
-        void ReloadGraph()
+        // 从GraphOwner加载
+        public void Load(GraphOwner graphOwner)
+        {
+            GraphAsset = graphOwner;
+            GraphOwner = graphOwner;
+            GraphOwner.Graph.InitializePropertyMapping(GraphOwner);
+            InternalLoad(GraphOwner.Graph);
+        }
+
+        // 从GraphAssetOwner加载
+        public void Load(GraphAssetOwner graphAssetOwner)
+        {
+            GraphAsset = graphAssetOwner.GraphAsset;
+            GraphOwner = graphAssetOwner;
+            GraphOwner.Graph.InitializePropertyMapping(GraphOwner);
+            InternalLoad(GraphOwner.Graph);
+        }
+
+        // 从Graph资源加载
+        public void Load(IGraphAsset graphAsset)
+        {
+            this.graphAsset = graphAsset as UnityObject;
+            GraphOwner = null;
+            InternalLoad(graphAsset.Graph);
+        }
+
+        // 直接加载Graph对象
+        public void Load(BaseGraph graph)
+        {
+            GraphAsset = null;
+            GraphOwner = null;
+            InternalLoad(graph);
+        }
+
+        // 重新加载Graph
+        public void Reload()
         {
             IGraphOwner tempGraphOwner = GraphOwner;
-            SetUp((GraphAsset as IGraphAsset).Graph);
+
+            var targetGraph = GraphAsset == null ? Graph : (GraphAsset as IGraphAsset).Graph;
+            if (targetGraph != null && tempGraphOwner != null)
+                targetGraph.InitializePropertyMapping(tempGraphOwner);
+            InternalLoad(targetGraph);
             GraphOwner = tempGraphOwner;
-            if (Graph != null && GraphOwner != null)
-                GraphView.Model.InitializePropertyMapping(GraphOwner);
+        }
+
+        // 保存到硬盘(如果可以)
+        public void Save()
+        {
+            if (GraphAsset == null) return;
+
+            EditorUtility.SetDirty(GraphAsset);
+
+            if (AssetDatabase.Contains(GraphAsset))
+                AssetDatabase.SaveAssets();
         }
         #endregion
 
-        #region Overrides
-        protected virtual BaseGraphView GenerateGraphView(BaseGraph _graph)
+        #region 静态
+        /// <summary> 从Graph类型获取对应的GraphWindow </summary>
+        static BaseGraphWindow GetGraphWindow(Type graphType)
         {
-            return new DefaultGraphView(_graph, CommandDispatcher, this);
+            var windowType = GraphProcessorEditorUtility.GetGraphWindowType(graphType);
+            UnityObject[] objs = Resources.FindObjectsOfTypeAll(windowType);
+            BaseGraphWindow window = null;
+            foreach (var obj in objs)
+            {
+                if (obj.GetType() == windowType)
+                {
+                    window = obj as BaseGraphWindow;
+                    break;
+                }
+            }
+            if (window == null)
+            {
+                window = CreateInstance(windowType) as BaseGraphWindow;
+                window.Show();
+            }
+            window.Focus();
+            return window;
         }
 
-        protected virtual void OnLoadedGraph() { }
+        /// <summary> 从GraphOwner打开Graph </summary>
+        /// <param name="graphAsset"></param>
+        public static BaseGraphWindow Open(GraphOwner graphOwner)
+        {
+            if (graphOwner == null) return null;
+            GetGraphWindow(graphOwner.Graph.GetType()).Load(graphOwner);
+            var window = GetGraphWindow(graphOwner.Graph.GetType());
+            window.Load(graphOwner);
+            return window;
+        }
+
+        /// <summary> 从GraphAssetOwner打开Graph </summary>
+        /// <param name="graphAsset"></param>
+        public static BaseGraphWindow Open(GraphAssetOwner graphAssetOwner)
+        {
+            if (graphAssetOwner == null) return null;
+            var window = GetGraphWindow(graphAssetOwner.Graph.GetType());
+            window.Load(graphAssetOwner);
+            return window;
+        }
+
+        /// <summary> 从GraphAsset打开Graph </summary>
+        /// <param name="graphAsset"></param>
+        public static BaseGraphWindow Open(IGraphAsset graphAsset)
+        {
+            if (graphAsset == null) return null;
+            var window = GetGraphWindow(graphAsset.Graph.GetType());
+            window.Load(graphAsset);
+            return window;
+        }
+
+        /// <summary> 打开Graph </summary>
+        /// <param name="graph"></param>
+        public static BaseGraphWindow Open(BaseGraph graph)
+        {
+            if (graph == null) return null;
+            var window = GetGraphWindow(graph.GetType());
+            window.Load(graph);
+            return window;
+        }
+
+        /// <summary> 双击资源 </summary>
+        [OnOpenAsset(0)]
+        public static bool OnOpen(int instanceID, int line)
+        {
+            IGraphAsset graphAsset = EditorUtility.InstanceIDToObject(instanceID) as IGraphAsset;
+            if (graphAsset == null) return false;
+            Open(graphAsset);
+            return true;
+        }
         #endregion
     }
 }

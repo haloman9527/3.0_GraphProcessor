@@ -13,7 +13,6 @@
  *
  */
 #endregion
-using CZToolKit.Core.Blackboards;
 using CZToolKit.Core.SharedVariable;
 using System;
 using System.Collections.Generic;
@@ -22,29 +21,17 @@ using UnityEngine;
 
 namespace CZToolKit.GraphProcessor
 {
-    public partial class BaseGraph : IntegratedViewModel
+    public abstract partial class BaseGraph : IntegratedViewModel
     {
-        public const string POSITION_NAME = nameof(position);
+        public const string POSITION_NAME = nameof(panOffset);
         public const string SCALE_NAME = nameof(scale);
-        public const string BLACKBOARD_VISIBLE_NAME = nameof(blackboardVisible);
-        public const string BLACKBOARD_POSITION_NAME = nameof(blackboardPosition);
 
         #region 字段
         public event Action<BaseNode> onNodeAdded;
         public event Action<BaseNode> onNodeRemoved;
 
-        public event Action<BaseEdge> onEdgeAdded;
-        public event Action<BaseEdge> onEdgeRemoved;
-
-        //public event Action<StackPanel> onStackAdded;
-        //public event Action<StackPanel> onStackRemoved;
-
-        public event Action<GroupPanel> onGroupAdded;
-        public event Action<GroupPanel> onGroupRemoved;
-
-        public event Action<string, ICZType> onBlackboardDataAdded;
-        public event Action<string> onBlackboardDataRemoved;
-        public event Action<string, string> onBlackboardDataRenamed;
+        public event Action<BaseConnection> onEdgeAdded;
+        public event Action<BaseConnection> onEdgeRemoved;
 
         [NonSerialized] public List<SharedVariable> variables = new List<SharedVariable>();
         #endregion
@@ -60,29 +47,8 @@ namespace CZToolKit.GraphProcessor
             get { return GetPropertyValue<Vector3>(SCALE_NAME); }
             set { SetPropertyValue(SCALE_NAME, value); }
         }
-        public bool BlackboardVisible
-        {
-            get { return GetPropertyValue<bool>(BLACKBOARD_VISIBLE_NAME); }
-            set { SetPropertyValue(BLACKBOARD_VISIBLE_NAME, value); }
-        }
-        public Rect BlackboardPosition
-        {
-            get { return GetPropertyValue<Rect>(BLACKBOARD_POSITION_NAME); }
-            set { SetPropertyValue(BLACKBOARD_POSITION_NAME, value); }
-        }
-        public IReadOnlyBlackboardWithGUID Blackboard
-        {
-            get
-            {
-                if (blackboard == null)
-                    blackboard = new CZBlackboardWithGUID();
-                return blackboard;
-            }
-        }
         public IReadOnlyDictionary<string, BaseNode> Nodes { get { return nodes; } }
-        public IReadOnlyDictionary<string, BaseEdge> Edges { get { return edges; } }
-        //public IReadOnlyDictionary<string, StackPanel> Stacks { get { return stacks; } }
-        public IReadOnlyList<GroupPanel> Groups { get { return groups; } }
+        public IReadOnlyList<BaseConnection> Connections { get { return connections; } }
         public IVariableOwner VarialbeOwner { get; private set; }
         public IReadOnlyList<SharedVariable> Variables
         {
@@ -99,9 +65,8 @@ namespace CZToolKit.GraphProcessor
             foreach (var node in nodes.Values)
             {
                 node.Enable(this);
-                GraphProcessorCache.UpdateStaticPorts(node);
             }
-            foreach (var edge in edges.Values)
+            foreach (var edge in connections)
             {
                 edge.Enable(this);
             }
@@ -109,16 +74,14 @@ namespace CZToolKit.GraphProcessor
 
         public override void InitializeBindableProperties()
         {
-            this[POSITION_NAME] = new BindableProperty<Vector3>(position, v => position = v);
+            this[POSITION_NAME] = new BindableProperty<Vector3>(panOffset, v => panOffset = v);
             this[SCALE_NAME] = new BindableProperty<Vector3>(scale, v => scale = v);
-            this[BLACKBOARD_VISIBLE_NAME] = new BindableProperty<bool>(blackboardVisible, v => blackboardVisible = v);
-            this[BLACKBOARD_POSITION_NAME] = new BindableProperty<Rect>(blackboardPosition, v => blackboardPosition = v);
         }
 
         #region API
-        public virtual void Initialize(IGraphOwner _graphOwner)
+        public virtual void Initialize(IGraphOwner graphOwner)
         {
-            InitializePropertyMapping(_graphOwner);
+            InitializePropertyMapping(graphOwner);
         }
 
         private void CollectionVariables()
@@ -133,11 +96,11 @@ namespace CZToolKit.GraphProcessor
             }
         }
 
-        public void InitializePropertyMapping(IVariableOwner _variableOwner)
+        public void InitializePropertyMapping(IVariableOwner variableOwner)
         {
             if (variables == null)
                 CollectionVariables();
-            VarialbeOwner = _variableOwner;
+            VarialbeOwner = variableOwner;
             foreach (var variable in variables)
             {
                 variable.InitializePropertyMapping(VarialbeOwner);
@@ -145,48 +108,28 @@ namespace CZToolKit.GraphProcessor
 
             foreach (var node in Nodes.Values)
             {
-                node.OnInitializedPropertyMapping(_variableOwner);
+                node.OnInitializedPropertyMapping(variableOwner);
             }
         }
 
-        public void AddParameterNode(string _dataName, Vector2 _position)
+        public string GenerateNodeGUID()
         {
-            ParameterNode parameterNode = BaseNode.CreateNew<ParameterNode>(_position);
-            parameterNode.Name = _dataName;
-            AddNode(parameterNode);
+            while (true)
+            {
+                string guid = Guid.NewGuid().ToString();
+                if (!nodes.ContainsKey(guid)) return guid;
+            }
         }
 
-        public void AddRelayNode(BaseEdge _edge, Vector2 _position)
+        public void AddNode(BaseNode node)
         {
-            NodePort inputPort = _edge.InputPort;
-            NodePort outputPort = _edge.OutputPort;
-            DisconnectEdge(_edge.GUID);
-
-            var relayNode = BaseNode.CreateNew<RelayNode>(_position);
-            BaseNode node = AddNode(relayNode);
-            Connect(node.Ports[nameof(RelayNode.input)], outputPort);
-            Connect(inputPort, node.Ports[nameof(RelayNode.output)]);
-        }
-
-        public void RemoveRelayNode(RelayNode _relayNode)
-        {
-            NodePort inputPort = _relayNode.Ports[nameof(RelayNode.output)].Connection;
-            NodePort outputPort = _relayNode.Ports[nameof(RelayNode.input)].Connection;
-
-            RemoveNode(_relayNode);
-            if (inputPort != null && outputPort != null)
-                Connect(inputPort, outputPort);
-        }
-
-        public BaseNode AddNode(BaseNode _node)
-        {
-            if (_node == null) return null;
-            GraphProcessorCache.UpdateStaticPorts(_node);
-            _node.Enable(this);
-            nodes[_node.GUID] = _node;
+            if (node.ContainsKey(node.GUID))
+                return;
+            node.Enable(this);
+            nodes[node.GUID] = node;
             if (variables == null)
                 CollectionVariables();
-            IEnumerable<SharedVariable> nodeVariables = SharedVariableUtility.CollectionObjectSharedVariables(_node);
+            IEnumerable<SharedVariable> nodeVariables = SharedVariableUtility.CollectionObjectSharedVariables(node);
             variables.AddRange(nodeVariables);
             if (VarialbeOwner != null)
             {
@@ -195,179 +138,105 @@ namespace CZToolKit.GraphProcessor
                     variable.InitializePropertyMapping(VarialbeOwner);
                 }
             }
-            onNodeAdded?.Invoke(_node);
-            return _node;
+            onNodeAdded?.Invoke(node);
         }
 
-        public void RemoveNode(BaseNode _node)
+        public void RemoveNode(BaseNode node)
         {
-            if (_node == null) return;
-            // 断开这个节点的所有连接,移除节点
-            Disconnect(_node);
-            BaseNode node = Nodes[_node.GUID];
-            nodes.Remove(_node.GUID);
+            if (node == null) return;
+            Disconnect(node);
+            nodes.Remove(node.GUID);
             onNodeRemoved?.Invoke(node);
         }
 
-        public BaseEdge Connect(NodePort _inputPort, NodePort _outputPort)
+        public void Connect(BaseConnection connection)
         {
-            // 在连接两个端口，如果端口设置为只能连接一个端口，则需要在连接前把其他所有连接断开
-            if (!_inputPort.Multiple)
-                Disconnect(_inputPort);
-            if (!_outputPort.Multiple)
-                Disconnect(_outputPort);
+            BaseConnection tempConnection = connections.Find(item =>
+            item.FromNodeGUID == connection.FromNodeGUID
+            && item.FromSlotName == connection.FromSlotName
+            && item.ToNodeGUID == connection.ToNodeGUID
+            && item.ToSlotName == connection.ToSlotName
+            );
+            if (tempConnection != null)
+                return;
 
-            // 创建一条连线
-            BaseEdge edge = BaseEdge.CreateNewEdge(_inputPort, _outputPort);
-            edge.Enable(this);
-            edges[edge.GUID] = edge;
+            connection.Enable(this);
 
-            _inputPort.ConnectToEdge(edge);
-            _outputPort.ConnectToEdge(edge);
+            Slot fromSlot = connection.FromNode.GetSlots().FirstOrDefault(slot => slot.name == connection.FromSlotName);
+            if (fromSlot.capacity == Slot.Capacity.Single)
+                Disconnect(connection.FromNode, fromSlot);
 
-            onEdgeAdded?.Invoke(edge);
+            Slot toSlot = connection.ToNode.GetSlots().FirstOrDefault(slot => slot.name == connection.ToSlotName);
+            if (toSlot.capacity == Slot.Capacity.Single)
+                Disconnect(connection.ToNode, toSlot);
 
-            _inputPort.Owner.OnConnected(_inputPort, _outputPort);
-            _outputPort.Owner.OnConnected(_outputPort, _inputPort);
-            return edge;
+            connection.Enable(this);
+            connections.Add(connection);
+            onEdgeAdded?.Invoke(connection);
         }
 
-        public void DisconnectEdge(string _edgeGUID)
+        public BaseConnection Connect(BaseNode from, string fromSlotName, BaseNode to, string toSlotName)
         {
-            if (!Edges.TryGetValue(_edgeGUID, out BaseEdge edge))
-                return;
+            BaseConnection connection = connections.Find(edge => edge.FromNode == from && edge.FromSlotName == fromSlotName && edge.ToNode == to && edge.ToSlotName == toSlotName);
+            if (connection != null)
+                return connection;
 
-            if (edge == null)
+            Slot fromSlot = from.GetSlots().FirstOrDefault(slot => slot.name == fromSlotName);
+            if (fromSlot.capacity == Slot.Capacity.Single)
+                Disconnect(from, fromSlot);
+
+            Slot toSlot = to.GetSlots().FirstOrDefault(slot => slot.name == toSlotName);
+            if (toSlot.capacity == Slot.Capacity.Single)
+                Disconnect(to, toSlot);
+
+            connection = NewConnection(from, fromSlotName, to, toSlotName);
+            connection.Enable(this);
+            connections.Add(connection);
+            onEdgeAdded?.Invoke(connection);
+            return connection;
+        }
+
+        public void Disconnect(BaseNode node)
+        {
+            // 断开节点所有连接
+            foreach (var edge in Connections.ToArray())
             {
-                edges.Remove(_edgeGUID);
-                return;
+                if (edge.FromNode == node || edge.ToNode == node)
+                    Disconnect(edge);
             }
+        }
 
-            edge.InputPort.DisconnectToEdge(edge);
-            edge.OutputPort.DisconnectToEdge(edge);
-            edge.InputNode.OnDisconnected(edge.InputPort, edge.OutputPort);
-            edge.OutputNode.OnDisconnected(edge.OutputPort, edge.InputPort);
-
-            edges.Remove(_edgeGUID);
+        public void Disconnect(BaseConnection edge)
+        {
+            if (!connections.Contains(edge)) return;
+            connections.Remove(edge);
             onEdgeRemoved?.Invoke(edge);
         }
 
-        public void Disconnect(NodePort _nodePort)
+        public void Disconnect(BaseNode node, Slot slot)
         {
-            for (int i = 0; i < _nodePort.EdgeGUIDs.Count; i++)
+            Disconnect(node, slot.name);
+        }
+
+        public void Disconnect(BaseNode node, string slotName)
+        {
+            foreach (var edge in connections.ToArray())
             {
-                DisconnectEdge(_nodePort.EdgeGUIDs[i]);
+                if ((edge.FromNode == node && edge.FromSlotName == slotName) || (edge.ToNode == node && edge.ToSlotName == slotName))
+                    Disconnect(edge);
             }
-        }
-
-        public void Disconnect(BaseNode _node)
-        {
-            foreach (NodePort nodePort in _node.Ports.Values)
-            {
-                Disconnect(nodePort);
-            }
-        }
-
-        //public void AddStackNode(StackPanel _stack)
-        //{
-        //    _stack.Enable(this);
-        //    stacks[_stack.GUID] = _stack;
-        //    onStackAdded?.Invoke(_stack);
-        //}
-
-        //public void RemoveStackNode(StackPanel _stack)
-        //{
-        //    stacks.Remove(_stack.GUID);
-        //    onStackRemoved?.Invoke(_stack);
-        //}
-
-        public void AddGroup(GroupPanel _group)
-        {
-            _group.Enable(this);
-            groups.Add(_group);
-            onGroupAdded?.Invoke(_group);
-        }
-
-        public void AddGroup(string _title, Vector2 _position)
-        {
-            GroupPanel group = GroupPanel.Create(_title, _position);
-            AddGroup(group);
-        }
-
-        public void RemoveGroup(GroupPanel _group)
-        {
-            if (groups.Remove(_group)) { }
-            onGroupRemoved?.Invoke(_group);
         }
         #endregion
 
-        #region Blackboard
-        public bool ContainsName_BB(string _name)
+        #region Overrides
+        public T NewNode<T>(Vector2 position) where T : BaseNode { return NewNode(typeof(T), position) as T; }
+        public virtual BaseNode NewNode(Type type, Vector2 position)
         {
-            return blackboard.ContainsName(_name);
+            return BaseNode.CreateNew(type, this, position);
         }
-
-        public bool ContainsGUID_BB(string _guid)
+        public virtual BaseConnection NewConnection(BaseNode from, string fromPortName, BaseNode to, string toPortName)
         {
-            return blackboard.ContainsGUID(_guid);
-        }
-
-        public bool AddData_BB(string _name, ICZType _data)
-        {
-            if (blackboard.SetData(_name, _data))
-            {
-                onBlackboardDataAdded?.Invoke(_name, _data);
-                return true;
-            }
-            return false;
-        }
-
-        public bool TryGetData_BB(string _name, out ICZType _data)
-        {
-            return blackboard.TryGetData(_name, out _data);
-        }
-
-        public bool TryGetValue_BB<T>(string _name, out T _value)
-        {
-            return blackboard.TryGetValue(_name, out _value);
-        }
-
-        public bool RemoveData_BB(string _name)
-        {
-            foreach (var parameterNode in Nodes.Values.OfType<ParameterNode>())
-            {
-                if (parameterNode.Name == _name)
-                {
-                    Debug.LogWarning("此参数正被节点引用");
-                    return false;
-                }
-            }
-            if (blackboard.RemoveData(_name))
-            {
-                onBlackboardDataRemoved?.Invoke(_name);
-                return true;
-            }
-            return false;
-        }
-
-        public void SetValue_BB<T>(string _name, T _value)
-        {
-            blackboard.SetValue(_name, _value);
-        }
-
-        public bool RenameData_BB(string _oldName, string _newName)
-        {
-            if (blackboard.Rename(_oldName, _newName))
-            {
-                foreach (var parameterNode in Nodes.Values.OfType<ParameterNode>())
-                {
-                    if (parameterNode.Name == _oldName)
-                        parameterNode.Name = _newName;
-                }
-                onBlackboardDataRenamed?.Invoke(_oldName, _newName);
-                return true;
-            }
-            return false;
+            return BaseConnection.CreateNew<BaseConnection>(from, fromPortName, to, toPortName);
         }
         #endregion
     }

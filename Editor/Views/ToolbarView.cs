@@ -41,60 +41,60 @@ namespace CZToolKit.GraphProcessor.Editors
             Add(Right);
         }
 
-        public void AddToLeft(VisualElement _element)
+        public void AddToLeft(VisualElement element)
         {
-            _element.style.height = new StyleLength(new Length(100, LengthUnit.Percent));
-            Left.Add(_element);
+            element.style.height = new StyleLength(new Length(100, LengthUnit.Percent));
+            Left.Add(element);
         }
 
-        public void AddToRight(VisualElement _element)
+        public void AddToRight(VisualElement element)
         {
-            _element.style.height = new StyleLength(new Length(100, LengthUnit.Percent));
-            _element.style.left = 0;
-            _element.style.borderRightWidth = 0;
-            Right.Add(_element);
+            element.style.height = new StyleLength(new Length(100, LengthUnit.Percent));
+            element.style.left = 0;
+            element.style.borderRightWidth = 0;
+            Right.Add(element);
         }
 
-        public void AddButtonToLeft(ToolbarButton _button)
+        public void AddButtonToLeft(ToolbarButton button)
         {
-            _button.style.alignSelf = Align.Center;
-            _button.style.width = 60;
-            _button.style.unityTextAlign = TextAnchor.MiddleCenter;
-            _button.style.color = Color.black;
-            AddToLeft(_button);
+            button.style.alignSelf = Align.Center;
+            button.style.width = 60;
+            button.style.unityTextAlign = TextAnchor.MiddleCenter;
+            button.style.color = Color.black;
+            AddToLeft(button);
         }
 
-        public void AddButtonToRight(ToolbarButton _button)
+        public void AddButtonToRight(ToolbarButton button)
         {
-            _button.style.alignSelf = Align.Center;
-            _button.style.width = 60;
-            _button.style.unityTextAlign = TextAnchor.MiddleCenter;
-            _button.style.color = Color.black;
-            AddToRight(_button);
+            button.style.alignSelf = Align.Center;
+            button.style.width = 60;
+            button.style.unityTextAlign = TextAnchor.MiddleCenter;
+            button.style.color = Color.black;
+            AddToRight(button);
         }
 
-        public void AddToggleToLeft(ToolbarToggle _toggle, float _width)
+        public void AddToggleToLeft(ToolbarToggle toggle, float width)
         {
-            _toggle.Q(className: "unity-toggle__input").style.justifyContent = Justify.Center;
-            _toggle.Q(className: "unity-toggle__input").StretchToParentSize();
-            _toggle.Q(className: "unity-toggle__input").style.marginBottom = 0;
-            _toggle.Q(className: "unity-toggle__text").style.color = new Color(0, 0, 0, 1);
-            _toggle.style.alignSelf = Align.Center;
-            _toggle.style.width = _width;
-            _toggle.style.unityTextAlign = TextAnchor.MiddleCenter;
-            AddToLeft(_toggle);
+            toggle.Q(className: "unity-toggle__input").style.justifyContent = Justify.Center;
+            toggle.Q(className: "unity-toggle__input").StretchToParentSize();
+            toggle.Q(className: "unity-toggle__input").style.marginBottom = 0;
+            toggle.Q(className: "unity-toggle__text").style.color = new Color(0, 0, 0, 1);
+            toggle.style.alignSelf = Align.Center;
+            toggle.style.width = width;
+            toggle.style.unityTextAlign = TextAnchor.MiddleCenter;
+            AddToLeft(toggle);
         }
 
-        public void AddToggleToRight(ToolbarToggle _toggle, float _width)
+        public void AddToggleToRight(ToolbarToggle toggle, float width)
         {
-            _toggle.Q(className: "unity-toggle__input").style.justifyContent = Justify.Center;
-            _toggle.Q(className: "unity-toggle__input").StretchToParentSize();
-            _toggle.Q(className: "unity-toggle__input").style.marginBottom = 0;
-            _toggle.Q(className: "unity-toggle__text").style.color = new Color(0, 0, 0, 1);
-            _toggle.style.alignSelf = Align.Center;
-            _toggle.style.width = _width;
-            _toggle.style.unityTextAlign = TextAnchor.MiddleCenter;
-            AddToLeft(_toggle);
+            toggle.Q(className: "unity-toggle__input").style.justifyContent = Justify.Center;
+            toggle.Q(className: "unity-toggle__input").StretchToParentSize();
+            toggle.Q(className: "unity-toggle__input").style.marginBottom = 0;
+            toggle.Q(className: "unity-toggle__text").style.color = new Color(0, 0, 0, 1);
+            toggle.style.alignSelf = Align.Center;
+            toggle.style.width = width;
+            toggle.style.unityTextAlign = TextAnchor.MiddleCenter;
+            AddToLeft(toggle);
         }
     }
 }

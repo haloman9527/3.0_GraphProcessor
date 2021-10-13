@@ -21,9 +21,9 @@ namespace CZToolKit.GraphProcessor
     public class NodeTooltipAttribute : Attribute
     {
         public string Tooltip;
-        public NodeTooltipAttribute(string _tooltip)
+        public NodeTooltipAttribute(string tooltip)
         {
-            Tooltip = _tooltip;
+            Tooltip = tooltip;
         }
     }
 }

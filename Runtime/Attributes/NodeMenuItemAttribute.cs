@@ -26,9 +26,9 @@ namespace CZToolKit.GraphProcessor
         /// <summary> 是否要显示在节点菜单中 </summary>
         public bool showInList = true;
 
-        public NodeMenuItemAttribute(params string[] _titles)
+        public NodeMenuItemAttribute(params string[] titles)
         {
-            titles = _titles;
+            this.titles = titles;
         }
     }
 }

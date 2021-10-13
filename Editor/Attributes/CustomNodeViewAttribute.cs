@@ -17,14 +17,14 @@ using System;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = true)]
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
     public class CustomNodeViewAttribute : Attribute
     {
-        public Type nodeType;
+        public Type targetNodeType;
 
-        public CustomNodeViewAttribute(Type _nodeType)
+        public CustomNodeViewAttribute(Type targetNodeType)
         {
-            nodeType = _nodeType;
+            this.targetNodeType = targetNodeType;
         }
     }
 }

@@ -84,16 +84,16 @@ namespace CZToolKit.GraphProcessor
         #endregion
 
         #region API
-        public SharedVariable GetVariable(string _guid)
+        public SharedVariable GetVariable(string guid)
         {
-            if (string.IsNullOrEmpty(_guid)) return null;
+            if (string.IsNullOrEmpty(guid)) return null;
             CheckSerialization();
             if (variables != null)
             {
                 if (sharedVariableIndex == null || sharedVariableIndex.Count != variables.Count)
                     UpdateVariablesIndex();
                 int index;
-                if (sharedVariableIndex.TryGetValue(_guid, out index))
+                if (sharedVariableIndex.TryGetValue(guid, out index))
                     return variables[index];
             }
             return null;
@@ -130,9 +130,9 @@ namespace CZToolKit.GraphProcessor
             }
         }
 
-        public void SetVariableValue(string _guid, object _value)
+        public void SetVariableValue(string guid, object value)
         {
-            GetVariable(_guid)?.SetValue(_value);
+            GetVariable(guid)?.SetValue(value);
         }
 
         public IReadOnlyList<SharedVariable> GetVariables()
@@ -141,9 +141,9 @@ namespace CZToolKit.GraphProcessor
             return variables;
         }
 
-        public void SetVariables(List<SharedVariable> _variables)
+        public void SetVariables(List<SharedVariable> variables)
         {
-            variables = _variables;
+            this.variables = variables;
             UpdateVariablesIndex();
         }
         #endregion

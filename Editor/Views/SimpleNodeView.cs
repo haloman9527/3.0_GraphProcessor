@@ -14,6 +14,8 @@
  */
 #endregion
 
+using UnityEngine.UIElements;
+
 namespace CZToolKit.GraphProcessor.Editors
 {
     public abstract class SimpleNodeView<M> : BaseNodeView<M> where M : BaseNode
@@ -21,9 +23,9 @@ namespace CZToolKit.GraphProcessor.Editors
         protected SimpleNodeView() : base()
         {
             styleSheets.Add(GraphProcessorStyles.SimpleNodeViewStyle);
-            titleContainer.Insert(0, inputContainer);
-            titleContainer.Add(outputContainer);
-            titleContainer.Add(topContainer);
+            //titleContainer.Add(topContainer);
+            //titleContainer.Insert(0, inputContainer);
+            //titleContainer.Add(outputContainer);
         }
     }
 }

@@ -16,8 +16,9 @@
 #title > #title-label {
     margin-left: 2px;
     margin-right: 2px;
-    font-size: 11px;
+    font-size: 12px;
     align-self: center;
+    -unity-text-align: middle-center;
 }
 
 #title > #input {

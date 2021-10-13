@@ -24,12 +24,12 @@ namespace CZToolKit.GraphProcessor
 {
     public abstract class GraphOwner : MonoBehaviour, IGraphOwner, IGraphAsset, IVariableOwner
     {
-        #region �ֶ�
+        #region 字段
         protected List<SharedVariable> variables = new List<SharedVariable>();
         protected Dictionary<string, int> sharedVariableIndex;
         #endregion
 
-        #region ����
+        #region 属性
         public abstract BaseGraph Graph { get; }
         public abstract Type GraphType { get; }
         #endregion
@@ -55,16 +55,16 @@ namespace CZToolKit.GraphProcessor
             return gameObject.name;
         }
 
-        public SharedVariable GetVariable(string _guid)
+        public SharedVariable GetVariable(string guid)
         {
-            if (string.IsNullOrEmpty(_guid)) return null;
+            if (string.IsNullOrEmpty(guid)) return null;
             CheckVaraiblesSerialization();
             if (variables != null)
             {
                 if (sharedVariableIndex == null || sharedVariableIndex.Count != variables.Count)
                     UpdateVariablesIndex();
                 int index;
-                if (sharedVariableIndex.TryGetValue(_guid, out index))
+                if (sharedVariableIndex.TryGetValue(guid, out index))
                     return variables[index];
             }
             return null;
@@ -101,9 +101,9 @@ namespace CZToolKit.GraphProcessor
             }
         }
 
-        public void SetVariableValue(string _guid, object _value)
+        public void SetVariableValue(string guid, object value)
         {
-            GetVariable(_guid)?.SetValue(_value);
+            GetVariable(guid)?.SetValue(value);
         }
 
         public IReadOnlyList<SharedVariable> GetVariables()
@@ -112,9 +112,9 @@ namespace CZToolKit.GraphProcessor
             return variables;
         }
 
-        public void SetVariables(List<SharedVariable> _variables)
+        public void SetVariables(List<SharedVariable> variables)
         {
-            variables = _variables;
+            this.variables = variables;
             UpdateVariablesIndex();
         }
         #endregion
@@ -142,13 +142,13 @@ namespace CZToolKit.GraphProcessor
     public abstract class GraphOwner<TGraph> : GraphOwner, ISerializationCallbackReceiver
         where TGraph : BaseGraph, new()
     {
-        #region �ֶ�
+        #region 字段
         [HideInInspector]
         [SerializeField]
         TGraph graph = new TGraph();
         #endregion
 
-        #region ����
+        #region 属性
         public override BaseGraph Graph
         {
             get { return graph; }
@@ -158,6 +158,8 @@ namespace CZToolKit.GraphProcessor
         {
             get { return graph; }
         }
+
+        public override Type GraphType { get { return typeof(TGraph); } }
 
         #endregion
 
@@ -234,8 +236,6 @@ namespace CZToolKit.GraphProcessor
         }
 
         #endregion
-
-        public override Type GraphType { get { return typeof(TGraph); } }
 
         private void Reset()
         {

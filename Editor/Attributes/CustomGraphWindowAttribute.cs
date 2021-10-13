@@ -17,14 +17,14 @@ using System;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = true)]
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
     public class CustomGraphWindowAttribute : Attribute
     {
-        public Type graphType;
+        public Type targetGraphType;
 
-        public CustomGraphWindowAttribute(Type _graphType)
+        public CustomGraphWindowAttribute(Type targetGraphType)
         {
-            graphType = _graphType;
+            this.targetGraphType = targetGraphType;
         }
     }
 }

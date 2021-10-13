@@ -23,9 +23,9 @@ namespace CZToolKit.GraphProcessor
     {
         public Color color;
 
-        public NodeTitleColorAttribute(float _r, float _g, float _b)
+        public NodeTitleColorAttribute(float r, float g, float b)
         {
-            color = new Color(_r, _g, _b, 1);
+            color = new Color(r, g, b, 1);
         }
     }
 }

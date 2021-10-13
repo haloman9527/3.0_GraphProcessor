@@ -13,7 +13,6 @@
  *
  */
 #endregion
-
 using CZToolKit.Core.SharedVariable;
 
 namespace CZToolKit.GraphProcessor
