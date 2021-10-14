@@ -1,4 +1,4 @@
-#region 注 释
+﻿#region 注 释
 /***
  *
  *  Title:
@@ -15,102 +15,81 @@
 #endregion
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
-using UnityEngine.UIElements;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
-    public class BaseConnectionView : Edge, IBindableView<BaseConnection>
+    public abstract class BaseConnectionView<M> : InternalBaseConnectionView where M : BaseConnection
     {
-        public BaseConnection Model { get; private set; }
-        protected BaseGraphView Owner { get; private set; }
+        public M T_Model { get { return Model as M; } }
 
-        public BaseConnectionView() : base()
+        public BaseConnectionView() : base() { this.AddManipulator(new FlowPoint()); }
+
+        public class FlowPoint : Manipulator
         {
-            styleSheets.Add(GraphProcessorStyles.EdgeViewStyle);
-            this.AddManipulator(new FlowPoint());
-        }
+            VisualElement point { get; set; }
 
-        public void SetUp(BaseConnection connection, BaseGraphView graphView)
-        {
-            Model = connection;
-            Owner = graphView;
-            RegisterCallback<MouseDownEvent>(OnMouseDown);
-        }
-
-        public virtual void UnBindingProperties()
-        {
-
-        }
-
-        void OnMouseDown(MouseDownEvent e)
-        {
-            if (e.clickCount == 2)
+            protected override void RegisterCallbacksOnTarget()
             {
-                var position = e.mousePosition;
-                position += new Vector2(-20 * Owner.scale, -30 * Owner.scale);
-                Vector2 mousePos = Owner.GraphWindow.rootVisualElement.ChangeCoordinatesTo(Owner.contentViewContainer, position);
+                if (target is Edge edge)
+                {
+                    point = new VisualElement();
+                    point.AddToClassList("flow-point");
+                    point.style.left = 0;
+                    point.style.top = 0;
+                    target.Add(point);
+
+                    target.schedule.Execute(() =>
+                    {
+                        UpdateCapPoint(edge, (float)(EditorApplication.timeSinceStartup % 3 / 3));
+                    }).Until(() => point == null);
+                }
+            }
+
+            protected override void UnregisterCallbacksFromTarget()
+            {
+                if (point != null)
+                {
+                    target.Remove(point);
+                    point = null;
+                }
+            }
+
+            public void UpdateCapPoint(Edge edgeView, float t)
+            {
+                Vector3 v = Lerp(edgeView.edgeControl.controlPoints, t);
+                point.style.left = v.x;
+                point.style.top = v.y;
+            }
+
+            Vector2 Lerp(Vector2[] points, float t)
+            {
+                t = Mathf.Clamp01(t);
+                float totalLength = 0;
+                for (int i = 0; i < points.Length - 1; i++)
+                {
+                    totalLength += Vector2.Distance(points[i], points[i + 1]);
+                }
+
+                float pointLength = Mathf.Lerp(0, totalLength, t);
+
+                float tempLength = 0;
+                for (int i = 0; i < points.Length - 1; i++)
+                {
+                    float d = Vector2.Distance(points[i], points[i + 1]);
+                    if (pointLength <= tempLength + d)
+                        return Vector2.Lerp(points[i], points[i + 1], (pointLength - tempLength) / d);
+                    tempLength += d;
+                }
+                return points[0];
             }
         }
     }
 
-    public class FlowPoint : Manipulator
+    /// <summary> 默认 </summary>
+    public sealed class BaseConnectionView : BaseConnectionView<BaseConnection>
     {
-        VisualElement point { get; set; }
-
-        protected override void RegisterCallbacksOnTarget()
-        {
-            if (target is Edge edge)
-            {
-                point = new VisualElement();
-                point.AddToClassList("flow-point");
-                point.style.left = 0;
-                point.style.top = 0;
-                target.Add(point);
-
-                target.schedule.Execute(() =>
-                {
-                    UpdateCapPoint(edge, (float)(EditorApplication.timeSinceStartup % 3 / 3));
-                }).Until(() => point == null);
-            }
-        }
-
-        protected override void UnregisterCallbacksFromTarget()
-        {
-            if (point != null)
-            {
-                target.Remove(point);
-                point = null;
-            }
-        }
-
-        public void UpdateCapPoint(Edge edgeView, float t)
-        {
-            Vector3 v = Lerp(edgeView.edgeControl.controlPoints, t);
-            point.style.left = v.x;
-            point.style.top = v.y;
-        }
-
-        Vector2 Lerp(Vector2[] points, float t)
-        {
-            t = Mathf.Clamp01(t);
-            float totalLength = 0;
-            for (int i = 0; i < points.Length - 1; i++)
-            {
-                totalLength += Vector2.Distance(points[i], points[i + 1]);
-            }
-
-            float pointLength = Mathf.Lerp(0, totalLength, t);
-
-            float tempLength = 0;
-            for (int i = 0; i < points.Length - 1; i++)
-            {
-                float d = Vector2.Distance(points[i], points[i + 1]);
-                if (pointLength <= tempLength + d)
-                    return Vector2.Lerp(points[i], points[i + 1], (pointLength - tempLength) / d);
-                tempLength += d;
-            }
-            return points[0];
-        }
+        public BaseConnectionView() : base() { }
     }
 }

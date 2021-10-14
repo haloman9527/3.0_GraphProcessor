@@ -61,7 +61,7 @@ namespace CZToolKit.GraphProcessor.Editors
             if (NodeViewTypeCache == null)
             {
                 NodeViewTypeCache = new Dictionary<Type, Type>();
-                foreach (var type in TypeCache.GetTypesDerivedFrom<BaseNodeView>())
+                foreach (var type in TypeCache.GetTypesDerivedFrom<InternalBaseNodeView>())
                 {
                     if (type.IsAbstract) continue;
                     foreach (var att in Utility_Attribute.GetTypeAttributes(type, true))
@@ -76,7 +76,7 @@ namespace CZToolKit.GraphProcessor.Editors
             if (nodeType.BaseType != null)
                 return GetNodeViewType(nodeType.BaseType);
             else
-                return typeof(DefaultNodeView);
+                return typeof(BaseNodeView);
         }
         #endregion
 

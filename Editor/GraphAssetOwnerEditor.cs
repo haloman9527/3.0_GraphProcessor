@@ -14,12 +14,13 @@
  */
 #endregion
 using CZToolKit.Core.Editors;
+using CZToolKit.GraphProcessor.Internal;
 using UnityEditor;
 using UnityEngine;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
-    [CustomEditor(typeof(GraphAssetOwner), true)]
+    [CustomEditor(typeof(InternalGraphAssetOwner), true)]
     public class GraphAssetOwnerEditor : BasicEditor
     {
         GUIContent graphContent;
@@ -44,10 +45,10 @@ namespace CZToolKit.GraphProcessor.Editors
             RegisterDrawer("graphAsset", property =>
             {
                 EditorGUILayout.BeginHorizontal();
-                GraphAssetOwner owner = target as GraphAssetOwner;
-                owner.GraphAsset = EditorGUILayout.ObjectField(graphContent, (target as GraphAssetOwner).GraphAsset, owner.GraphAssetType, false) as BaseGraphAsset;
+                InternalGraphAssetOwner owner = target as InternalGraphAssetOwner;
+                owner.GraphAsset = EditorGUILayout.ObjectField(graphContent, (target as InternalGraphAssetOwner).GraphAsset, owner.GraphAssetType, false) as InternalBaseGraphAsset;
                 if (GUILayout.Button("Edit", GUILayout.Width(50)))
-                    BaseGraphWindow.Open(target as GraphAssetOwner);
+                    BaseGraphWindow.Open(target as InternalGraphAssetOwner);
                 EditorGUILayout.EndHorizontal();
             });
         }

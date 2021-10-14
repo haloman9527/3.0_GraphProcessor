@@ -15,13 +15,13 @@
 #endregion
 using CZToolKit.Core;
 using CZToolKit.Core.SharedVariable;
+using CZToolKit.GraphProcessor.Internal;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace CZToolKit.GraphProcessor
 {
-
     public abstract partial class BaseNode : IntegratedViewModel
     {
         public const string TITLE_NAME = nameof(Title);
@@ -82,14 +82,14 @@ namespace CZToolKit.GraphProcessor
             owner = graph;
         }
 
-        public virtual IEnumerable<Slot> GetSlots()
+        public virtual IEnumerable<BaseSlot> GetSlots()
         {
             yield break;
         }
 
         public override void InitializeBindableProperties()
         {
-            this[TITLE_NAME] = new BindableProperty<string>();
+            this[TITLE_NAME] = new BindableProperty<string>(GetType().Name);
             this[TITLE_COLOR_NAME] = new BindableProperty<Color>(new Color(0.2f, 0.2f, 0.2f, 0.8f));
             this[TOOLTIP_NAME] = new BindableProperty<string>();
             this[POSITION_NAME] = new BindableProperty<Vector2>(position, v => position = v);
@@ -116,7 +116,7 @@ namespace CZToolKit.GraphProcessor
         #region Overrides
         public virtual void Initialize(IGraphOwner graphOwner) { }
 
-        public virtual void DrawGizmos(GraphAssetOwner graphOwner) { }
+        public virtual void DrawGizmos(IGraphOwner graphOwner) { }
         #endregion
 
         #region API

@@ -162,12 +162,12 @@ namespace CZToolKit.GraphProcessor
 
             connection.Enable(this);
 
-            Slot fromSlot = connection.FromNode.GetSlots().FirstOrDefault(slot => slot.name == connection.FromSlotName);
-            if (fromSlot.capacity == Slot.Capacity.Single)
+            BaseSlot fromSlot = connection.FromNode.GetSlots().FirstOrDefault(slot => slot.name == connection.FromSlotName);
+            if (fromSlot.capacity == BaseSlot.Capacity.Single)
                 Disconnect(connection.FromNode, fromSlot);
 
-            Slot toSlot = connection.ToNode.GetSlots().FirstOrDefault(slot => slot.name == connection.ToSlotName);
-            if (toSlot.capacity == Slot.Capacity.Single)
+            BaseSlot toSlot = connection.ToNode.GetSlots().FirstOrDefault(slot => slot.name == connection.ToSlotName);
+            if (toSlot.capacity == BaseSlot.Capacity.Single)
                 Disconnect(connection.ToNode, toSlot);
 
             connection.Enable(this);
@@ -181,12 +181,12 @@ namespace CZToolKit.GraphProcessor
             if (connection != null)
                 return connection;
 
-            Slot fromSlot = from.GetSlots().FirstOrDefault(slot => slot.name == fromSlotName);
-            if (fromSlot.capacity == Slot.Capacity.Single)
+            BaseSlot fromSlot = from.GetSlots().FirstOrDefault(slot => slot.name == fromSlotName);
+            if (fromSlot.capacity == BaseSlot.Capacity.Single)
                 Disconnect(from, fromSlot);
 
-            Slot toSlot = to.GetSlots().FirstOrDefault(slot => slot.name == toSlotName);
-            if (toSlot.capacity == Slot.Capacity.Single)
+            BaseSlot toSlot = to.GetSlots().FirstOrDefault(slot => slot.name == toSlotName);
+            if (toSlot.capacity == BaseSlot.Capacity.Single)
                 Disconnect(to, toSlot);
 
             connection = NewConnection(from, fromSlotName, to, toSlotName);
@@ -213,7 +213,7 @@ namespace CZToolKit.GraphProcessor
             onEdgeRemoved?.Invoke(edge);
         }
 
-        public void Disconnect(BaseNode node, Slot slot)
+        public void Disconnect(BaseNode node, BaseSlot slot)
         {
             Disconnect(node, slot.name);
         }

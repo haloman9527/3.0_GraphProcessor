@@ -43,7 +43,7 @@ namespace CZToolKit.GraphProcessor.Editors
         }
         public UnityObject GraphAsset { get { return graphAsset; } private set { graphAsset = value; } }
         public BaseGraph Graph { get; private set; }
-        public BaseGraphView GraphView { get; private set; }
+        public InternalBaseGraphView GraphView { get; private set; }
         public GraphViewParentElement GraphViewParent { get; private set; }
         public ToolbarView Toolbar { get { return GraphViewParent.Toolbar; } }
         public VisualElement GraphViewElement { get { return GraphViewParent.GraphViewElement; } }
@@ -66,7 +66,7 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             if (GraphView != null && GraphAsset != null && EditorUtility.IsDirty(GraphAsset))
             {
-                GraphView.SaveGraphToDisk();
+                GraphView.Save();
             }
             EditorApplication.playModeStateChanged -= OnPlayModeChanged;
         }
@@ -88,7 +88,7 @@ namespace CZToolKit.GraphProcessor.Editors
             {
                 case PlayModeStateChange.EnteredEditMode:
                 case PlayModeStateChange.EnteredPlayMode:
-                    GraphOwner = EditorUtility.InstanceIDToObject(graphOwnerInstanceID) as GraphAssetOwner;
+                    GraphOwner = EditorUtility.InstanceIDToObject(graphOwnerInstanceID) as IGraphAssetOwner;
                     break;
                 default:
                     break;
@@ -97,9 +97,9 @@ namespace CZToolKit.GraphProcessor.Editors
         #endregion
 
         #region 方法
-        protected virtual BaseGraphView NewGraphView(BaseGraph graph)
+        protected virtual InternalBaseGraphView NewGraphView(BaseGraph graph)
         {
-            return new DefaultGraphView(graph, this, new CommandDispatcher());
+            return new BaseGraphView(graph, this, new CommandDispatcher());
         }
 
         public void Clear()
@@ -116,7 +116,7 @@ namespace CZToolKit.GraphProcessor.Editors
         void InternalLoad(BaseGraph graph)
         {
             if (GraphView != null && GraphAsset != null && EditorUtility.IsDirty(GraphAsset))
-                GraphView.SaveGraphToDisk();
+                GraphView.Save();
             Clear();
 
             Graph = graph;
@@ -148,16 +148,16 @@ namespace CZToolKit.GraphProcessor.Editors
         }
 
         // 从GraphOwner加载
-        public void Load(GraphOwner graphOwner)
+        public void Load(IGraphOwner graphOwner)
         {
-            GraphAsset = graphOwner;
+            GraphAsset = null;
             GraphOwner = graphOwner;
             GraphOwner.Graph.InitializePropertyMapping(GraphOwner);
             InternalLoad(GraphOwner.Graph);
         }
 
         // 从GraphAssetOwner加载
-        public void Load(GraphAssetOwner graphAssetOwner)
+        public void Load(IGraphAssetOwner graphAssetOwner)
         {
             GraphAsset = graphAssetOwner.GraphAsset;
             GraphOwner = graphAssetOwner;
@@ -231,10 +231,9 @@ namespace CZToolKit.GraphProcessor.Editors
 
         /// <summary> 从GraphOwner打开Graph </summary>
         /// <param name="graphAsset"></param>
-        public static BaseGraphWindow Open(GraphOwner graphOwner)
+        public static BaseGraphWindow Open(IGraphOwner graphOwner)
         {
             if (graphOwner == null) return null;
-            GetGraphWindow(graphOwner.Graph.GetType()).Load(graphOwner);
             var window = GetGraphWindow(graphOwner.Graph.GetType());
             window.Load(graphOwner);
             return window;
@@ -242,7 +241,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
         /// <summary> 从GraphAssetOwner打开Graph </summary>
         /// <param name="graphAsset"></param>
-        public static BaseGraphWindow Open(GraphAssetOwner graphAssetOwner)
+        public static BaseGraphWindow Open(IGraphAssetOwner graphAssetOwner)
         {
             if (graphAssetOwner == null) return null;
             var window = GetGraphWindow(graphAssetOwner.Graph.GetType());

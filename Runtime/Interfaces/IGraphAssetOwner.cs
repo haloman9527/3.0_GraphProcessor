@@ -13,11 +13,12 @@
  *
  */
 #endregion
+using CZToolKit.GraphProcessor.Internal;
 
 namespace CZToolKit.GraphProcessor
 {
-    public interface IGraphAssetOwner 
+    public interface IGraphAssetOwner : IGraphOwner
     {
-        BaseGraphAsset GraphAsset { get; }
+        InternalBaseGraphAsset GraphAsset { get; }
     }
 }

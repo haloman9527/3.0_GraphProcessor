@@ -18,7 +18,6 @@ using UnityEngine;
 
 namespace CZToolKit.GraphProcessor
 {
-
     [Serializable]
     public abstract partial class BaseNode
     {

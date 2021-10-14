@@ -20,7 +20,7 @@ using UnityEngine;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
-    [CustomObjectEditor(typeof(BaseNodeView))]
+    [CustomObjectEditor(typeof(InternalBaseNodeView))]
     public class BaseNodeInspector : ObjectEditor
     {
         public static HashSet<string> IgnoreProperties = new HashSet<string>() {
@@ -42,7 +42,7 @@ namespace CZToolKit.GraphProcessor.Editors
             }
             GUILayout.Box("Node", bigLabel.value);
 
-            if (Target is BaseNodeView view && view.Model != null)
+            if (Target is InternalBaseNodeView view && view.Model != null)
             {
                 EditorGUI.BeginChangeCheck();
                 Event current = Event.current;

@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
-    [CustomObjectEditor(typeof(BaseConnectionView))]
+    [CustomObjectEditor(typeof(InternalBaseConnectionView))]
     public class BaseConnectionInspector : ObjectEditor
     {
 
@@ -32,7 +32,7 @@ namespace CZToolKit.GraphProcessor.Editors
                 bigLabel.value.stretchWidth = true;
             }
 
-            if (Target is BaseConnectionView view && view.Model != null)
+            if (Target is InternalBaseConnectionView view && view.Model != null)
             {
                 EditorGUI.BeginChangeCheck();
                 GUILayout.Box(string.Concat(view.output?.node.title, "   >>   ", view.input?.node.title), bigLabel.value);

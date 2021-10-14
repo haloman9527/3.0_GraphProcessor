@@ -14,12 +14,13 @@
  */
 #endregion
 using CZToolKit.Core.Editors;
+using CZToolKit.GraphProcessor.Internal;
 using UnityEditor;
 using UnityEngine;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
-    [CustomEditor(typeof(GraphOwner), true)]
+    [CustomEditor(typeof(InternalGraphOwner), true)]
     public class GraphOwnerEditor : BasicEditor
     {
         protected override void RegisterDrawers()

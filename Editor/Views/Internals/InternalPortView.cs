@@ -4,13 +4,13 @@ using UnityEngine.UIElements;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
-    public abstract class PortView : Port
+    public abstract class InternalBasePortView : Port
     {
         public Image Icon { get; }
-        public BaseGraphView GraphView { get; private set; }
-        public Slot Model { get; private set; }
+        public InternalBaseGraphView GraphView { get; private set; }
+        public BaseSlot Model { get; private set; }
 
-        protected PortView(Orientation portOrientation, Direction portDirection, Capacity portCapacity, Type type) : base(portOrientation, portDirection, portCapacity, type)
+        protected InternalBasePortView(Orientation portOrientation, Direction portDirection, Capacity portCapacity, Type type) : base(portOrientation, portDirection, portCapacity, type)
         {
             styleSheets.Add(GraphProcessorStyles.PortViewStyle);
             Icon = new Image();
@@ -35,7 +35,7 @@ namespace CZToolKit.GraphProcessor.Editors
                 AddToClassList("vertical");
         }
 
-        public void SetUp(Slot slot, BaseGraphView graphView)
+        public void SetUp(BaseSlot slot, InternalBaseGraphView graphView)
         {
             Model = slot;
             GraphView = graphView;

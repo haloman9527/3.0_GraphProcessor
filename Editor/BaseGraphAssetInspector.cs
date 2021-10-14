@@ -14,12 +14,13 @@
  */
 #endregion
 using CZToolKit.Core.Editors;
+using CZToolKit.GraphProcessor.Internal;
 using UnityEditor;
 using UnityEngine;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
-    [CustomEditor(typeof(BaseGraphAsset), true)]
+    [CustomEditor(typeof(InternalBaseGraphAsset), true)]
     public class BaseGraphAssetInspector : BasicEditor
     {
         protected override void RegisterDrawers()
@@ -55,7 +56,7 @@ namespace CZToolKit.GraphProcessor.Editors
             //}
             if (GUILayout.Button("Open", GUILayout.Height(30)))
             {
-                BaseGraphWindow.Open(target as BaseGraphAsset);
+                BaseGraphWindow.Open(target as InternalBaseGraphAsset);
             }
             EditorGUILayout.EndHorizontal();
         }

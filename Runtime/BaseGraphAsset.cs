@@ -13,6 +13,7 @@
  *
  */
 #endregion
+using CZToolKit.GraphProcessor.Internal;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -21,21 +22,8 @@ using UnityObject = UnityEngine.Object;
 
 namespace CZToolKit.GraphProcessor
 {
-    public abstract class BaseGraphAsset : ScriptableObject, IGraphAsset, ICloneable
-    {
-        public BaseGraphAsset() { }
-
-        public abstract BaseGraph Graph { get; }
-
-        public abstract void SaveGraph();
-
-        public abstract void CheckGraphSerialization();
-
-        public virtual object Clone() { return Instantiate(this); }
-    }
-
     [Serializable]
-    public abstract class BaseGraphAsset<GraphClass> : BaseGraphAsset, ISerializationCallbackReceiver
+    public abstract class BaseGraphAsset<GraphClass> : InternalBaseGraphAsset, ISerializationCallbackReceiver
         where GraphClass : BaseGraph, new()
     {
         #region 字段

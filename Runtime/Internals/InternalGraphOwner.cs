@@ -16,78 +16,49 @@
 using CZToolKit.Core.SharedVariable;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using UnityEngine;
 
 using UnityObject = UnityEngine.Object;
 
-namespace CZToolKit.GraphProcessor
+namespace CZToolKit.GraphProcessor.Internal
 {
-    public abstract class GraphAssetOwner : MonoBehaviour, IGraphAssetOwner, IGraphOwner, IVariableOwner, ISerializationCallbackReceiver
+    public abstract class InternalGraphOwner : MonoBehaviour, IGraphOwner, IGraphAsset, IVariableOwner
     {
         #region 字段
-        List<SharedVariable> variables = new List<SharedVariable>();
-        Dictionary<string, int> sharedVariableIndex;
+        protected List<SharedVariable> variables = new List<SharedVariable>();
+        protected Dictionary<string, int> sharedVariableIndex;
         #endregion
 
         #region 属性
-        public abstract BaseGraphAsset GraphAsset { get; set; }
         public abstract BaseGraph Graph { get; }
-        public abstract Type GraphAssetType { get; }
+        public abstract Type GraphType { get; }
         #endregion
 
         #region Serialize
+        public abstract void SaveVariables();
 
-        [HideInInspector]
-        [SerializeField]
-        string serializedVariables;
-        [HideInInspector]
-        [SerializeField]
-        List<UnityObject> variablesUnityReference;
-        [NonSerialized]
-        bool initializedVariables;
+        public abstract void SaveGraph();
 
-        public virtual void OnBeforeSerialize()
-        {
-            //SaveVariables();
-        }
+        public abstract void CheckGraphSerialization();
 
-        public virtual void OnAfterDeserialize()
-        {
-            CheckSerialization();
-        }
-
-        public void SaveVariables()
-        {
-            serializedVariables = JsonSerializer.SerializeValue(variables, out variablesUnityReference);
-        }
-
-        void DeserializeVariables()
-        {
-            if (string.IsNullOrEmpty(serializedVariables))
-                variables = new List<SharedVariable>();
-            else
-                variables = JsonSerializer.DeserializeValue<List<SharedVariable>>(serializedVariables, variablesUnityReference);
-            if (variables == null)
-                variables = new List<SharedVariable>();
-
-            UpdateVariablesIndex();
-        }
-
-        void CheckSerialization()
-        {
-            if (initializedVariables) return;
-            initializedVariables = true;
-            DeserializeVariables();
-        }
-
+        protected abstract void CheckVaraiblesSerialization();
         #endregion
 
         #region API
+        public UnityObject Self()
+        {
+            return this;
+        }
+
+        public string GetOwnerName()
+        {
+            return gameObject.name;
+        }
+
         public SharedVariable GetVariable(string guid)
         {
             if (string.IsNullOrEmpty(guid)) return null;
-            CheckSerialization();
+            CheckVaraiblesSerialization();
             if (variables != null)
             {
                 if (sharedVariableIndex == null || sharedVariableIndex.Count != variables.Count)
@@ -101,14 +72,14 @@ namespace CZToolKit.GraphProcessor
 
         public List<SharedVariable> GetAllVariables()
         {
-            CheckSerialization();
+            CheckVaraiblesSerialization();
             return variables;
         }
 
         public void SetVariable(SharedVariable sharedVariable)
         {
             if (sharedVariable == null) return;
-            CheckSerialization();
+            CheckVaraiblesSerialization();
 
             if (variables == null)
                 variables = new List<SharedVariable>();
@@ -137,7 +108,7 @@ namespace CZToolKit.GraphProcessor
 
         public IReadOnlyList<SharedVariable> GetVariables()
         {
-            CheckSerialization();
+            CheckVaraiblesSerialization();
             return variables;
         }
 
@@ -148,8 +119,7 @@ namespace CZToolKit.GraphProcessor
         }
         #endregion
 
-        #region 帮助方法
-        private void UpdateVariablesIndex()
+        protected void UpdateVariablesIndex()
         {
             if (variables == null)
             {
@@ -167,47 +137,5 @@ namespace CZToolKit.GraphProcessor
                     sharedVariableIndex.Add(variables[i].GUID, i);
             }
         }
-        #endregion
-    }
-
-    public abstract class GraphAssetOwner<TGraphAsset, TGraph> : GraphAssetOwner
-        where TGraphAsset : BaseGraphAsset<TGraph>
-        where TGraph : BaseGraph, new()
-    {
-        #region 字段
-        [SerializeField]
-        TGraphAsset graphAsset;
-        #endregion
-
-        #region 属性
-        public override BaseGraphAsset GraphAsset
-        {
-            get { return graphAsset; }
-            set
-            {
-                if (graphAsset != value)
-                {
-                    graphAsset = value as TGraphAsset;
-                    if (graphAsset != null)
-                    {
-                        foreach (var variable in T_Graph.Variables)
-                        {
-                            if (GetVariable(variable.GUID) == null)
-                                SetVariable(variable.Clone() as SharedVariable);
-                        }
-                    }
-                }
-            }
-        }
-
-        public override Type GraphAssetType { get { return typeof(TGraphAsset); } }
-
-        public TGraphAsset T_GraphAsset { get { return graphAsset; } }
-
-        public override BaseGraph Graph { get { return T_Graph; } }
-
-        public TGraph T_Graph { get { return graphAsset.T_Graph; } }
-
-        #endregion
     }
 }

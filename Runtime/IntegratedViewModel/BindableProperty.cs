@@ -56,7 +56,6 @@ namespace CZToolKit.GraphProcessor
                 onValueChanged.Invoke(Value);
             if (onBoxedValueChanged != null)
                 onBoxedValueChanged.Invoke(Value);
-
         }
         public IBindableProperty<T1> AsBindableProperty<T1>()
         {
@@ -64,11 +63,11 @@ namespace CZToolKit.GraphProcessor
         }
         public void RegesterValueChangedEvent(Action<T> onValueChanged)
         {
-            onValueChanged += onValueChanged;
+            this.onValueChanged += onValueChanged;
         }
         public void UnregesterValueChangedEvent(Action<T> onValueChanged)
         {
-            onValueChanged -= onValueChanged;
+            this.onValueChanged -= onValueChanged;
         }
         public virtual void SetValueWithoutNotify(T value)
         {
