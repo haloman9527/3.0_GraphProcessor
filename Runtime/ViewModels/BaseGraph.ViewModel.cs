@@ -31,7 +31,7 @@ namespace CZToolKit.GraphProcessor
         public event Action<BaseNode> onNodeRemoved;
 
         public event Action<BaseConnection> onEdgeAdded;
-        public event Action<BaseConnection> onEdgeRemoved;
+        public event Action<BaseConnection> onConnectionRemoved;
 
         [NonSerialized] public List<SharedVariable> variables = new List<SharedVariable>();
         #endregion
@@ -199,10 +199,10 @@ namespace CZToolKit.GraphProcessor
         public void Disconnect(BaseNode node)
         {
             // 断开节点所有连接
-            foreach (var edge in Connections.ToArray())
+            foreach (var connection in Connections.ToArray())
             {
-                if (edge.FromNode == node || edge.ToNode == node)
-                    Disconnect(edge);
+                if (connection.FromNodeGUID == node.GUID || connection.ToNodeGUID == node.GUID)
+                    Disconnect(connection);
             }
         }
 
@@ -210,7 +210,7 @@ namespace CZToolKit.GraphProcessor
         {
             if (!connections.Contains(edge)) return;
             connections.Remove(edge);
-            onEdgeRemoved?.Invoke(edge);
+            onConnectionRemoved?.Invoke(edge);
         }
 
         public void Disconnect(BaseNode node, BaseSlot slot)

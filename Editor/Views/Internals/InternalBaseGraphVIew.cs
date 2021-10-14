@@ -98,6 +98,21 @@ namespace CZToolKit.GraphProcessor.Editors
             MarkDirtyRepaint();
         }
 
+        void InitializeCallbacks()
+        {
+            graphViewChanged = GraphViewChangedCallback;
+            serializeGraphElements = SerializeGraphElementsCallback;
+            canPasteSerializedData = CanPasteSerializedDataCallback;
+            unserializeAndPaste = DeserializeAndPasteCallback;
+            viewTransformChanged = ViewTransformChangedCallback;
+
+            RegisterCallback<KeyDownEvent>(KeyDownCallback);
+
+            CreateNodeMenu = ScriptableObject.CreateInstance<CreateNodeMenuWindow>();
+            CreateNodeMenu.Initialize(this, GetNodeTypes());
+            nodeCreationRequest = c => SearchWindow.Open(new SearchWindowContext(c.screenMousePosition), CreateNodeMenu);
+        }
+
         /// <summary> 初始化ToolbarButton </summary>
         void InitializeToolbarButtons()
         {
@@ -119,21 +134,6 @@ namespace CZToolKit.GraphProcessor.Editors
             };
             btnSave.clicked += () => Save();
             GraphWindow.Toolbar.AddButtonToRight(btnSave);
-        }
-
-        void InitializeCallbacks()
-        {
-            graphViewChanged = GraphViewChangedCallback;
-            serializeGraphElements = SerializeGraphElementsCallback;
-            canPasteSerializedData = CanPasteSerializedDataCallback;
-            unserializeAndPaste = DeserializeAndPasteCallback;
-            viewTransformChanged = ViewTransformChangedCallback;
-
-            RegisterCallback<KeyDownEvent>(KeyDownCallback);
-
-            CreateNodeMenu = ScriptableObject.CreateInstance<CreateNodeMenuWindow>();
-            CreateNodeMenu.Initialize(this, GetNodeTypes());
-            nodeCreationRequest = c => SearchWindow.Open(new SearchWindowContext(c.screenMousePosition), CreateNodeMenu);
         }
 
         /// <summary> 生成所有NodeView </summary>
@@ -178,17 +178,20 @@ namespace CZToolKit.GraphProcessor.Editors
             viewTransform.position = position;
             SetDirty();
         }
+
         void OnScaleChanged(Vector3 scale)
         {
             viewTransform.scale = scale;
             SetDirty();
         }
+
         void OnNodeAdded(BaseNode node)
         {
             InternalBaseNodeView nodeView = AddNodeView(node);
             nodeView.Initialized();
             SetDirty();
         }
+
         void OnNodeRemoved(BaseNode node)
         {
             RemoveNodeView(NodeViews[node.GUID]);
@@ -207,7 +210,7 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             edges.ForEach(edge =>
             {
-                if (edge.userData != edge) return;
+                if (edge.userData != connection) return;
                 DisconnectView(edge as InternalBaseConnectionView);
             });
             SetDirty();
@@ -226,7 +229,7 @@ namespace CZToolKit.GraphProcessor.Editors
             Model.onNodeRemoved += OnNodeRemoved;
 
             Model.onEdgeAdded += OnEdgeAdded;
-            Model.onEdgeRemoved += OnEdgeRemoved;
+            Model.onConnectionRemoved += OnEdgeRemoved;
         }
 
         public virtual void UnBindingProperties()
@@ -246,7 +249,7 @@ namespace CZToolKit.GraphProcessor.Editors
             Model.onNodeRemoved -= OnNodeRemoved;
 
             Model.onEdgeAdded -= OnEdgeAdded;
-            Model.onEdgeRemoved -= OnEdgeRemoved;
+            Model.onConnectionRemoved -= OnEdgeRemoved;
         }
         #endregion
 
