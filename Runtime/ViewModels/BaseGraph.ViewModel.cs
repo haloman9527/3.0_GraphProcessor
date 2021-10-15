@@ -153,43 +153,43 @@ namespace CZToolKit.GraphProcessor
         {
             BaseConnection tempConnection = connections.Find(item =>
             item.FromNodeGUID == connection.FromNodeGUID
-            && item.FromSlotName == connection.FromSlotName
+            && item.FromPortName == connection.FromPortName
             && item.ToNodeGUID == connection.ToNodeGUID
-            && item.ToSlotName == connection.ToSlotName
+            && item.ToPortName == connection.ToPortName
             );
             if (tempConnection != null)
                 return;
 
             connection.Enable(this);
 
-            BaseSlot fromSlot = connection.FromNode.GetSlots().FirstOrDefault(slot => slot.name == connection.FromSlotName);
-            if (fromSlot.capacity == BaseSlot.Capacity.Single)
-                Disconnect(connection.FromNode, fromSlot);
+            BasePort fromPort = connection.FromNode.GetPorts().FirstOrDefault(port => port.name == connection.FromPortName);
+            if (fromPort.capacity == BasePort.Capacity.Single)
+                Disconnect(connection.FromNode, fromPort);
 
-            BaseSlot toSlot = connection.ToNode.GetSlots().FirstOrDefault(slot => slot.name == connection.ToSlotName);
-            if (toSlot.capacity == BaseSlot.Capacity.Single)
-                Disconnect(connection.ToNode, toSlot);
+            BasePort toPort = connection.ToNode.GetPorts().FirstOrDefault(port => port.name == connection.ToPortName);
+            if (toPort.capacity == BasePort.Capacity.Single)
+                Disconnect(connection.ToNode, toPort);
 
             connection.Enable(this);
             connections.Add(connection);
             onEdgeAdded?.Invoke(connection);
         }
 
-        public BaseConnection Connect(BaseNode from, string fromSlotName, BaseNode to, string toSlotName)
+        public BaseConnection Connect(BaseNode from, string fromPortName, BaseNode to, string toPortName)
         {
-            BaseConnection connection = connections.Find(edge => edge.FromNode == from && edge.FromSlotName == fromSlotName && edge.ToNode == to && edge.ToSlotName == toSlotName);
+            BaseConnection connection = connections.Find(edge => edge.FromNode == from && edge.FromPortName == fromPortName && edge.ToNode == to && edge.ToPortName == toPortName);
             if (connection != null)
                 return connection;
 
-            BaseSlot fromSlot = from.GetSlots().FirstOrDefault(slot => slot.name == fromSlotName);
-            if (fromSlot.capacity == BaseSlot.Capacity.Single)
-                Disconnect(from, fromSlot);
+            BasePort fromPort = from.GetPorts().FirstOrDefault(port => port.name == fromPortName);
+            if (fromPort.capacity == BasePort.Capacity.Single)
+                Disconnect(from, fromPort);
 
-            BaseSlot toSlot = to.GetSlots().FirstOrDefault(slot => slot.name == toSlotName);
-            if (toSlot.capacity == BaseSlot.Capacity.Single)
-                Disconnect(to, toSlot);
+            BasePort toPort = to.GetPorts().FirstOrDefault(port => port.name == toPortName);
+            if (toPort.capacity == BasePort.Capacity.Single)
+                Disconnect(to, toPort);
 
-            connection = NewConnection(from, fromSlotName, to, toSlotName);
+            connection = NewConnection(from, fromPortName, to, toPortName);
             connection.Enable(this);
             connections.Add(connection);
             onEdgeAdded?.Invoke(connection);
@@ -213,16 +213,16 @@ namespace CZToolKit.GraphProcessor
             onConnectionRemoved?.Invoke(edge);
         }
 
-        public void Disconnect(BaseNode node, BaseSlot slot)
+        public void Disconnect(BaseNode node, BasePort port)
         {
-            Disconnect(node, slot.name);
+            Disconnect(node, port.name);
         }
 
-        public void Disconnect(BaseNode node, string slotName)
+        public void Disconnect(BaseNode node, string portName)
         {
             foreach (var edge in connections.ToArray())
             {
-                if ((edge.FromNode == node && edge.FromSlotName == slotName) || (edge.ToNode == node && edge.ToSlotName == slotName))
+                if ((edge.FromNode == node && edge.FromPortName == portName) || (edge.ToNode == node && edge.ToPortName == portName))
                     Disconnect(edge);
             }
         }

@@ -23,7 +23,7 @@ namespace CZToolKit.GraphProcessor.Editors
     {
         public Image Icon { get; }
         public BaseGraphView GraphView { get; private set; }
-        public BaseSlot Model { get; private set; }
+        public BasePort Model { get; private set; }
 
         protected BasePortView(Orientation orientation, Direction direction, Capacity capacity, Type type, IEdgeConnectorListener connectorListener) : base(orientation, direction, capacity, type)
         {
@@ -53,12 +53,12 @@ namespace CZToolKit.GraphProcessor.Editors
             this.AddManipulator(m_EdgeConnector);
         }
 
-        public void SetUp(BaseSlot slot, BaseGraphView graphView)
+        public void SetUp(BasePort port, BaseGraphView graphView)
         {
-            Model = slot;
+            Model = port;
             GraphView = graphView;
 
-            tooltip = slot.name;
+            tooltip = port.name;
         }
     }
 }

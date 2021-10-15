@@ -82,7 +82,7 @@ namespace CZToolKit.GraphProcessor
             owner = graph;
         }
 
-        public virtual IEnumerable<BaseSlot> GetSlots()
+        public virtual IEnumerable<BasePort> GetPorts()
         {
             yield break;
         }

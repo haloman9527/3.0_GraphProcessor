@@ -80,21 +80,21 @@ namespace CZToolKit.GraphProcessor
     {
         BaseGraph graph;
         BaseNode from;
-        string fromSlotName;
+        string fromPortName;
         BaseNode to;
-        string toSlotName;
+        string toPortName;
 
         BaseConnection connection;
 
         List<BaseConnection> others = new List<BaseConnection>();
 
-        public ConnectCommand(BaseGraph graph, BaseNode from, string fromSlotName, BaseNode to, string toSlotName)
+        public ConnectCommand(BaseGraph graph, BaseNode from, string fromPortName, BaseNode to, string toPortName)
         {
             this.graph = graph;
             this.from = from;
-            this.fromSlotName = fromSlotName;
+            this.fromPortName = fromPortName;
             this.to = to;
-            this.toSlotName = toSlotName;
+            this.toPortName = toPortName;
         }
 
         public ConnectCommand(BaseGraph graph, BaseConnection edge)
@@ -112,7 +112,7 @@ namespace CZToolKit.GraphProcessor
                     if (edge.ToNodeGUID == to.GUID && edge.FromNodeGUID != from.GUID)
                         others.Add(edge);
                 }
-                connection = graph.Connect(from, fromSlotName, to, toSlotName);
+                connection = graph.Connect(from, fromPortName, to, toPortName);
             }
             else
             {
@@ -145,10 +145,10 @@ namespace CZToolKit.GraphProcessor
         BaseConnection edge;
         bool edgeControl;
 
-        public DisconnectCommand(BaseGraph graph, BaseConnection edge)
+        public DisconnectCommand(BaseGraph graph, BaseConnection connection)
         {
             this.graph = graph;
-            this.edge = edge;
+            this.edge = connection;
             edgeControl = true;
         }
 

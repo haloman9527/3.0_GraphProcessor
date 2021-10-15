@@ -110,10 +110,10 @@ namespace CZToolKit.GraphProcessor.Editors
             titleContainer.style.backgroundColor = Model.TitleColor;
             TitleLabel.style.color = Model.TitleColor.GetLuminance() > 0.5f && Model.TitleColor.a > 0.5f ? Color.black : Color.white * 0.9f;
 
-            foreach (var slot in Model.GetSlots())
+            foreach (var port in Model.GetPorts())
             {
-                BasePortView portView = NewPortView(slot);
-                portView.SetUp(slot, Owner);
+                BasePortView portView = NewPortView(port);
+                portView.SetUp(port, Owner);
                 if (portView.orientation == Orientation.Horizontal)
                 {
                     if (portView.direction == Direction.Input)
@@ -128,7 +128,7 @@ namespace CZToolKit.GraphProcessor.Editors
                     else
                         bottomPortContainer.Add(portView);
                 }
-                portViews[slot.name] = portView;
+                portViews[port.name] = portView;
             }
 
             // 绑定

@@ -23,9 +23,9 @@ namespace CZToolKit.GraphProcessor.Editors
     {
         public virtual void Initialized() { }
 
-        public virtual BasePortView NewPortView(BaseSlot slot)
+        public virtual BasePortView NewPortView(BasePort port)
         {
-            return new BasePortView(slot, typeof(object), new EdgeConnectorListener());
+            return new BasePortView(port, typeof(object), new EdgeConnectorListener());
         }
 
         public override void BuildContextualMenu(ContextualMenuPopulateEvent evt)

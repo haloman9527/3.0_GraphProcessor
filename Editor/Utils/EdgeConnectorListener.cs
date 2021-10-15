@@ -26,10 +26,10 @@ namespace CZToolKit.GraphProcessor.Editors
             BaseGraphView tempGraphView = graphView as BaseGraphView;
 
             BaseNode from = (edge.output.node as BaseNodeView).Model;
-            BaseSlot fromSlot = (edge.output as BasePortView).Model;
+            BasePort fromPort = (edge.output as BasePortView).Model;
             BaseNode to = (edge.input.node as BaseNodeView).Model;
-            BaseSlot toSlot = (edge.input as BasePortView).Model;
-            tempGraphView.CommandDispacter.Do(new ConnectCommand(tempGraphView.Model, from, fromSlot.name, to, toSlot.name));
+            BasePort toPort = (edge.input as BasePortView).Model;
+            tempGraphView.CommandDispacter.Do(new ConnectCommand(tempGraphView.Model, from, fromPort.name, to, toPort.name));
         }
 
         /// <summary> 拖到空白松开时触发 </summary>

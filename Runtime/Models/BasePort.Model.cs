@@ -1,7 +1,7 @@
 
 namespace CZToolKit.GraphProcessor
 {
-    public partial class BaseSlot
+    public partial class BasePort
     {
         public enum Direction { Input, Output }
         public enum Orientation { Horizontal, Vertical }
@@ -12,7 +12,7 @@ namespace CZToolKit.GraphProcessor
         public readonly Direction direction;
         public readonly Capacity capacity;
 
-        public BaseSlot(string name, Orientation orientation, Direction direction, Capacity capacity)
+        public BasePort(string name, Orientation orientation, Direction direction, Capacity capacity)
         {
             this.name = name;
             this.orientation = orientation;

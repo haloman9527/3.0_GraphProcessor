@@ -21,21 +21,21 @@ namespace CZToolKit.GraphProcessor
     {
         #region 静态方法
         /// <summary> 根据T创建一个节点，并设置位置 </summary>
-        public static T CreateNew<T>(BaseNode from, string fromSlotName, BaseNode to, string toSlotName) where T : BaseConnection
+        public static T CreateNew<T>(BaseNode from, string fromPortName, BaseNode to, string toPortName) where T : BaseConnection
         {
-            return CreateNew(typeof(T), from, fromSlotName, to, toSlotName) as T;
+            return CreateNew(typeof(T), from, fromPortName, to, toPortName) as T;
         }
 
         /// <summary> 根据_type创建一个节点，并设置位置 </summary>
-        public static BaseConnection CreateNew(Type type, BaseNode from, string fromSlotName, BaseNode to, string toSlotName)
+        public static BaseConnection CreateNew(Type type, BaseNode from, string fromPortName, BaseNode to, string toPortName)
         {
             if (!type.IsSubclassOf(typeof(BaseConnection)))
                 return null;
             var connection = Activator.CreateInstance(type) as BaseConnection;
             connection.from = from.GUID;
-            connection.fromSlotName = fromSlotName;
+            connection.fromPortName = fromPortName;
             connection.to = to.GUID;
-            connection.toSlotName = toSlotName;
+            connection.toPortName = toPortName;
             return connection;
         }
         #endregion
@@ -44,8 +44,8 @@ namespace CZToolKit.GraphProcessor
 
         public string FromNodeGUID { get { return from; } }
         public string ToNodeGUID { get { return to; } }
-        public string FromSlotName { get { return fromSlotName; } }
-        public string ToSlotName { get { return toSlotName; } }
+        public string FromPortName { get { return fromPortName; } }
+        public string ToPortName { get { return toPortName; } }
 
         public BaseNode FromNode { get { owner.Nodes.TryGetValue(FromNodeGUID, out BaseNode node); return node; } }
         public BaseNode ToNode { get { owner.Nodes.TryGetValue(ToNodeGUID, out BaseNode node); return node; } }

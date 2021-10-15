@@ -376,7 +376,7 @@ namespace CZToolKit.GraphProcessor.Editors
                 if (NodeViews.TryGetValue(fromNode.GUID, out BaseNodeView inputNodeView)
                     && NodeViews.TryGetValue(toNode.GUID, out BaseNodeView outputNodeView))
                 {
-                    CommandDispacter.Do(new ConnectCommand(Model, inputNodeView.Model, edge.FromSlotName, outputNodeView.Model, edge.ToSlotName));
+                    CommandDispacter.Do(new ConnectCommand(Model, inputNodeView.Model, edge.FromPortName, outputNodeView.Model, edge.ToPortName));
                     //Model.Connect(inputNodeView.Model, outputNodeView.Model);
                 }
             }
@@ -452,10 +452,10 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             var edgeView = Activator.CreateInstance(GetConnectionViewType(connection)) as BaseConnectionView;
             edgeView.userData = connection;
-            edgeView.output = from.portViews[connection.FromSlotName];
-            edgeView.input = to.portViews[connection.ToSlotName];
-            from.portViews[connection.FromSlotName].Connect(edgeView);
-            to.portViews[connection.ToSlotName].Connect(edgeView);
+            edgeView.output = from.portViews[connection.FromPortName];
+            edgeView.input = to.portViews[connection.ToPortName];
+            from.portViews[connection.FromPortName].Connect(edgeView);
+            to.portViews[connection.ToPortName].Connect(edgeView);
             edgeView.SetUp(connection, this);
             AddElement(edgeView);
             return edgeView;

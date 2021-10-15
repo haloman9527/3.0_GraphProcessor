@@ -20,10 +20,10 @@ namespace CZToolKit.GraphProcessor.Editors
 {
     public partial class BasePortView
     {
-        public BasePortView(BaseSlot slot, Type portType, IEdgeConnectorListener connectorListener) : this(
-            orientation: slot.orientation == BaseSlot.Orientation.Horizontal ? Orientation.Horizontal : Orientation.Vertical,
-            direction: slot.direction == BaseSlot.Direction.Input ? Direction.Input : Direction.Output,
-            capacity: slot.capacity == BaseSlot.Capacity.Single ? Capacity.Single : Capacity.Multi,
+        public BasePortView(BasePort port, Type portType, IEdgeConnectorListener connectorListener) : this(
+            orientation: port.orientation == BasePort.Orientation.Horizontal ? Orientation.Horizontal : Orientation.Vertical,
+            direction: port.direction == BasePort.Direction.Input ? Direction.Input : Direction.Output,
+            capacity: port.capacity == BasePort.Capacity.Single ? Capacity.Single : Capacity.Multi,
             portType, connectorListener)
         {
 

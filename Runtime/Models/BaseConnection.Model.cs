@@ -22,8 +22,8 @@ namespace CZToolKit.GraphProcessor
     public partial class BaseConnection
     {
         [SerializeField] string from;
-        [SerializeField] string fromSlotName;
+        [SerializeField] string fromPortName;
         [SerializeField] string to;
-        [SerializeField] string toSlotName;
+        [SerializeField] string toPortName;
     }
 }
