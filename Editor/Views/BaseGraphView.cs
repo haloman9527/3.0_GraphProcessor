@@ -22,13 +22,9 @@ using UnityEditor.Experimental.GraphView;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
-    public class BaseGraphView<M> : InternalBaseGraphView where M : BaseGraph
+    public partial class BaseGraphView
     {
-        public M T_Model { get { return Model as M; } }
-
-        public BaseGraphView(BaseGraph graph, BaseGraphWindow window, CommandDispatcher commandDispacter) : base(graph, window, commandDispacter) { }
-
-        protected override void OnInitialized() { }
+        protected virtual void OnInitialized() { }
 
         public override List<Port> GetCompatiblePorts(Port startPortView, NodeAdapter nodeAdapter)
         {
@@ -41,7 +37,7 @@ namespace CZToolKit.GraphProcessor.Editors
             return compatiblePorts;
         }
 
-        protected override IEnumerable<Type> GetNodeTypes()
+        protected virtual IEnumerable<Type> GetNodeTypes()
         {
             foreach (var type in Utility_Reflection.GetChildTypes<BaseNode>())
             {
@@ -50,27 +46,27 @@ namespace CZToolKit.GraphProcessor.Editors
             }
         }
 
-        protected override Type GetNodeViewType(BaseNode node)
+        protected virtual Type GetNodeViewType(BaseNode node)
         {
             return GraphProcessorEditorUtility.GetNodeViewType(node.GetType());
         }
 
-        protected override Type GetConnectionViewType(BaseConnection connection)
+        protected virtual Type GetConnectionViewType(BaseConnection connection)
         {
-            return typeof(InternalBaseConnectionView);
+            return typeof(BaseConnectionView);
         }
 
-        protected override void UpdateInspector()
+        protected virtual void UpdateInspector()
         {
             foreach (var element in selection)
             {
                 switch (element)
                 {
-                    case InternalBaseNodeView nodeView:
+                    case BaseNodeView nodeView:
                         EditorGUILayoutExtension.DrawFieldsInInspector("Node", nodeView, GraphAsset);
                         Selection.activeObject = ObjectInspector.Instance;
                         return;
-                    case InternalBaseConnectionView edgeView:
+                    case BaseConnectionView edgeView:
                         EditorGUILayoutExtension.DrawFieldsInInspector("Edge", edgeView, GraphAsset);
                         Selection.activeObject = ObjectInspector.Instance;
                         return;
@@ -81,11 +77,5 @@ namespace CZToolKit.GraphProcessor.Editors
 
             Selection.activeObject = null;
         }
-    }
-
-    /// <summary> 默认 </summary>
-    public sealed class BaseGraphView : BaseGraphView<BaseGraph>
-    {
-        public BaseGraphView(BaseGraph graph, BaseGraphWindow window, CommandDispatcher commandDispacter) : base(graph, window, commandDispacter) { }
     }
 }

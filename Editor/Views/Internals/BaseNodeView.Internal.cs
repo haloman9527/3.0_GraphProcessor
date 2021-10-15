@@ -23,7 +23,7 @@ using NodeView = UnityEditor.Experimental.GraphView.Node;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
-    public abstract class InternalBaseNodeView : NodeView, IBindableView<BaseNode>
+    public partial class BaseNodeView : NodeView, IBindableView<BaseNode>
     {
         #region 字段
         Label titleLabel;
@@ -34,7 +34,7 @@ namespace CZToolKit.GraphProcessor.Editors
         public readonly VisualElement contentsHorizontalDivider;
         public readonly VisualElement portsVerticalDivider;
         public readonly VisualElement controlsHorizontalDivider;
-        public readonly Dictionary<string, InternalBasePortView> portViews = new Dictionary<string, InternalBasePortView>();
+        public readonly Dictionary<string, BasePortView> portViews = new Dictionary<string, BasePortView>();
         [NonSerialized]
         List<IconBadge> badges = new List<IconBadge>();
         #endregion
@@ -49,11 +49,11 @@ namespace CZToolKit.GraphProcessor.Editors
                 return titleLabel;
             }
         }
-        public InternalBaseGraphView Owner { get; private set; }
+        public BaseGraphView Owner { get; private set; }
         public BaseNode Model { get; protected set; }
         #endregion
 
-        public InternalBaseNodeView()
+        public BaseNodeView()
         {
             styleSheets.Add(GraphProcessorStyles.BaseNodeViewStyle);
             styleSheets.Add(GraphProcessorStyles.PortViewTypesStyle);
@@ -98,7 +98,7 @@ namespace CZToolKit.GraphProcessor.Editors
         }
 
         #region Initialization
-        public void SetUp(BaseNode node, InternalBaseGraphView graphView)
+        public void SetUp(BaseNode node, BaseGraphView graphView)
         {
             Model = node;
             Owner = graphView;
@@ -112,7 +112,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
             foreach (var slot in Model.GetSlots())
             {
-                InternalBasePortView portView = NewPortView(slot);
+                BasePortView portView = NewPortView(slot);
                 portView.SetUp(slot, Owner);
                 if (portView.orientation == Orientation.Horizontal)
                 {
@@ -229,18 +229,6 @@ namespace CZToolKit.GraphProcessor.Editors
                 }
                 return false;
             });
-        }
-        #endregion
-
-        #region 抽象方法
-
-        public abstract void Initialized();
-
-        public abstract InternalBasePortView NewPortView(BaseSlot slot);
-
-        public override void BuildContextualMenu(ContextualMenuPopulateEvent evt)
-        {
-            throw new NotImplementedException("你必须实现该方法才能正常使用");
         }
         #endregion
     }

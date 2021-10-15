@@ -28,7 +28,7 @@ using UnityObject = UnityEngine.Object;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
-    public abstract class InternalBaseGraphView : GraphView, IBindableView<BaseGraph>
+    public partial class BaseGraphView : GraphView, IBindableView<BaseGraph>
     {
         #region 属性
         public bool IsDirty { get; private set; } = false;
@@ -38,12 +38,12 @@ namespace CZToolKit.GraphProcessor.Editors
         public UnityObject GraphAsset { get { return GraphWindow.GraphAsset; } }
         protected override bool canCopySelection { get { return true; } }
         protected override bool canCutSelection { get { return true; } }
-        public Dictionary<string, InternalBaseNodeView> NodeViews { get; private set; } = new Dictionary<string, InternalBaseNodeView>();
+        public Dictionary<string, BaseNodeView> NodeViews { get; private set; } = new Dictionary<string, BaseNodeView>();
 
         public BaseGraph Model { get; set; }
         #endregion
 
-        private InternalBaseGraphView()
+        private BaseGraphView()
         {
             styleSheets.Add(GraphProcessorStyles.GraphViewStyle);
 
@@ -56,24 +56,20 @@ namespace CZToolKit.GraphProcessor.Editors
             this.StretchToParentSize();
         }
 
-        public InternalBaseGraphView(BaseGraph graph, BaseGraphWindow window, CommandDispatcher commandDispacter) : this()
+        public BaseGraphView(BaseGraph graph, BaseGraphWindow window, CommandDispatcher commandDispacter) : this()
         {
             Model = graph;
             GraphWindow = window;
             CommandDispacter = commandDispacter;
-            EditorCoroutine coroutine = GraphWindow.StartCoroutine(Init());
+            EditorCoroutine coroutine = GraphWindow.StartCoroutine(Initialize());
             RegisterCallback<DetachFromPanelEvent>(evt => { GraphWindow.StopCoroutine(coroutine); });
         }
 
         #region Initialize
-        IEnumerator Init()
+        IEnumerator Initialize()
         {
-            InitializeCallbacks();
-            yield return null;
-
-            InitializeToolbarButtons();
-            yield return null;
-
+            yield return GraphWindow.StartCoroutine(InitializeCallbacks());
+            yield return GraphWindow.StartCoroutine(InitializeToolbarButtons());
             // 绑定
             BindingProperties();
             RegisterCallback<DetachFromPanelEvent>(evt => { UnBindingProperties(); });
@@ -84,6 +80,7 @@ namespace CZToolKit.GraphProcessor.Editors
             yield return GraphWindow.StartCoroutine(NotifyNodeViewsInitialized());
 
             OnInitialized();
+            MarkDirtyRepaint();
 
             double time = EditorApplication.timeSinceStartup;
             Add(new IMGUIContainer(() =>
@@ -95,10 +92,9 @@ namespace CZToolKit.GraphProcessor.Editors
                     time += 1;
                 }
             }));
-            MarkDirtyRepaint();
         }
 
-        void InitializeCallbacks()
+        IEnumerator InitializeCallbacks()
         {
             graphViewChanged = GraphViewChangedCallback;
             serializeGraphElements = SerializeGraphElementsCallback;
@@ -111,10 +107,11 @@ namespace CZToolKit.GraphProcessor.Editors
             CreateNodeMenu = ScriptableObject.CreateInstance<CreateNodeMenuWindow>();
             CreateNodeMenu.Initialize(this, GetNodeTypes());
             nodeCreationRequest = c => SearchWindow.Open(new SearchWindowContext(c.screenMousePosition), CreateNodeMenu);
+            yield break;
         }
 
         /// <summary> 初始化ToolbarButton </summary>
-        void InitializeToolbarButtons()
+        IEnumerator InitializeToolbarButtons()
         {
             ToolbarButton btnCenter = new ToolbarButton()
             {
@@ -134,6 +131,7 @@ namespace CZToolKit.GraphProcessor.Editors
             };
             btnSave.clicked += () => Save();
             GraphWindow.Toolbar.AddButtonToRight(btnSave);
+            yield break;
         }
 
         /// <summary> 生成所有NodeView </summary>
@@ -154,7 +152,7 @@ namespace CZToolKit.GraphProcessor.Editors
             {
                 yield return null;
                 if (edge == null) continue;
-                InternalBaseNodeView fromNodeView, toNodeView;
+                BaseNodeView fromNodeView, toNodeView;
                 if (!NodeViews.TryGetValue(edge.FromNodeGUID, out fromNodeView)) yield break;
                 if (!NodeViews.TryGetValue(edge.ToNodeGUID, out toNodeView)) yield break;
 
@@ -166,9 +164,9 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             foreach (var nodeView in NodeViews.Values)
             {
-                yield return null;
                 nodeView.Initialized();
             }
+            yield break;
         }
         #endregion
 
@@ -187,7 +185,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
         void OnNodeAdded(BaseNode node)
         {
-            InternalBaseNodeView nodeView = AddNodeView(node);
+            BaseNodeView nodeView = AddNodeView(node);
             nodeView.Initialized();
             SetDirty();
         }
@@ -211,7 +209,7 @@ namespace CZToolKit.GraphProcessor.Editors
             edges.ForEach(edge =>
             {
                 if (edge.userData != connection) return;
-                DisconnectView(edge as InternalBaseConnectionView);
+                DisconnectView(edge as BaseConnectionView);
             });
             SetDirty();
         }
@@ -260,23 +258,23 @@ namespace CZToolKit.GraphProcessor.Editors
             if (changes.movedElements != null)
             {
                 CommandDispacter.BeginGroup();
-                changes.movedElements.RemoveAll(element =>
+                changes.movedElements.RemoveAll((Predicate<GraphElement>)(element =>
                 {
                     switch (element)
                     {
-                        case InternalBaseNodeView nodeView:
-                            CommandDispacter.Do(new MoveNodeCommand(nodeView.Model, nodeView.GetPosition().position));
+                        case BaseNodeView nodeView:
+                            CommandDispacter.Do(new MoveNodeCommand(nodeView.Model, (Vector2)nodeView.GetPosition().position));
                             return true;
                         default:
                             break;
                     }
                     return false;
-                });
+                }));
                 CommandDispacter.EndGroup();
             }
             if (changes.elementsToRemove != null)
             {
-                changes.elementsToRemove.Sort((element1, element2) =>
+                changes.elementsToRemove.Sort((Comparison<GraphElement>)((element1, element2) =>
                 {
                     int GetPriority(GraphElement element)
                     {
@@ -284,29 +282,29 @@ namespace CZToolKit.GraphProcessor.Editors
                         {
                             case Edge edgeView:
                                 return 0;
-                            case InternalBaseNodeView nodeView:
+                            case BaseNodeView nodeView:
                                 return 1;
                         }
                         return 4;
                     }
                     return GetPriority(element1).CompareTo(GetPriority(element2));
-                });
+                }));
                 CommandDispacter.BeginGroup();
-                changes.elementsToRemove.RemoveAll(element =>
+                changes.elementsToRemove.RemoveAll((Predicate<GraphElement>)(element =>
                 {
                     switch (element)
                     {
-                        case InternalBaseConnectionView edgeView:
+                        case BaseConnectionView edgeView:
                             if (edgeView.selected)
                                 CommandDispacter.Do(new DisconnectCommand(Model, edgeView.Model));
                             return true;
-                        case InternalBaseNodeView nodeView:
+                        case BaseNodeView nodeView:
                             if (nodeView.selected)
                                 CommandDispacter.Do(new RemoveNodeCommand(Model, nodeView.Model));
                             return true;
                     }
                     return false;
-                });
+                }));
                 CommandDispacter.EndGroup();
 
                 UpdateInspector();
@@ -322,10 +320,10 @@ namespace CZToolKit.GraphProcessor.Editors
             {
                 switch (element)
                 {
-                    case InternalBaseNodeView nodeView:
+                    case BaseNodeView nodeView:
                         data.copiedNodes.Add(nodeView.Model);
                         break;
-                    case InternalBaseConnectionView edgeView:
+                    case BaseConnectionView edgeView:
                         data.copiedEdges.Add(edgeView.Model);
                         break;
                     default:
@@ -375,8 +373,8 @@ namespace CZToolKit.GraphProcessor.Editors
 
                 if (fromNode == null || toNode == null) continue;
 
-                if (NodeViews.TryGetValue(fromNode.GUID, out InternalBaseNodeView inputNodeView)
-                    && NodeViews.TryGetValue(toNode.GUID, out InternalBaseNodeView outputNodeView))
+                if (NodeViews.TryGetValue(fromNode.GUID, out BaseNodeView inputNodeView)
+                    && NodeViews.TryGetValue(toNode.GUID, out BaseNodeView outputNodeView))
                 {
                     CommandDispacter.Do(new ConnectCommand(Model, inputNodeView.Model, edge.FromSlotName, outputNodeView.Model, edge.ToSlotName));
                     //Model.Connect(inputNodeView.Model, outputNodeView.Model);
@@ -433,10 +431,10 @@ namespace CZToolKit.GraphProcessor.Editors
         #endregion
 
         #region 方法
-        public InternalBaseNodeView AddNodeView(BaseNode node)
+        public BaseNodeView AddNodeView(BaseNode node)
         {
             Type nodeViewType = GetNodeViewType(node);
-            InternalBaseNodeView nodeView = Activator.CreateInstance(nodeViewType) as InternalBaseNodeView;
+            BaseNodeView nodeView = Activator.CreateInstance(nodeViewType) as BaseNodeView;
 
             nodeView.SetUp(node, this);
             NodeViews[node.GUID] = nodeView;
@@ -444,15 +442,15 @@ namespace CZToolKit.GraphProcessor.Editors
             return nodeView;
         }
 
-        public void RemoveNodeView(InternalBaseNodeView nodeView)
+        public void RemoveNodeView(BaseNodeView nodeView)
         {
             RemoveElement(nodeView);
             NodeViews.Remove(nodeView.Model.GUID);
         }
 
-        public InternalBaseConnectionView ConnectView(InternalBaseNodeView from, InternalBaseNodeView to, BaseConnection connection)
+        public BaseConnectionView ConnectView(BaseNodeView from, BaseNodeView to, BaseConnection connection)
         {
-            var edgeView = Activator.CreateInstance(GetConnectionViewType(connection)) as InternalBaseConnectionView;
+            var edgeView = Activator.CreateInstance(GetConnectionViewType(connection)) as BaseConnectionView;
             edgeView.userData = connection;
             edgeView.output = from.portViews[connection.FromSlotName];
             edgeView.input = to.portViews[connection.ToSlotName];
@@ -463,18 +461,18 @@ namespace CZToolKit.GraphProcessor.Editors
             return edgeView;
         }
 
-        public void DisconnectView(InternalBaseConnectionView edgeView)
+        public void DisconnectView(BaseConnectionView edgeView)
         {
             RemoveElement(edgeView);
             Port inputPortView = edgeView.input;
-            InternalBaseNodeView inputNodeView = inputPortView.node as InternalBaseNodeView;
+            BaseNodeView inputNodeView = inputPortView.node as BaseNodeView;
             if (inputPortView != null)
             {
                 inputPortView.Disconnect(edgeView);
             }
 
             Port outputPortView = edgeView.output;
-            InternalBaseNodeView outputNodeView = outputPortView.node as InternalBaseNodeView;
+            BaseNodeView outputNodeView = outputPortView.node as BaseNodeView;
             if (outputPortView != null)
             {
                 edgeView.output.Disconnect(edgeView);
@@ -515,24 +513,6 @@ namespace CZToolKit.GraphProcessor.Editors
             if (GraphWindow.titleContent.text.EndsWith(" *"))
                 GraphWindow.titleContent.text = GraphWindow.titleContent.text.Replace(" *", "");
         }
-        #endregion
-
-        #region 抽象方法
-        protected abstract void OnInitialized();
-
-        protected abstract IEnumerable<Type> GetNodeTypes();
-
-        protected abstract Type GetNodeViewType(BaseNode node);
-
-        protected abstract Type GetConnectionViewType(BaseConnection connection);
-
-        /// <summary> 获取兼容接口 </summary>
-        public override List<Port> GetCompatiblePorts(Port startPortView, NodeAdapter nodeAdapter)
-        {
-            throw new NotImplementedException("你必须实现该方法才能正常使用");
-        }
-
-        protected abstract void UpdateInspector();
         #endregion
     }
 }

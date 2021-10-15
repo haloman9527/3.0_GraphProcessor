@@ -19,15 +19,13 @@ using UnityEngine.UIElements;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
-    public abstract class BaseNodeView<M> : InternalBaseNodeView where M : BaseNode
+    public partial class BaseNodeView
     {
-        public M T_Model { get { return Model as M; } }
+        public virtual void Initialized() { }
 
-        public override void Initialized() { }
-
-        public override InternalBasePortView NewPortView(BaseSlot slot)
+        public virtual BasePortView NewPortView(BaseSlot slot)
         {
-            return new BasePortView(slot, typeof(object));
+            return new BasePortView(slot, typeof(object), new EdgeConnectorListener());
         }
 
         public override void BuildContextualMenu(ContextualMenuPopulateEvent evt)
@@ -46,6 +44,8 @@ namespace CZToolKit.GraphProcessor.Editors
         }
     }
 
-    /// <summary> 默认 </summary>
-    public sealed class BaseNodeView : BaseNodeView<BaseNode> { }
+    public class BaseNodeView<M> : BaseNodeView where M : BaseNode
+    {
+        public M T_Model { get { return Model as M; } }
+    }
 }

@@ -19,17 +19,17 @@ using UnityEngine;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
-    public abstract class InternalBaseConnectionView : Edge, IBindableView<BaseConnection>
+    public partial class BaseConnectionView : Edge, IBindableView<BaseConnection>
     {
         public BaseConnection Model { get; private set; }
-        protected InternalBaseGraphView Owner { get; private set; }
+        protected BaseGraphView Owner { get; private set; }
 
-        public InternalBaseConnectionView() : base()
+        public BaseConnectionView() : base()
         {
             styleSheets.Add(GraphProcessorStyles.EdgeViewStyle);
         }
 
-        public void SetUp(BaseConnection connection, InternalBaseGraphView graphView)
+        public void SetUp(BaseConnection connection, BaseGraphView graphView)
         {
             Model = connection;
             Owner = graphView;

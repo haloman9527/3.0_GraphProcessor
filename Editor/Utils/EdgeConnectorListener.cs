@@ -23,12 +23,12 @@ namespace CZToolKit.GraphProcessor.Editors
         /// <summary> 拖拽到符合条件的接口上松开时触发 </summary>
         public virtual void OnDrop(GraphView graphView, Edge edge)
         {
-            InternalBaseGraphView tempGraphView = graphView as InternalBaseGraphView;
+            BaseGraphView tempGraphView = graphView as BaseGraphView;
 
-            BaseNode from = (edge.output.node as InternalBaseNodeView).Model;
-            BaseSlot fromSlot = (edge.output as InternalBasePortView).Model;
-            BaseNode to = (edge.input.node as InternalBaseNodeView).Model;
-            BaseSlot toSlot = (edge.input as InternalBasePortView).Model;
+            BaseNode from = (edge.output.node as BaseNodeView).Model;
+            BaseSlot fromSlot = (edge.output as BasePortView).Model;
+            BaseNode to = (edge.input.node as BaseNodeView).Model;
+            BaseSlot toSlot = (edge.input as BasePortView).Model;
             tempGraphView.CommandDispacter.Do(new ConnectCommand(tempGraphView.Model, from, fromSlot.name, to, toSlot.name));
         }
 

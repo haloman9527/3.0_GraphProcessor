@@ -13,6 +13,7 @@
  *
  */
 #endregion
+using UnityEngine.UIElements;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
@@ -21,14 +22,9 @@ namespace CZToolKit.GraphProcessor.Editors
         protected BaseSimpleNodeView() : base()
         {
             styleSheets.Add(GraphProcessorStyles.SimpleNodeViewStyle);
+            m_CollapseButton.style.display = DisplayStyle.None;
         }
     }
 
-    public sealed class BaseSimpleNodeView : BaseSimpleNodeView<BaseNode>
-    {
-        public override InternalBasePortView NewPortView(BaseSlot slot)
-        {
-            return new BasePortView(slot, typeof(object));
-        }
-    }
+    public class BaseSimpleNodeView : BaseSimpleNodeView<BaseNode> { }
 }

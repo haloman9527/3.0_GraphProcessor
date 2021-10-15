@@ -13,7 +13,6 @@
  *
  */
 #endregion
-using CZToolKit.Core;
 using CZToolKit.Core.Editors;
 using System;
 using UnityEngine;
@@ -23,6 +22,7 @@ using UnityEditor.Callbacks;
 using UnityEditor.UIElements;
 
 using UnityObject = UnityEngine.Object;
+using CZToolKit.Core;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
@@ -33,6 +33,7 @@ namespace CZToolKit.GraphProcessor.Editors
         protected int graphOwnerInstanceID;
         protected IGraphOwner graphOwner;
         protected UnityObject graphAsset;
+        protected bool locked = false;
         #endregion
 
         #region 属性
@@ -43,7 +44,7 @@ namespace CZToolKit.GraphProcessor.Editors
         }
         public UnityObject GraphAsset { get { return graphAsset; } private set { graphAsset = value; } }
         public BaseGraph Graph { get; private set; }
-        public InternalBaseGraphView GraphView { get; private set; }
+        public BaseGraphView GraphView { get; private set; }
         public GraphViewParentElement GraphViewParent { get; private set; }
         public ToolbarView Toolbar { get { return GraphViewParent.Toolbar; } }
         public VisualElement GraphViewElement { get { return GraphViewParent.GraphViewElement; } }
@@ -97,9 +98,16 @@ namespace CZToolKit.GraphProcessor.Editors
         #endregion
 
         #region 方法
-        protected virtual InternalBaseGraphView NewGraphView(BaseGraph graph)
+        protected override void ShowButton(Rect rect)
         {
-            return new BaseGraphView(graph, this, new CommandDispatcher());
+            base.ShowButton(rect);
+            rect.x -= 28;
+            rect.width = 20;
+            if (GUI.Button(rect, locked ? EditorGUIUtility.IconContent("IN LockButton act@2x") : EditorGUIUtility.IconContent("IN LockButton on act@2x"), EditorStylesExtension.OnlyIconButtonStyle))
+            {
+                locked = !locked;
+            }
+
         }
 
         public void Clear()
@@ -109,7 +117,8 @@ namespace CZToolKit.GraphProcessor.Editors
                 GraphViewParent.RemoveFromHierarchy();
                 GraphViewParent = null;
             }
-
+            Graph = null;
+            GraphAsset = null;
             GraphOwner = null;
         }
 
@@ -147,6 +156,18 @@ namespace CZToolKit.GraphProcessor.Editors
             GraphViewParent.GraphViewElement.Add(GraphView);
         }
 
+        // 重新加载Graph
+        public void Reload()
+        {
+            IGraphOwner tempGraphOwner = GraphOwner;
+
+            var targetGraph = GraphAsset == null ? Graph : (GraphAsset as IGraphAsset).Graph;
+            if (targetGraph != null && tempGraphOwner != null)
+                targetGraph.InitializePropertyMapping(tempGraphOwner);
+            InternalLoad(targetGraph);
+            GraphOwner = tempGraphOwner;
+        }
+
         // 从GraphOwner加载
         public void Load(IGraphOwner graphOwner)
         {
@@ -181,18 +202,6 @@ namespace CZToolKit.GraphProcessor.Editors
             InternalLoad(graph);
         }
 
-        // 重新加载Graph
-        public void Reload()
-        {
-            IGraphOwner tempGraphOwner = GraphOwner;
-
-            var targetGraph = GraphAsset == null ? Graph : (GraphAsset as IGraphAsset).Graph;
-            if (targetGraph != null && tempGraphOwner != null)
-                targetGraph.InitializePropertyMapping(tempGraphOwner);
-            InternalLoad(targetGraph);
-            GraphOwner = tempGraphOwner;
-        }
-
         // 保存到硬盘(如果可以)
         public void Save()
         {
@@ -202,6 +211,13 @@ namespace CZToolKit.GraphProcessor.Editors
 
             if (AssetDatabase.Contains(GraphAsset))
                 AssetDatabase.SaveAssets();
+        }
+        #endregion
+
+        #region 抽象方法
+        protected virtual BaseGraphView NewGraphView(BaseGraph graph)
+        {
+            return new BaseGraphView(graph, this, new CommandDispatcher());
         }
         #endregion
 

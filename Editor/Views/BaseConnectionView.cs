@@ -20,12 +20,8 @@ using UnityEngine.UIElements;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
-    public abstract class BaseConnectionView<M> : InternalBaseConnectionView where M : BaseConnection
+    public partial class BaseConnectionView
     {
-        public M T_Model { get { return Model as M; } }
-
-        public BaseConnectionView() : base() { this.AddManipulator(new FlowPoint()); }
-
         public class FlowPoint : Manipulator
         {
             VisualElement point { get; set; }
@@ -85,11 +81,5 @@ namespace CZToolKit.GraphProcessor.Editors
                 return points[0];
             }
         }
-    }
-
-    /// <summary> 默认 </summary>
-    public sealed class BaseConnectionView : BaseConnectionView<BaseConnection>
-    {
-        public BaseConnectionView() : base() { }
     }
 }

@@ -25,11 +25,11 @@ namespace CZToolKit.GraphProcessor.Editors
 {
     public class CreateNodeMenuWindow : ScriptableObject, ISearchWindowProvider
     {
-        InternalBaseGraphView graphView;
+        BaseGraphView graphView;
         IEnumerable<Type> nodeTypes;
         List<SearchTreeEntry> tree;
 
-        public void Initialize(InternalBaseGraphView _graphView, IEnumerable<Type> nodeTypes)
+        public void Initialize(BaseGraphView _graphView, IEnumerable<Type> nodeTypes)
         {
             graphView = _graphView;
             this.nodeTypes = nodeTypes;

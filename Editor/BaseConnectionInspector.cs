@@ -1,3 +1,18 @@
+#region ×¢ ÊÍ
+/***
+ *
+ *  Title:
+ *  
+ *  Description:
+ *  
+ *  Date:
+ *  Version:
+ *  Writer: °ëÖ»ÁúÏºÈË
+ *  Github: https://github.com/HalfLobsterMan
+ *  Blog: https://www.crosshair.top/
+ *
+ */
+#endregion
 using CZToolKit.Core.Editors;
 using System.Collections.Generic;
 using UnityEditor;
@@ -5,7 +20,7 @@ using UnityEngine;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
-    [CustomObjectEditor(typeof(InternalBaseConnectionView))]
+    [CustomObjectEditor(typeof(BaseConnectionView))]
     public class BaseConnectionInspector : ObjectEditor
     {
 
@@ -32,7 +47,7 @@ namespace CZToolKit.GraphProcessor.Editors
                 bigLabel.value.stretchWidth = true;
             }
 
-            if (Target is InternalBaseConnectionView view && view.Model != null)
+            if (Target is BaseConnectionView view && view.Model != null)
             {
                 EditorGUI.BeginChangeCheck();
                 GUILayout.Box(string.Concat(view.output?.node.title, "   >>   ", view.input?.node.title), bigLabel.value);
