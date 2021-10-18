@@ -13,6 +13,7 @@
  *
  */
 #endregion
+#if UNITY_EDITOR
 using CZToolKit.Core;
 using CZToolKit.Core.Editors;
 using System;
@@ -70,17 +71,13 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             yield return GraphWindow.StartCoroutine(InitializeCallbacks());
             yield return GraphWindow.StartCoroutine(InitializeToolbarButtons());
+
             // 绑定
             BindingProperties();
             RegisterCallback<DetachFromPanelEvent>(evt => { UnBindingProperties(); });
-            yield return null;
 
             yield return GraphWindow.StartCoroutine(GenerateNodeViews());
             yield return GraphWindow.StartCoroutine(LinkNodeViews());
-            yield return GraphWindow.StartCoroutine(NotifyNodeViewsInitialized());
-
-            OnInitialized();
-            MarkDirtyRepaint();
 
             double time = EditorApplication.timeSinceStartup;
             Add(new IMGUIContainer(() =>
@@ -92,6 +89,8 @@ namespace CZToolKit.GraphProcessor.Editors
                     time += 1;
                 }
             }));
+
+            OnInitialized();
         }
 
         IEnumerator InitializeCallbacks()
@@ -159,15 +158,6 @@ namespace CZToolKit.GraphProcessor.Editors
                 ConnectView(fromNodeView, toNodeView, edge);
             }
         }
-
-        IEnumerator NotifyNodeViewsInitialized()
-        {
-            foreach (var nodeView in NodeViews.Values)
-            {
-                nodeView.Initialized();
-            }
-            yield break;
-        }
         #endregion
 
         #region 数据监听回调
@@ -185,8 +175,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
         void OnNodeAdded(BaseNode node)
         {
-            BaseNodeView nodeView = AddNodeView(node);
-            nodeView.Initialized();
+            AddNodeView(node);
             SetDirty();
         }
 
@@ -516,3 +505,4 @@ namespace CZToolKit.GraphProcessor.Editors
         #endregion
     }
 }
+#endif

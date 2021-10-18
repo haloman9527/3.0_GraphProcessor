@@ -13,6 +13,7 @@
  *
  */
 #endregion
+#if UNITY_EDITOR
 using CZToolKit.Core;
 using System;
 using System.Collections.Generic;
@@ -36,7 +37,7 @@ namespace CZToolKit.GraphProcessor.Editors
                 {
                     if (type.IsAbstract) continue;
 
-                    foreach (var att in Utility_Attribute.GetTypeAttributes(type, true))
+                    foreach (var att in Util_Attribute.GetTypeAttributes(type, true))
                     {
                         if (att is CustomGraphWindowAttribute sAtt)
                             WindowTypeCache[sAtt.targetGraphType] = type;
@@ -64,7 +65,7 @@ namespace CZToolKit.GraphProcessor.Editors
                 foreach (var type in TypeCache.GetTypesDerivedFrom<BaseNodeView>())
                 {
                     if (type.IsAbstract) continue;
-                    foreach (var att in Utility_Attribute.GetTypeAttributes(type, true))
+                    foreach (var att in Util_Attribute.GetTypeAttributes(type, true))
                     {
                         if (att is CustomNodeViewAttribute sAtt)
                             NodeViewTypeCache[sAtt.targetNodeType] = type;
@@ -83,7 +84,7 @@ namespace CZToolKit.GraphProcessor.Editors
         #region NodeNames
         public static string GetNodeDisplayName(Type nodeType)
         {
-            if (Utility_Attribute.TryGetTypeAttribute(nodeType, out NodeMenuItemAttribute attri))
+            if (Util_Attribute.TryGetTypeAttribute(nodeType, out NodeMenuItemAttribute attri))
             {
                 if (attri.titles != null && attri.titles.Length != 0)
                     return attri.titles[attri.titles.Length - 1];
@@ -98,4 +99,4 @@ namespace CZToolKit.GraphProcessor.Editors
         #endregion
     }
 }
-
+#endif

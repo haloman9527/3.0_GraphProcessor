@@ -13,6 +13,7 @@
  *
  */
 #endregion
+#if UNITY_EDITOR
 using System;
 using System.Collections.Generic;
 using UnityEditor.Experimental.GraphView;
@@ -114,6 +115,8 @@ namespace CZToolKit.GraphProcessor.Editors
             {
                 BasePortView portView = NewPortView(port);
                 portView.SetUp(port, Owner);
+                portViews[port.name] = portView;
+
                 if (portView.orientation == Orientation.Horizontal)
                 {
                     if (portView.direction == Direction.Input)
@@ -128,14 +131,17 @@ namespace CZToolKit.GraphProcessor.Editors
                     else
                         bottomPortContainer.Add(portView);
                 }
-                portViews[port.name] = portView;
             }
+            RefreshPorts();
 
             // 绑定
             BindingProperties();
-            RefreshPorts();
-        }
 
+            OnInitialized();
+        }
+        #endregion
+
+        #region 数据监听
         protected virtual void BindingProperties()
         {
             Model.BindingProperty<string>(BaseNode.TITLE_NAME, OnTitleChanged);
@@ -151,9 +157,7 @@ namespace CZToolKit.GraphProcessor.Editors
             Model.UnBindingProperty<string>(BaseNode.TOOLTIP_NAME, OnTooltipChanged);
             Model.UnBindingProperty<Vector2>(BaseNode.POSITION_NAME, OnPositionChanged);
         }
-        #endregion
 
-        #region 数据监听回调
         void OnTitleChanged(string title)
         {
             base.title = title;
@@ -233,3 +237,4 @@ namespace CZToolKit.GraphProcessor.Editors
         #endregion
     }
 }
+#endif

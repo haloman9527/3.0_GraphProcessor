@@ -13,6 +13,7 @@
  *
  */
 #endregion
+#if UNITY_EDITOR
 using UnityEngine;
 using UnityEditor.Experimental.GraphView;
 
@@ -36,3 +37,4 @@ namespace CZToolKit.GraphProcessor.Editors
         public void OnDropOutsidePort(Edge edge, Vector2 position) { }
     }
 }
+#endif

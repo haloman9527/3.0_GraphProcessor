@@ -13,6 +13,7 @@
  *
  */
 #endregion
+#if UNITY_EDITOR
 using CZToolKit.Core;
 using CZToolKit.Core.Editors;
 using System;
@@ -39,7 +40,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
         protected virtual IEnumerable<Type> GetNodeTypes()
         {
-            foreach (var type in Utility_Reflection.GetChildTypes<BaseNode>())
+            foreach (var type in Util_Reflection.GetChildTypes<BaseNode>())
             {
                 if (type.IsAbstract) continue;
                 yield return type;
@@ -79,3 +80,4 @@ namespace CZToolKit.GraphProcessor.Editors
         }
     }
 }
+#endif

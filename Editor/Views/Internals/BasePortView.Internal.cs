@@ -13,6 +13,7 @@
  *
  */
 #endregion
+#if UNITY_EDITOR
 using System;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine.UIElements;
@@ -31,7 +32,6 @@ namespace CZToolKit.GraphProcessor.Editors
             Icon = new Image();
             Icon.AddToClassList("port-icon");
             Insert(1, Icon);
-
             var portLabel = this.Q("type");
             if (portLabel != null)
             {
@@ -62,3 +62,4 @@ namespace CZToolKit.GraphProcessor.Editors
         }
     }
 }
+#endif

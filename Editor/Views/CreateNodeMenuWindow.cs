@@ -13,6 +13,7 @@
  *
  */
 #endregion
+#if UNITY_EDITOR
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -43,7 +44,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
             foreach (Type type in nodeTypes)
             {
-                if (Utility_Attribute.TryGetTypeAttribute(type, out NodeMenuItemAttribute attribute))
+                if (Util_Attribute.TryGetTypeAttribute(type, out NodeMenuItemAttribute attribute))
                 {
                     if (attribute.showInList)
                     {
@@ -101,3 +102,4 @@ namespace CZToolKit.GraphProcessor.Editors
         }
     }
 }
+#endif

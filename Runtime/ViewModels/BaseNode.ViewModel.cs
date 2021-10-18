@@ -96,7 +96,7 @@ namespace CZToolKit.GraphProcessor
 
             Type type = GetType();
 
-            if (Utility_Attribute.TryGetTypeAttribute(type, out NodeMenuItemAttribute displayName))
+            if (Util_Attribute.TryGetTypeAttribute(type, out NodeMenuItemAttribute displayName))
             {
                 if (displayName.titles != null && displayName.titles.Length != 0)
                     Title = displayName.titles[displayName.titles.Length - 1];
@@ -104,10 +104,10 @@ namespace CZToolKit.GraphProcessor
             else
                 Title = type.Name;
 
-            if (Utility_Attribute.TryGetTypeAttribute(type, out NodeTitleColorAttribute nodeTitleColor))
+            if (Util_Attribute.TryGetTypeAttribute(type, out NodeTitleColorAttribute nodeTitleColor))
                 TitleColor = nodeTitleColor.color;
 
-            if (Utility_Attribute.TryGetTypeAttribute(type, out NodeTooltipAttribute tooltip))
+            if (Util_Attribute.TryGetTypeAttribute(type, out NodeTooltipAttribute tooltip))
                 Tooltip = tooltip.Tooltip;
         }
 

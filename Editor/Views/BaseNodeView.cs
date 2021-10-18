@@ -13,6 +13,7 @@
  *
  */
 #endregion
+#if UNITY_EDITOR
 using CZToolKit.Core.Editors;
 using UnityEditor;
 using UnityEngine.UIElements;
@@ -21,7 +22,7 @@ namespace CZToolKit.GraphProcessor.Editors
 {
     public partial class BaseNodeView
     {
-        public virtual void Initialized() { }
+        protected virtual void OnInitialized() { }
 
         public virtual BasePortView NewPortView(BasePort port)
         {
@@ -49,3 +50,4 @@ namespace CZToolKit.GraphProcessor.Editors
         public M T_Model { get { return Model as M; } }
     }
 }
+#endif
