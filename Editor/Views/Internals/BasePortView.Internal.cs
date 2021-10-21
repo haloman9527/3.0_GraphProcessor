@@ -13,7 +13,6 @@
  *
  */
 #endregion
-#if UNITY_EDITOR
 using System;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine.UIElements;
@@ -62,4 +61,3 @@ namespace CZToolKit.GraphProcessor.Editors
         }
     }
 }
-#endif

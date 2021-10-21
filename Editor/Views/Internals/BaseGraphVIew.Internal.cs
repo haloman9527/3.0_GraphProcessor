@@ -13,7 +13,6 @@
  *
  */
 #endregion
-#if UNITY_EDITOR
 using CZToolKit.Core;
 using CZToolKit.Core.Editors;
 using System;
@@ -24,6 +23,7 @@ using UnityEditor.Experimental.GraphView;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
+using System.Linq;
 
 using UnityObject = UnityEngine.Object;
 
@@ -70,7 +70,10 @@ namespace CZToolKit.GraphProcessor.Editors
         IEnumerator Initialize()
         {
             yield return GraphWindow.StartCoroutine(InitializeCallbacks());
-            yield return GraphWindow.StartCoroutine(InitializeToolbarButtons());
+
+            // 初始化
+            viewTransform.position = Model.Position;
+            viewTransform.scale = Model.Scale;
 
             // 绑定
             BindingProperties();
@@ -79,14 +82,14 @@ namespace CZToolKit.GraphProcessor.Editors
             yield return GraphWindow.StartCoroutine(GenerateNodeViews());
             yield return GraphWindow.StartCoroutine(LinkNodeViews());
 
-            double time = EditorApplication.timeSinceStartup;
+            double nextCheckTime = EditorApplication.timeSinceStartup;
             Add(new IMGUIContainer(() =>
             {
-                if (IsDirty && EditorApplication.timeSinceStartup > time && GraphAsset != null)
+                if (IsDirty && EditorApplication.timeSinceStartup > nextCheckTime)
                 {
                     IsDirty = false;
-                    EditorUtility.SetDirty(GraphAsset);
-                    time += 1;
+                    SetDirty(true);
+                    nextCheckTime += 1;
                 }
             }));
 
@@ -101,35 +104,9 @@ namespace CZToolKit.GraphProcessor.Editors
             unserializeAndPaste = DeserializeAndPasteCallback;
             viewTransformChanged = ViewTransformChangedCallback;
 
-            RegisterCallback<KeyDownEvent>(KeyDownCallback);
-
             CreateNodeMenu = ScriptableObject.CreateInstance<CreateNodeMenuWindow>();
             CreateNodeMenu.Initialize(this, GetNodeTypes());
             nodeCreationRequest = c => SearchWindow.Open(new SearchWindowContext(c.screenMousePosition), CreateNodeMenu);
-            yield break;
-        }
-
-        /// <summary> 初始化ToolbarButton </summary>
-        IEnumerator InitializeToolbarButtons()
-        {
-            ToolbarButton btnCenter = new ToolbarButton()
-            {
-                text = "Center"
-            };
-            btnCenter.clicked += () =>
-            {
-                ResetPositionAndZoom();
-                UpdateViewTransform(Model.Position, Model.Scale);
-            };
-            GraphWindow.Toolbar.AddButtonToLeft(btnCenter);
-
-            ToolbarButton btnSave = new ToolbarButton()
-            {
-                text = "Save",
-                style = { width = 60 }
-            };
-            btnSave.clicked += () => Save();
-            GraphWindow.Toolbar.AddButtonToRight(btnSave);
             yield break;
         }
 
@@ -185,7 +162,7 @@ namespace CZToolKit.GraphProcessor.Editors
             SetDirty();
         }
 
-        void OnEdgeAdded(BaseConnection connection)
+        void OnConnected(BaseConnection connection)
         {
             var from = NodeViews[connection.FromNodeGUID];
             var to = NodeViews[connection.ToNodeGUID];
@@ -193,7 +170,7 @@ namespace CZToolKit.GraphProcessor.Editors
             SetDirty();
         }
 
-        void OnEdgeRemoved(BaseConnection connection)
+        void OnDisconnected(BaseConnection connection)
         {
             edges.ForEach(edge =>
             {
@@ -205,18 +182,14 @@ namespace CZToolKit.GraphProcessor.Editors
 
         protected virtual void BindingProperties()
         {
-            // 初始化
-            viewTransform.position = Model.Position;
-            viewTransform.scale = Model.Scale;
-
             Model.BindingProperty<Vector3>(BaseGraph.POSITION_NAME, OnPositionChanged);
             Model.BindingProperty<Vector3>(BaseGraph.SCALE_NAME, OnScaleChanged);
 
             Model.onNodeAdded += OnNodeAdded;
             Model.onNodeRemoved += OnNodeRemoved;
 
-            Model.onEdgeAdded += OnEdgeAdded;
-            Model.onConnectionRemoved += OnEdgeRemoved;
+            Model.onConnected += OnConnected;
+            Model.onDisconnected += OnDisconnected;
         }
 
         public virtual void UnBindingProperties()
@@ -235,8 +208,8 @@ namespace CZToolKit.GraphProcessor.Editors
             Model.onNodeAdded -= OnNodeAdded;
             Model.onNodeRemoved -= OnNodeRemoved;
 
-            Model.onEdgeAdded -= OnEdgeAdded;
-            Model.onConnectionRemoved -= OnEdgeRemoved;
+            Model.onConnected -= OnConnected;
+            Model.onDisconnected -= OnDisconnected;
         }
         #endregion
 
@@ -382,30 +355,6 @@ namespace CZToolKit.GraphProcessor.Editors
             Model.Scale = viewTransform.scale;
         }
 
-        void KeyDownCallback(KeyDownEvent evt)
-        {
-            if (evt.commandKey || evt.ctrlKey)
-            {
-                switch (evt.keyCode)
-                {
-                    case KeyCode.S:
-                        Save();
-                        evt.StopPropagation();
-                        break;
-                    case KeyCode.Z:
-                        CommandDispacter.Undo();
-                        evt.StopPropagation();
-                        break;
-                    case KeyCode.Y:
-                        CommandDispacter.Redo();
-                        evt.StopPropagation();
-                        break;
-                    default:
-                        break;
-                }
-            }
-        }
-
         public override void AddToSelection(ISelectable selectable)
         {
             base.AddToSelection(selectable);
@@ -482,27 +431,46 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             if (!GraphWindow.titleContent.text.EndsWith(" *"))
                 GraphWindow.titleContent.text += " *";
-            if (immediately & GraphAsset != null)
-                EditorUtility.SetDirty(GraphAsset);
+
+            if (immediately)
+            {
+                if (GraphAsset != null)
+                {
+                    EditorUtility.SetDirty(GraphAsset);
+                }
+                if (GraphWindow.GraphOwner != null)
+                {
+                    EditorUtility.SetDirty(GraphWindow.GraphOwner.Self());
+                }
+            }
             else
                 IsDirty = true;
         }
 
-        // 保存
-        public void Save()
+        public void UnsetDirty()
         {
-            SetDirty(true);
-            (GraphAsset as IGraphAsset)?.SaveGraph();
+            if (GraphWindow.titleContent.text.EndsWith(" *"))
+                GraphWindow.titleContent.text = GraphWindow.titleContent.text.Replace(" *", "");
+            IsDirty = false;
+        }
+
+        // 保存
+        public virtual void Save()
+        {
+            if (GraphAsset != null)
+            {
+                (GraphAsset as IGraphAsset)?.SaveGraph();
+            }
             if (GraphWindow.GraphOwner != null)
             {
                 GraphWindow.GraphOwner.SaveVariables();
-                EditorUtility.SetDirty(GraphWindow.GraphOwner as UnityObject);
             }
+
+            SetDirty(true);
             AssetDatabase.SaveAssets();
-            if (GraphWindow.titleContent.text.EndsWith(" *"))
-                GraphWindow.titleContent.text = GraphWindow.titleContent.text.Replace(" *", "");
+
+            UnsetDirty();
         }
         #endregion
     }
 }
-#endif

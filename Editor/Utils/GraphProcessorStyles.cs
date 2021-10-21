@@ -13,7 +13,6 @@
  *
  */
 #endregion
-#if UNITY_EDITOR
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -48,4 +47,3 @@ namespace CZToolKit.GraphProcessor.Editors
         public static StyleSheet RelayNodeViewStyle { get; } = Resources.Load<StyleSheet>(RelayNodeViewStyleFile);
     }
 }
-#endif

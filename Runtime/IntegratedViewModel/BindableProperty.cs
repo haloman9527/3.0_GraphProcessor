@@ -77,6 +77,11 @@ namespace CZToolKit.GraphProcessor
         {
             SetValueWithoutNotify((T)value);
         }
+        public void ClearChangedEvent()
+        {
+            while (this.onValueChanged != null)
+                this.onValueChanged -= this.onValueChanged;
+        }
         public override string ToString()
         {
             return (Value != null ? Value.ToString() : "null");

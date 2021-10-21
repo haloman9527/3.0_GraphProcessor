@@ -30,8 +30,8 @@ namespace CZToolKit.GraphProcessor
         public event Action<BaseNode> onNodeAdded;
         public event Action<BaseNode> onNodeRemoved;
 
-        public event Action<BaseConnection> onEdgeAdded;
-        public event Action<BaseConnection> onConnectionRemoved;
+        public event Action<BaseConnection> onConnected;
+        public event Action<BaseConnection> onDisconnected;
 
         [NonSerialized] public List<SharedVariable> variables = new List<SharedVariable>();
         #endregion
@@ -172,7 +172,7 @@ namespace CZToolKit.GraphProcessor
 
             connection.Enable(this);
             connections.Add(connection);
-            onEdgeAdded?.Invoke(connection);
+            onConnected?.Invoke(connection);
         }
 
         public BaseConnection Connect(BaseNode from, string fromPortName, BaseNode to, string toPortName)
@@ -192,7 +192,7 @@ namespace CZToolKit.GraphProcessor
             connection = NewConnection(from, fromPortName, to, toPortName);
             connection.Enable(this);
             connections.Add(connection);
-            onEdgeAdded?.Invoke(connection);
+            onConnected?.Invoke(connection);
             return connection;
         }
 
@@ -210,7 +210,7 @@ namespace CZToolKit.GraphProcessor
         {
             if (!connections.Contains(edge)) return;
             connections.Remove(edge);
-            onConnectionRemoved?.Invoke(edge);
+            onDisconnected?.Invoke(edge);
         }
 
         public void Disconnect(BaseNode node, BasePort port)

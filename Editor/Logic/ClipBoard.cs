@@ -13,7 +13,6 @@
  *
  */
 #endregion
-#if UNITY_EDITOR
 using System;
 using System.Collections.Generic;
 
@@ -30,4 +29,3 @@ namespace CZToolKit.GraphProcessor
         public List<BaseConnection> copiedEdges = new List<BaseConnection>();
     }
 }
-#endif

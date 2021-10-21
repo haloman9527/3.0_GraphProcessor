@@ -39,5 +39,6 @@ namespace CZToolKit.GraphProcessor
         void RegesterValueChangedEvent(Action<T> onValueChanged);
         void UnregesterValueChangedEvent(Action<T> onValueChanged);
         void SetValueWithoutNotify(T value);
+        void ClearChangedEvent();
     }
 }
