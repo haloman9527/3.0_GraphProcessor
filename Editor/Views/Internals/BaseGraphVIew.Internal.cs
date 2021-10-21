@@ -465,7 +465,6 @@ namespace CZToolKit.GraphProcessor.Editors
             {
                 GraphWindow.GraphOwner.SaveVariables();
             }
-
             SetDirty(true);
             AssetDatabase.SaveAssets();
 

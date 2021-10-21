@@ -165,12 +165,6 @@ namespace CZToolKit.GraphProcessor.Editors
 
         protected void InternalLoad(BaseGraph graph)
         {
-            if (GraphView != null && GraphAsset != null && EditorUtility.IsDirty(GraphAsset))
-            {
-                GraphView.Save();
-            }
-            Clear();
-
             Graph = graph;
 
             GraphViewParent = new GraphViewParentElement();
@@ -210,6 +204,10 @@ namespace CZToolKit.GraphProcessor.Editors
         // 从GraphOwner加载
         public void Load(IGraphOwner graphOwner)
         {
+            if (GraphView != null && GraphView.IsDirty)
+                GraphView.Save();
+            Clear();
+
             GraphAsset = graphOwner.Self();
             GraphOwner = graphOwner;
             GraphOwner.Graph.InitializePropertyMapping(GraphOwner);
@@ -219,6 +217,10 @@ namespace CZToolKit.GraphProcessor.Editors
         // 从GraphAssetOwner加载
         public void Load(IGraphAssetOwner graphAssetOwner)
         {
+            if (GraphView != null && GraphView.IsDirty)
+                GraphView.Save();
+            Clear();
+
             GraphAsset = graphAssetOwner.GraphAsset;
             GraphOwner = graphAssetOwner;
             GraphOwner.Graph.InitializePropertyMapping(GraphOwner);
@@ -228,6 +230,10 @@ namespace CZToolKit.GraphProcessor.Editors
         // 从Graph资源加载
         public void Load(IGraphAsset graphAsset)
         {
+            if (GraphView != null && GraphView.IsDirty)
+                GraphView.Save();
+            Clear();
+
             GraphAsset = graphAsset as UnityObject;
             GraphOwner = null;
             InternalLoad(graphAsset.Graph);
@@ -236,6 +242,10 @@ namespace CZToolKit.GraphProcessor.Editors
         // 直接加载Graph对象
         public void Load(BaseGraph graph)
         {
+            if (GraphView != null && GraphView.IsDirty)
+                GraphView.Save();
+            Clear();
+
             GraphAsset = null;
             GraphOwner = null;
             InternalLoad(graph);
