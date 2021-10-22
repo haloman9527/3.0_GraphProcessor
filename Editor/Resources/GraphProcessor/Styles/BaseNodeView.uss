@@ -1,8 +1,10 @@
-#node {
+#node 
+{
     background-color: rgba(0, 63, 63, 1);
 }
 
-#title {
+#title 
+{
     height: 30px;
     padding-left: 8px;
 }
@@ -11,9 +13,11 @@
     margin-left: 2px;
     align-self: center;
     flex-grow: 1;
+    height: 100
 }
 
-#title > #settings-button {
+#title > #settings-button 
+{
     align-self: center;
 }
 
@@ -21,95 +25,3 @@
     background-color: rgba(0, 255, 255, 1);
     border-radius: 7px
 }
-
-/*#input-container {
-    position: absolute;
-    right: 100%;
-    top: 40px;
-    align-items: flex-end;
-    --layer: -50;
-    opacity: 0.6;
-}
-
-.collapsed #input-container {
-    visibility: hidden;
-}
-
-.node:checked > #input-container {
-    opacity: 1;
-}
-
-#input-container > .port-input-element {
-    background-color: rgba(72, 72, 72, 1);
-    margin-left: 1px;
-    margin-top: 1px;
-    margin-bottom: 3px;
-    padding-top: 1px;
-    padding-bottom: 1px;
-    height: 20px;
-    overflow: hidden;
-    padding-right: 1px;
-    font-size: 8px;
-    flex-direction: row-reverse
-}
-
-.unity-base-field__label{
-    min-width: 50px;
-}
-
-#input-container > .port-input-element > IntegerField,
-#input-container > .port-input-element > LongField,
-#input-container > .port-input-element > FloatField,
-#input-container > .port-input-element > DoubleField {
-    min-width: 30px;
-    max-width: 100px;
-    margin-top: 0px;
-}
-
-#input-container > .port-input-element > ColorField,
-#input-container > .port-input-element > ObjectField,
-#input-container > .port-input-element > GradientField,
-#input-container > .port-input-element > CurveField,
-#input-container > .port-input-element > TextField {
-    margin-top: 0;
-    margin-bottom: 0;
-    width: 100px;
-    max-width: 150px;
-}
-
-.unity-base-field__input{
-    min-width: 50px;
-    border-top-left-radius: 1px;
-    border-bottom-left-radius: 1px;
-    border-top-right-radius: 1px;
-    border-bottom-right-radius: 1px;
-    margin-top: 1px;
-    padding-bottom: 1px;
-    height: 16px;
-}
-
-#input-container > .port-input-element > .unity-vector3-int-field Label,
-#input-container > .port-input-element > .unity-vector2-int-field Label,
-#input-container > .port-input-element > .unity-vector4-field Label,
-#input-container > .port-input-element > .unity-vector3-field Label,
-#input-container > .port-input-element > .unity-vector2-field Label {
-    font-size: 10px;
-    min-width: 10px;
-    margin-right: 1px;
-}
-
-#input-container > .port-input-element > .unity-vector3-int-field IntegerInput,
-#input-container > .port-input-element > .unity-vector2-int-field IntegerInput,
-#input-container > .port-input-element > .unity-vector4-field FloatInput,
-#input-container > .port-input-element > .unity-vector3-field FloatInput,
-#input-container > .port-input-element > .unity-vector2-field FloatInput {
-    min-width: 30px;
-    flex-basis: 30%;
-    height: 14px;
-}
-
-#input-container ObjectFieldSelector {
-    width: 17px;
-    border-top-right-radius: 2px;
-    border-bottom-right-radius: 2px;
-}*/

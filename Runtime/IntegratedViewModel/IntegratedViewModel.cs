@@ -31,7 +31,8 @@ namespace CZToolKit.GraphProcessor
 
     public abstract class IntegratedViewModel : IReadOnlyIntegratedViewModel<string, IBindableProperty>, IEnumerable<KeyValuePair<string, IBindableProperty>>, IEnumerable
     {
-        [NonSerialized] Dictionary<string, IBindableProperty> bindableProperties;
+        [NonSerialized] 
+        Dictionary<string, IBindableProperty> bindableProperties;
 
         Dictionary<string, IBindableProperty> InternalBindableProperties { get { CheckPropertiesIsNull(); return bindableProperties; } set { bindableProperties = value; } }
 
@@ -72,7 +73,7 @@ namespace CZToolKit.GraphProcessor
             InitializeBindableProperties();
         }
 
-        public abstract void InitializeBindableProperties();
+        protected abstract void InitializeBindableProperties();
 
         public virtual void BindingProperty<T>(string propertyName, Action<T> onValueChangedCallback)
         {

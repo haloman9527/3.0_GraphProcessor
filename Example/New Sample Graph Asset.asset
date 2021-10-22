@@ -14,20 +14,29 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   serializedGraph: "{\r\n    \"$id\": 0,\r\n    \"$type\": \"0|SampleGraph, Assembly-CSharp\",\r\n   
     \"panOffset\": {\r\n        \"$type\": \"1|UnityEngine.Vector3, UnityEngine.CoreModule\",\r\n       
-    0,\r\n        0,\r\n        0\r\n    },\r\n    \"scale\": {\r\n        \"$type\":
-    1,\r\n        1,\r\n        1,\r\n        1\r\n    },\r\n    \"nodes\": {\r\n       
-    \"$id\": 1,\r\n        \"$type\": \"2|System.Collections.Generic.Dictionary`2[[System.String,
+    -850.6667,\r\n        -24,\r\n        0\r\n    },\r\n    \"scale\": {\r\n       
+    \"$type\": 1,\r\n        2,\r\n        2,\r\n        1\r\n    },\r\n    \"nodes\":
+    {\r\n        \"$id\": 1,\r\n        \"$type\": \"2|System.Collections.Generic.Dictionary`2[[System.String,
     mscorlib],[CZToolKit.GraphProcessor.BaseNode, Assembly-CSharp]], mscorlib\",\r\n       
     \"comparer\": {\r\n            \"$id\": 2,\r\n            \"$type\": \"3|System.Collections.Generic.GenericEqualityComparer`1[[System.String,
-    mscorlib]], mscorlib\"\r\n        },\r\n        \"$rlength\": 1,\r\n        \"$rcontent\":
+    mscorlib]], mscorlib\"\r\n        },\r\n        \"$rlength\": 2,\r\n        \"$rcontent\":
     [\r\n            {\r\n                \"$k\": \"d77cc14d-1fcb-487d-a87c-0135529045a4\",\r\n               
     \"$v\": {\r\n                    \"$id\": 3,\r\n                    \"$type\":
     \"4|SampleNode, Assembly-CSharp\",\r\n                    \"guid\": \"d77cc14d-1fcb-487d-a87c-0135529045a4\",\r\n                   
     \"position\": {\r\n                        \"$type\": \"5|UnityEngine.Vector2,
-    UnityEngine.CoreModule\",\r\n                        426.000061,\r\n                       
-    251.000031\r\n                    }\r\n                }\r\n            }\r\n       
-    ]\r\n    },\r\n    \"connections\": {\r\n        \"$id\": 4,\r\n        \"$type\":
-    \"6|System.Collections.Generic.List`1[[CZToolKit.GraphProcessor.BaseConnection,
-    Assembly-CSharp]], mscorlib\",\r\n        \"$rlength\": 0,\r\n        \"$rcontent\":
-    [\r\n        ]\r\n    }\r\n}"
+    UnityEngine.CoreModule\",\r\n                        701,\r\n                       
+    94\r\n                    }\r\n                }\r\n            },\r\n           
+    {\r\n                \"$k\": \"92938ba2-5c16-4056-b4ed-f169049620da\",\r\n               
+    \"$v\": {\r\n                    \"$id\": 4,\r\n                    \"$type\":
+    4,\r\n                    \"guid\": \"92938ba2-5c16-4056-b4ed-f169049620da\",\r\n                   
+    \"position\": {\r\n                        \"$type\": 5,\r\n                       
+    514,\r\n                        94\r\n                    }\r\n               
+    }\r\n            }\r\n        ]\r\n    },\r\n    \"connections\": {\r\n       
+    \"$id\": 5,\r\n        \"$type\": \"6|System.Collections.Generic.List`1[[CZToolKit.GraphProcessor.BaseConnection,
+    Assembly-CSharp]], mscorlib\",\r\n        \"$rlength\": 1,\r\n        \"$rcontent\":
+    [\r\n            {\r\n                \"$id\": 6,\r\n                \"$type\":
+    \"7|CZToolKit.GraphProcessor.BaseConnection, Assembly-CSharp\",\r\n               
+    \"from\": \"92938ba2-5c16-4056-b4ed-f169049620da\",\r\n                \"fromPortName\":
+    \"B\",\r\n                \"to\": \"d77cc14d-1fcb-487d-a87c-0135529045a4\",\r\n               
+    \"toPortName\": \"A\"\r\n            }\r\n        ]\r\n    }\r\n}"
   graphUnityReferences: []

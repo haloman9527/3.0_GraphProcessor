@@ -62,25 +62,16 @@ namespace CZToolKit.GraphProcessor.Editors
 
             contentsHorizontalDivider = contentContainer.Q(name: "divider", className: "horizontal");
             contentsHorizontalDivider.AddToClassList("contents-horizontal-divider");
-            contentsHorizontalDivider.style.backgroundColor = Color.green;
+            contentsHorizontalDivider.style.backgroundColor = new Color(1f, 0.5f, 0f, 1);
 
             portsVerticalDivider = topContainer.Q(name: "divider", className: "vertical");
             portsVerticalDivider.AddToClassList("ports-vertical-divider");
-            portsVerticalDivider.style.backgroundColor = Color.red;
+            portsVerticalDivider.style.backgroundColor = new Color(1f, 0.5f, 0f, 1);
 
             controlsContainer = new VisualElement { name = "controls" };
             controlsContainer.AddToClassList("node-controls");
-            controlsContainer.style.backgroundColor = new Color(0.2f, 0.2f, 0.2f, 1);
+            controlsContainer.style.backgroundColor = new Color(1f, 0.5f, 0f, 1);
             mainContainer.Add(controlsContainer);
-
-            controlsHorizontalDivider = new VisualElement() { name = "divider" };
-            controlsHorizontalDivider.style.height = 1;
-            controlsHorizontalDivider.style.backgroundColor = new Color(0.2f, 0.2f, 0.2f, 1);
-            controlsHorizontalDivider.StretchToParentWidth();
-            controlsHorizontalDivider.AddToClassList("horizontal");
-            controlsHorizontalDivider.AddToClassList("controls-horizontal-divider");
-            controlsHorizontalDivider.style.backgroundColor = Color.blue;
-            controlsContainer.Add(controlsHorizontalDivider);
 
             topPortContainer = new VisualElement { name = "top-port-container" };
             topPortContainer.style.justifyContent = Justify.Center;

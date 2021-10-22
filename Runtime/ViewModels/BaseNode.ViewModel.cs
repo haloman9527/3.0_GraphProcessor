@@ -15,7 +15,6 @@
 #endregion
 using CZToolKit.Core;
 using CZToolKit.Core.SharedVariable;
-using CZToolKit.GraphProcessor.Internal;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -24,35 +23,6 @@ namespace CZToolKit.GraphProcessor
 {
     public abstract partial class BaseNode : IntegratedViewModel
     {
-        public const string TITLE_NAME = nameof(Title);
-        public const string TITLE_COLOR_NAME = nameof(TitleColor);
-        public const string TOOLTIP_NAME = nameof(Tooltip);
-        public const string POSITION_NAME = nameof(Position);
-
-        #region 静态
-        /// <summary> 根据T创建一个节点，并设置位置 </summary>
-        public static T CreateNew<T>(BaseGraph graph, Vector2 position) where T : BaseNode
-        {
-            return CreateNew(typeof(T), graph, position) as T;
-        }
-
-        /// <summary> 根据type创建一个节点，并设置位置 </summary>
-        public static BaseNode CreateNew(Type type, BaseGraph graph, Vector2 position)
-        {
-            if (!type.IsSubclassOf(typeof(BaseNode)))
-                return null;
-            var node = Activator.CreateInstance(type) as BaseNode;
-            node.position = position;
-            IDAllocation(node, graph);
-            return node;
-        }
-
-        /// <summary> 给节点分配一个GUID，这将会覆盖已有GUID </summary>
-        public static void IDAllocation(BaseNode node, BaseGraph graph)
-        {
-            node.guid = graph.GenerateNodeGUID();
-        }
-        #endregion
         [NonSerialized]
         BaseGraph owner;
         public string GUID { get { return guid; } }
@@ -87,7 +57,7 @@ namespace CZToolKit.GraphProcessor
             yield break;
         }
 
-        public override void InitializeBindableProperties()
+        protected override void InitializeBindableProperties()
         {
             this[TITLE_NAME] = new BindableProperty<string>(GetType().Name);
             this[TITLE_COLOR_NAME] = new BindableProperty<Color>(new Color(0.2f, 0.2f, 0.2f, 0.8f));
@@ -120,23 +90,68 @@ namespace CZToolKit.GraphProcessor
         #endregion
 
         #region API
-        public IEnumerable<BaseNode> GetParentNodes()
+        public IEnumerable<BaseConnection> GetInputPortConnections(string portName)
         {
-            foreach (var edge in owner.Connections)
+            foreach (var connection in owner.Connections)
             {
-                if (edge.ToNode == this)
-                    yield return edge.FromNode;
+                if (connection.ToNodeGUID == guid) continue;
+                if (connection.ToPortName != portName) continue;
+                yield return connection;
+            }
+        }
+        
+        public IEnumerable<BaseConnection> GetOuputPortConnections(string portName)
+        {
+            foreach (var connection in owner.Connections)
+            {
+                if (connection.FromNodeGUID != GUID) continue;
+                if (connection.FromPortName != portName) continue;
+                yield return connection;
             }
         }
 
-        public IEnumerable<BaseNode> GetChildNodes()
+        public IEnumerable<BaseConnection> GetConnections(string portName)
         {
-            foreach (var edge in owner.Connections)
+            foreach (var connection in owner.Connections)
             {
-                if (edge.FromNode == this)
-                    yield return edge.ToNode;
+                if (connection.FromNodeGUID != GUID && connection.ToNodeGUID == guid) continue;
+                if (connection.FromPortName != portName && connection.ToPortName != portName) continue;
+                yield return connection;
             }
         }
         #endregion
+
+        #region 常量
+        public const string TITLE_NAME = nameof(Title);
+        public const string TITLE_COLOR_NAME = nameof(TitleColor);
+        public const string TOOLTIP_NAME = nameof(Tooltip);
+        public const string POSITION_NAME = nameof(Position);
+        #endregion
+
+        #region 静态
+        /// <summary> 根据T创建一个节点，并设置位置 </summary>
+        public static T CreateNew<T>(BaseGraph graph, Vector2 position) where T : BaseNode
+        {
+            return CreateNew(typeof(T), graph, position) as T;
+        }
+
+        /// <summary> 根据type创建一个节点，并设置位置 </summary>
+        public static BaseNode CreateNew(Type type, BaseGraph graph, Vector2 position)
+        {
+            if (!type.IsSubclassOf(typeof(BaseNode)))
+                return null;
+            var node = Activator.CreateInstance(type) as BaseNode;
+            node.position = position;
+            IDAllocation(node, graph);
+            return node;
+        }
+
+        /// <summary> 给节点分配一个GUID，这将会覆盖已有GUID </summary>
+        public static void IDAllocation(BaseNode node, BaseGraph graph)
+        {
+            node.guid = graph.GenerateNodeGUID();
+        }
+        #endregion
+
     }
 }

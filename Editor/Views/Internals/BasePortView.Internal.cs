@@ -57,6 +57,7 @@ namespace CZToolKit.GraphProcessor.Editors
             Model = port;
             GraphView = graphView;
 
+            portName = port.name;
             tooltip = port.name;
         }
     }

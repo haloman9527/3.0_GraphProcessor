@@ -20,17 +20,13 @@ namespace CZToolKit.GraphProcessor
     public partial class BaseConnection : IntegratedViewModel
     {
         #region 静态方法
-        /// <summary> 根据T创建一个节点，并设置位置 </summary>
         public static T CreateNew<T>(BaseNode from, string fromPortName, BaseNode to, string toPortName) where T : BaseConnection
         {
             return CreateNew(typeof(T), from, fromPortName, to, toPortName) as T;
         }
 
-        /// <summary> 根据_type创建一个节点，并设置位置 </summary>
         public static BaseConnection CreateNew(Type type, BaseNode from, string fromPortName, BaseNode to, string toPortName)
         {
-            if (!type.IsSubclassOf(typeof(BaseConnection)))
-                return null;
             var connection = Activator.CreateInstance(type) as BaseConnection;
             connection.from = from.GUID;
             connection.fromPortName = fromPortName;
@@ -51,6 +47,6 @@ namespace CZToolKit.GraphProcessor
         public BaseNode ToNode { get { owner.Nodes.TryGetValue(ToNodeGUID, out BaseNode node); return node; } }
 
         public void Enable(BaseGraph graph) { owner = graph; }
-        public override void InitializeBindableProperties() { }
+        protected override void InitializeBindableProperties() { }
     }
 }

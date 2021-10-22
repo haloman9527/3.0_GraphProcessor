@@ -72,7 +72,7 @@ namespace CZToolKit.GraphProcessor
             }
         }
 
-        public override void InitializeBindableProperties()
+        protected override void InitializeBindableProperties()
         {
             this[POSITION_NAME] = new BindableProperty<Vector3>(panOffset, v => panOffset = v);
             this[SCALE_NAME] = new BindableProperty<Vector3>(scale, v => scale = v);
