@@ -287,6 +287,7 @@ namespace CZToolKit.GraphProcessor.Editors
         public static BaseGraphWindow Open(IGraphOwner graphOwner)
         {
             if (graphOwner == null) return null;
+            if (graphOwner.Graph == null) return null;
             var window = GetGraphWindow(graphOwner.Graph.GetType());
             window.Load(graphOwner);
             return window;
@@ -296,6 +297,7 @@ namespace CZToolKit.GraphProcessor.Editors
         public static BaseGraphWindow Open(IGraphAssetOwner graphAssetOwner)
         {
             if (graphAssetOwner == null) return null;
+            if (graphAssetOwner.GraphAsset == null) return null;
             var window = GetGraphWindow(graphAssetOwner.Graph.GetType());
             window.Load(graphAssetOwner);
             return window;
@@ -305,6 +307,7 @@ namespace CZToolKit.GraphProcessor.Editors
         public static BaseGraphWindow Open(IGraphAsset graphAsset)
         {
             if (graphAsset == null) return null;
+            if (graphAsset.Graph == null) return null;
             var window = GetGraphWindow(graphAsset.Graph.GetType());
             window.Load(graphAsset);
             return window;

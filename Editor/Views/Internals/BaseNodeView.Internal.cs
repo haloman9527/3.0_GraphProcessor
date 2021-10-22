@@ -70,7 +70,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
             controlsContainer = new VisualElement { name = "controls" };
             controlsContainer.AddToClassList("node-controls");
-            controlsContainer.style.backgroundColor = new Color(1f, 0.5f, 0f, 1);
+            controlsContainer.style.backgroundColor = new Color(0.2f, 0.2f, 0.2f, 1);
             mainContainer.Add(controlsContainer);
 
             topPortContainer = new VisualElement { name = "top-port-container" };
