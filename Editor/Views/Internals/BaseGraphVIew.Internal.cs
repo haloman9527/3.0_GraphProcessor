@@ -13,6 +13,7 @@
  *
  */
 #endregion
+#if UNITY_EDITOR
 using CZToolKit.Core;
 using CZToolKit.Core.Editors;
 using System;
@@ -20,10 +21,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
-using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
-using System.Linq;
 
 using UnityObject = UnityEngine.Object;
 
@@ -37,8 +36,8 @@ namespace CZToolKit.GraphProcessor.Editors
         public BaseGraphWindow GraphWindow { get; private set; }
         public CommandDispatcher CommandDispacter { get; private set; }
         public UnityObject GraphAsset { get { return GraphWindow.GraphAsset; } }
-        protected override bool canCopySelection { get { return true; } }
-        protected override bool canCutSelection { get { return true; } }
+        protected override bool canCopySelection { get { return selection.Count > 0; } }
+        protected override bool canCutSelection { get { return selection.Count > 0; } }
         public Dictionary<string, BaseNodeView> NodeViews { get; private set; } = new Dictionary<string, BaseNodeView>();
 
         public BaseGraph Model { get; set; }
@@ -307,6 +306,7 @@ namespace CZToolKit.GraphProcessor.Editors
             var data = JsonSerializer.DeserializeValue<ClipBoard>(serializedData, ClipBoard.objectReferences);
             if (data == null)
                 return;
+
             ClearSelection();
             Dictionary<string, BaseNode> copiedNodesMap = new Dictionary<string, BaseNode>();
 
@@ -322,7 +322,6 @@ namespace CZToolKit.GraphProcessor.Editors
                 copiedNodesMap[sourceGUID] = node;
                 node.Position += new Vector2(20, 20);
                 CommandDispacter.Do(new AddNodeCommand(Model, node));
-                //Model.AddNode(node);
                 AddToSelection(NodeViews[node.GUID]);
             }
             foreach (var edge in data.copiedEdges)
@@ -339,7 +338,6 @@ namespace CZToolKit.GraphProcessor.Editors
                     && NodeViews.TryGetValue(toNode.GUID, out BaseNodeView outputNodeView))
                 {
                     CommandDispacter.Do(new ConnectCommand(Model, inputNodeView.Model, edge.FromPortName, outputNodeView.Model, edge.ToPortName));
-                    //Model.Connect(inputNodeView.Model, outputNodeView.Model);
                 }
             }
 
@@ -364,6 +362,12 @@ namespace CZToolKit.GraphProcessor.Editors
         public override void RemoveFromSelection(ISelectable selectable)
         {
             base.RemoveFromSelection(selectable);
+            UpdateInspector();
+        }
+
+        public override void ClearSelection()
+        {
+            base.ClearSelection();
             UpdateInspector();
         }
         #endregion
@@ -473,3 +477,4 @@ namespace CZToolKit.GraphProcessor.Editors
         #endregion
     }
 }
+#endif

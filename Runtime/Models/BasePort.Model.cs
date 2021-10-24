@@ -1,4 +1,6 @@
 
+using System;
+
 namespace CZToolKit.GraphProcessor
 {
     public partial class BasePort
@@ -11,13 +13,15 @@ namespace CZToolKit.GraphProcessor
         public readonly Orientation orientation;
         public readonly Direction direction;
         public readonly Capacity capacity;
+        public readonly Type type;
 
-        public BasePort(string name, Orientation orientation, Direction direction, Capacity capacity)
+        public BasePort(string name, Orientation orientation, Direction direction, Capacity capacity, Type type = null)
         {
             this.name = name;
             this.orientation = orientation;
             this.direction = direction;
             this.capacity = capacity;
+            this.type = type == null ? typeof(object) : type;
         }
     }
 }

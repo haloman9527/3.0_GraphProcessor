@@ -84,18 +84,6 @@ namespace CZToolKit.GraphProcessor
             InitializePropertyMapping(graphOwner);
         }
 
-        private void CollectionVariables()
-        {
-            if (variables == null)
-                variables = new List<SharedVariable>();
-            else
-                variables.Clear();
-            foreach (var node in nodes.Values)
-            {
-                variables.AddRange(SharedVariableUtility.CollectionObjectSharedVariables(node));
-            }
-        }
-
         public void InitializePropertyMapping(IVariableOwner variableOwner)
         {
             if (variables == null)
@@ -109,6 +97,18 @@ namespace CZToolKit.GraphProcessor
             foreach (var node in Nodes.Values)
             {
                 node.OnInitializedPropertyMapping(variableOwner);
+            }
+        }
+
+        void CollectionVariables()
+        {
+            if (variables == null)
+                variables = new List<SharedVariable>();
+            else
+                variables.Clear();
+            foreach (var node in nodes.Values)
+            {
+                variables.AddRange(SharedVariableUtility.CollectionObjectSharedVariables(node));
             }
         }
 
@@ -162,11 +162,11 @@ namespace CZToolKit.GraphProcessor
 
             connection.Enable(this);
 
-            BasePort fromPort = connection.FromNode.GetPorts().FirstOrDefault(port => port.name == connection.FromPortName);
+            connection.FromNode.Ports.TryGetValue(connection.FromPortName, out BasePort fromPort);
             if (fromPort.capacity == BasePort.Capacity.Single)
                 Disconnect(connection.FromNode, fromPort);
 
-            BasePort toPort = connection.ToNode.GetPorts().FirstOrDefault(port => port.name == connection.ToPortName);
+            connection.ToNode.Ports.TryGetValue(connection.ToPortName, out BasePort toPort);
             if (toPort.capacity == BasePort.Capacity.Single)
                 Disconnect(connection.ToNode, toPort);
 
@@ -177,15 +177,15 @@ namespace CZToolKit.GraphProcessor
 
         public BaseConnection Connect(BaseNode from, string fromPortName, BaseNode to, string toPortName)
         {
-            BaseConnection connection = connections.Find(edge => edge.FromNode == from && edge.FromPortName == fromPortName && edge.ToNode == to && edge.ToPortName == toPortName);
+            BaseConnection connection = connections.Find(edge => edge.FromNodeGUID == from.GUID && edge.FromPortName == fromPortName && edge.ToNodeGUID == to.GUID && edge.ToPortName == toPortName);
             if (connection != null)
                 return connection;
 
-            BasePort fromPort = from.GetPorts().FirstOrDefault(port => port.name == fromPortName);
+            from.Ports.TryGetValue(fromPortName, out BasePort fromPort);
             if (fromPort.capacity == BasePort.Capacity.Single)
                 Disconnect(from, fromPort);
 
-            BasePort toPort = to.GetPorts().FirstOrDefault(port => port.name == toPortName);
+            to.Ports.TryGetValue(toPortName, out BasePort toPort);
             if (toPort.capacity == BasePort.Capacity.Single)
                 Disconnect(to, toPort);
 

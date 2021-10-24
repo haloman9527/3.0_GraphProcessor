@@ -13,6 +13,7 @@
  *
  */
 #endregion
+#if UNITY_EDITOR
 using CZToolKit.Core.Editors;
 using System.Collections.Generic;
 using UnityEditor;
@@ -41,17 +42,24 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             if (!ContextDataCache.TryGetContextData<GUIStyle>("BigLabel", out var bigLabel))
             {
-                bigLabel.value = new GUIStyle(GUI.skin.box);
-                bigLabel.value.fontSize = 20;
+                bigLabel.value = new GUIStyle(GUI.skin.label);
+                bigLabel.value.fontSize = 18;
                 bigLabel.value.fontStyle = FontStyle.Bold;
+                bigLabel.value.alignment = TextAnchor.MiddleLeft;
                 bigLabel.value.stretchWidth = true;
             }
+            EditorGUILayoutExtension.BeginBoxGroup();
+            GUILayout.Label("Connection", bigLabel.value);
+            EditorGUILayoutExtension.EndBoxGroup();
 
             if (Target is BaseConnectionView view && view.Model != null)
             {
-                EditorGUI.BeginChangeCheck();
-                GUILayout.Box(string.Concat(view.output?.node.title, "   >>   ", view.input?.node.title), bigLabel.value);
+                EditorGUILayoutExtension.BeginBoxGroup();
+                GUILayout.Label(string.Concat(view.output?.node.title, "£º", view.Model.FromPortName, "  >>  ", view.input?.node.title, "£º", view.Model.ToPortName), bigLabel.value);
+                EditorGUILayoutExtension.EndBoxGroup();
 
+                EditorGUI.BeginChangeCheck();
+                EditorGUILayoutExtension.BeginBoxGroup();
                 foreach (var property in view.Model)
                 {
                     if (IgnoreProperties.Contains(property.Key)) continue;
@@ -61,6 +69,7 @@ namespace CZToolKit.GraphProcessor.Editors
                         property.Value.ValueBoxed = newValue;
 
                 }
+                EditorGUILayoutExtension.EndBoxGroup();
 
                 if (EditorGUI.EndChangeCheck())
                 {
@@ -74,5 +83,5 @@ namespace CZToolKit.GraphProcessor.Editors
             yield break;
         }
     }
-
 }
+#endif

@@ -13,6 +13,7 @@
  *
  */
 #endregion
+#if UNITY_EDITOR
 using CZToolKit.Core.Editors;
 using UnityEditor;
 using UnityEngine.UIElements;
@@ -25,7 +26,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
         public virtual BasePortView NewPortView(BasePort port)
         {
-            return new BasePortView(port, typeof(object), new EdgeConnectorListener());
+            return new BasePortView(port, new EdgeConnectorListener());
         }
 
         public override void BuildContextualMenu(ContextualMenuPopulateEvent evt)
@@ -49,3 +50,4 @@ namespace CZToolKit.GraphProcessor.Editors
         public M T_Model { get { return Model as M; } }
     }
 }
+#endif

@@ -13,10 +13,7 @@
  *
  */
 #endregion
-using CZToolKit.Core.SharedVariable;
 using CZToolKit.GraphProcessor.Internal;
-
-using UnityObject = UnityEngine.Object;
 
 namespace CZToolKit.GraphProcessor
 {

@@ -13,6 +13,7 @@
  *
  */
 #endregion
+#if UNITY_EDITOR
 using CZToolKit.Core.Editors;
 using CZToolKit.GraphProcessor.Internal;
 using UnityEditor;
@@ -23,6 +24,8 @@ namespace CZToolKit.GraphProcessor.Editors
     [CustomEditor(typeof(InternalBaseGraphAsset), true)]
     public class BaseGraphAssetInspector : BasicEditor
     {
+        static GUIHelper.ContextDataCache ContextDataCache = new GUIHelper.ContextDataCache();
+
         protected override void RegisterDrawers()
         {
             base.RegisterDrawers();
@@ -47,18 +50,26 @@ namespace CZToolKit.GraphProcessor.Editors
         public override void OnInspectorGUI()
         {
             base.OnInspectorGUI();
-            EditorGUILayout.BeginHorizontal();
-            // *****
-            //if (GUILayout.Button(new GUIContent("Flush", "清理空数据(空节点，空连接等)"), GUILayout.Height(30)))
-            //{
-            //    (target as BaseGraphAsset).Graph.Flush();
-            //    EditorUtility.SetDirty(target);
-            //}
-            if (GUILayout.Button("Open", GUILayout.Height(30)))
+
+            if (!ContextDataCache.TryGetContextData<GUIStyle>("BigLabel", out var bigLabel))
             {
-                BaseGraphWindow.Open(target as InternalBaseGraphAsset);
+                bigLabel.value = new GUIStyle(GUI.skin.label);
+                bigLabel.value.fontSize = 18;
+                bigLabel.value.fontStyle = FontStyle.Bold;
+                bigLabel.value.alignment = TextAnchor.MiddleLeft;
+                bigLabel.value.stretchWidth = true;
             }
-            EditorGUILayout.EndHorizontal();
+
+            IGraphAsset graphAsset = target as IGraphAsset;
+
+            EditorGUILayoutExtension.BeginBoxGroup();
+            GUILayout.Label(string.Concat("Nodes：", graphAsset.Graph.Nodes.Count), bigLabel.value);
+            GUILayout.Label(string.Concat("Connections：", graphAsset.Graph.Connections.Count), bigLabel.value);
+            EditorGUILayoutExtension.EndBoxGroup();
+
+            if (GUILayout.Button("Open", GUILayout.Height(30)))
+                BaseGraphWindow.Open(target as InternalBaseGraphAsset);
         }
     }
 }
+#endif

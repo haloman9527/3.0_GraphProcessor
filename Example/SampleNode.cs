@@ -2,7 +2,7 @@
 /***
  *
  *  Title:
- *  
+ *      一个样例节点
  *  Description:
  *  
  *  Date:
@@ -18,16 +18,17 @@ using System.Collections.Generic;
 
 public class SampleNode : BaseNode
 {
+    public int value;
+
     protected override void InitializeBindableProperties()
     {
         base.InitializeBindableProperties();
-        this["Port-A"] = new BindableProperty<BasePort>(new BasePort("A", BasePort.Orientation.Horizontal, BasePort.Direction.Input, BasePort.Capacity.Multi));
-        this["Port-B"] = new BindableProperty<BasePort>(new BasePort("B", BasePort.Orientation.Horizontal, BasePort.Direction.Output, BasePort.Capacity.Multi));
+        this[nameof(value)] = new BindableProperty<int>(0, v => value = v);
     }
 
-    public override IEnumerable<BasePort> GetPorts()
+    protected override IEnumerable<BasePort> GetPorts()
     {
-        yield return this["Port-A"].AsBindableProperty<BasePort>().Value;
-        yield return this["Port-B"].AsBindableProperty<BasePort>().Value;
+        yield return new BasePort("A", BasePort.Orientation.Horizontal, BasePort.Direction.Input, BasePort.Capacity.Multi, typeof(int));
+        yield return new BasePort("B", BasePort.Orientation.Horizontal, BasePort.Direction.Output, BasePort.Capacity.Multi, typeof(int));
     }
 }

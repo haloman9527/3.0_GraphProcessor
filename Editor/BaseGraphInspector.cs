@@ -15,22 +15,22 @@
 #endregion
 #if UNITY_EDITOR
 using CZToolKit.Core.Editors;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
-    [CustomObjectEditor(typeof(BaseNodeView))]
-    public class BaseNodeInspector : ObjectEditor
+    [CustomObjectEditor(typeof(BaseGraphView))]
+    public class BaseGraphInspector : ObjectEditor
     {
-        public static HashSet<string> IgnoreProperties = new HashSet<string>() {
-            BaseNode.TITLE_NAME,
-            BaseNode.TITLE_COLOR_NAME,
-            BaseNode.TOOLTIP_NAME
-        };
-
         static GUIHelper.ContextDataCache ContextDataCache = new GUIHelper.ContextDataCache();
+        static HashSet<string> IgnoreProperties = new HashSet<string>()
+        {
+            BaseGraph.POSITION_NAME,
+            BaseGraph.SCALE_NAME
+        };
 
         public override void OnInspectorGUI()
         {
@@ -43,10 +43,15 @@ namespace CZToolKit.GraphProcessor.Editors
                 bigLabel.value.stretchWidth = true;
             }
 
-            if (Target is BaseNodeView view && view.Model != null)
+            EditorGUILayoutExtension.BeginBoxGroup();
+            GUILayout.Label("Graph", bigLabel.value);
+            EditorGUILayoutExtension.EndBoxGroup();
+
+            if (Target is BaseGraphView view && view.Model != null)
             {
                 EditorGUILayoutExtension.BeginBoxGroup();
-                GUILayout.Label(string.Concat("Node：", view.Model.Title), bigLabel.value);
+                GUILayout.Label(string.Concat("Nodes：", view.Model.Nodes.Count), bigLabel.value);
+                GUILayout.Label(string.Concat("Connections：", view.Model.Connections.Count), bigLabel.value);
                 EditorGUILayoutExtension.EndBoxGroup();
 
                 EditorGUI.BeginChangeCheck();

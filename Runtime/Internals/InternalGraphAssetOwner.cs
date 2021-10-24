@@ -36,7 +36,6 @@ namespace CZToolKit.GraphProcessor.Internal
         #endregion
 
         #region Serialize
-
         [HideInInspector]
         [SerializeField]
         string serializedVariables;
@@ -84,7 +83,6 @@ namespace CZToolKit.GraphProcessor.Internal
             initializedVariables = true;
             DeserializeVariables();
         }
-
         #endregion
 
         #region API

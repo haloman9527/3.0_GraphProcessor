@@ -13,6 +13,7 @@
  *
  */
 #endregion
+#if UNITY_EDITOR
 using System;
 using System.Collections.Generic;
 using UnityEditor.Experimental.GraphView;
@@ -62,15 +63,12 @@ namespace CZToolKit.GraphProcessor.Editors
 
             contentsHorizontalDivider = contentContainer.Q(name: "divider", className: "horizontal");
             contentsHorizontalDivider.AddToClassList("contents-horizontal-divider");
-            contentsHorizontalDivider.style.backgroundColor = new Color(1f, 0.5f, 0f, 1);
 
             portsVerticalDivider = topContainer.Q(name: "divider", className: "vertical");
             portsVerticalDivider.AddToClassList("ports-vertical-divider");
-            portsVerticalDivider.style.backgroundColor = new Color(1f, 0.5f, 0f, 1);
 
             controlsContainer = new VisualElement { name = "controls" };
             controlsContainer.AddToClassList("node-controls");
-            controlsContainer.style.backgroundColor = new Color(0.2f, 0.2f, 0.2f, 1);
             mainContainer.Add(controlsContainer);
 
             topPortContainer = new VisualElement { name = "top-port-container" };
@@ -101,7 +99,7 @@ namespace CZToolKit.GraphProcessor.Editors
             titleContainer.style.backgroundColor = Model.TitleColor;
             TitleLabel.style.color = Model.TitleColor.GetLuminance() > 0.5f && Model.TitleColor.a > 0.5f ? Color.black : Color.white * 0.9f;
 
-            foreach (var port in Model.GetPorts())
+            foreach (var port in Model.Ports.Values)
             {
                 BasePortView portView = NewPortView(port);
                 portView.SetUp(port, Owner);
@@ -227,3 +225,4 @@ namespace CZToolKit.GraphProcessor.Editors
         #endregion
     }
 }
+#endif

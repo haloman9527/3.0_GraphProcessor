@@ -13,6 +13,7 @@
  *
  */
 #endregion
+#if UNITY_EDITOR
 using System;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine.UIElements;
@@ -28,25 +29,23 @@ namespace CZToolKit.GraphProcessor.Editors
         protected BasePortView(Orientation orientation, Direction direction, Capacity capacity, Type type, IEdgeConnectorListener connectorListener) : base(orientation, direction, capacity, type)
         {
             styleSheets.Add(GraphProcessorStyles.PortViewStyle);
+
             Icon = new Image();
             Icon.AddToClassList("port-icon");
             Insert(1, Icon);
+
+            visualClass = "Port_" + portType.Name;
+
             var portLabel = this.Q("type");
-            if (portLabel != null)
-            {
-                portLabel.pickingMode = PickingMode.Position;
-                portLabel.style.flexGrow = 1;
-            }
+            portLabel.pickingMode = PickingMode.Position;
+            portLabel.style.flexGrow = 1;
             bool vertical = orientation == Orientation.Vertical;
-
-            if (vertical && portLabel != null)
-                portLabel.style.display = DisplayStyle.None;
-
             if (vertical)
+            {
+                portLabel.style.display = DisplayStyle.None;
                 this.Q("connector").pickingMode = PickingMode.Position;
-
-            if (orientation == Orientation.Vertical)
                 AddToClassList("vertical");
+            }
 
             m_EdgeConnector = new EdgeConnector<BaseConnectionView>(connectorListener);
             this.AddManipulator(m_EdgeConnector);
@@ -62,3 +61,4 @@ namespace CZToolKit.GraphProcessor.Editors
         }
     }
 }
+#endif

@@ -13,6 +13,7 @@
  *
  */
 #endregion
+#if UNITY_EDITOR
 using System;
 using UnityEditor.Experimental.GraphView;
 
@@ -20,13 +21,14 @@ namespace CZToolKit.GraphProcessor.Editors
 {
     public partial class BasePortView
     {
-        public BasePortView(BasePort port, Type portType, IEdgeConnectorListener connectorListener) : this(
+        public BasePortView(BasePort port, IEdgeConnectorListener connectorListener) : this(
             orientation: port.orientation == BasePort.Orientation.Horizontal ? Orientation.Horizontal : Orientation.Vertical,
             direction: port.direction == BasePort.Direction.Input ? Direction.Input : Direction.Output,
             capacity: port.capacity == BasePort.Capacity.Single ? Capacity.Single : Capacity.Multi,
-            portType, connectorListener)
+            port.type, connectorListener)
         {
 
         }
     }
 }
+#endif

@@ -13,6 +13,7 @@
  *
  */
 #endregion
+#if UNITY_EDITOR
 using CZToolKit.Core;
 using CZToolKit.Core.Editors;
 using System;
@@ -67,15 +68,17 @@ namespace CZToolKit.GraphProcessor.Editors
                         Selection.activeObject = ObjectInspector.Instance;
                         return;
                     case BaseConnectionView edgeView:
-                        EditorGUILayoutExtension.DrawFieldsInInspector("Edge", edgeView, GraphAsset);
+                        EditorGUILayoutExtension.DrawFieldsInInspector("Connection", edgeView, GraphAsset);
                         Selection.activeObject = ObjectInspector.Instance;
                         return;
                     default:
                         break;
                 }
             }
-
-            Selection.activeObject = null;
+            EditorGUILayoutExtension.DrawFieldsInInspector("Graph", this, GraphAsset);
+            Selection.activeObject = ObjectInspector.Instance;
+            //Selection.activeObject = null;
         }
     }
 }
+#endif

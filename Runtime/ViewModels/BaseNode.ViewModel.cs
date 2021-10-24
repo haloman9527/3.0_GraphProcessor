@@ -25,7 +25,24 @@ namespace CZToolKit.GraphProcessor
     {
         [NonSerialized]
         BaseGraph owner;
+        [NonSerialized]
+        Dictionary<string, BasePort> ports;
         public string GUID { get { return guid; } }
+        public IReadOnlyDictionary<string, BasePort> Ports
+        {
+            get
+            {
+                if (ports == null)
+                {
+                    ports = new Dictionary<string, BasePort>();
+                    foreach (var port in GetPorts())
+                    {
+                        ports[port.name] = port;
+                    }
+                }
+                return ports;
+            }
+        }
         public string Title
         {
             get { return GetPropertyValue<string>(TITLE_NAME); }
@@ -47,14 +64,14 @@ namespace CZToolKit.GraphProcessor
             set { SetPropertyValue(POSITION_NAME, value); }
         }
 
+        protected virtual IEnumerable<BasePort> GetPorts()
+        {
+            yield break;
+        }
+
         public virtual void Enable(BaseGraph graph)
         {
             owner = graph;
-        }
-
-        public virtual IEnumerable<BasePort> GetPorts()
-        {
-            yield break;
         }
 
         protected override void InitializeBindableProperties()
@@ -90,34 +107,40 @@ namespace CZToolKit.GraphProcessor
         #endregion
 
         #region API
-        public IEnumerable<BaseConnection> GetInputPortConnections(string portName)
+
+        public IEnumerable<BaseConnection> GetInputPortConnections(string port)
         {
             foreach (var connection in owner.Connections)
             {
                 if (connection.ToNodeGUID == guid) continue;
-                if (connection.ToPortName != portName) continue;
-                yield return connection;
-            }
-        }
-        
-        public IEnumerable<BaseConnection> GetOuputPortConnections(string portName)
-        {
-            foreach (var connection in owner.Connections)
-            {
-                if (connection.FromNodeGUID != GUID) continue;
-                if (connection.FromPortName != portName) continue;
+                if (connection.ToPortName != port) continue;
                 yield return connection;
             }
         }
 
-        public IEnumerable<BaseConnection> GetConnections(string portName)
+        public IEnumerable<BaseConnection> GetOuputPortConnections(string port)
+        {
+            foreach (var connection in owner.Connections)
+            {
+                if (connection.FromNodeGUID != GUID) continue;
+                if (connection.FromPortName != port) continue;
+                yield return connection;
+            }
+        }
+
+        public IEnumerable<BaseConnection> GetConnections(string port)
         {
             foreach (var connection in owner.Connections)
             {
                 if (connection.FromNodeGUID != GUID && connection.ToNodeGUID == guid) continue;
-                if (connection.FromPortName != portName && connection.ToPortName != portName) continue;
+                if (connection.FromPortName != port && connection.ToPortName != port) continue;
                 yield return connection;
             }
+        }
+
+        public object GetValue(string port)
+        {
+            throw new NotImplementedException();
         }
         #endregion
 
