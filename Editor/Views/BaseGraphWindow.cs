@@ -17,6 +17,7 @@
 using CZToolKit.Core;
 using CZToolKit.Core.Editors;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UnityEditor;
@@ -35,15 +36,17 @@ namespace CZToolKit.GraphProcessor.Editors
         protected UnityObject graphOwner;
         protected UnityObject graphAsset;
         protected bool locked = false;
+        [NonSerialized]
+        Dictionary<Type, Action<UnityObject>> graphAssetProcessor = new Dictionary<Type, Action<UnityObject>>();
         #endregion
 
         #region 属性
         public IGraphOwner GraphOwner
         {
             get { return graphOwner as IGraphOwner; }
-            private set { if (value != null) graphOwner = value.Self(); }
+            protected set { if (value != null) graphOwner = value.Self(); }
         }
-        public UnityObject GraphAsset { get { return graphAsset; } private set { graphAsset = value; } }
+        public UnityObject GraphAsset { get { return graphAsset; } protected set { graphAsset = value; } }
         public BaseGraph Graph { get; private set; }
         public BaseGraphView GraphView { get; private set; }
         public ToolbarView Toolbar { get { return GraphViewParent.Toolbar; } }
@@ -182,7 +185,7 @@ namespace CZToolKit.GraphProcessor.Editors
         }
 
         // 重新加载Graph
-        public void Reload()
+        public virtual void Reload()
         {
             if (GraphOwner is IGraphAssetOwner graphAssetOwner)
             {
@@ -192,9 +195,9 @@ namespace CZToolKit.GraphProcessor.Editors
             {
                 Load(graphOwner);
             }
-            else if (GraphAsset != null)
+            else if (GraphAsset is IGraphAsset graphAsset)
             {
-                Load(GraphAsset as IGraphAsset);
+                Load(graphAsset);
             }
             else
             {
@@ -250,6 +253,11 @@ namespace CZToolKit.GraphProcessor.Editors
             GraphAsset = null;
             GraphOwner = null;
             InternalLoad(graph);
+        }
+
+        public void RegisterGraphAssetProcessor(Type targetType, Action<UnityObject> assetProcessor)
+        {
+            graphAssetProcessor[targetType] = assetProcessor;
         }
         #endregion
 

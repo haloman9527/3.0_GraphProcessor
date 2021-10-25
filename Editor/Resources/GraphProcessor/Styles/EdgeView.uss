@@ -4,11 +4,12 @@
 }
 
 .edge:hover {
-    --edge-width: 4;
+    --edge-width: 7;
 }
 
 .edge:selected {
     --edge-color: #00FFDE;
+    --edge-width: 5;
 }
 
 .flow-point{

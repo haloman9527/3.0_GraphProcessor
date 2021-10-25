@@ -163,10 +163,12 @@ namespace CZToolKit.GraphProcessor
             connection.Enable(this);
 
             connection.FromNode.Ports.TryGetValue(connection.FromPortName, out BasePort fromPort);
+            if (fromPort == null) return;
             if (fromPort.capacity == BasePort.Capacity.Single)
                 Disconnect(connection.FromNode, fromPort);
 
             connection.ToNode.Ports.TryGetValue(connection.ToPortName, out BasePort toPort);
+            if (toPort == null) return;
             if (toPort.capacity == BasePort.Capacity.Single)
                 Disconnect(connection.ToNode, toPort);
 
