@@ -457,23 +457,6 @@ namespace CZToolKit.GraphProcessor.Editors
                 GraphWindow.titleContent.text = GraphWindow.titleContent.text.Replace(" *", "");
             IsDirty = false;
         }
-
-        // 保存
-        public virtual void Save()
-        {
-            if (GraphAsset != null)
-            {
-                (GraphAsset as IGraphAsset)?.SaveGraph();
-            }
-            if (GraphWindow.GraphOwner != null)
-            {
-                GraphWindow.GraphOwner.SaveVariables();
-            }
-            SetDirty(true);
-            AssetDatabase.SaveAssets();
-
-            UnsetDirty();
-        }
         #endregion
     }
 }

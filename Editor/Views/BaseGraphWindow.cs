@@ -63,14 +63,6 @@ namespace CZToolKit.GraphProcessor.Editors
             if (GraphAsset != null) Reload();
         }
 
-        protected virtual void OnDisable()
-        {
-            if (GraphView != null && GraphAsset != null && EditorUtility.IsDirty(GraphAsset))
-            {
-                GraphView.Save();
-            }
-        }
-
         protected virtual void OnDestroy()
         {
             if (Selection.activeObject is ObjectInspector objectInspector && objectInspector.TargetObject is GraphElement)
@@ -120,14 +112,6 @@ namespace CZToolKit.GraphProcessor.Editors
             };
             btnReload.clicked += Reload;
             toolbar.AddButtonToRight(btnReload);
-
-            ToolbarButton btnSave = new ToolbarButton()
-            {
-                text = "Save",
-                style = { width = 60 }
-            };
-            btnSave.clicked += () => GraphView.Save();
-            toolbar.AddButtonToRight(btnSave);
         }
 
         protected virtual void KeyDownCallback(KeyDownEvent evt)
@@ -142,10 +126,6 @@ namespace CZToolKit.GraphProcessor.Editors
                         break;
                     case KeyCode.Y:
                         GraphView.CommandDispacter.Redo();
-                        evt.StopPropagation();
-                        break;
-                    case KeyCode.S:
-                        GraphView.Save();
                         evt.StopPropagation();
                         break;
                     default:
@@ -208,8 +188,6 @@ namespace CZToolKit.GraphProcessor.Editors
         // 从GraphOwner加载
         public void Load(IGraphOwner graphOwner)
         {
-            if (GraphView != null && GraphView.IsDirty)
-                GraphView.Save();
             Clear();
 
             GraphAsset = graphOwner.Self();
@@ -221,8 +199,6 @@ namespace CZToolKit.GraphProcessor.Editors
         // 从GraphAssetOwner加载
         public void Load(IGraphAssetOwner graphAssetOwner)
         {
-            if (GraphView != null && GraphView.IsDirty)
-                GraphView.Save();
             Clear();
 
             GraphAsset = graphAssetOwner.GraphAsset;
@@ -234,8 +210,6 @@ namespace CZToolKit.GraphProcessor.Editors
         // 从Graph资源加载
         public void Load(IGraphAsset graphAsset)
         {
-            if (GraphView != null && GraphView.IsDirty)
-                GraphView.Save();
             Clear();
 
             GraphAsset = graphAsset as UnityObject;
@@ -246,8 +220,6 @@ namespace CZToolKit.GraphProcessor.Editors
         // 直接加载Graph对象
         public void Load(BaseGraph graph)
         {
-            if (GraphView != null && GraphView.IsDirty)
-                GraphView.Save();
             Clear();
 
             GraphAsset = null;
@@ -335,8 +307,11 @@ namespace CZToolKit.GraphProcessor.Editors
         [OnOpenAsset(0)]
         public static bool OnOpen(int instanceID, int line)
         {
-            IGraphAsset graphAsset = EditorUtility.InstanceIDToObject(instanceID) as IGraphAsset;
-            if (graphAsset == null) return false;
+            UnityObject go = EditorUtility.InstanceIDToObject(instanceID);
+            if (go == null) return false;
+            IGraphAsset graphAsset = go as IGraphAsset;
+            if (graphAsset == null)
+                return false;
             Open(graphAsset);
             return true;
         }
