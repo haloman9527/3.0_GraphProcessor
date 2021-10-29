@@ -27,6 +27,7 @@ namespace CZToolKit.GraphProcessor
         void ValueChanged();
         void SetValueWithoutNotify(object value);
         IBindableProperty<T> AsBindableProperty<T>();
+        void ClearChangedEvent();
     }
 
     public interface IBindableProperty<T>
