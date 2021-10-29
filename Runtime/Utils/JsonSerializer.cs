@@ -43,13 +43,13 @@ namespace CZToolKit.GraphProcessor
 #if USE_ODIN
         public static string SerializeValue<T>(T targetObject, out List<UnityObject> referencedUnityObjects)
         {
-            return System.Text.Encoding.UTF8.GetString(SerializationUtility.SerializeValue(targetObject, DataFormat.JSON, out referencedUnityObjects));
+            return System.Text.Encoding.UTF8.GetString(Sirenix.Serialization.SerializationUtility.SerializeValue(targetObject, DataFormat.JSON, out referencedUnityObjects));
         }
 
 
         public static T DeserializeValue<T>(string _json, List<UnityObject> _referencedUnityObjects)
         {
-            return SerializationUtility.DeserializeValue<T>(System.Text.Encoding.UTF8.GetBytes(_json), DataFormat.JSON, _referencedUnityObjects);
+            return Sirenix.Serialization.SerializationUtility.DeserializeValue<T>(System.Text.Encoding.UTF8.GetBytes(_json), DataFormat.JSON, _referencedUnityObjects);
         }
 #else
         public static string SerializeToJson(object _targetObject)

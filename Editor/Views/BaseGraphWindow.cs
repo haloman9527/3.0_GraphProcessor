@@ -73,33 +73,23 @@ namespace CZToolKit.GraphProcessor.Editors
         #endregion
 
         #region 方法
-        protected override void ShowButton(Rect rect)
-        {
-            base.ShowButton(rect);
-            rect.x -= 28;
-            rect.width = 20;
-            if (GUI.Button(rect, locked ? EditorGUIUtility.IconContent("IN LockButton act@2x") : EditorGUIUtility.IconContent("IN LockButton on act@2x"), EditorStylesExtension.OnlyIconButtonStyle))
-            {
-                locked = !locked;
-            }
-        }
-
         protected virtual void BuildToolbar(ToolbarView toolbar)
         {
-            ToolbarButton btnCenter = new ToolbarButton()
+            ToolbarButton btnAllView = new ToolbarButton()
             {
-                text = "Center"
+                text = "全览",
+                tooltip = "查看所有节点"
             };
-            btnCenter.clicked += () =>
+            btnAllView.clicked += () =>
             {
-                GraphView.ResetPositionAndZoom();
-                GraphView.UpdateViewTransform(GraphView.Model.Position, GraphView.Model.Scale);
+                GraphView.FrameAll();
             };
-            toolbar.AddButtonToLeft(btnCenter);
+            toolbar.AddButtonToLeft(btnAllView);
 
             ToolbarButton btnPing = new ToolbarButton()
             {
                 text = "Ping",
+                tooltip = "提示正在编辑的Graph文件的位置",
                 style = { width = 60 }
             };
             btnPing.clicked += () => EditorGUIUtility.PingObject(GraphAsset);
@@ -108,6 +98,7 @@ namespace CZToolKit.GraphProcessor.Editors
             ToolbarButton btnReload = new ToolbarButton()
             {
                 text = "Reload",
+                tooltip = "重新加载",
                 style = { width = 70 }
             };
             btnReload.clicked += Reload;

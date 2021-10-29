@@ -61,7 +61,6 @@ namespace CZToolKit.GraphProcessor.Editors
             button.style.alignSelf = Align.Center;
             button.style.width = 60;
             button.style.unityTextAlign = TextAnchor.MiddleCenter;
-            button.style.color = Color.black;
             AddToLeft(button);
         }
 
@@ -70,7 +69,6 @@ namespace CZToolKit.GraphProcessor.Editors
             button.style.alignSelf = Align.Center;
             button.style.width = 60;
             button.style.unityTextAlign = TextAnchor.MiddleCenter;
-            button.style.color = Color.black;
             AddToRight(button);
         }
 
