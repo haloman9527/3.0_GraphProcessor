@@ -140,15 +140,15 @@ namespace CZToolKit.GraphProcessor.Editors
 
         protected void InternalLoad(BaseGraph graph)
         {
-            Graph = graph;
+            CommandDispatcher commandDispatcher = new CommandDispatcher();
+            GraphView = NewGraphView(graph, commandDispatcher);
+            if (GraphView == null) return;
 
+            Graph = graph;
             GraphViewParent = new GraphViewParentElement();
             GraphViewParent.StretchToParentSize();
             rootVisualElement.Add(GraphViewParent);
 
-            CommandDispatcher commandDispatcher = new CommandDispatcher();
-            GraphView = NewGraphView(Graph, commandDispatcher);
-            if (GraphView == null) return;
             BuildToolbar(GraphViewParent.Toolbar);
             GraphView.RegisterCallback<KeyDownEvent>(KeyDownCallback);
             GraphViewParent.GraphViewElement.Add(GraphView);
