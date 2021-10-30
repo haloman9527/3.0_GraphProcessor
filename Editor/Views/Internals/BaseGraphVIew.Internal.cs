@@ -68,6 +68,7 @@ namespace CZToolKit.GraphProcessor.Editors
         #region Initialize
         IEnumerator Initialize()
         {
+            GraphWindow.ShowNotification(new GUIContent("正在加载\n提示加载完成后再进行操作"), 5);
             yield return GraphWindow.StartCoroutine(InitializeCallbacks());
 
             // 初始化
@@ -93,6 +94,7 @@ namespace CZToolKit.GraphProcessor.Editors
             }));
 
             OnInitialized();
+            GraphWindow.ShowNotification(new GUIContent("加载完成"), 0.5f);
         }
 
         IEnumerator InitializeCallbacks()
