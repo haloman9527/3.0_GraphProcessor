@@ -70,10 +70,10 @@ namespace CZToolKit.GraphProcessor
         {
             if (bindableProperties != null) return;
             bindableProperties = new Dictionary<string, IBindableProperty>();
-            InitializeBindableProperties();
+            BindProperties();
         }
 
-        protected abstract void InitializeBindableProperties();
+        protected abstract void BindProperties();
 
         public virtual void BindingProperty<T>(string propertyName, Action<T> onValueChangedCallback)
         {

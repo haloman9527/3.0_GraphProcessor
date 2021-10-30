@@ -20,9 +20,9 @@ public class SampleNode : BaseNode
 {
     public int value;
 
-    protected override void InitializeBindableProperties()
+    protected override void BindProperties()
     {
-        base.InitializeBindableProperties();
+        base.BindProperties();
         this[nameof(value)] = new BindableProperty<int>(0, v => value = v);
     }
 

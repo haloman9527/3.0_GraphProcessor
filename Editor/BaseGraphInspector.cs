@@ -28,8 +28,8 @@ namespace CZToolKit.GraphProcessor.Editors
         static GUIHelper.ContextDataCache ContextDataCache = new GUIHelper.ContextDataCache();
         static HashSet<string> IgnoreProperties = new HashSet<string>()
         {
-            BaseGraph.POSITION_NAME,
-            BaseGraph.SCALE_NAME
+            BaseGraph.PAN_NAME,
+            BaseGraph.ZOOM_NAME
         };
 
         public override void OnInspectorGUI()

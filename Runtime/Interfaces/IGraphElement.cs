@@ -13,11 +13,11 @@
  *
  */
 #endregion
-using CZToolKit.GraphProcessor;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 
-public class SampleGraph : BaseGraph
+namespace CZToolKit.GraphProcessor
 {
+    public interface IGraphElement
+    {
+
+    }
 }

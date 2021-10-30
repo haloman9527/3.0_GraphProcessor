@@ -35,7 +35,7 @@ public class SampleGraphWindow : BaseGraphWindow
         ToolbarButton btnSave = new ToolbarButton();
         btnSave.text = "Save";
         btnSave.clicked += Save;
-        toolbar.AddToRight(btnSave);
+        toolbar.AddButtonToRight(btnSave);
     }
 
     protected override void KeyDownCallback(KeyDownEvent evt)

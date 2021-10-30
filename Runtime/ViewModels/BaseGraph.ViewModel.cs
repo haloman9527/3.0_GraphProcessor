@@ -23,8 +23,8 @@ namespace CZToolKit.GraphProcessor
 {
     public abstract partial class BaseGraph : IntegratedViewModel
     {
-        public const string POSITION_NAME = nameof(panOffset);
-        public const string SCALE_NAME = nameof(scale);
+        public const string PAN_NAME = nameof(pan);
+        public const string ZOOM_NAME = nameof(zoom);
 
         #region 字段
         public event Action<BaseNode> onNodeAdded;
@@ -37,15 +37,15 @@ namespace CZToolKit.GraphProcessor
         #endregion
 
         #region 属性
-        public Vector3 Position
+        public Vector3 Pan
         {
-            get { return GetPropertyValue<Vector3>(POSITION_NAME); }
-            set { SetPropertyValue(POSITION_NAME, value); }
+            get { return GetPropertyValue<Vector3>(PAN_NAME); }
+            set { SetPropertyValue(PAN_NAME, value); }
         }
-        public Vector3 Scale
+        public Vector3 Zoom
         {
-            get { return GetPropertyValue<Vector3>(SCALE_NAME); }
-            set { SetPropertyValue(SCALE_NAME, value); }
+            get { return GetPropertyValue<Vector3>(ZOOM_NAME); }
+            set { SetPropertyValue(ZOOM_NAME, value); }
         }
         public IReadOnlyDictionary<string, BaseNode> Nodes { get { return nodes; } }
         public IReadOnlyList<BaseConnection> Connections { get { return connections; } }
@@ -60,28 +60,36 @@ namespace CZToolKit.GraphProcessor
         }
         #endregion
 
+        #region API
         public void Enable()
         {
-            foreach (var node in nodes.Values)
+            foreach (var pair in nodes)
             {
-                node.Enable(this);
+                pair.Value.Enable(this);
             }
-            foreach (var edge in connections)
+            foreach (var connection in connections)
             {
-                edge.Enable(this);
+                connection.Enable(this);
+                connection.FromNode.Ports.TryGetValue(connection.FromPortName, out var fromPort);
+                connection.ToNode.Ports.TryGetValue(connection.ToPortName, out var toPort);
+                fromPort.connections.Add(connection);
+                toPort.connections.Add(connection);
             }
         }
 
-        protected override void InitializeBindableProperties()
-        {
-            this[POSITION_NAME] = new BindableProperty<Vector3>(panOffset, v => panOffset = v);
-            this[SCALE_NAME] = new BindableProperty<Vector3>(scale, v => scale = v);
-        }
-
-        #region API
         public virtual void Initialize(IGraphOwner graphOwner)
         {
             InitializePropertyMapping(graphOwner);
+            foreach (var pair in nodes)
+            {
+                pair.Value.Initialize(graphOwner);
+            }
+        }
+
+        protected override void BindProperties()
+        {
+            this[PAN_NAME] = new BindableProperty<Vector3>(pan, v => pan = v);
+            this[ZOOM_NAME] = new BindableProperty<Vector3>(zoom, v => zoom = v);
         }
 
         public void InitializePropertyMapping(IVariableOwner variableOwner)
@@ -92,11 +100,6 @@ namespace CZToolKit.GraphProcessor
             foreach (var variable in variables)
             {
                 variable.InitializePropertyMapping(VarialbeOwner);
-            }
-
-            foreach (var node in Nodes.Values)
-            {
-                node.OnInitializedPropertyMapping(variableOwner);
             }
         }
 
@@ -160,8 +163,6 @@ namespace CZToolKit.GraphProcessor
             if (tempConnection != null)
                 return;
 
-            connection.Enable(this);
-
             connection.FromNode.Ports.TryGetValue(connection.FromPortName, out BasePort fromPort);
             if (fromPort == null) return;
             if (fromPort.capacity == BasePort.Capacity.Single)
@@ -174,6 +175,10 @@ namespace CZToolKit.GraphProcessor
 
             connection.Enable(this);
             connections.Add(connection);
+
+            fromPort.ConnectTo(connection);
+            toPort.ConnectTo(connection);
+
             onConnected?.Invoke(connection);
         }
 
@@ -194,7 +199,12 @@ namespace CZToolKit.GraphProcessor
             connection = NewConnection(from, fromPortName, to, toPortName);
             connection.Enable(this);
             connections.Add(connection);
+
+            fromPort.ConnectTo(connection);
+            toPort.ConnectTo(connection);
+
             onConnected?.Invoke(connection);
+
             return connection;
         }
 
@@ -208,11 +218,18 @@ namespace CZToolKit.GraphProcessor
             }
         }
 
-        public void Disconnect(BaseConnection edge)
+        public void Disconnect(BaseConnection connection)
         {
-            if (!connections.Contains(edge)) return;
-            connections.Remove(edge);
-            onDisconnected?.Invoke(edge);
+            if (!connections.Contains(connection)) return;
+
+            connection.FromNode.Ports.TryGetValue(connection.FromPortName, out BasePort fromPort);
+            fromPort.DisconnectTo(connection);
+
+            connection.ToNode.Ports.TryGetValue(connection.ToPortName, out BasePort toPort);
+            toPort.DisconnectTo(connection);
+
+            connections.Remove(connection);
+            onDisconnected?.Invoke(connection);
         }
 
         public void Disconnect(BaseNode node, BasePort port)

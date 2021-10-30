@@ -14,14 +14,13 @@
  */
 #endregion
 using CZToolKit.Core;
-using CZToolKit.Core.SharedVariable;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace CZToolKit.GraphProcessor
 {
-    public abstract partial class BaseNode : IntegratedViewModel
+    public abstract partial class BaseNode : IntegratedViewModel, IGraphElement
     {
         [NonSerialized]
         BaseGraph owner;
@@ -32,14 +31,6 @@ namespace CZToolKit.GraphProcessor
         {
             get
             {
-                if (ports == null)
-                {
-                    ports = new Dictionary<string, BasePort>();
-                    foreach (var port in GetPorts())
-                    {
-                        ports[port.name] = port;
-                    }
-                }
                 return ports;
             }
         }
@@ -61,7 +52,7 @@ namespace CZToolKit.GraphProcessor
         public Vector2 Position
         {
             get { return GetPropertyValue<Vector2>(POSITION_NAME); }
-            set { SetPropertyValue(POSITION_NAME, value); }
+            internal set { SetPropertyValue(POSITION_NAME, value); }
         }
 
         protected virtual IEnumerable<BasePort> GetPorts()
@@ -69,12 +60,24 @@ namespace CZToolKit.GraphProcessor
             yield break;
         }
 
+        #region initialize
         public virtual void Enable(BaseGraph graph)
         {
             owner = graph;
+            ports = new Dictionary<string, BasePort>();
+            foreach (var port in GetPorts())
+            {
+                ports[port.name] = port;
+                port.Enable(this);
+            }
         }
 
-        protected override void InitializeBindableProperties()
+        public virtual void Initialize(IGraphOwner graphOwner)
+        {
+
+        }
+
+        protected override void BindProperties()
         {
             this[TITLE_NAME] = new BindableProperty<string>(GetType().Name);
             this[TITLE_COLOR_NAME] = new BindableProperty<Color>(new Color(0.2f, 0.2f, 0.2f, 0.8f));
@@ -97,43 +100,43 @@ namespace CZToolKit.GraphProcessor
             if (Util_Attribute.TryGetTypeAttribute(type, out NodeTooltipAttribute tooltip))
                 Tooltip = tooltip.Tooltip;
         }
-
-        public virtual void OnInitializedPropertyMapping(IVariableOwner variableOwner) { }
-
-        #region Overrides
-        public virtual void Initialize(IGraphOwner graphOwner) { }
-
-        public virtual void DrawGizmos(IGraphOwner graphOwner) { }
         #endregion
 
         #region API
 
-        public IEnumerable<BaseConnection> GetInputPortConnections(string port)
+        public IEnumerable<BaseConnection> GetInputPortConnections(string portName)
         {
-            foreach (var connection in owner.Connections)
+            if (!Ports.TryGetValue(portName, out var port))
+                yield break;
+            if (port.direction != BasePort.Direction.Input)
+                yield break;
+
+            foreach (var connection in port.Connections)
             {
-                if (connection.ToNodeGUID == guid) continue;
-                if (connection.ToPortName != port) continue;
                 yield return connection;
             }
         }
 
-        public IEnumerable<BaseConnection> GetOuputPortConnections(string port)
+        public IEnumerable<BaseConnection> GetOuputPortConnections(string portName)
         {
-            foreach (var connection in owner.Connections)
+            if (!Ports.TryGetValue(portName, out var port))
+                yield break;
+            if (port.direction != BasePort.Direction.Output)
+                yield break;
+
+            foreach (var connection in port.Connections)
             {
-                if (connection.FromNodeGUID != GUID) continue;
-                if (connection.FromPortName != port) continue;
                 yield return connection;
             }
         }
 
-        public IEnumerable<BaseConnection> GetConnections(string port)
+        public IEnumerable<BaseConnection> GetConnections(string portName)
         {
-            foreach (var connection in owner.Connections)
+            if (!Ports.TryGetValue(portName, out var port))
+                yield break;
+
+            foreach (var connection in port.Connections)
             {
-                if (connection.FromNodeGUID != GUID && connection.ToNodeGUID == guid) continue;
-                if (connection.FromPortName != port && connection.ToPortName != port) continue;
                 yield return connection;
             }
         }
@@ -142,6 +145,11 @@ namespace CZToolKit.GraphProcessor
         {
             throw new NotImplementedException();
         }
+        #endregion
+
+        #region Helper
+
+        public virtual void DrawGizmos(IGraphOwner graphOwner) { }
         #endregion
 
         #region 常量

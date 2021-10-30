@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: New Sample Graph Asset
   m_EditorClassIdentifier: 
   serializedGraph: "{\r\n    \"$id\": 0,\r\n    \"$type\": \"0|SampleGraph, CZToolKit.GraphProcessor\",\r\n   
-    \"panOffset\": {\r\n        \"$type\": \"1|UnityEngine.Vector3, UnityEngine.CoreModule\",\r\n       
-    329,\r\n        82.00001,\r\n        0\r\n    },\r\n    \"scale\": {\r\n       
-    \"$type\": 1,\r\n        0.0611002743,\r\n        0.0611002743,\r\n        1\r\n   
+    \"pan\": {\r\n        \"$type\": \"1|UnityEngine.Vector3, UnityEngine.CoreModule\",\r\n       
+    336.666656,\r\n        332.666656,\r\n        0\r\n    },\r\n    \"zoom\": {\r\n       
+    \"$type\": 1,\r\n        0.326901764,\r\n        0.326901764,\r\n        1\r\n   
     },\r\n    \"nodes\": {\r\n        \"$id\": 1,\r\n        \"$type\": \"2|System.Collections.Generic.Dictionary`2[[System.String,
     mscorlib],[CZToolKit.GraphProcessor.BaseNode, CZToolKit.GraphProcessor]], mscorlib\",\r\n       
     \"comparer\": {\r\n            \"$id\": 2,\r\n            \"$type\": \"3|System.Collections.Generic.GenericEqualityComparer`1[[System.String,
@@ -30,8 +30,8 @@ MonoBehaviour:
     \"$k\": \"fea2f0a0-1b0c-40cc-9cf6-818a6a75d75e\",\r\n                \"$v\":
     {\r\n                    \"$id\": 4,\r\n                    \"$type\": 4,\r\n                   
     \"guid\": \"fea2f0a0-1b0c-40cc-9cf6-818a6a75d75e\",\r\n                    \"position\":
-    {\r\n                        \"$type\": 5,\r\n                        642,\r\n                       
-    46\r\n                    },\r\n                    \"value\": 0\r\n               
+    {\r\n                        \"$type\": 5,\r\n                        520,\r\n                       
+    63\r\n                    },\r\n                    \"value\": 0\r\n               
     }\r\n            },\r\n            {\r\n                \"$k\": \"f5489176-c128-440e-8694-44ebe5e7a604\",\r\n               
     \"$v\": {\r\n                    \"$id\": 5,\r\n                    \"$type\":
     4,\r\n                    \"guid\": \"f5489176-c128-440e-8694-44ebe5e7a604\",\r\n                   
@@ -47,7 +47,7 @@ MonoBehaviour:
     \"$v\": {\r\n                    \"$id\": 7,\r\n                    \"$type\":
     4,\r\n                    \"guid\": \"02d10084-754b-435d-8b22-bafbfd8dd8e3\",\r\n                   
     \"position\": {\r\n                        \"$type\": 5,\r\n                       
-    461,\r\n                        124\r\n                    },\r\n                   
+    527,\r\n                        -36\r\n                    },\r\n                   
     \"value\": 0\r\n                }\r\n            },\r\n            {\r\n               
     \"$k\": \"dd70dd64-3a60-4734-8d8b-85bcb4bf5f4f\",\r\n                \"$v\":
     {\r\n                    \"$id\": 8,\r\n                    \"$type\": 4,\r\n                   
@@ -4469,7 +4469,7 @@ MonoBehaviour:
     \"$v\": {\r\n                    \"$id\": 811,\r\n                    \"$type\":
     4,\r\n                    \"guid\": \"53966177-79f4-4f49-9293-b3773ee8e063\",\r\n                   
     \"position\": {\r\n                        \"$type\": 5,\r\n                       
-    4316,\r\n                        4280\r\n                    },\r\n                   
+    4135,\r\n                        4265\r\n                    },\r\n                   
     \"value\": 0\r\n                }\r\n            },\r\n            {\r\n               
     \"$k\": \"a4f3a48c-5f14-4891-af11-88065f411d60\",\r\n                \"$v\":
     {\r\n                    \"$id\": 812,\r\n                    \"$type\": 4,\r\n                   
@@ -5655,7 +5655,7 @@ MonoBehaviour:
     5366\r\n                    },\r\n                    \"value\": 0\r\n               
     }\r\n            }\r\n        ]\r\n    },\r\n    \"connections\": {\r\n       
     \"$id\": 1027,\r\n        \"$type\": \"6|System.Collections.Generic.List`1[[CZToolKit.GraphProcessor.BaseConnection,
-    CZToolKit.GraphProcessor]], mscorlib\",\r\n        \"$rlength\": 896,\r\n       
+    CZToolKit.GraphProcessor]], mscorlib\",\r\n        \"$rlength\": 898,\r\n       
     \"$rcontent\": [\r\n            {\r\n                \"$id\": 1028,\r\n               
     \"$type\": \"7|CZToolKit.GraphProcessor.BaseConnection, CZToolKit.GraphProcessor\",\r\n               
     \"from\": \"d77cc14d-1fcb-487d-a87c-0135529045a4\",\r\n                \"fromPortName\":
@@ -8345,5 +8345,11 @@ MonoBehaviour:
     \"toPortName\": \"A\"\r\n            },\r\n            {\r\n                \"$id\":
     1923,\r\n                \"$type\": 7,\r\n                \"from\": \"8e8692b1-2887-4d16-a718-d5b7deb5c75c\",\r\n               
     \"fromPortName\": \"B\",\r\n                \"to\": \"340562bd-ba60-4afd-9739-48ef03b02734\",\r\n               
+    \"toPortName\": \"A\"\r\n            },\r\n            {\r\n                \"$id\":
+    1924,\r\n                \"$type\": 7,\r\n                \"from\": \"1d676f17-d48b-4f45-bd86-9203aa293f9a\",\r\n               
+    \"fromPortName\": \"B\",\r\n                \"to\": \"08ae7627-2d67-438d-a05b-bac618369ffc\",\r\n               
+    \"toPortName\": \"A\"\r\n            },\r\n            {\r\n                \"$id\":
+    1925,\r\n                \"$type\": 7,\r\n                \"from\": \"d77cc14d-1fcb-487d-a87c-0135529045a4\",\r\n               
+    \"fromPortName\": \"B\",\r\n                \"to\": \"02d10084-754b-435d-8b22-bafbfd8dd8e3\",\r\n               
     \"toPortName\": \"A\"\r\n            }\r\n        ]\r\n    }\r\n}"
   graphUnityReferences: []

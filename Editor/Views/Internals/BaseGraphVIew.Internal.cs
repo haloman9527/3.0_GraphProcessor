@@ -71,8 +71,8 @@ namespace CZToolKit.GraphProcessor.Editors
             yield return GraphWindow.StartCoroutine(InitializeCallbacks());
 
             // 初始化
-            viewTransform.position = Model.Position;
-            viewTransform.scale = Model.Scale;
+            viewTransform.position = Model.Pan;
+            viewTransform.scale = Model.Zoom;
 
             // 绑定
             BindingProperties();
@@ -112,26 +112,32 @@ namespace CZToolKit.GraphProcessor.Editors
         /// <summary> 生成所有NodeView </summary>
         IEnumerator GenerateNodeViews()
         {
+            int c = 0;
             foreach (var node in Model.Nodes)
             {
-                yield return null;
                 if (node.Value == null) continue;
                 AddNodeView(node.Value);
+                c++;
+                if (c % 5 == 0)
+                    yield return null;
             }
         }
 
         /// <summary> 连接节点 </summary>
         IEnumerator LinkNodeViews()
         {
+            int c = 0;
             foreach (var edge in Model.Connections)
             {
-                yield return null;
                 if (edge == null) continue;
                 BaseNodeView fromNodeView, toNodeView;
                 if (!NodeViews.TryGetValue(edge.FromNodeGUID, out fromNodeView)) yield break;
                 if (!NodeViews.TryGetValue(edge.ToNodeGUID, out toNodeView)) yield break;
 
                 ConnectView(fromNodeView, toNodeView, edge);
+                c++;
+                if (c % 5 == 0)
+                    yield return null;
             }
         }
         #endregion
@@ -181,8 +187,8 @@ namespace CZToolKit.GraphProcessor.Editors
 
         protected virtual void BindingProperties()
         {
-            Model.BindingProperty<Vector3>(BaseGraph.POSITION_NAME, OnPositionChanged);
-            Model.BindingProperty<Vector3>(BaseGraph.SCALE_NAME, OnScaleChanged);
+            Model.BindingProperty<Vector3>(BaseGraph.PAN_NAME, OnPositionChanged);
+            Model.BindingProperty<Vector3>(BaseGraph.ZOOM_NAME, OnScaleChanged);
 
             Model.onNodeAdded += OnNodeAdded;
             Model.onNodeRemoved += OnNodeRemoved;
@@ -201,8 +207,8 @@ namespace CZToolKit.GraphProcessor.Editors
                 }
             });
 
-            Model.UnBindingProperty<Vector3>(BaseGraph.POSITION_NAME, OnPositionChanged);
-            Model.UnBindingProperty<Vector3>(BaseGraph.SCALE_NAME, OnScaleChanged);
+            Model.UnBindingProperty<Vector3>(BaseGraph.PAN_NAME, OnPositionChanged);
+            Model.UnBindingProperty<Vector3>(BaseGraph.ZOOM_NAME, OnScaleChanged);
 
             Model.onNodeAdded -= OnNodeAdded;
             Model.onNodeRemoved -= OnNodeRemoved;
@@ -219,18 +225,42 @@ namespace CZToolKit.GraphProcessor.Editors
             if (changes.movedElements != null)
             {
                 CommandDispacter.BeginGroup();
-                changes.movedElements.RemoveAll((Predicate<GraphElement>)(element =>
+                // 当节点移动之后，与之连接的接口连接遵循从上到下，从左到右重新排序
+                HashSet<BasePort> ports = new HashSet<BasePort>();
+                changes.movedElements.RemoveAll(element =>
                 {
                     switch (element)
                     {
                         case BaseNodeView nodeView:
-                            CommandDispacter.Do(new MoveNodeCommand(nodeView.Model, (Vector2)nodeView.GetPosition().position));
+                            CommandDispacter.Do(new MoveNodeCommand(nodeView.Model, nodeView.GetPosition().position));
+                            // 记录需要重新排序的接口
+                            foreach (var port in nodeView.Model.Ports.Values)
+                            {
+                                if (port.direction != BasePort.Direction.Input)
+                                {
+                                    continue;
+                                }
+                                foreach (var connection in port.connections)
+                                {
+                                    ports.Add(connection.FromNode.Ports[connection.FromPortName]);
+                                }
+                            }
                             return true;
                         default:
                             break;
                     }
                     return false;
-                }));
+                });
+                // 排序
+                foreach (var port in ports)
+                {
+                    var connections = new SortedSet<BaseConnection>(port.connections.Comparer);
+                    foreach (var connection in port.connections)
+                    {
+                        connections.Add(connection);
+                    }
+                    port.connections = connections;
+                }
                 CommandDispacter.EndGroup();
             }
             if (changes.elementsToRemove != null)
@@ -349,8 +379,8 @@ namespace CZToolKit.GraphProcessor.Editors
         /// <summary> 转换发生改变时调用 </summary>
         void ViewTransformChangedCallback(GraphView view)
         {
-            Model.Position = viewTransform.position;
-            Model.Scale = viewTransform.scale;
+            Model.Pan = viewTransform.position;
+            Model.Zoom = viewTransform.scale;
         }
 
         public override void AddToSelection(ISelectable selectable)
@@ -426,8 +456,8 @@ namespace CZToolKit.GraphProcessor.Editors
 
         public virtual void ResetPositionAndZoom()
         {
-            Model.Position = Vector3.zero;
-            Model.Scale = Vector3.one;
+            Model.Pan = Vector3.zero;
+            Model.Zoom = Vector3.one;
         }
 
         // 标记Dirty

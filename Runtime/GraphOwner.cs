@@ -67,7 +67,7 @@ namespace CZToolKit.GraphProcessor
         {
             graph = JsonSerializer.DeserializeValue<TGraph>(serializedGraph, graphUnityReferences);
             graph.Enable();
-            graph.InitializePropertyMapping(this);
+            graph.Initialize(this);
         }
 
         public override void CheckGraphSerialization()

@@ -183,7 +183,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
             GraphAsset = graphOwner.Self();
             GraphOwner = graphOwner;
-            GraphOwner.Graph.InitializePropertyMapping(GraphOwner);
+            GraphOwner.Graph.Initialize(GraphOwner);
             InternalLoad(GraphOwner.Graph);
         }
 
@@ -194,7 +194,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
             GraphAsset = graphAssetOwner.GraphAsset;
             GraphOwner = graphAssetOwner;
-            GraphOwner.Graph.InitializePropertyMapping(GraphOwner);
+            GraphOwner.Graph.Initialize(GraphOwner);
             InternalLoad(GraphOwner.Graph);
         }
 

@@ -17,7 +17,7 @@ using System;
 
 namespace CZToolKit.GraphProcessor
 {
-    public partial class BaseConnection : IntegratedViewModel
+    public partial class BaseConnection : IntegratedViewModel, IGraphElement
     {
         #region 静态方法
         public static T CreateNew<T>(BaseNode from, string fromPortName, BaseNode to, string toPortName) where T : BaseConnection
@@ -37,16 +37,23 @@ namespace CZToolKit.GraphProcessor
         #endregion
 
         [NonSerialized] BaseGraph owner;
+        [NonSerialized] BaseNode fromNode;
+        [NonSerialized] BaseNode toNode;
 
         public string FromNodeGUID { get { return from; } }
         public string ToNodeGUID { get { return to; } }
         public string FromPortName { get { return fromPortName; } }
         public string ToPortName { get { return toPortName; } }
 
-        public BaseNode FromNode { get { owner.Nodes.TryGetValue(FromNodeGUID, out BaseNode node); return node; } }
-        public BaseNode ToNode { get { owner.Nodes.TryGetValue(ToNodeGUID, out BaseNode node); return node; } }
+        public BaseNode FromNode { get { return fromNode; } }
+        public BaseNode ToNode { get { return toNode; } }
 
-        public void Enable(BaseGraph graph) { owner = graph; }
-        protected override void InitializeBindableProperties() { }
+        public void Enable(BaseGraph graph)
+        {
+            owner = graph;
+            owner.Nodes.TryGetValue(FromNodeGUID, out fromNode);
+            owner.Nodes.TryGetValue(ToNodeGUID, out toNode);
+        }
+        protected override void BindProperties() { }
     }
 }

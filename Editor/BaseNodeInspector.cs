@@ -60,6 +60,11 @@ namespace CZToolKit.GraphProcessor.Editors
                         property.Value.ValueBoxed = newValue;
 
                 }
+                GUILayout.Label(view.Model.GUID);
+                foreach (var item in view.Model.Ports["B"].Connections)
+                {
+                    GUILayout.Label(item.ToNode.GUID);
+                }
                 EditorGUILayoutExtension.EndBoxGroup();
                 if (EditorGUI.EndChangeCheck())
                 {
