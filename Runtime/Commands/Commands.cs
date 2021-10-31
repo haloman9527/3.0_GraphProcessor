@@ -86,8 +86,6 @@ namespace CZToolKit.GraphProcessor
 
         BaseConnection connection;
 
-        List<BaseConnection> others = new List<BaseConnection>();
-
         public ConnectCommand(BaseGraph graph, BaseNode from, string fromPortName, BaseNode to, string toPortName)
         {
             this.graph = graph;
@@ -97,30 +95,20 @@ namespace CZToolKit.GraphProcessor
             this.toPortName = toPortName;
         }
 
-        public ConnectCommand(BaseGraph graph, BaseConnection edge)
+        public ConnectCommand(BaseGraph graph, BaseConnection connection)
         {
             this.graph = graph;
-            connection = edge;
+            this.connection = connection;
         }
 
         public void Do()
         {
             if (connection == null)
             {
-                foreach (var edge in graph.Connections)
-                {
-                    if (edge.ToNodeGUID == to.GUID && edge.FromNodeGUID != from.GUID)
-                        others.Add(edge);
-                }
                 connection = graph.Connect(from, fromPortName, to, toPortName);
             }
             else
             {
-                foreach (var edge in graph.Connections)
-                {
-                    if (edge.ToNodeGUID == edge.ToNodeGUID && edge.FromNodeGUID != edge.FromNodeGUID)
-                        others.Add(edge);
-                }
                 graph.Connect(connection);
             }
         }
@@ -128,10 +116,6 @@ namespace CZToolKit.GraphProcessor
         public void Undo()
         {
             graph.Disconnect(connection);
-            foreach (var edge in others)
-            {
-                graph.Connect(edge);
-            }
         }
     }
 

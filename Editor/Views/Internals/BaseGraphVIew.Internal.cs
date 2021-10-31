@@ -41,8 +41,6 @@ namespace CZToolKit.GraphProcessor.Editors
         public Dictionary<string, BaseNodeView> NodeViews { get; private set; } = new Dictionary<string, BaseNodeView>();
 
         public BaseGraph Model { get; set; }
-        public bool Initialized { get; private set; }
-        internal event Action onInitialized;
         #endregion
 
         private BaseGraphView()
@@ -95,8 +93,6 @@ namespace CZToolKit.GraphProcessor.Editors
             }));
 
             OnInitialized();
-            Initialized = true;
-            onInitialized?.Invoke();
         }
 
         IEnumerator InitializeCallbacks()
@@ -117,10 +113,10 @@ namespace CZToolKit.GraphProcessor.Editors
         IEnumerator GenerateNodeViews()
         {
             int c = 0;
-            foreach (var node in Model.Nodes)
+            foreach (var node in Model.Nodes.Values)
             {
-                if (node.Value == null) continue;
-                AddNodeView(node.Value);
+                if (node == null) continue;
+                AddNodeView(node);
                 c++;
                 if (c % 5 == 0)
                     yield return null;
@@ -240,13 +236,16 @@ namespace CZToolKit.GraphProcessor.Editors
                             // 记录需要重新排序的接口
                             foreach (var port in nodeView.Model.Ports.Values)
                             {
-                                if (port.direction != BasePort.Direction.Input)
-                                {
-                                    continue;
-                                }
                                 foreach (var connection in port.connections)
                                 {
-                                    ports.Add(connection.FromNode.Ports[connection.FromPortName]);
+                                    if (port.direction == BasePort.Direction.Input)
+                                    {
+                                        ports.Add(connection.FromNode.Ports[connection.FromPortName]);
+                                    }
+                                    else
+                                    {
+                                        ports.Add(connection.ToNode.Ports[connection.ToPortName]);
+                                    }
                                 }
                             }
                             return true;
@@ -427,25 +426,25 @@ namespace CZToolKit.GraphProcessor.Editors
         public BaseConnectionView ConnectView(BaseNodeView from, BaseNodeView to, BaseConnection connection)
         {
             var edgeView = Activator.CreateInstance(GetConnectionViewType(connection)) as BaseConnectionView;
+            edgeView.SetUp(connection, this);
             edgeView.userData = connection;
             edgeView.output = from.portViews[connection.FromPortName];
             edgeView.input = to.portViews[connection.ToPortName];
             from.portViews[connection.FromPortName].Connect(edgeView);
             to.portViews[connection.ToPortName].Connect(edgeView);
-            edgeView.SetUp(connection, this);
             AddElement(edgeView);
             return edgeView;
         }
 
         public void DisconnectView(BaseConnectionView edgeView)
         {
-            RemoveElement(edgeView);
             Port inputPortView = edgeView.input;
             BaseNodeView inputNodeView = inputPortView.node as BaseNodeView;
             if (inputPortView != null)
             {
                 inputPortView.Disconnect(edgeView);
             }
+            inputPortView.Disconnect(edgeView);
 
             Port outputPortView = edgeView.output;
             BaseNodeView outputNodeView = outputPortView.node as BaseNodeView;
@@ -453,9 +452,12 @@ namespace CZToolKit.GraphProcessor.Editors
             {
                 edgeView.output.Disconnect(edgeView);
             }
+            outputPortView.Disconnect(edgeView);
 
             inputNodeView.RefreshPorts();
             outputNodeView.RefreshPorts();
+
+            RemoveElement(edgeView);
         }
 
         public virtual void ResetPositionAndZoom()

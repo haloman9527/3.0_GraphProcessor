@@ -16,6 +16,7 @@
 #if UNITY_EDITOR
 using CZToolKit.Core.Editors;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
@@ -46,10 +47,34 @@ namespace CZToolKit.GraphProcessor.Editors
             if (Target is BaseNodeView view && view.Model != null)
             {
                 EditorGUILayoutExtension.BeginBoxGroup();
-                GUILayout.Label(string.Concat("Node：", view.Model.Title), bigLabel.value);
+                bigLabel.value.alignment = TextAnchor.MiddleLeft;
+                GUILayout.Label(string.Concat("Node：", view.Model.GUID), bigLabel.value);
                 EditorGUILayoutExtension.EndBoxGroup();
 
-                EditorGUI.BeginChangeCheck();
+                EditorGUILayoutExtension.BeginBoxGroup();
+                var portSelected = ContextDataCache.GetContextData("Port.Selected", 0);
+                if (!ContextDataCache.TryGetContextData<string[]>($"{view.Model.GetHashCode()}.Ports.Keys", out var portKeys))
+                {
+                    portKeys.value = view.Model.Ports.Keys.ToArray();
+                }
+                portSelected.value = EditorGUILayout.Popup(portSelected.value, portKeys.value);
+                if (view.Model.Ports.TryGetValue(portKeys.value[portSelected.value], out var port))
+                {
+
+                    foreach (var connection in port.connections)
+                    {
+                        if (port.direction == BasePort.Direction.Input)
+                        {
+                            GUILayout.Label(string.Concat(connection.FromNode.Title, "：", connection.FromNode.GUID));
+                        }
+                        else
+                        {
+                            GUILayout.Label(string.Concat(connection.ToNode.Title, "：", connection.ToNode.GUID));
+                        }
+                    }
+                }
+                EditorGUILayoutExtension.EndBoxGroup();
+
                 EditorGUILayoutExtension.BeginBoxGroup();
                 foreach (var property in view.Model)
                 {
@@ -60,16 +85,7 @@ namespace CZToolKit.GraphProcessor.Editors
                         property.Value.ValueBoxed = newValue;
 
                 }
-                GUILayout.Label(view.Model.GUID);
-                foreach (var item in view.Model.Ports["B"].Connections)
-                {
-                    GUILayout.Label(item.ToNode.GUID);
-                }
                 EditorGUILayoutExtension.EndBoxGroup();
-                if (EditorGUI.EndChangeCheck())
-                {
-
-                }
             }
         }
     }

@@ -163,11 +163,11 @@ namespace CZToolKit.GraphProcessor
         /// <summary> 根据T创建一个节点，并设置位置 </summary>
         public static T CreateNew<T>(BaseGraph graph, Vector2 position) where T : BaseNode
         {
-            return CreateNew(typeof(T), graph, position) as T;
+            return CreateNew(graph, typeof(T), position) as T;
         }
 
         /// <summary> 根据type创建一个节点，并设置位置 </summary>
-        public static BaseNode CreateNew(Type type, BaseGraph graph, Vector2 position)
+        public static BaseNode CreateNew(BaseGraph graph, Type type, Vector2 position)
         {
             if (!type.IsSubclassOf(typeof(BaseNode)))
                 return null;

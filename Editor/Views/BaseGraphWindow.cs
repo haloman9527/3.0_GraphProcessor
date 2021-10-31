@@ -142,6 +142,7 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             CommandDispatcher commandDispatcher = new CommandDispatcher();
             GraphView = NewGraphView(graph, commandDispatcher);
+
             if (GraphView == null) return;
 
             Graph = graph;
@@ -150,6 +151,7 @@ namespace CZToolKit.GraphProcessor.Editors
             rootVisualElement.Add(GraphViewParent);
 
             BuildToolbar(GraphViewParent.Toolbar);
+
             GraphView.RegisterCallback<KeyDownEvent>(KeyDownCallback);
             GraphViewParent.GraphViewElement.Add(GraphView);
             CommandDispatcher = commandDispatcher;
@@ -184,7 +186,7 @@ namespace CZToolKit.GraphProcessor.Editors
             GraphAsset = graphOwner.Self();
             GraphOwner = graphOwner;
             GraphOwner.Graph.Initialize(GraphOwner);
-            InternalLoad(GraphOwner.Graph);
+            InternalLoad(graphOwner.Graph);
         }
 
         // 从GraphAssetOwner加载
@@ -195,7 +197,7 @@ namespace CZToolKit.GraphProcessor.Editors
             GraphAsset = graphAssetOwner.GraphAsset;
             GraphOwner = graphAssetOwner;
             GraphOwner.Graph.Initialize(GraphOwner);
-            InternalLoad(GraphOwner.Graph);
+            InternalLoad(graphAssetOwner.Graph);
         }
 
         // 从Graph资源加载
@@ -255,7 +257,7 @@ namespace CZToolKit.GraphProcessor.Editors
             return window;
         }
 
-        /// <summary> 从GraphOwner打开Graph </summary>\
+        /// <summary> 从GraphOwner打开Graph </summary>
         public static BaseGraphWindow Open(IGraphOwner graphOwner)
         {
             if (graphOwner == null) return null;
@@ -265,7 +267,7 @@ namespace CZToolKit.GraphProcessor.Editors
             return window;
         }
 
-        /// <summary> 从GraphAssetOwner打开Graph </summary>\
+        /// <summary> 从GraphAssetOwner打开Graph </summary>
         public static BaseGraphWindow Open(IGraphAssetOwner graphAssetOwner)
         {
             if (graphAssetOwner == null) return null;
@@ -275,7 +277,7 @@ namespace CZToolKit.GraphProcessor.Editors
             return window;
         }
 
-        /// <summary> 从GraphAsset打开Graph </summary>\
+        /// <summary> 从GraphAsset打开Graph </summary>
         public static BaseGraphWindow Open(IGraphAsset graphAsset)
         {
             if (graphAsset == null) return null;
@@ -285,7 +287,7 @@ namespace CZToolKit.GraphProcessor.Editors
             return window;
         }
 
-        /// <summary> 打开Graph </summary>\
+        /// <summary> 打开Graph </summary>
         public static BaseGraphWindow Open(BaseGraph graph)
         {
             if (graph == null) return null;

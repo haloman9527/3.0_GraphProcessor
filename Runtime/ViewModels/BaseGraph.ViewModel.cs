@@ -144,6 +144,20 @@ namespace CZToolKit.GraphProcessor
             onNodeAdded?.Invoke(node);
         }
 
+        public T AddNode<T>(Vector2 position) where T : BaseNode
+        {
+            T node = BaseNode.CreateNew<T>(this, position);
+            AddNode(node);
+            return node;
+        }
+
+        public BaseNode AddNode(Type tpye, Vector2 position)
+        {
+            BaseNode node = BaseNode.CreateNew(this, tpye, position);
+            AddNode(node);
+            return node;
+        }
+
         public void RemoveNode(BaseNode node)
         {
             if (node == null) return;
@@ -184,7 +198,7 @@ namespace CZToolKit.GraphProcessor
 
         public BaseConnection Connect(BaseNode from, string fromPortName, BaseNode to, string toPortName)
         {
-            BaseConnection connection = connections.Find(edge => edge.FromNodeGUID == from.GUID && edge.FromPortName == fromPortName && edge.ToNodeGUID == to.GUID && edge.ToPortName == toPortName);
+            BaseConnection connection = connections.Find(tmpConnection => tmpConnection.FromNodeGUID == from.GUID && tmpConnection.FromPortName == fromPortName && tmpConnection.ToNodeGUID == to.GUID && tmpConnection.ToPortName == toPortName);
             if (connection != null)
                 return connection;
 
@@ -239,10 +253,10 @@ namespace CZToolKit.GraphProcessor
 
         public void Disconnect(BaseNode node, string portName)
         {
-            foreach (var edge in connections.ToArray())
+            foreach (var connection in connections.ToArray())
             {
-                if ((edge.FromNode == node && edge.FromPortName == portName) || (edge.ToNode == node && edge.ToPortName == portName))
-                    Disconnect(edge);
+                if ((connection.FromNode == node && connection.FromPortName == portName) || (connection.ToNode == node && connection.ToPortName == portName))
+                    Disconnect(connection);
             }
         }
         #endregion
@@ -251,7 +265,7 @@ namespace CZToolKit.GraphProcessor
         public T NewNode<T>(Vector2 position) where T : BaseNode { return NewNode(typeof(T), position) as T; }
         public virtual BaseNode NewNode(Type type, Vector2 position)
         {
-            return BaseNode.CreateNew(type, this, position);
+            return BaseNode.CreateNew(this, type, position);
         }
         public virtual BaseConnection NewConnection(BaseNode from, string fromPortName, BaseNode to, string toPortName)
         {
