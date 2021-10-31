@@ -94,7 +94,7 @@ namespace CZToolKit.GraphProcessor.Editors
             OnInitialized();
         }
 
-        IEnumerator InitializeCallbacks()
+        void InitializeCallbacks()
         {
             graphViewChanged = GraphViewChangedCallback;
             serializeGraphElements = SerializeGraphElementsCallback;
@@ -105,7 +105,6 @@ namespace CZToolKit.GraphProcessor.Editors
             CreateNodeMenu = ScriptableObject.CreateInstance<CreateNodeMenuWindow>();
             CreateNodeMenu.Initialize(this, GetNodeTypes());
             nodeCreationRequest = c => SearchWindow.Open(new SearchWindowContext(c.screenMousePosition), CreateNodeMenu);
-            yield break;
         }
 
         /// <summary> 生成所有NodeView </summary>
