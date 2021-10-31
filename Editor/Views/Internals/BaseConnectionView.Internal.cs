@@ -31,6 +31,8 @@ namespace CZToolKit.GraphProcessor.Editors
             styleSheets.Add(GraphProcessorStyles.EdgeViewStyle);
             IndexLabel = new Label();
             IndexLabel.style.display = DisplayStyle.None;
+            IndexLabel.style.flexGrow = 1;
+            IndexLabel.style.unityTextAlign = TextAnchor.MiddleCenter;
             edgeControl.Add(IndexLabel);
         }
 
