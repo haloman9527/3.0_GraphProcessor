@@ -93,9 +93,9 @@ namespace CZToolKit.GraphProcessor.Editors
             Owner = graphView;
 
             // 初始化
+            base.SetPosition(new Rect(Model.Position == default ? Vector2.zero : Model.Position, GetPosition().size));
             title = Model.Title;
             tooltip = Model.Tooltip;
-            base.SetPosition(new Rect(Model.Position, GetPosition().size));
             titleContainer.style.backgroundColor = Model.TitleColor;
             TitleLabel.style.color = Model.TitleColor.GetLuminance() > 0.5f && Model.TitleColor.a > 0.5f ? Color.black : Color.white * 0.9f;
 

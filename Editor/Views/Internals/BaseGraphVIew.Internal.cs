@@ -68,15 +68,15 @@ namespace CZToolKit.GraphProcessor.Editors
         #region Initialize
         IEnumerator Initialize()
         {
-            yield return GraphWindow.StartCoroutine(InitializeCallbacks());
-
             // 初始化
-            viewTransform.position = Model.Pan;
-            viewTransform.scale = Model.Zoom;
+            viewTransform.position = Model.Pan == default ? Vector3.zero : Model.Pan;
+            viewTransform.scale = Model.Zoom == default ? Vector3.one : Model.Zoom;
 
             // 绑定
             BindingProperties();
             RegisterCallback<DetachFromPanelEvent>(evt => { UnBindingProperties(); });
+
+            InitializeCallbacks();
 
             yield return GraphWindow.StartCoroutine(GenerateNodeViews());
             yield return GraphWindow.StartCoroutine(LinkNodeViews());
@@ -91,7 +91,6 @@ namespace CZToolKit.GraphProcessor.Editors
                     nextCheckTime += 1;
                 }
             }));
-
             OnInitialized();
         }
 

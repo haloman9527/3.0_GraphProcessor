@@ -63,9 +63,9 @@ namespace CZToolKit.GraphProcessor
         #region API
         public void Enable()
         {
-            foreach (var pair in nodes)
+            foreach (var node in nodes.Values)
             {
-                pair.Value.Enable(this);
+                node.Enable(this);
             }
             foreach (var connection in connections)
             {
@@ -80,9 +80,9 @@ namespace CZToolKit.GraphProcessor
         public virtual void Initialize(IGraphOwner graphOwner)
         {
             InitializePropertyMapping(graphOwner);
-            foreach (var pair in nodes)
+            foreach (var node in nodes.Values)
             {
-                pair.Value.Initialize(graphOwner);
+                node.Initialize(graphOwner);
             }
         }
 

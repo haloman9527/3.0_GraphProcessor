@@ -60,7 +60,7 @@ namespace CZToolKit.GraphProcessor
             yield break;
         }
 
-        #region initialize
+        #region API
         public virtual void Enable(BaseGraph graph)
         {
             owner = graph;
@@ -103,41 +103,23 @@ namespace CZToolKit.GraphProcessor
         #endregion
 
         #region API
-
-        public IEnumerable<BaseConnection> GetInputPortConnections(string portName)
+        public IEnumerable<BaseNode> GetConnections(string portName)
         {
             if (!Ports.TryGetValue(portName, out var port))
                 yield break;
-            if (port.direction != BasePort.Direction.Input)
-                yield break;
-
-            foreach (var connection in port.Connections)
+            if (port.direction == BasePort.Direction.Input)
             {
-                yield return connection;
+                foreach (var connection in port.Connections)
+                {
+                    yield return connection.FromNode;
+                }
             }
-        }
-
-        public IEnumerable<BaseConnection> GetOuputPortConnections(string portName)
-        {
-            if (!Ports.TryGetValue(portName, out var port))
-                yield break;
-            if (port.direction != BasePort.Direction.Output)
-                yield break;
-
-            foreach (var connection in port.Connections)
+            else
             {
-                yield return connection;
-            }
-        }
-
-        public IEnumerable<BaseConnection> GetConnections(string portName)
-        {
-            if (!Ports.TryGetValue(portName, out var port))
-                yield break;
-
-            foreach (var connection in port.Connections)
-            {
-                yield return connection;
+                foreach (var connection in port.Connections)
+                {
+                    yield return connection.ToNode;
+                }
             }
         }
 

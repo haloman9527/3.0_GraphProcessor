@@ -15,6 +15,7 @@
 #endregion
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace CZToolKit.GraphProcessor
 {
@@ -57,6 +58,32 @@ namespace CZToolKit.GraphProcessor
         {
             connections.Remove(connection);
             onDisconnected?.Invoke(connection);
+        }
+
+        /// <summary> 获取连接的第一个接口的值 </summary>
+        /// <returns></returns>
+        public object GetConnectionValue()
+        {
+            return GetConnectionValues().FirstOrDefault();
+        }
+
+        /// <summary> 获取连接的接口的值 </summary>
+        public IEnumerable<object> GetConnectionValues()
+        {
+            if (direction == Direction.Input)
+            {
+                foreach (var connection in Connections)
+                {
+                    yield return connection.FromNode.GetValue(connection.FromPortName);
+                }
+            }
+            else
+            {
+                foreach (var connection in Connections)
+                {
+                    yield return connection.ToNode.GetValue(connection.ToPortName);
+                }
+            }
         }
 
         public class ConnectionHorizontalComparer : IComparer<BaseConnection>
