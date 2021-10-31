@@ -1,4 +1,4 @@
-#region ×¢ ÊÍ
+ï»¿#region æ³¨ é‡Š
 /***
  *
  *  Title:
@@ -7,7 +7,7 @@
  *  
  *  Date:
  *  Version:
- *  Writer: °ëÖ»ÁúÏºÈË
+ *  Writer: åŠåªé¾™è™¾äºº
  *  Github: https://github.com/HalfLobsterMan
  *  Blog: https://www.crosshair.top/
  *

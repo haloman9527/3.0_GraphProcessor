@@ -1,4 +1,4 @@
-#region ×¢ ÊÍ
+ï»¿#region æ³¨ é‡Š
 /***
  *
  *  Title:
@@ -7,7 +7,7 @@
  *  
  *  Date:
  *  Version:
- *  Writer: °ëÖ»ÁúÏºÈË
+ *  Writer: åŠåªé¾™è™¾äºº
  *  Github: https://github.com/HalfLobsterMan
  *  Blog: https://www.crosshair.top/
  *
@@ -60,14 +60,14 @@ namespace CZToolKit.GraphProcessor
             onDisconnected?.Invoke(connection);
         }
 
-        /// <summary> »ñÈ¡Á¬½ÓµÄµÚÒ»¸ö½Ó¿ÚµÄÖµ </summary>
+        /// <summary> è·å–è¿æ¥çš„ç¬¬ä¸€ä¸ªæ¥å£çš„å€¼ </summary>
         /// <returns></returns>
         public object GetConnectionValue()
         {
             return GetConnectionValues().FirstOrDefault();
         }
 
-        /// <summary> »ñÈ¡Á¬½ÓµÄ½Ó¿ÚµÄÖµ </summary>
+        /// <summary> è·å–è¿æ¥çš„æ¥å£çš„å€¼ </summary>
         public IEnumerable<object> GetConnectionValues()
         {
             if (direction == Direction.Input)
@@ -97,20 +97,20 @@ namespace CZToolKit.GraphProcessor
 
             public int Compare(BaseConnection x, BaseConnection y)
             {
-                // ÈôĞèÒªÖØĞÂÅÅĞòµÄÊÇinput½Ó¿Ú£¬Ôò¸ù¾İFromNodeÅÅĞò
-                // ÈôĞèÒªÖØĞÂÅÅĞòµÄÊÇoutput½Ó¿Ú£¬Ôò¸ù¾İToNodeÅÅĞò
+                // è‹¥éœ€è¦é‡æ–°æ’åºçš„æ˜¯inputæ¥å£ï¼Œåˆ™æ ¹æ®FromNodeæ’åº
+                // è‹¥éœ€è¦é‡æ–°æ’åºçš„æ˜¯outputæ¥å£ï¼Œåˆ™æ ¹æ®ToNodeæ’åº
                 var nodeX = direction == Direction.Input ? x.FromNode : x.ToNode;
                 var nodeY = direction == Direction.Input ? y.FromNode : y.ToNode;
 
-                // ÔòÊ¹ÓÃx×ø±ê±È½ÏÅÅĞò
-                // ×ñÑ­´Ó×óµ½ÓÒ
+                // åˆ™ä½¿ç”¨xåæ ‡æ¯”è¾ƒæ’åº
+                // éµå¾ªä»å·¦åˆ°å³
                 if (nodeX.Position.x < nodeY.Position.x)
                     return -1;
                 if (nodeX.Position.x > nodeY.Position.x)
                     return 1;
 
-                // Èô½ÚµãµÄx×ø±êÏàÍ¬£¬ÔòÊ¹ÓÃy×ø±ê±È½ÏÅÅĞò
-                // ×ñÑ­´ÓÉÏµ½ÏÂ
+                // è‹¥èŠ‚ç‚¹çš„xåæ ‡ç›¸åŒï¼Œåˆ™ä½¿ç”¨yåæ ‡æ¯”è¾ƒæ’åº
+                // éµå¾ªä»ä¸Šåˆ°ä¸‹
                 if (nodeX.Position.y < nodeY.Position.y)
                     return -1;
                 return 1;
@@ -128,21 +128,21 @@ namespace CZToolKit.GraphProcessor
 
             public int Compare(BaseConnection x, BaseConnection y)
             {
-                // ÈôĞèÒªÖØĞÂÅÅĞòµÄÊÇinput½Ó¿Ú£¬Ôò¸ù¾İFromNodeÅÅĞò
-                // ÈôĞèÒªÖØĞÂÅÅĞòµÄÊÇoutput½Ó¿Ú£¬Ôò¸ù¾İToNodeÅÅĞò
+                // è‹¥éœ€è¦é‡æ–°æ’åºçš„æ˜¯inputæ¥å£ï¼Œåˆ™æ ¹æ®FromNodeæ’åº
+                // è‹¥éœ€è¦é‡æ–°æ’åºçš„æ˜¯outputæ¥å£ï¼Œåˆ™æ ¹æ®ToNodeæ’åº
                 var nodeX = direction == Direction.Input ? x.FromNode : x.ToNode;
                 var nodeY = direction == Direction.Input ? y.FromNode : y.ToNode;
 
-                // ÔòÊ¹ÓÃy×ø±ê±È½ÏÅÅĞò
-                // ×ñÑ­´ÓÉÏµ½ÏÂ
+                // åˆ™ä½¿ç”¨yåæ ‡æ¯”è¾ƒæ’åº
+                // éµå¾ªä»ä¸Šåˆ°ä¸‹
                 if (nodeX.Position.y < nodeY.Position.y)
                     return -1;
                 if (nodeX.Position.y > nodeY.Position.y)
                     return 1;
                 return 0;
 
-                // Èô½ÚµãµÄy×ø±êÏàÍ¬£¬ÔòÊ¹ÓÃx×ø±ê±È½ÏÅÅĞò
-                // ×ñÑ­´Ó×óµ½ÓÒ
+                // è‹¥èŠ‚ç‚¹çš„yåæ ‡ç›¸åŒï¼Œåˆ™ä½¿ç”¨xåæ ‡æ¯”è¾ƒæ’åº
+                // éµå¾ªä»å·¦åˆ°å³
                 if (nodeX.Position.x < nodeY.Position.x)
                     return -1;
                 return 1;
