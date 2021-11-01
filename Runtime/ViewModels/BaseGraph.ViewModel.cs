@@ -177,12 +177,14 @@ namespace CZToolKit.GraphProcessor
             if (tempConnection != null)
                 return;
 
-            connection.FromNode.Ports.TryGetValue(connection.FromPortName, out BasePort fromPort);
+            Nodes.TryGetValue(connection.FromNodeGUID, out var fromNode);
+            fromNode.Ports.TryGetValue(connection.FromPortName, out BasePort fromPort);
             if (fromPort == null) return;
             if (fromPort.capacity == BasePort.Capacity.Single)
                 Disconnect(connection.FromNode, fromPort);
 
-            connection.ToNode.Ports.TryGetValue(connection.ToPortName, out BasePort toPort);
+            Nodes.TryGetValue(connection.FromNodeGUID, out var toNode);
+            toNode.Ports.TryGetValue(connection.ToPortName, out BasePort toPort);
             if (toPort == null) return;
             if (toPort.capacity == BasePort.Capacity.Single)
                 Disconnect(connection.ToNode, toPort);

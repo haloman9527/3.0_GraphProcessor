@@ -40,7 +40,6 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             Model = connection;
             Owner = graphView;
-            RegisterCallback<MouseDownEvent>(OnMouseDown);
         }
 
         public virtual void UnBindingProperties()
@@ -48,20 +47,11 @@ namespace CZToolKit.GraphProcessor.Editors
 
         }
 
-        void OnMouseDown(MouseDownEvent e)
-        {
-            if (e.clickCount == 2)
-            {
-                var position = e.mousePosition;
-                position += new Vector2(-20 * Owner.scale, -30 * Owner.scale);
-                Vector2 mousePos = Owner.GraphWindow.rootVisualElement.ChangeCoordinatesTo(Owner.contentViewContainer, position);
-            }
-        }
-
         public void ShowIndex(int index)
         {
             IndexLabel.text = index.ToString();
             IndexLabel.style.display = DisplayStyle.Flex;
+            BringToFront();
         }
 
         public void HideIndex()
