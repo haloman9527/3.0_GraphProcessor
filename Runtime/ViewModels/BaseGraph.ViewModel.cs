@@ -67,13 +67,13 @@ namespace CZToolKit.GraphProcessor
             {
                 node.Enable(this);
             }
-            foreach (var connection in connections)
+            foreach (var connection in Connections)
             {
                 connection.Enable(this);
                 connection.FromNode.Ports.TryGetValue(connection.FromPortName, out var fromPort);
                 connection.ToNode.Ports.TryGetValue(connection.ToPortName, out var toPort);
-                fromPort.connections.Add(connection);
-                toPort.connections.Add(connection);
+                fromPort.ConnectTo(connection);
+                toPort.ConnectTo(connection);
             }
         }
 

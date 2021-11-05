@@ -24,7 +24,7 @@ namespace CZToolKit.GraphProcessor
         [NonSerialized]
         BaseNode owner;
         [NonSerialized]
-        internal SortedSet<BaseConnection> connections;
+        SortedSet<BaseConnection> connections;
 
         public event Action<BaseConnection> onConnected;
         public event Action<BaseConnection> onDisconnected;
@@ -58,6 +58,17 @@ namespace CZToolKit.GraphProcessor
         {
             connections.Remove(connection);
             onDisconnected?.Invoke(connection);
+        }
+
+        /// <summary> 强制重新排序 </summary>
+        public void Resort()
+        {
+            var newConnections = new SortedSet<BaseConnection>(connections.Comparer);
+            foreach (var connection in Connections)
+            {
+                newConnections.Add(connection);
+            }
+            connections = newConnections;
         }
 
         /// <summary> 获取连接的第一个接口的值 </summary>

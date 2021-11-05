@@ -87,7 +87,7 @@ namespace CZToolKit.GraphProcessor.Editors
         private void OnMouseEnter(MouseEnterEvent evt)
         {
             int index = 0;
-            foreach (var connection in Model.connections)
+            foreach (var connection in Model.Connections)
             {
                 ConnectionViews.TryGetValue(connection, out var connectionView);
                 connectionView.ShowIndex(index);
@@ -98,7 +98,7 @@ namespace CZToolKit.GraphProcessor.Editors
         private void OnMouseLeave(MouseLeaveEvent evt)
         {
             int index = 0;
-            foreach (var connection in Model.connections)
+            foreach (var connection in Model.Connections)
             {
                 ConnectionViews.TryGetValue(connection, out var connectionView);
                 connectionView.HideIndex();

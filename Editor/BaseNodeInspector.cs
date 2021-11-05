@@ -61,7 +61,7 @@ namespace CZToolKit.GraphProcessor.Editors
                 if (view.Model.Ports.TryGetValue(portKeys.value[portSelected.value], out var port))
                 {
 
-                    foreach (var connection in port.connections)
+                    foreach (var connection in port.Connections)
                     {
                         if (port.direction == BasePort.Direction.Input)
                         {

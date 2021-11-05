@@ -235,7 +235,7 @@ namespace CZToolKit.GraphProcessor.Editors
                             // 记录需要重新排序的接口
                             foreach (var port in nodeView.Model.Ports.Values)
                             {
-                                foreach (var connection in port.connections)
+                                foreach (var connection in port.Connections)
                                 {
                                     if (port.direction == BasePort.Direction.Input)
                                     {
@@ -256,12 +256,7 @@ namespace CZToolKit.GraphProcessor.Editors
                 // 排序
                 foreach (var port in ports)
                 {
-                    var connections = new SortedSet<BaseConnection>(port.connections.Comparer);
-                    foreach (var connection in port.connections)
-                    {
-                        connections.Add(connection);
-                    }
-                    port.connections = connections;
+                    port.Resort();
                 }
                 CommandDispacter.EndGroup();
             }
