@@ -113,7 +113,10 @@ namespace CZToolKit.GraphProcessor
                 // 遵循从上到下
                 if (nodeX.Position.y < nodeY.Position.y)
                     return -1;
-                return 1;
+                if (nodeX.Position.y > nodeY.Position.y)
+                    return 1;
+
+                return 0;
             }
         }
 
@@ -139,13 +142,15 @@ namespace CZToolKit.GraphProcessor
                     return -1;
                 if (nodeX.Position.y > nodeY.Position.y)
                     return 1;
-                return 0;
 
                 // 若节点的y坐标相同，则使用x坐标比较排序
                 // 遵循从左到右
                 if (nodeX.Position.x < nodeY.Position.x)
                     return -1;
-                return 1;
+                if (nodeX.Position.x > nodeY.Position.x)
+                    return 1;
+
+                return 0;
             }
         }
     }

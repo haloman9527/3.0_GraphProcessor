@@ -63,7 +63,7 @@ namespace CZToolKit.GraphProcessor.Editors
             tooltip = port.name;
 
             this.RegisterCallback<MouseEnterEvent>(OnMouseEnter);
-            this.RegisterCallback<MouseLeaveEvent>(OnMOuseLeave);
+            this.RegisterCallback<MouseLeaveEvent>(OnMouseLeave);
         }
 
         public override void Connect(Edge edge)
@@ -95,7 +95,7 @@ namespace CZToolKit.GraphProcessor.Editors
             }
         }
 
-        private void OnMOuseLeave(MouseLeaveEvent evt)
+        private void OnMouseLeave(MouseLeaveEvent evt)
         {
             int index = 0;
             foreach (var connection in Model.connections)

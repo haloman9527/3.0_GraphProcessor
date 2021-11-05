@@ -168,28 +168,24 @@ namespace CZToolKit.GraphProcessor
 
         public void Connect(BaseConnection connection)
         {
-            BaseConnection tempConnection = connections.Find(item =>
-            item.FromNodeGUID == connection.FromNodeGUID
-            && item.FromPortName == connection.FromPortName
-            && item.ToNodeGUID == connection.ToNodeGUID
-            && item.ToPortName == connection.ToPortName
-            );
-            if (tempConnection != null)
-                return;
-
             Nodes.TryGetValue(connection.FromNodeGUID, out var fromNode);
             fromNode.Ports.TryGetValue(connection.FromPortName, out BasePort fromPort);
-            if (fromPort == null) return;
+
+            Nodes.TryGetValue(connection.ToNodeGUID, out var toNode);
+            toNode.Ports.TryGetValue(connection.ToPortName, out BasePort toPort);
+
+            var tmpConnection = fromPort.Connections.FirstOrDefault(tmp => tmp.ToNodeGUID == connection.ToNodeGUID && tmp.ToPortName == connection.ToPortName);
+            if (tmpConnection != null)
+                return;
+
+            connection.Enable(this);
+
             if (fromPort.capacity == BasePort.Capacity.Single)
                 Disconnect(connection.FromNode, fromPort);
 
-            Nodes.TryGetValue(connection.FromNodeGUID, out var toNode);
-            toNode.Ports.TryGetValue(connection.ToPortName, out BasePort toPort);
-            if (toPort == null) return;
             if (toPort.capacity == BasePort.Capacity.Single)
                 Disconnect(connection.ToNode, toPort);
 
-            connection.Enable(this);
             connections.Add(connection);
 
             fromPort.ConnectTo(connection);
@@ -200,27 +196,8 @@ namespace CZToolKit.GraphProcessor
 
         public BaseConnection Connect(BaseNode from, string fromPortName, BaseNode to, string toPortName)
         {
-            BaseConnection connection = connections.Find(tmpConnection => tmpConnection.FromNodeGUID == from.GUID && tmpConnection.FromPortName == fromPortName && tmpConnection.ToNodeGUID == to.GUID && tmpConnection.ToPortName == toPortName);
-            if (connection != null)
-                return connection;
-
-            from.Ports.TryGetValue(fromPortName, out BasePort fromPort);
-            if (fromPort.capacity == BasePort.Capacity.Single)
-                Disconnect(from, fromPort);
-
-            to.Ports.TryGetValue(toPortName, out BasePort toPort);
-            if (toPort.capacity == BasePort.Capacity.Single)
-                Disconnect(to, toPort);
-
-            connection = NewConnection(from, fromPortName, to, toPortName);
-            connection.Enable(this);
-            connections.Add(connection);
-
-            fromPort.ConnectTo(connection);
-            toPort.ConnectTo(connection);
-
-            onConnected?.Invoke(connection);
-
+            var connection = NewConnection(from, fromPortName, to, toPortName);
+            Connect(connection);
             return connection;
         }
 

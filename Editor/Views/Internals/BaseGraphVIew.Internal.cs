@@ -91,6 +91,7 @@ namespace CZToolKit.GraphProcessor.Editors
                     nextCheckTime += 1;
                 }
             }));
+            UpdateInspector();
             OnInitialized();
         }
 
@@ -436,7 +437,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
         public void DisconnectView(BaseConnectionView edgeView)
         {
-            Port inputPortView = edgeView.input;
+            BasePortView inputPortView = edgeView.input as BasePortView;
             BaseNodeView inputNodeView = inputPortView.node as BaseNodeView;
             if (inputPortView != null)
             {
@@ -444,11 +445,11 @@ namespace CZToolKit.GraphProcessor.Editors
             }
             inputPortView.Disconnect(edgeView);
 
-            Port outputPortView = edgeView.output;
+            BasePortView outputPortView = edgeView.output as BasePortView;
             BaseNodeView outputNodeView = outputPortView.node as BaseNodeView;
             if (outputPortView != null)
             {
-                edgeView.output.Disconnect(edgeView);
+                outputPortView.Disconnect(edgeView);
             }
             outputPortView.Disconnect(edgeView);
 
