@@ -224,7 +224,7 @@ namespace CZToolKit.GraphProcessor.Editors
             if (changes.movedElements != null)
             {
                 CommandDispacter.BeginGroup();
-                // 当节点移动之后，与之连接的接口连接遵循从上到下，从左到右重新排序
+                // 当节点移动之后，与之连接的接口重新排序
                 HashSet<BasePort> ports = new HashSet<BasePort>();
                 changes.movedElements.RemoveAll(element =>
                 {
@@ -300,6 +300,31 @@ namespace CZToolKit.GraphProcessor.Editors
             return changes;
         }
 
+        /// <summary> 转换发生改变时调用 </summary>
+        void ViewTransformChangedCallback(GraphView view)
+        {
+            Model.Pan = viewTransform.position;
+            Model.Zoom = viewTransform.scale;
+        }
+
+        public override void AddToSelection(ISelectable selectable)
+        {
+            base.AddToSelection(selectable);
+            UpdateInspector();
+        }
+
+        public override void RemoveFromSelection(ISelectable selectable)
+        {
+            base.RemoveFromSelection(selectable);
+            UpdateInspector();
+        }
+
+        public override void ClearSelection()
+        {
+            base.ClearSelection();
+            UpdateInspector();
+        }
+
         string SerializeGraphElementsCallback(IEnumerable<GraphElement> elements)
         {
             var data = new ClipBoard();
@@ -371,31 +396,6 @@ namespace CZToolKit.GraphProcessor.Editors
             CommandDispacter.EndGroup();
 
             SetDirty();
-        }
-
-        /// <summary> 转换发生改变时调用 </summary>
-        void ViewTransformChangedCallback(GraphView view)
-        {
-            Model.Pan = viewTransform.position;
-            Model.Zoom = viewTransform.scale;
-        }
-
-        public override void AddToSelection(ISelectable selectable)
-        {
-            base.AddToSelection(selectable);
-            UpdateInspector();
-        }
-
-        public override void RemoveFromSelection(ISelectable selectable)
-        {
-            base.RemoveFromSelection(selectable);
-            UpdateInspector();
-        }
-
-        public override void ClearSelection()
-        {
-            base.ClearSelection();
-            UpdateInspector();
         }
         #endregion
 
