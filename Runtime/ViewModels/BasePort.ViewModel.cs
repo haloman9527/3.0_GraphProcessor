@@ -127,7 +127,7 @@ namespace CZToolKit.GraphProcessor
                 if (nodeX.Position.y > nodeY.Position.y)
                     return 1;
 
-                return 0;
+                return 1;
             }
         }
 
@@ -161,7 +161,7 @@ namespace CZToolKit.GraphProcessor
                 if (nodeX.Position.x > nodeY.Position.x)
                     return 1;
 
-                return 0;
+                return 1;
             }
         }
     }
