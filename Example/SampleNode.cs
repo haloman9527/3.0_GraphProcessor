@@ -28,7 +28,7 @@ public class SampleNode : BaseNode
 
     protected override IEnumerable<BasePort> GetPorts()
     {
-        yield return new BasePort("A", BasePort.Orientation.Horizontal, BasePort.Direction.Input, BasePort.Capacity.Multi, typeof(int));
-        yield return new BasePort("B", BasePort.Orientation.Horizontal, BasePort.Direction.Output, BasePort.Capacity.Multi, typeof(int));
+        yield return new BasePort("Input", BasePort.Orientation.Horizontal, BasePort.Direction.Input, BasePort.Capacity.Multi, typeof(int));
+        yield return new BasePort("Output", BasePort.Orientation.Horizontal, BasePort.Direction.Output, BasePort.Capacity.Multi, typeof(int));
     }
 }

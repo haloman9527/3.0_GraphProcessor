@@ -41,8 +41,8 @@ MonoBehaviour:
     \"$k\": \"7f5a1eb9-633b-4239-a700-14298f712074\",\r\n                \"$v\":
     {\r\n                    \"$id\": 6,\r\n                    \"$type\": 4,\r\n                   
     \"guid\": \"7f5a1eb9-633b-4239-a700-14298f712074\",\r\n                    \"position\":
-    {\r\n                        \"$type\": 5,\r\n                        192,\r\n                       
-    180\r\n                    },\r\n                    \"value\": 123123\r\n               
+    {\r\n                        \"$type\": 5,\r\n                        193,\r\n                       
+    169\r\n                    },\r\n                    \"value\": 123123\r\n               
     }\r\n            },\r\n            {\r\n                \"$k\": \"28fa88c6-fdc8-44f2-9282-0f8815797acc\",\r\n               
     \"$v\": {\r\n                    \"$id\": 7,\r\n                    \"$type\":
     4,\r\n                    \"guid\": \"28fa88c6-fdc8-44f2-9282-0f8815797acc\",\r\n                   
@@ -56,22 +56,25 @@ MonoBehaviour:
     -28\r\n                    },\r\n                    \"value\": 0\r\n               
     }\r\n            }\r\n        ]\r\n    },\r\n    \"connections\": {\r\n       
     \"$id\": 9,\r\n        \"$type\": \"6|System.Collections.Generic.List`1[[CZToolKit.GraphProcessor.BaseConnection,
-    CZToolKit.GraphProcessor]], mscorlib\",\r\n        \"$rlength\": 5,\r\n       
+    CZToolKit.GraphProcessor]], mscorlib\",\r\n        \"$rlength\": 6,\r\n       
     \"$rcontent\": [\r\n            {\r\n                \"$id\": 10,\r\n               
     \"$type\": \"7|CZToolKit.GraphProcessor.BaseConnection, CZToolKit.GraphProcessor\",\r\n               
-    \"from\": \"7f5a1eb9-633b-4239-a700-14298f712074\",\r\n                \"fromPortName\":
-    \"B\",\r\n                \"to\": \"d77cc14d-1fcb-487d-a87c-0135529045a4\",\r\n               
-    \"toPortName\": \"A\"\r\n            },\r\n            {\r\n                \"$id\":
-    11,\r\n                \"$type\": 7,\r\n                \"from\": \"f5489176-c128-440e-8694-44ebe5e7a604\",\r\n               
-    \"fromPortName\": \"B\",\r\n                \"to\": \"d77cc14d-1fcb-487d-a87c-0135529045a4\",\r\n               
-    \"toPortName\": \"A\"\r\n            },\r\n            {\r\n                \"$id\":
-    12,\r\n                \"$type\": 7,\r\n                \"from\": \"befc153e-cc8f-489e-b338-23bc7749ae40\",\r\n               
-    \"fromPortName\": \"B\",\r\n                \"to\": \"a2016afe-0d46-4e87-acbb-19c4073d903a\",\r\n               
-    \"toPortName\": \"A\"\r\n            },\r\n            {\r\n                \"$id\":
-    13,\r\n                \"$type\": 7,\r\n                \"from\": \"befc153e-cc8f-489e-b338-23bc7749ae40\",\r\n               
-    \"fromPortName\": \"B\",\r\n                \"to\": \"28fa88c6-fdc8-44f2-9282-0f8815797acc\",\r\n               
-    \"toPortName\": \"A\"\r\n            },\r\n            {\r\n                \"$id\":
-    14,\r\n                \"$type\": 7,\r\n                \"from\": \"befc153e-cc8f-489e-b338-23bc7749ae40\",\r\n               
-    \"fromPortName\": \"B\",\r\n                \"to\": \"d77cc14d-1fcb-487d-a87c-0135529045a4\",\r\n               
-    \"toPortName\": \"A\"\r\n            }\r\n        ]\r\n    }\r\n}"
+    \"from\": \"befc153e-cc8f-489e-b338-23bc7749ae40\",\r\n                \"fromPortName\":
+    \"Output\",\r\n                \"to\": \"d77cc14d-1fcb-487d-a87c-0135529045a4\",\r\n               
+    \"toPortName\": \"Input\"\r\n            },\r\n            {\r\n               
+    \"$id\": 11,\r\n                \"$type\": 7,\r\n                \"from\": \"f5489176-c128-440e-8694-44ebe5e7a604\",\r\n               
+    \"fromPortName\": \"Output\",\r\n                \"to\": \"a2016afe-0d46-4e87-acbb-19c4073d903a\",\r\n               
+    \"toPortName\": \"Input\"\r\n            },\r\n            {\r\n               
+    \"$id\": 12,\r\n                \"$type\": 7,\r\n                \"from\": \"7f5a1eb9-633b-4239-a700-14298f712074\",\r\n               
+    \"fromPortName\": \"Output\",\r\n                \"to\": \"28fa88c6-fdc8-44f2-9282-0f8815797acc\",\r\n               
+    \"toPortName\": \"Input\"\r\n            },\r\n            {\r\n               
+    \"$id\": 13,\r\n                \"$type\": 7,\r\n                \"from\": \"7f5a1eb9-633b-4239-a700-14298f712074\",\r\n               
+    \"fromPortName\": \"Output\",\r\n                \"to\": \"a2016afe-0d46-4e87-acbb-19c4073d903a\",\r\n               
+    \"toPortName\": \"Input\"\r\n            },\r\n            {\r\n               
+    \"$id\": 14,\r\n                \"$type\": 7,\r\n                \"from\": \"f5489176-c128-440e-8694-44ebe5e7a604\",\r\n               
+    \"fromPortName\": \"Output\",\r\n                \"to\": \"d77cc14d-1fcb-487d-a87c-0135529045a4\",\r\n               
+    \"toPortName\": \"Input\"\r\n            },\r\n            {\r\n               
+    \"$id\": 15,\r\n                \"$type\": 7,\r\n                \"from\": \"7f5a1eb9-633b-4239-a700-14298f712074\",\r\n               
+    \"fromPortName\": \"Output\",\r\n                \"to\": \"d77cc14d-1fcb-487d-a87c-0135529045a4\",\r\n               
+    \"toPortName\": \"Input\"\r\n            }\r\n        ]\r\n    }\r\n}"
   graphUnityReferences: []

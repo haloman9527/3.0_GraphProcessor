@@ -16,8 +16,6 @@
 #if UNITY_EDITOR
 using CZToolKit.Core.Editors;
 using System.Collections.Generic;
-using System.Linq;
-using UnityEditor;
 using UnityEngine;
 
 namespace CZToolKit.GraphProcessor.Editors
@@ -52,35 +50,11 @@ namespace CZToolKit.GraphProcessor.Editors
                 EditorGUILayoutExtension.EndBoxGroup();
 
                 EditorGUILayoutExtension.BeginBoxGroup();
-                var portSelected = ContextDataCache.GetContextData("Port.Selected", 0);
-                if (!ContextDataCache.TryGetContextData<string[]>($"{view.Model.GetHashCode()}.Ports.Keys", out var portKeys))
-                {
-                    portKeys.value = view.Model.Ports.Keys.ToArray();
-                }
-                portSelected.value = EditorGUILayout.Popup(portSelected.value, portKeys.value);
-                if (view.Model.Ports.TryGetValue(portKeys.value[portSelected.value], out var port))
-                {
-
-                    foreach (var connection in port.Connections)
-                    {
-                        if (port.direction == BasePort.Direction.Input)
-                        {
-                            GUILayout.Label(string.Concat(connection.FromNode.Title, "：", connection.FromNode.GUID));
-                        }
-                        else
-                        {
-                            GUILayout.Label(string.Concat(connection.ToNode.Title, "：", connection.ToNode.GUID));
-                        }
-                    }
-                }
-                EditorGUILayoutExtension.EndBoxGroup();
-
-                EditorGUILayoutExtension.BeginBoxGroup();
                 foreach (var property in view.Model)
                 {
                     if (IgnoreProperties.Contains(property.Key)) continue;
 
-                    object newValue = EditorGUILayoutExtension.DrawField(property.Value.ValueBoxed, GraphProcessorEditorUtility.GetDisplayName(property.Key));
+                    object newValue = EditorGUILayoutExtension.DrawField(property.Value.ValueType, property.Value.ValueBoxed, GraphProcessorEditorUtility.GetDisplayName(property.Key));
                     if (newValue == null || !newValue.Equals(property.Value.ValueBoxed))
                         property.Value.ValueBoxed = newValue;
 

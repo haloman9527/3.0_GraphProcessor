@@ -64,7 +64,7 @@ namespace CZToolKit.GraphProcessor.Editors
                 {
                     if (IgnoreProperties.Contains(property.Key)) continue;
 
-                    object newValue = EditorGUILayoutExtension.DrawField(property.Value.ValueBoxed, GraphProcessorEditorUtility.GetDisplayName(property.Key));
+                    object newValue = EditorGUILayoutExtension.DrawField(property.Value.ValueType, property.Value.ValueBoxed, GraphProcessorEditorUtility.GetDisplayName(property.Key));
                     if (!newValue.Equals(property.Value.ValueBoxed))
                         property.Value.ValueBoxed = newValue;
 

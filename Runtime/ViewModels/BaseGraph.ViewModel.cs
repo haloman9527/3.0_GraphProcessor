@@ -67,11 +67,38 @@ namespace CZToolKit.GraphProcessor
             {
                 node.Enable(this);
             }
-            foreach (var connection in Connections)
+            for (int i = 0; i < connections.Count; i++)
             {
+                var connection = connections[i];
+
+                if (connection == null)
+                {
+                    connections.RemoveAt(i--);
+                    continue;
+                }
+                if (!nodes.TryGetValue(connection.FromNodeGUID, out var fromNode))
+                {
+                    connections.RemoveAt(i--);
+                    continue;
+                }
+                if (!nodes.TryGetValue(connection.ToNodeGUID, out var toNode))
+                {
+                    connections.RemoveAt(i--);
+                    continue;
+                }
+                if (!fromNode.Ports.TryGetValue(connection.FromPortName, out var fromPort))
+                {
+                    connections.RemoveAt(i--);
+                    continue;
+                }
+                if (!toNode.Ports.TryGetValue(connection.ToPortName, out var toPort))
+                {
+                    connections.RemoveAt(i--);
+                    continue;
+                }
+
                 connection.Enable(this);
-                connection.FromNode.Ports.TryGetValue(connection.FromPortName, out var fromPort);
-                connection.ToNode.Ports.TryGetValue(connection.ToPortName, out var toPort);
+
                 fromPort.ConnectTo(connection);
                 toPort.ConnectTo(connection);
             }
