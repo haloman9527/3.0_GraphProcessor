@@ -60,7 +60,7 @@ namespace CZToolKit.GraphProcessor.Editors
             titleContent = new GUIContent("Graph Processor");
             rootVisualElement.styleSheets.Add(GraphProcessorStyles.BasicStyle);
 
-            if (GraphAsset != null) Reload();
+            Reload();
         }
 
         protected virtual void OnDestroy()
@@ -183,8 +183,9 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             Clear();
 
-            GraphAsset = graphOwner.Self();
             GraphOwner = graphOwner;
+            GraphAsset = graphOwner.Self();
+
             GraphOwner.Graph.Initialize(GraphOwner);
             InternalLoad(graphOwner.Graph);
         }
@@ -194,8 +195,9 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             Clear();
 
-            GraphAsset = graphAssetOwner.GraphAsset;
             GraphOwner = graphAssetOwner;
+            GraphAsset = graphAssetOwner.GraphAsset;
+
             GraphOwner.Graph.Initialize(GraphOwner);
             InternalLoad(graphAssetOwner.Graph);
         }
@@ -205,8 +207,9 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             Clear();
 
-            GraphAsset = graphAsset as UnityObject;
             GraphOwner = null;
+            GraphAsset = graphAsset as UnityObject;
+
             InternalLoad(graphAsset.Graph);
         }
 
@@ -217,6 +220,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
             GraphAsset = null;
             GraphOwner = null;
+
             InternalLoad(graph);
         }
 
