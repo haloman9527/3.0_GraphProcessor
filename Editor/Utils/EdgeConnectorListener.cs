@@ -30,9 +30,12 @@ namespace CZToolKit.GraphProcessor.Editors
             BasePort fromPort = (edge.output as BasePortView).Model;
             BaseNode to = (edge.input.node as BaseNodeView).Model;
             BasePort toPort = (edge.input as BasePortView).Model;
-            tempGraphView.CommandDispacter.Do(new ConnectCommand(tempGraphView.Model, from, fromPort.name, to, toPort.name));
+            // 如果连线不是一个新建的连线就重定向
+            if (edge.userData is BaseConnection connection)
+                tempGraphView.CommandDispacter.Do(new ConnectionRedirectCommand(tempGraphView.Model, connection, from, fromPort.name, to, toPort.name));
+            else
+                tempGraphView.CommandDispacter.Do(new ConnectCommand(tempGraphView.Model, from, fromPort.name, to, toPort.name));
         }
-
 
         /// <summary> 拖到空白松开时触发 </summary>
         public void OnDropOutsidePort(Edge edge, Vector2 position) { }

@@ -40,6 +40,7 @@ namespace CZToolKit.GraphProcessor
         [NonSerialized] BaseNode fromNode;
         [NonSerialized] BaseNode toNode;
 
+        public BaseGraph Owner { get { return owner; } }
         public string FromNodeGUID { get { return from; } }
         public string ToNodeGUID { get { return to; } }
         public string FromPortName { get { return fromPortName; } }
@@ -55,5 +56,19 @@ namespace CZToolKit.GraphProcessor
             owner.Nodes.TryGetValue(ToNodeGUID, out toNode);
         }
         protected override void BindProperties() { }
+
+        /// <summary>
+        /// 重定向
+        /// </summary>
+        internal void Redirect(BaseNode from, string fromPortName, BaseNode to, string toPortName)
+        {
+            this.from = from.GUID;
+            this.fromPortName = fromPortName;
+
+            this.to = to.GUID;
+            this.toPortName = toPortName;
+
+            Enable(owner);
+        }
     }
 }

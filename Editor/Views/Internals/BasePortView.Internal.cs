@@ -66,19 +66,19 @@ namespace CZToolKit.GraphProcessor.Editors
             this.RegisterCallback<MouseLeaveEvent>(OnMouseLeave);
         }
 
-        public override void Connect(Edge edge)
+        public virtual void Connect(BaseConnectionView connection)
         {
-            base.Connect(edge);
-            if (edge is BaseConnectionView connectionView)
+            base.Connect(connection);
+            if (connection is BaseConnectionView connectionView)
             {
                 ConnectionViews[connectionView.Model] = connectionView;
             }
         }
 
-        public override void Disconnect(Edge edge)
+        public virtual void Disconnect(BaseConnectionView connection)
         {
-            base.Disconnect(edge);
-            if (edge is BaseConnectionView connectionView)
+            base.Disconnect(connection);
+            if (connection is BaseConnectionView connectionView)
             {
                 ConnectionViews.Remove(connectionView.Model);
             }
@@ -105,6 +105,26 @@ namespace CZToolKit.GraphProcessor.Editors
                 index++;
             }
         }
+
+        #region 不建议使用
+        /// <summary>
+        /// 不建议使用
+        /// </summary>
+        /// <param name="edge"></param>
+        public sealed override void Connect(Edge edge)
+        {
+            base.Connect(edge);
+        }
+
+        /// <summary>
+        /// 不建议使用
+        /// </summary>
+        /// <param name="edge"></param>
+        public sealed override void Disconnect(Edge edge)
+        {
+            base.Connect(edge);
+        }
+        #endregion
     }
 }
 #endif

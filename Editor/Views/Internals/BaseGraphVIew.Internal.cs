@@ -36,11 +36,17 @@ namespace CZToolKit.GraphProcessor.Editors
         public BaseGraphWindow GraphWindow { get; private set; }
         public CommandDispatcher CommandDispacter { get; private set; }
         public UnityObject GraphAsset { get { return GraphWindow.GraphAsset; } }
-        protected override bool canCopySelection { get { return selection.Count > 0; } }
-        protected override bool canCutSelection { get { return selection.Count > 0; } }
         public Dictionary<string, BaseNodeView> NodeViews { get; private set; } = new Dictionary<string, BaseNodeView>();
 
         public BaseGraph Model { get; set; }
+
+        #region 不建议使用自带复制粘贴功能，建议自己实现
+        protected sealed override bool canCopySelection => false;
+        protected sealed override bool canCutSelection => false;
+        protected sealed override bool canDuplicateSelection => false;
+        protected sealed override bool canPaste => false;
+        #endregion
+
         #endregion
 
         private BaseGraphView()
@@ -98,10 +104,10 @@ namespace CZToolKit.GraphProcessor.Editors
         void InitializeCallbacks()
         {
             graphViewChanged = GraphViewChangedCallback;
-            serializeGraphElements = SerializeGraphElementsCallback;
-            canPasteSerializedData = CanPasteSerializedDataCallback;
-            unserializeAndPaste = DeserializeAndPasteCallback;
             viewTransformChanged = ViewTransformChangedCallback;
+            //serializeGraphElements = SerializeGraphElementsCallback;
+            //canPasteSerializedData = CanPasteSerializedDataCallback;
+            //unserializeAndPaste = DeserializeAndPasteCallback;
 
             CreateNodeMenu = ScriptableObject.CreateInstance<CreateNodeMenuWindow>();
             CreateNodeMenu.Initialize(this, GetNodeTypes());
@@ -218,6 +224,42 @@ namespace CZToolKit.GraphProcessor.Editors
         #endregion
 
         #region 回调方法
+        public override void BuildContextualMenu(ContextualMenuPopulateEvent evt)
+        {
+            base.BuildContextualMenu(evt);
+
+            evt.menu.MenuItems().RemoveAll(item =>
+            {
+                if (item is DropdownMenuSeparator)
+                {
+                    return true;
+                }
+                if (!(item is DropdownMenuAction actionItem))
+                {
+                    return false;
+                }
+                switch (actionItem.name)
+                {
+                    case "Cut":
+                    case "Copy":
+                    case "Paste":
+                    case "Duplicate":
+                        return true;
+                    default:
+                        return false;
+                }
+            });
+            
+            if (evt.target is GraphView || evt.target is Node || evt.target is Group || evt.target is Edge)
+            {
+                evt.menu.AppendAction("Delete", delegate
+                {
+                    DeleteSelectionCallback(AskUser.DontAskUser);
+                }, (DropdownMenuAction a) => canDeleteSelection ? DropdownMenuAction.Status.Normal : DropdownMenuAction.Status.Hidden);
+                evt.menu.AppendSeparator();
+            }
+        }
+
         /// <summary> GraphView发生改变时调用 </summary>
         GraphViewChange GraphViewChangedCallback(GraphViewChange changes)
         {
@@ -262,7 +304,7 @@ namespace CZToolKit.GraphProcessor.Editors
             }
             if (changes.elementsToRemove != null)
             {
-                changes.elementsToRemove.Sort((Comparison<GraphElement>)((element1, element2) =>
+                changes.elementsToRemove.Sort((element1, element2) =>
                 {
                     int GetPriority(GraphElement element)
                     {
@@ -276,9 +318,9 @@ namespace CZToolKit.GraphProcessor.Editors
                         return 4;
                     }
                     return GetPriority(element1).CompareTo(GetPriority(element2));
-                }));
+                });
                 CommandDispacter.BeginGroup();
-                changes.elementsToRemove.RemoveAll((Predicate<GraphElement>)(element =>
+                changes.elementsToRemove.RemoveAll(element =>
                 {
                     switch (element)
                     {
@@ -292,7 +334,7 @@ namespace CZToolKit.GraphProcessor.Editors
                             return true;
                     }
                     return false;
-                }));
+                });
                 CommandDispacter.EndGroup();
 
                 UpdateInspector();
@@ -325,78 +367,76 @@ namespace CZToolKit.GraphProcessor.Editors
             UpdateInspector();
         }
 
-        string SerializeGraphElementsCallback(IEnumerable<GraphElement> elements)
-        {
-            var data = new ClipBoard();
+        //string SerializeGraphElementsCallback(IEnumerable<GraphElement> elements)
+        //{
+        //    var data = new ClipBoard();
 
-            foreach (var element in elements)
-            {
-                switch (element)
-                {
-                    case BaseNodeView nodeView:
-                        data.copiedNodes.Add(nodeView.Model);
-                        break;
-                    case BaseConnectionView edgeView:
-                        data.copiedEdges.Add(edgeView.Model);
-                        break;
-                    default:
-                        break;
-                }
-            }
-            return JsonSerializer.SerializeValue(data, out ClipBoard.objectReferences);
-        }
+        //    foreach (var element in elements)
+        //    {
+        //        switch (element)
+        //        {
+        //            case BaseNodeView nodeView:
+        //                data.copiedNodes.Add(nodeView.Model);
+        //                break;
+        //            case BaseConnectionView edgeView:
+        //                data.copiedEdges.Add(edgeView.Model);
+        //                break;
+        //            default:
+        //                break;
+        //        }
+        //    }
+        //    return JsonSerializer.SerializeValue(data, out ClipBoard.objectReferences);
+        //}
 
-        bool CanPasteSerializedDataCallback(string serializedData)
-        {
-            return !string.IsNullOrEmpty(serializedData);
-        }
+        //bool CanPasteSerializedDataCallback(string serializedData)
+        //{
+        //    return !string.IsNullOrEmpty(serializedData);
+        //}
 
-        void DeserializeAndPasteCallback(string operationName, string serializedData)
-        {
-            if (string.IsNullOrEmpty(serializedData))
-                return;
-            var data = JsonSerializer.DeserializeValue<ClipBoard>(serializedData, ClipBoard.objectReferences);
-            if (data == null)
-                return;
+        //void DeserializeAndPasteCallback(string operationName, string serializedData)
+        //{
+        //    if (string.IsNullOrEmpty(serializedData))
+        //        return;
+        //    var data = JsonSerializer.DeserializeValue<ClipBoard>(serializedData, ClipBoard.objectReferences);
+        //    if (data == null)
+        //        return;
 
-            ClearSelection();
-            Dictionary<string, BaseNode> copiedNodesMap = new Dictionary<string, BaseNode>();
+        //    CommandDispacter.BeginGroup();
+        //    ClearSelection();
+        //    Dictionary<string, BaseNode> copiedNodesMap = new Dictionary<string, BaseNode>();
+        //    foreach (var node in data.copiedNodes)
+        //    {
+        //        if (node == null)
+        //            continue;
+        //        string sourceGUID = node.GUID;
+        //        // 新节点重置id
+        //        BaseNode.IDAllocation(node, Model);
+        //        // 新节点与旧id存入字典
+        //        copiedNodesMap[sourceGUID] = node;
+        //        node.Position += new Vector2(20, 20);
+        //        CommandDispacter.Do(new AddNodeCommand(Model, node));
+        //        AddToSelection(NodeViews[node.GUID]);
+        //    }
+        //    foreach (var edge in data.copiedEdges)
+        //    {
+        //        copiedNodesMap.TryGetValue(edge.FromNodeGUID, out var fromNode);
+        //        copiedNodesMap.TryGetValue(edge.ToNodeGUID, out var toNode);
 
-            CommandDispacter.BeginGroup();
-            foreach (var node in data.copiedNodes)
-            {
-                if (node == null)
-                    continue;
-                string sourceGUID = node.GUID;
-                // 新节点重置id
-                BaseNode.IDAllocation(node, Model);
-                // 新节点与旧id存入字典
-                copiedNodesMap[sourceGUID] = node;
-                node.Position += new Vector2(20, 20);
-                CommandDispacter.Do(new AddNodeCommand(Model, node));
-                AddToSelection(NodeViews[node.GUID]);
-            }
-            foreach (var edge in data.copiedEdges)
-            {
-                copiedNodesMap.TryGetValue(edge.FromNodeGUID, out var fromNode);
-                copiedNodesMap.TryGetValue(edge.ToNodeGUID, out var toNode);
+        //        fromNode = fromNode == null ? Model.Nodes[edge.FromNodeGUID] : Model.Nodes[fromNode.GUID];
+        //        toNode = toNode == null ? Model.Nodes[edge.ToNodeGUID] : Model.Nodes[toNode.GUID];
 
-                fromNode = fromNode == null ? Model.Nodes[edge.FromNodeGUID] : Model.Nodes[fromNode.GUID];
-                toNode = toNode == null ? Model.Nodes[edge.ToNodeGUID] : Model.Nodes[toNode.GUID];
+        //        if (fromNode == null || toNode == null) continue;
 
-                if (fromNode == null || toNode == null) continue;
+        //        if (NodeViews.TryGetValue(fromNode.GUID, out BaseNodeView inputNodeView)
+        //            && NodeViews.TryGetValue(toNode.GUID, out BaseNodeView outputNodeView))
+        //        {
+        //            CommandDispacter.Do(new ConnectCommand(Model, inputNodeView.Model, edge.FromPortName, outputNodeView.Model, edge.ToPortName));
+        //        }
+        //    }
 
-                if (NodeViews.TryGetValue(fromNode.GUID, out BaseNodeView inputNodeView)
-                    && NodeViews.TryGetValue(toNode.GUID, out BaseNodeView outputNodeView))
-                {
-                    CommandDispacter.Do(new ConnectCommand(Model, inputNodeView.Model, edge.FromPortName, outputNodeView.Model, edge.ToPortName));
-                }
-            }
-
-            CommandDispacter.EndGroup();
-
-            SetDirty();
-        }
+        //    SetDirty();
+        //    CommandDispacter.EndGroup();
+        //}
         #endregion
 
         #region 方法

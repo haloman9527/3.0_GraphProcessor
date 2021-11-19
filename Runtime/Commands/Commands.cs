@@ -119,6 +119,47 @@ namespace CZToolKit.GraphProcessor
         }
     }
 
+    public class ConnectionRedirectCommand : ICommand
+    {
+        BaseGraph graph;
+        BaseConnection connection;
+
+        BaseNode oldFrom, oldTo;
+        string oldFromPortName, oldToPortName;
+
+        BaseNode newFrom, newTo;
+        string newFromPortName, newToPortName;
+
+        public ConnectionRedirectCommand(BaseGraph graph, BaseConnection connection, BaseNode from, string fromPortName, BaseNode to, string toPortName)
+        {
+            this.graph = graph;
+            this.connection = connection;
+
+            oldFrom = connection.FromNode;
+            oldFromPortName = connection.FromPortName;
+            oldTo = connection.ToNode;
+            oldToPortName = connection.ToPortName;
+
+            newFrom = from;
+            newFromPortName = fromPortName;
+            newTo = to;
+            newToPortName = toPortName;
+        }
+
+        public void Do()
+        {
+            connection.Redirect(newFrom, newFromPortName, newTo, newToPortName);
+            graph.Connect(connection);
+        }
+
+        public void Undo()
+        {
+            graph.Disconnect(connection);
+            connection.Redirect(oldFrom, oldFromPortName, oldTo, oldToPortName);
+            graph.Connect(connection);
+        }
+    }
+
     public class DisconnectCommand : ICommand
     {
         BaseGraph graph;

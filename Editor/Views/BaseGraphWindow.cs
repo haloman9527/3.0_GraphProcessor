@@ -65,7 +65,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
         protected virtual void OnDestroy()
         {
-            if (Selection.activeObject is ObjectInspector objectInspector && objectInspector.TargetObject is GraphElement)
+            if (Selection.activeObject is ObjectInspector objectInspector && objectInspector.Target is GraphElement)
             {
                 Selection.activeObject = null;
             }
