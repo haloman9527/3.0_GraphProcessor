@@ -102,6 +102,8 @@ namespace CZToolKit.GraphProcessor
                 fromPort.ConnectTo(connection);
                 toPort.ConnectTo(connection);
             }
+
+            OnEnable();
         }
 
         public virtual void Initialize(IGraphOwner graphOwner)
@@ -268,6 +270,8 @@ namespace CZToolKit.GraphProcessor
         #endregion
 
         #region Overrides
+        protected virtual void OnEnable() { }
+
         public T NewNode<T>(Vector2 position) where T : BaseNode { return NewNode(typeof(T), position) as T; }
         public virtual BaseNode NewNode(Type type, Vector2 position)
         {

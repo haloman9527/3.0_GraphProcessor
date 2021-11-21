@@ -177,6 +177,12 @@ namespace CZToolKit.GraphProcessor.Editors
             nodeBorder.RemoveFromClassList("highlight");
         }
 
+        public void Flash()
+        {
+            HighlightOn();
+            schedule.Execute(_ => { HighlightOff(); }).ExecuteLater(2000);
+        }
+
         public void SetDeletable(bool deletable)
         {
             if (deletable)

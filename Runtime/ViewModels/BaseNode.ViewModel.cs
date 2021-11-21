@@ -26,6 +26,7 @@ namespace CZToolKit.GraphProcessor
         BaseGraph owner;
         [NonSerialized]
         Dictionary<string, BasePort> ports;
+        public BaseGraph Owner { get { return owner; } }
         public string GUID { get { return guid; } }
         public IReadOnlyDictionary<string, BasePort> Ports
         {

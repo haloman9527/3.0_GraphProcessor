@@ -17,6 +17,7 @@
 using UnityEditor.Experimental.GraphView;
 using UnityEngine.UIElements;
 using UnityEngine;
+using System;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
@@ -32,8 +33,11 @@ namespace CZToolKit.GraphProcessor.Editors
             IndexLabel = new Label();
             IndexLabel.style.display = DisplayStyle.None;
             IndexLabel.style.flexGrow = 1;
+            IndexLabel.style.fontSize = 20;
+            IndexLabel.style.color = new Color(1, 0.5f, 0, 1);
             IndexLabel.style.unityTextAlign = TextAnchor.MiddleCenter;
             edgeControl.Add(IndexLabel);
+            this.RegisterCallback<MouseEnterEvent>(OnMouseEnter);
         }
 
         public void SetUp(BaseConnection connection, BaseGraphView graphView)
@@ -58,6 +62,11 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             IndexLabel.text = "";
             IndexLabel.style.display = DisplayStyle.None;
+        }
+
+        private void OnMouseEnter(MouseEnterEvent evt)
+        {
+            this.BringToFront();
         }
     }
 }

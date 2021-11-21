@@ -224,42 +224,6 @@ namespace CZToolKit.GraphProcessor.Editors
         #endregion
 
         #region 回调方法
-        public override void BuildContextualMenu(ContextualMenuPopulateEvent evt)
-        {
-            base.BuildContextualMenu(evt);
-
-            evt.menu.MenuItems().RemoveAll(item =>
-            {
-                if (item is DropdownMenuSeparator)
-                {
-                    return true;
-                }
-                if (!(item is DropdownMenuAction actionItem))
-                {
-                    return false;
-                }
-                switch (actionItem.name)
-                {
-                    case "Cut":
-                    case "Copy":
-                    case "Paste":
-                    case "Duplicate":
-                        return true;
-                    default:
-                        return false;
-                }
-            });
-            
-            if (evt.target is GraphView || evt.target is Node || evt.target is Group || evt.target is Edge)
-            {
-                evt.menu.AppendAction("Delete", delegate
-                {
-                    DeleteSelectionCallback(AskUser.DontAskUser);
-                }, (DropdownMenuAction a) => canDeleteSelection ? DropdownMenuAction.Status.Normal : DropdownMenuAction.Status.Hidden);
-                evt.menu.AppendSeparator();
-            }
-        }
-
         /// <summary> GraphView发生改变时调用 </summary>
         GraphViewChange GraphViewChangedCallback(GraphViewChange changes)
         {
@@ -349,19 +313,19 @@ namespace CZToolKit.GraphProcessor.Editors
             Model.Zoom = viewTransform.scale;
         }
 
-        public override void AddToSelection(ISelectable selectable)
+        public sealed override void AddToSelection(ISelectable selectable)
         {
             base.AddToSelection(selectable);
             UpdateInspector();
         }
 
-        public override void RemoveFromSelection(ISelectable selectable)
+        public sealed override void RemoveFromSelection(ISelectable selectable)
         {
             base.RemoveFromSelection(selectable);
             UpdateInspector();
         }
 
-        public override void ClearSelection()
+        public sealed override void ClearSelection()
         {
             base.ClearSelection();
             UpdateInspector();

@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   serializedGraph: "{\r\n    \"$id\": 0,\r\n    \"$type\": \"0|SampleGraph, CZToolKit.GraphProcessor\",\r\n   
     \"pan\": {\r\n        \"$type\": \"1|UnityEngine.Vector3, UnityEngine.CoreModule\",\r\n       
-    138,\r\n        184,\r\n        0\r\n    },\r\n    \"zoom\": {\r\n        \"$type\":
-    1,\r\n        1,\r\n        1,\r\n        1\r\n    },\r\n    \"nodes\": {\r\n       
-    \"$id\": 1,\r\n        \"$type\": \"2|System.Collections.Generic.Dictionary`2[[System.String,
+    62.6666679,\r\n        156,\r\n        0\r\n    },\r\n    \"zoom\": {\r\n       
+    \"$type\": 1,\r\n        1,\r\n        1,\r\n        1\r\n    },\r\n    \"nodes\":
+    {\r\n        \"$id\": 1,\r\n        \"$type\": \"2|System.Collections.Generic.Dictionary`2[[System.String,
     mscorlib],[CZToolKit.GraphProcessor.BaseNode, CZToolKit.GraphProcessor]], mscorlib\",\r\n       
     \"comparer\": {\r\n            \"$id\": 2,\r\n            \"$type\": \"3|System.Collections.Generic.GenericEqualityComparer`1[[System.String,
     mscorlib]], mscorlib\"\r\n        },\r\n        \"$rlength\": 6,\r\n        \"$rcontent\":
@@ -38,11 +38,11 @@ MonoBehaviour:
     \"position\": {\r\n                        \"$type\": 5,\r\n                       
     553,\r\n                        72\r\n                    },\r\n                   
     \"value\": 0\r\n                }\r\n            },\r\n            {\r\n               
-    \"$k\": \"7f5a1eb9-633b-4239-a700-14298f712074\",\r\n                \"$v\":
+    \"$k\": \"580cc7fe-bc2c-4d65-80d8-242384b5a379\",\r\n                \"$v\":
     {\r\n                    \"$id\": 6,\r\n                    \"$type\": 4,\r\n                   
-    \"guid\": \"7f5a1eb9-633b-4239-a700-14298f712074\",\r\n                    \"position\":
-    {\r\n                        \"$type\": 5,\r\n                        193,\r\n                       
-    169\r\n                    },\r\n                    \"value\": 123123\r\n               
+    \"guid\": \"580cc7fe-bc2c-4d65-80d8-242384b5a379\",\r\n                    \"position\":
+    {\r\n                        \"$type\": 5,\r\n                        198,\r\n                       
+    181\r\n                    },\r\n                    \"value\": 0\r\n               
     }\r\n            },\r\n            {\r\n                \"$k\": \"28fa88c6-fdc8-44f2-9282-0f8815797acc\",\r\n               
     \"$v\": {\r\n                    \"$id\": 7,\r\n                    \"$type\":
     4,\r\n                    \"guid\": \"28fa88c6-fdc8-44f2-9282-0f8815797acc\",\r\n                   
@@ -65,16 +65,16 @@ MonoBehaviour:
     \"$id\": 11,\r\n                \"$type\": 7,\r\n                \"from\": \"f5489176-c128-440e-8694-44ebe5e7a604\",\r\n               
     \"fromPortName\": \"Output\",\r\n                \"to\": \"a2016afe-0d46-4e87-acbb-19c4073d903a\",\r\n               
     \"toPortName\": \"Input\"\r\n            },\r\n            {\r\n               
-    \"$id\": 12,\r\n                \"$type\": 7,\r\n                \"from\": \"7f5a1eb9-633b-4239-a700-14298f712074\",\r\n               
-    \"fromPortName\": \"Output\",\r\n                \"to\": \"28fa88c6-fdc8-44f2-9282-0f8815797acc\",\r\n               
+    \"$id\": 12,\r\n                \"$type\": 7,\r\n                \"from\": \"f5489176-c128-440e-8694-44ebe5e7a604\",\r\n               
+    \"fromPortName\": \"Output\",\r\n                \"to\": \"d77cc14d-1fcb-487d-a87c-0135529045a4\",\r\n               
     \"toPortName\": \"Input\"\r\n            },\r\n            {\r\n               
-    \"$id\": 13,\r\n                \"$type\": 7,\r\n                \"from\": \"7f5a1eb9-633b-4239-a700-14298f712074\",\r\n               
+    \"$id\": 13,\r\n                \"$type\": 7,\r\n                \"from\": \"580cc7fe-bc2c-4d65-80d8-242384b5a379\",\r\n               
+    \"fromPortName\": \"Output\",\r\n                \"to\": \"d77cc14d-1fcb-487d-a87c-0135529045a4\",\r\n               
+    \"toPortName\": \"Input\"\r\n            },\r\n            {\r\n               
+    \"$id\": 14,\r\n                \"$type\": 7,\r\n                \"from\": \"580cc7fe-bc2c-4d65-80d8-242384b5a379\",\r\n               
     \"fromPortName\": \"Output\",\r\n                \"to\": \"a2016afe-0d46-4e87-acbb-19c4073d903a\",\r\n               
     \"toPortName\": \"Input\"\r\n            },\r\n            {\r\n               
-    \"$id\": 14,\r\n                \"$type\": 7,\r\n                \"from\": \"f5489176-c128-440e-8694-44ebe5e7a604\",\r\n               
-    \"fromPortName\": \"Output\",\r\n                \"to\": \"d77cc14d-1fcb-487d-a87c-0135529045a4\",\r\n               
-    \"toPortName\": \"Input\"\r\n            },\r\n            {\r\n               
-    \"$id\": 15,\r\n                \"$type\": 7,\r\n                \"from\": \"7f5a1eb9-633b-4239-a700-14298f712074\",\r\n               
-    \"fromPortName\": \"Output\",\r\n                \"to\": \"d77cc14d-1fcb-487d-a87c-0135529045a4\",\r\n               
+    \"$id\": 15,\r\n                \"$type\": 7,\r\n                \"from\": \"580cc7fe-bc2c-4d65-80d8-242384b5a379\",\r\n               
+    \"fromPortName\": \"Output\",\r\n                \"to\": \"28fa88c6-fdc8-44f2-9282-0f8815797acc\",\r\n               
     \"toPortName\": \"Input\"\r\n            }\r\n        ]\r\n    }\r\n}"
   graphUnityReferences: []

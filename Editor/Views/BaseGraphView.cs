@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
+using UnityEngine.UIElements;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
@@ -27,13 +28,57 @@ namespace CZToolKit.GraphProcessor.Editors
     {
         protected virtual void OnInitialized() { }
 
+        public override void BuildContextualMenu(ContextualMenuPopulateEvent evt)
+        {
+            base.BuildContextualMenu(evt);
+
+            evt.menu.MenuItems().RemoveAll(item =>
+            {
+                if (item is DropdownMenuSeparator)
+                {
+                    return true;
+                }
+                if (!(item is DropdownMenuAction actionItem))
+                {
+                    return false;
+                }
+                switch (actionItem.name)
+                {
+                    case "Cut":
+                    case "Copy":
+                    case "Paste":
+                    case "Duplicate":
+                        return true;
+                    default:
+                        return false;
+                }
+            });
+
+            if (evt.target is GraphView || evt.target is Node || evt.target is Group || evt.target is Edge)
+            {
+                evt.menu.AppendAction("Delete", delegate
+                {
+                    DeleteSelectionCallback(AskUser.DontAskUser);
+                }, (DropdownMenuAction a) => canDeleteSelection ? DropdownMenuAction.Status.Normal : DropdownMenuAction.Status.Hidden);
+                evt.menu.AppendSeparator();
+            }
+        }
+
         public override List<Port> GetCompatiblePorts(Port startPortView, NodeAdapter nodeAdapter)
         {
+            BasePortView portView = startPortView as BasePortView;
             List<Port> compatiblePorts = new List<Port>();
             ports.ForEach(_portView =>
             {
-                if (_portView.direction != startPortView.direction)
-                    compatiblePorts.Add(_portView);
+                var toPortView = _portView as BasePortView;
+                if (toPortView.node == portView.node)
+                    return;
+                if (toPortView.direction == portView.direction)
+                    return;
+                // 类型兼容查询
+                if (!toPortView.Model.type.IsAssignableFrom(portView.Model.type) && !portView.Model.type.IsAssignableFrom(toPortView.Model.type))
+                    return;
+                compatiblePorts.Add(_portView);
             });
             return compatiblePorts;
         }
