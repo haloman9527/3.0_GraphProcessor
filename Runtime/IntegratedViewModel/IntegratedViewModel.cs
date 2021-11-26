@@ -31,10 +31,22 @@ namespace CZToolKit.GraphProcessor
 
     public abstract class IntegratedViewModel : IReadOnlyIntegratedViewModel<string, IBindableProperty>, IEnumerable<KeyValuePair<string, IBindableProperty>>, IEnumerable
     {
-        [NonSerialized] 
+        [NonSerialized]
         Dictionary<string, IBindableProperty> bindableProperties;
 
-        Dictionary<string, IBindableProperty> InternalBindableProperties { get { CheckPropertiesIsNull(); return bindableProperties; } set { bindableProperties = value; } }
+        Dictionary<string, IBindableProperty> InternalBindableProperties
+        {
+            get
+            {
+                if (bindableProperties == null)
+                {
+                    bindableProperties = new Dictionary<string, IBindableProperty>();
+                    BindProperties();
+                }
+                return bindableProperties;
+            }
+            set { bindableProperties = value; }
+        }
 
         public IEnumerable<string> Keys { get { return InternalBindableProperties.Keys; } }
 
@@ -68,31 +80,29 @@ namespace CZToolKit.GraphProcessor
 
         void CheckPropertiesIsNull()
         {
-            if (bindableProperties != null) return;
-            bindableProperties = new Dictionary<string, IBindableProperty>();
-            BindProperties();
+
         }
 
         protected abstract void BindProperties();
 
-        public virtual void BindingProperty<T>(string propertyName, Action<T> onValueChangedCallback)
-        {
-            this[propertyName].AsBindableProperty<T>().RegesterValueChangedEvent(onValueChangedCallback);
-        }
-
-        public virtual void UnBindingProperty<T>(string propertyName, Action<T> onValueChangedCallback)
-        {
-            this[propertyName].AsBindableProperty<T>().UnregesterValueChangedEvent(onValueChangedCallback);
-        }
-
-        protected virtual T GetPropertyValue<T>(string propertyName)
+        protected T GetPropertyValue<T>(string propertyName)
         {
             return this[propertyName].AsBindableProperty<T>().Value;
         }
 
-        protected virtual void SetPropertyValue<T>(string propertyName, T value)
+        protected void SetPropertyValue<T>(string propertyName, T value)
         {
             this[propertyName].AsBindableProperty<T>().Value = value;
+        }
+
+        public void BindingProperty<T>(string propertyName, Action<T> onValueChangedCallback)
+        {
+            this[propertyName].AsBindableProperty<T>().RegesterValueChangedEvent(onValueChangedCallback);
+        }
+
+        public void UnBindingProperty<T>(string propertyName, Action<T> onValueChangedCallback)
+        {
+            this[propertyName].AsBindableProperty<T>().UnregesterValueChangedEvent(onValueChangedCallback);
         }
     }
 }

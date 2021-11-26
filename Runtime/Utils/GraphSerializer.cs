@@ -38,7 +38,7 @@ namespace CZToolKit.GraphProcessor
         public string json;
     }
 
-    public static class JsonSerializer
+    public static class GraphSerializer
     {
 #if USE_ODIN
         public static string SerializeValue<T>(T targetObject, out List<UnityObject> referencedUnityObjects)

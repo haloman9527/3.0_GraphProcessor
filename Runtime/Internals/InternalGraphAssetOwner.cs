@@ -62,7 +62,7 @@ namespace CZToolKit.GraphProcessor.Internal
 
         public void SaveVariables()
         {
-            serializedVariables = JsonSerializer.SerializeValue(variables, out variablesUnityReference);
+            serializedVariables = GraphSerializer.SerializeValue(variables, out variablesUnityReference);
         }
 
         void DeserializeVariables()
@@ -70,7 +70,7 @@ namespace CZToolKit.GraphProcessor.Internal
             if (string.IsNullOrEmpty(serializedVariables))
                 variables = new List<SharedVariable>();
             else
-                variables = JsonSerializer.DeserializeValue<List<SharedVariable>>(serializedVariables, variablesUnityReference);
+                variables = GraphSerializer.DeserializeValue<List<SharedVariable>>(serializedVariables, variablesUnityReference);
             if (variables == null)
                 variables = new List<SharedVariable>();
 

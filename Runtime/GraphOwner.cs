@@ -60,12 +60,12 @@ namespace CZToolKit.GraphProcessor
 
         public override void SaveGraph()
         {
-            serializedGraph = JsonSerializer.SerializeValue(graph, out graphUnityReferences);
+            serializedGraph = GraphSerializer.SerializeValue(graph, out graphUnityReferences);
         }
 
         void DeserializeGraph()
         {
-            graph = JsonSerializer.DeserializeValue<TGraph>(serializedGraph, graphUnityReferences);
+            graph = GraphSerializer.DeserializeValue<TGraph>(serializedGraph, graphUnityReferences);
             graph.Enable();
             graph.Initialize(this);
         }
@@ -90,12 +90,12 @@ namespace CZToolKit.GraphProcessor
 
         public override void SaveVariables()
         {
-            serializedVariables = JsonSerializer.SerializeValue(variables, out variablesUnityReferences);
+            serializedVariables = GraphSerializer.SerializeValue(variables, out variablesUnityReferences);
         }
 
         void DeserializeVariables()
         {
-            variables = JsonSerializer.DeserializeValue<List<SharedVariable>>(serializedVariables, variablesUnityReferences);
+            variables = GraphSerializer.DeserializeValue<List<SharedVariable>>(serializedVariables, variablesUnityReferences);
             UpdateVariablesIndex();
         }
 

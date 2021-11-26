@@ -71,14 +71,8 @@ namespace CZToolKit.GraphProcessor.Editors
             ports.ForEach(_portView =>
             {
                 var toPortView = _portView as BasePortView;
-                if (toPortView.node == portView.node)
-                    return;
-                if (toPortView.direction == portView.direction)
-                    return;
-                // 类型兼容查询
-                if (!toPortView.Model.type.IsAssignableFrom(portView.Model.type) && !portView.Model.type.IsAssignableFrom(toPortView.Model.type))
-                    return;
-                compatiblePorts.Add(_portView);
+                if (IsCompatible(portView, toPortView, nodeAdapter))
+                    compatiblePorts.Add(_portView);
             });
             return compatiblePorts;
         }
@@ -123,6 +117,18 @@ namespace CZToolKit.GraphProcessor.Editors
             EditorGUILayoutExtension.DrawObjectInInspector("Graph", this, GraphAsset);
             Selection.activeObject = ObjectInspector.Instance;
             //Selection.activeObject = null;
+        }
+
+        protected virtual bool IsCompatible(BasePortView portView, BasePortView toPortView, NodeAdapter nodeAdapter)
+        {
+            if (toPortView.node == portView.node)
+                return false;
+            if (toPortView.direction == portView.direction)
+                return false;
+            // 类型兼容查询
+            if (!toPortView.Model.type.IsAssignableFrom(portView.Model.type) && !portView.Model.type.IsAssignableFrom(toPortView.Model.type))
+                return false;
+            return true;
         }
     }
 }

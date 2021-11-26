@@ -49,7 +49,7 @@ namespace CZToolKit.GraphProcessor.Editors
         public UnityObject GraphAsset { get { return graphAsset; } protected set { graphAsset = value; } }
         public BaseGraph Graph { get; private set; }
         public BaseGraphView GraphView { get; private set; }
-        public ToolbarView Toolbar { get { return GraphViewParent.Toolbar; } }
+        public ToolbarView Toolbar { get { return GraphViewParent?.Toolbar; } }
         public GraphViewParentElement GraphViewParent { get; private set; }
         public CommandDispatcher CommandDispatcher { get; private set; }
         #endregion
@@ -125,17 +125,40 @@ namespace CZToolKit.GraphProcessor.Editors
             }
         }
 
-        public void Clear()
+        public virtual void Clear()
         {
             if (GraphViewParent != null)
             {
                 GraphViewParent.RemoveFromHierarchy();
-                GraphViewParent = null;
             }
+
             Graph = null;
+            GraphView = null;
+            GraphViewParent = null;
             GraphAsset = null;
             GraphOwner = null;
             CommandDispatcher = null;
+        }
+
+        // 重新加载Graph
+        public virtual void Reload()
+        {
+            if (GraphOwner is IGraphAssetOwner graphAssetOwner)
+            {
+                Load(graphAssetOwner);
+            }
+            else if (GraphOwner is IGraphOwner graphOwner)
+            {
+                Load(graphOwner);
+            }
+            else if (GraphAsset is IGraphAsset graphAsset)
+            {
+                Load(graphAsset);
+            }
+            else if (Graph is BaseGraph graph)
+            {
+                Load(graph);
+            }
         }
 
         protected void InternalLoad(BaseGraph graph)
@@ -155,27 +178,6 @@ namespace CZToolKit.GraphProcessor.Editors
             GraphView.RegisterCallback<KeyDownEvent>(KeyDownCallback);
             GraphViewParent.GraphViewElement.Add(GraphView);
             CommandDispatcher = commandDispatcher;
-        }
-
-        // 重新加载Graph
-        public virtual void Reload()
-        {
-            if (GraphOwner is IGraphAssetOwner graphAssetOwner)
-            {
-                Load(graphAssetOwner);
-            }
-            else if (GraphOwner is IGraphOwner graphOwner)
-            {
-                Load(graphOwner);
-            }
-            else if (GraphAsset is IGraphAsset graphAsset)
-            {
-                Load(graphAsset);
-            }
-            else
-            {
-                Load(Graph);
-            }
         }
 
         // 从GraphOwner加载
@@ -230,7 +232,7 @@ namespace CZToolKit.GraphProcessor.Editors
         }
         #endregion
 
-        #region 抽象方法
+        #region
         protected virtual BaseGraphView NewGraphView(BaseGraph graph, CommandDispatcher commandDispatcher)
         {
             return new BaseGraphView(graph, this, commandDispatcher);
@@ -254,8 +256,7 @@ namespace CZToolKit.GraphProcessor.Editors
             }
             if (window == null)
             {
-                window = CreateInstance(windowType) as BaseGraphWindow;
-                window.Show();
+                window = GetWindow(windowType) as BaseGraphWindow;
             }
             window.Focus();
             return window;

@@ -57,12 +57,12 @@ namespace CZToolKit.GraphProcessor
 
         public override void SaveGraph()
         {
-            serializedGraph = JsonSerializer.SerializeValue(graph, out graphUnityReferences);
+            serializedGraph = GraphSerializer.SerializeValue(graph, out graphUnityReferences);
         }
 
         void DeserializeGraph()
         {
-            graph = JsonSerializer.DeserializeValue<GraphClass>(serializedGraph, graphUnityReferences);
+            graph = GraphSerializer.DeserializeValue<GraphClass>(serializedGraph, graphUnityReferences);
             if (graph == null)
                 graph = new GraphClass();
             graph.Enable();

@@ -101,9 +101,7 @@ namespace CZToolKit.GraphProcessor
             if (Util_Attribute.TryGetTypeAttribute(type, out NodeTooltipAttribute tooltip))
                 Tooltip = tooltip.Tooltip;
         }
-        #endregion
 
-        #region API
         public IEnumerable<BaseNode> GetConnections(string portName)
         {
             if (!Ports.TryGetValue(portName, out var port))
