@@ -48,18 +48,18 @@ namespace CZToolKit.GraphProcessor.Editors
                 bigLabel.value.alignment = TextAnchor.MiddleLeft;
                 bigLabel.value.stretchWidth = true;
             }
-            EditorGUILayoutExtension.BeginBoxGroup();
+            EditorGUILayoutExtension.BeginVerticalBoxGroup();
             GUILayout.Label("Connection", bigLabel.value);
-            EditorGUILayoutExtension.EndBoxGroup();
+            EditorGUILayoutExtension.EndVerticalBoxGroup();
 
             if (Target is BaseConnectionView view && view.Model != null)
             {
-                EditorGUILayoutExtension.BeginBoxGroup();
+                EditorGUILayoutExtension.BeginVerticalBoxGroup();
                 GUILayout.Label(string.Concat(view.output?.node.title, "£º", view.Model.FromPortName, "  >>  ", view.input?.node.title, "£º", view.Model.ToPortName), bigLabel.value);
-                EditorGUILayoutExtension.EndBoxGroup();
+                EditorGUILayoutExtension.EndVerticalBoxGroup();
 
                 EditorGUI.BeginChangeCheck();
-                EditorGUILayoutExtension.BeginBoxGroup();
+                EditorGUILayoutExtension.BeginVerticalBoxGroup();
                 foreach (var property in view.Model)
                 {
                     if (IgnoreProperties.Contains(property.Key)) continue;
@@ -69,7 +69,7 @@ namespace CZToolKit.GraphProcessor.Editors
                         property.Value.ValueBoxed = newValue;
 
                 }
-                EditorGUILayoutExtension.EndBoxGroup();
+                EditorGUILayoutExtension.EndVerticalBoxGroup();
 
                 if (EditorGUI.EndChangeCheck())
                 {

@@ -43,19 +43,19 @@ namespace CZToolKit.GraphProcessor.Editors
                 bigLabel.value.stretchWidth = true;
             }
 
-            EditorGUILayoutExtension.BeginBoxGroup();
+            EditorGUILayoutExtension.BeginVerticalBoxGroup();
             GUILayout.Label("Graph", bigLabel.value);
-            EditorGUILayoutExtension.EndBoxGroup();
+            EditorGUILayoutExtension.EndVerticalBoxGroup();
 
             if (Target is BaseGraphView view && view.Model != null)
             {
-                EditorGUILayoutExtension.BeginBoxGroup();
+                EditorGUILayoutExtension.BeginVerticalBoxGroup();
                 GUILayout.Label(string.Concat("Nodes：", view.Model.Nodes.Count), bigLabel.value);
                 GUILayout.Label(string.Concat("Connections：", view.Model.Connections.Count), bigLabel.value);
-                EditorGUILayoutExtension.EndBoxGroup();
+                EditorGUILayoutExtension.EndVerticalBoxGroup();
 
                 EditorGUI.BeginChangeCheck();
-                EditorGUILayoutExtension.BeginBoxGroup();
+                EditorGUILayoutExtension.BeginVerticalBoxGroup();
                 foreach (var property in view.Model)
                 {
                     if (IgnoreProperties.Contains(property.Key)) continue;
@@ -65,7 +65,7 @@ namespace CZToolKit.GraphProcessor.Editors
                         property.Value.ValueBoxed = newValue;
 
                 }
-                EditorGUILayoutExtension.EndBoxGroup();
+                EditorGUILayoutExtension.EndVerticalBoxGroup();
                 if (EditorGUI.EndChangeCheck())
                 {
 

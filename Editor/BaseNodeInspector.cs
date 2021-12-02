@@ -44,12 +44,12 @@ namespace CZToolKit.GraphProcessor.Editors
 
             if (Target is BaseNodeView view && view.Model != null)
             {
-                EditorGUILayoutExtension.BeginBoxGroup();
+                EditorGUILayoutExtension.BeginVerticalBoxGroup();
                 bigLabel.value.alignment = TextAnchor.MiddleLeft;
                 GUILayout.Label(string.Concat("Node：", view.Model.GUID), bigLabel.value);
-                EditorGUILayoutExtension.EndBoxGroup();
+                EditorGUILayoutExtension.EndVerticalBoxGroup();
 
-                EditorGUILayoutExtension.BeginBoxGroup();
+                EditorGUILayoutExtension.BeginVerticalBoxGroup();
                 foreach (var property in view.Model)
                 {
                     if (IgnoreProperties.Contains(property.Key)) continue;
@@ -59,7 +59,7 @@ namespace CZToolKit.GraphProcessor.Editors
                         property.Value.ValueBoxed = newValue;
 
                 }
-                EditorGUILayoutExtension.EndBoxGroup();
+                EditorGUILayoutExtension.EndVerticalBoxGroup();
             }
         }
     }

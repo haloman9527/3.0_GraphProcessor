@@ -63,10 +63,10 @@ namespace CZToolKit.GraphProcessor.Editors
 
             IGraphAsset graphAsset = target as IGraphAsset;
 
-            EditorGUILayoutExtension.BeginBoxGroup();
+            EditorGUILayoutExtension.BeginVerticalBoxGroup();
             GUILayout.Label(string.Concat("Nodes：", graphAsset.Graph.Nodes.Count), bigLabel.value);
             GUILayout.Label(string.Concat("Connections：", graphAsset.Graph.Connections.Count), bigLabel.value);
-            EditorGUILayoutExtension.EndBoxGroup();
+            EditorGUILayoutExtension.EndVerticalBoxGroup();
 
             if (GUILayout.Button("Open", GUILayout.Height(30)))
                 BaseGraphWindow.Open(target as InternalBaseGraphAsset);
