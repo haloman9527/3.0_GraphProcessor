@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   serializedGraph: "{\r\n    \"$id\": 0,\r\n    \"$type\": \"0|SampleGraph, CZToolKit.GraphProcessor\",\r\n   
     \"pan\": {\r\n        \"$type\": \"1|UnityEngine.Vector3, UnityEngine.CoreModule\",\r\n       
-    62.6666679,\r\n        156,\r\n        0\r\n    },\r\n    \"zoom\": {\r\n       
-    \"$type\": 1,\r\n        1,\r\n        1,\r\n        1\r\n    },\r\n    \"nodes\":
-    {\r\n        \"$id\": 1,\r\n        \"$type\": \"2|System.Collections.Generic.Dictionary`2[[System.String,
+    -254.666672,\r\n        226,\r\n        0\r\n    },\r\n    \"zoom\": {\r\n       
+    \"$type\": 1,\r\n        1.74900627,\r\n        1.74900627,\r\n        1\r\n   
+    },\r\n    \"nodes\": {\r\n        \"$id\": 1,\r\n        \"$type\": \"2|System.Collections.Generic.Dictionary`2[[System.String,
     mscorlib],[CZToolKit.GraphProcessor.BaseNode, CZToolKit.GraphProcessor]], mscorlib\",\r\n       
     \"comparer\": {\r\n            \"$id\": 2,\r\n            \"$type\": \"3|System.Collections.Generic.GenericEqualityComparer`1[[System.String,
     mscorlib]], mscorlib\"\r\n        },\r\n        \"$rlength\": 6,\r\n        \"$rcontent\":

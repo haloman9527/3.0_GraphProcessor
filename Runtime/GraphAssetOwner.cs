@@ -57,7 +57,7 @@ namespace CZToolKit.GraphProcessor
 
         public override BaseGraph Graph { get { return T_Graph; } }
 
-        public TGraph T_Graph { get { return graphAsset.T_Graph; } }
+        public TGraph T_Graph { get { return graphAsset?.T_Graph; } }
 
         #endregion
     }
