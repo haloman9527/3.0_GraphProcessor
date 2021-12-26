@@ -14,9 +14,10 @@
  */
 #endregion
 using CZToolKit.Core;
-using UnityEngine;
+using System;
 using System.Linq;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace CZToolKit.GraphProcessor
 {
@@ -73,6 +74,76 @@ namespace CZToolKit.GraphProcessor
                 graph.Connect(edge);
             }
             connections.Clear();
+        }
+    }
+
+    public class AddPortCommand : ICommand
+    {
+        BaseNode node;
+        BasePort port;
+        bool successed = false;
+
+        public AddPortCommand(BaseNode node, string name, BasePort.Orientation orientation, BasePort.Direction direction, BasePort.Capacity capacity, Type type = null)
+        {
+            this.node = node;
+            port = new BasePort(name, orientation, direction, capacity, type);
+        }
+
+        public void Do()
+        {
+            successed = false;
+            if (!node.Ports.ContainsKey(port.name))
+            {
+                node.AddPort(port);
+                successed = true;
+            }
+        }
+
+        public void Undo()
+        {
+            if (!successed)
+            {
+                return;
+            }
+            node.RemovePort(port);
+        }
+    }
+
+    public class RemovePortCommand : ICommand
+    {
+        BaseNode node;
+        BasePort port;
+        bool successed = false;
+
+        public RemovePortCommand(BaseNode node, BasePort port)
+        {
+            this.node = node;
+            this.port = port;
+        }
+
+        public RemovePortCommand(BaseNode node, string name)
+        {
+            this.node = node;
+            node.Ports.TryGetValue(name, out port);
+        }
+
+        public void Do()
+        {
+            successed = false;
+            if (node.Ports.ContainsKey(port.name))
+            {
+                node.AddPort(port);
+                successed = true;
+            }
+        }
+
+        public void Undo()
+        {
+            if (!successed)
+            {
+                return;
+            }
+            node.RemovePort(port);
         }
     }
 

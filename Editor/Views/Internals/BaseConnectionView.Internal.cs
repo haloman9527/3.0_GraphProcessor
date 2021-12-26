@@ -68,6 +68,11 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             this.BringToFront();
         }
+
+        protected override void DrawEdge()
+        {
+            base.DrawEdge();
+        }
     }
 }
 #endif

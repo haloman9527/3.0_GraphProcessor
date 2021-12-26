@@ -70,7 +70,7 @@ namespace CZToolKit.GraphProcessor
 
         public void OnBeforeSerialize()
         {
-            //SaveGraph();
+
         }
 
         public void OnAfterDeserialize()

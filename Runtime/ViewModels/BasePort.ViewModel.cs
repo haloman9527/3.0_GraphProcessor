@@ -21,18 +21,20 @@ namespace CZToolKit.GraphProcessor
 {
     public partial class BasePort : IntegratedViewModel, IGraphElement
     {
-        [NonSerialized]
-        BaseNode owner;
-        [NonSerialized]
-        SortedSet<BaseConnection> connections;
+        #region Fields
+        [NonSerialized] BaseNode owner;
+        [NonSerialized] SortedSet<BaseConnection> connections;
 
         public event Action<BaseConnection> onConnected;
         public event Action<BaseConnection> onDisconnected;
+        #endregion
 
+        #region Properties
         public BaseNode Owner { get { return owner; } }
         public IReadOnlyCollection<BaseConnection> Connections { get { return connections; } }
+        #endregion
 
-        public void Enable(BaseNode node)
+        internal void Enable(BaseNode node)
         {
             owner = node;
             switch (orientation)
@@ -44,10 +46,10 @@ namespace CZToolKit.GraphProcessor
                     connections = new SortedSet<BaseConnection>(new ConnectionHorizontalComparer(direction));
                     break;
             }
+            OnEnabled();
         }
 
-        protected override void BindProperties() { }
-
+        #region API
         public void ConnectTo(BaseConnection connection)
         {
             connections.Add(connection);
@@ -96,6 +98,11 @@ namespace CZToolKit.GraphProcessor
                 }
             }
         }
+        #endregion
+
+        #region Overrides
+        protected virtual void OnEnabled() { }
+        #endregion
 
         public class ConnectionHorizontalComparer : IComparer<BaseConnection>
         {

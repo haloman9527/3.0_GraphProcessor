@@ -20,9 +20,12 @@ namespace CZToolKit.GraphProcessor.Internal
 {
     public abstract class InternalBaseGraphAsset : ScriptableObject, IGraphAsset, ICloneable
     {
-        public InternalBaseGraphAsset() { }
-
-        public abstract BaseGraph Graph { get; }
+        #region Properties
+        public abstract BaseGraph Graph
+        {
+            get;
+        }
+        #endregion
 
         public abstract void SaveGraph();
 

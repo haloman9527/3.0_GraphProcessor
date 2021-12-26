@@ -136,6 +136,9 @@ namespace CZToolKit.GraphProcessor.Editors
             Model.BindingProperty<Color>(BaseNode.TITLE_COLOR_NAME, OnTitleColorChanged);
             Model.BindingProperty<string>(BaseNode.TOOLTIP_NAME, OnTooltipChanged);
             Model.BindingProperty<Vector2>(BaseNode.POSITION_NAME, OnPositionChanged);
+
+            Model.onPortAdded += OnPortAdded;
+            Model.onPortRemoved += OnPortRemoved;
         }
 
         public virtual void UnBindingProperties()
@@ -144,6 +147,39 @@ namespace CZToolKit.GraphProcessor.Editors
             Model.UnBindingProperty<Color>(BaseNode.TITLE_COLOR_NAME, OnTitleColorChanged);
             Model.UnBindingProperty<string>(BaseNode.TOOLTIP_NAME, OnTooltipChanged);
             Model.UnBindingProperty<Vector2>(BaseNode.POSITION_NAME, OnPositionChanged);
+
+            Model.onPortAdded -= OnPortAdded;
+            Model.onPortRemoved -= OnPortRemoved;
+        }
+
+        void OnPortAdded(BasePort port)
+        {
+            BasePortView portView = NewPortView(port);
+            portView.SetUp(port, Owner);
+            portViews[port.name] = portView;
+
+            if (portView.orientation == Orientation.Horizontal)
+            {
+                if (portView.direction == Direction.Input)
+                    inputContainer.Add(portView);
+                else
+                    outputContainer.Add(portView);
+            }
+            else
+            {
+                if (portView.direction == Direction.Input)
+                    topPortContainer.Add(portView);
+                else
+                    bottomPortContainer.Add(portView);
+            }
+            RefreshPorts();
+        }
+
+        void OnPortRemoved(BasePort port)
+        {
+            portViews[port.name].RemoveFromHierarchy();
+            portViews.Remove(port.name);
+            RefreshPorts();
         }
 
         void OnTitleChanged(string title)

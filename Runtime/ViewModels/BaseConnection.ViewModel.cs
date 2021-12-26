@@ -19,7 +19,50 @@ namespace CZToolKit.GraphProcessor
 {
     public partial class BaseConnection : IntegratedViewModel, IGraphElement
     {
-        #region 静态方法
+        #region Fields
+        [NonSerialized] BaseGraph owner;
+        [NonSerialized] BaseNode fromNode;
+        [NonSerialized] BaseNode toNode;
+        #endregion
+
+        #region Properties
+        public BaseGraph Owner { get { return owner; } }
+        public string FromNodeGUID { get { return from; } }
+        public string ToNodeGUID { get { return to; } }
+        public string FromPortName { get { return fromPortName; } }
+        public string ToPortName { get { return toPortName; } }
+
+        public BaseNode FromNode { get { return fromNode; } }
+        public BaseNode ToNode { get { return toNode; } }
+        #endregion
+
+        internal void Enable(BaseGraph graph)
+        {
+            owner = graph;
+            owner.Nodes.TryGetValue(FromNodeGUID, out fromNode);
+            owner.Nodes.TryGetValue(ToNodeGUID, out toNode);
+            OnEnabled();
+        }
+
+        /// <summary>
+        /// 重定向
+        /// </summary>
+        internal void Redirect(BaseNode from, string fromPortName, BaseNode to, string toPortName)
+        {
+            this.from = from.GUID;
+            this.fromPortName = fromPortName;
+
+            this.to = to.GUID;
+            this.toPortName = toPortName;
+
+            Enable(owner);
+        }
+
+        #region Overrides
+        protected virtual void OnEnabled() { }
+        #endregion
+
+        #region Static
         public static T CreateNew<T>(BaseNode from, string fromPortName, BaseNode to, string toPortName) where T : BaseConnection
         {
             return CreateNew(typeof(T), from, fromPortName, to, toPortName) as T;
@@ -36,39 +79,5 @@ namespace CZToolKit.GraphProcessor
         }
         #endregion
 
-        [NonSerialized] BaseGraph owner;
-        [NonSerialized] BaseNode fromNode;
-        [NonSerialized] BaseNode toNode;
-
-        public BaseGraph Owner { get { return owner; } }
-        public string FromNodeGUID { get { return from; } }
-        public string ToNodeGUID { get { return to; } }
-        public string FromPortName { get { return fromPortName; } }
-        public string ToPortName { get { return toPortName; } }
-
-        public BaseNode FromNode { get { return fromNode; } }
-        public BaseNode ToNode { get { return toNode; } }
-
-        public void Enable(BaseGraph graph)
-        {
-            owner = graph;
-            owner.Nodes.TryGetValue(FromNodeGUID, out fromNode);
-            owner.Nodes.TryGetValue(ToNodeGUID, out toNode);
-        }
-        protected override void BindProperties() { }
-
-        /// <summary>
-        /// 重定向
-        /// </summary>
-        internal void Redirect(BaseNode from, string fromPortName, BaseNode to, string toPortName)
-        {
-            this.from = from.GUID;
-            this.fromPortName = fromPortName;
-
-            this.to = to.GUID;
-            this.toPortName = toPortName;
-
-            Enable(owner);
-        }
     }
 }

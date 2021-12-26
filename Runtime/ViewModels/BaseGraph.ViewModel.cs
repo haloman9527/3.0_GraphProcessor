@@ -15,28 +15,25 @@
 #endregion
 using CZToolKit.Core.SharedVariable;
 using System;
-using System.Collections.Generic;
 using System.Linq;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace CZToolKit.GraphProcessor
 {
     public abstract partial class BaseGraph : IntegratedViewModel
     {
-        public const string PAN_NAME = nameof(pan);
-        public const string ZOOM_NAME = nameof(zoom);
-
-        #region 字段
+        #region Fields
         public event Action<BaseNode> onNodeAdded;
         public event Action<BaseNode> onNodeRemoved;
 
         public event Action<BaseConnection> onConnected;
         public event Action<BaseConnection> onDisconnected;
 
-        [NonSerialized] public List<SharedVariable> variables = new List<SharedVariable>();
+        [NonSerialized] internal List<SharedVariable> variables = new List<SharedVariable>();
         #endregion
 
-        #region 属性
+        #region Properties
         public Vector3 Pan
         {
             get { return GetPropertyValue<Vector3>(PAN_NAME); }
@@ -47,9 +44,23 @@ namespace CZToolKit.GraphProcessor
             get { return GetPropertyValue<Vector3>(ZOOM_NAME); }
             set { SetPropertyValue(ZOOM_NAME, value); }
         }
-        public IReadOnlyDictionary<string, BaseNode> Nodes { get { return nodes; } }
-        public IReadOnlyList<BaseConnection> Connections { get { return connections; } }
-        public IVariableOwner VarialbeOwner { get; private set; }
+        public IReadOnlyDictionary<string, BaseNode> Nodes
+        {
+            get { return nodes; }
+        }
+        public IReadOnlyList<BaseConnection> Connections
+        {
+            get { return connections; }
+        }
+        public IGraphOwner GraphOwner
+        {
+            get; 
+            private set;
+        }
+        public IVariableOwner VarialbeOwner
+        {
+            get { return GraphOwner; }
+        }
         public IReadOnlyList<SharedVariable> Variables
         {
             get
@@ -60,10 +71,9 @@ namespace CZToolKit.GraphProcessor
         }
         #endregion
 
-        #region API
         public void Enable()
         {
-            foreach (var node in nodes.Values)
+            foreach (var node in Nodes.Values)
             {
                 node.Enable(this);
             }
@@ -103,36 +113,34 @@ namespace CZToolKit.GraphProcessor
                 toPort.ConnectTo(connection);
             }
 
-            OnEnable();
-        }
-
-        public virtual void Initialize(IGraphOwner graphOwner)
-        {
-            InitializePropertyMapping(graphOwner);
-            foreach (var node in nodes.Values)
-            {
-                node.Initialize(graphOwner);
-            }
-        }
-
-        protected override void BindProperties()
-        {
             this[PAN_NAME] = new BindableProperty<Vector3>(pan, v => pan = v);
             this[ZOOM_NAME] = new BindableProperty<Vector3>(zoom, v => zoom = v);
+
+            OnEnabled();
         }
 
-        public void InitializePropertyMapping(IVariableOwner variableOwner)
+        public void Initialize(IGraphOwner graphOwner)
+        {
+            GraphOwner = graphOwner;
+            InitializePropertyMapping();
+            foreach (var node in nodes.Values)
+            {
+                node.Initialize();
+            }
+            OnInitialized();
+        }
+
+        private void InitializePropertyMapping()
         {
             if (variables == null)
                 CollectionVariables();
-            VarialbeOwner = variableOwner;
             foreach (var variable in variables)
             {
                 variable.InitializePropertyMapping(VarialbeOwner);
             }
         }
 
-        void CollectionVariables()
+        private void CollectionVariables()
         {
             if (variables == null)
                 variables = new List<SharedVariable>();
@@ -144,6 +152,7 @@ namespace CZToolKit.GraphProcessor
             }
         }
 
+        #region API
         public string GenerateNodeGUID()
         {
             while (true)
@@ -163,11 +172,12 @@ namespace CZToolKit.GraphProcessor
                 CollectionVariables();
             IEnumerable<SharedVariable> nodeVariables = SharedVariableUtility.CollectionObjectSharedVariables(node);
             variables.AddRange(nodeVariables);
-            if (VarialbeOwner != null)
+            if (GraphOwner != null)
             {
+                node.Initialize();
                 foreach (var variable in nodeVariables)
                 {
-                    variable.InitializePropertyMapping(VarialbeOwner);
+                    variable.InitializePropertyMapping(GraphOwner);
                 }
             }
             onNodeAdded?.Invoke(node);
@@ -232,7 +242,6 @@ namespace CZToolKit.GraphProcessor
 
         public void Disconnect(BaseNode node)
         {
-            // 断开节点所有连接
             foreach (var connection in Connections.ToArray())
             {
                 if (connection.FromNodeGUID == node.GUID || connection.ToNodeGUID == node.GUID)
@@ -270,17 +279,29 @@ namespace CZToolKit.GraphProcessor
         #endregion
 
         #region Overrides
-        protected virtual void OnEnable() { }
+        protected virtual void OnEnabled() { }
 
-        public T NewNode<T>(Vector2 position) where T : BaseNode { return NewNode(typeof(T), position) as T; }
+        protected virtual void OnInitialized() { }
+
+        public T NewNode<T>(Vector2 position) where T : BaseNode
+        {
+            return NewNode(typeof(T), position) as T;
+        }
+
         public virtual BaseNode NewNode(Type type, Vector2 position)
         {
             return BaseNode.CreateNew(this, type, position);
         }
+
         public virtual BaseConnection NewConnection(BaseNode from, string fromPortName, BaseNode to, string toPortName)
         {
             return BaseConnection.CreateNew<BaseConnection>(from, fromPortName, to, toPortName);
         }
+        #endregion
+
+        #region Static
+        public const string PAN_NAME = nameof(pan);
+        public const string ZOOM_NAME = nameof(zoom);
         #endregion
     }
 }

@@ -24,12 +24,12 @@ namespace CZToolKit.GraphProcessor.Internal
 {
     public abstract class InternalGraphAssetOwner : MonoBehaviour, IGraphAssetOwner, IVariableOwner, ISerializationCallbackReceiver
     {
-        #region 字段
+        #region Fields
         List<SharedVariable> variables = new List<SharedVariable>();
         Dictionary<string, int> sharedVariableIndex;
         #endregion
 
-        #region 属性
+        #region Properties
         public abstract InternalBaseGraphAsset GraphAsset { get; set; }
         public abstract BaseGraph Graph { get; }
         public abstract Type GraphAssetType { get; }
@@ -150,7 +150,7 @@ namespace CZToolKit.GraphProcessor.Internal
         }
         #endregion
 
-        #region 帮助方法
+        #region Helper
         private void UpdateVariablesIndex()
         {
             if (variables == null)

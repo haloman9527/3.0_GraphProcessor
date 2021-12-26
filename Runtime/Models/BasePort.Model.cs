@@ -14,20 +14,22 @@
  */
 #endregion
 using System;
+using UnityEngine;
 
 namespace CZToolKit.GraphProcessor
 {
+    [Serializable]
     public partial class BasePort
     {
         public enum Direction { Input, Output }
         public enum Orientation { Horizontal, Vertical }
         public enum Capacity { Single, Multi }
 
-        public readonly string name;
-        public readonly Orientation orientation;
-        public readonly Direction direction;
-        public readonly Capacity capacity;
-        public readonly Type type;
+        [SerializeField] public readonly string name;
+        [SerializeField] public readonly Orientation orientation;
+        [SerializeField] public readonly Direction direction;
+        [SerializeField] public readonly Capacity capacity;
+        [SerializeField] public readonly Type type;
 
         public BasePort(string name, Orientation orientation, Direction direction, Capacity capacity, Type type = null)
         {

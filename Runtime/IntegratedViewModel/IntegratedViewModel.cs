@@ -39,10 +39,7 @@ namespace CZToolKit.GraphProcessor
             get
             {
                 if (bindableProperties == null)
-                {
                     bindableProperties = new Dictionary<string, IBindableProperty>();
-                    BindProperties();
-                }
                 return bindableProperties;
             }
             set { bindableProperties = value; }
@@ -77,13 +74,6 @@ namespace CZToolKit.GraphProcessor
         {
             return InternalBindableProperties.TryGetValue(key, out value);
         }
-
-        void CheckPropertiesIsNull()
-        {
-
-        }
-
-        protected abstract void BindProperties();
 
         protected T GetPropertyValue<T>(string propertyName)
         {

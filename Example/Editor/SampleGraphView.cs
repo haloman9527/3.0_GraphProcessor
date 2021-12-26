@@ -29,4 +29,14 @@ public class SampleGraphView : BaseGraphView
     {
         yield return typeof(SampleNode);
     }
+
+    protected override Type GetNodeViewType(BaseNode node)
+    {
+        return typeof(SampleNodeView);
+    }
+
+    protected override Type GetConnectionViewType(BaseConnection connection)
+    {
+        return typeof(SampleConnectionView);
+    }
 }

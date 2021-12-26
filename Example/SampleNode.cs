@@ -20,15 +20,13 @@ public class SampleNode : BaseNode
 {
     public int value;
 
-    protected override void BindProperties()
+    protected override void OnEnabled()
     {
-        base.BindProperties();
-        this[nameof(value)] = new BindableProperty<int>(0, v => value = v);
-    }
+        base.OnEnabled();
 
-    protected override IEnumerable<BasePort> GetPorts()
-    {
-        yield return new BasePort("Input", BasePort.Orientation.Horizontal, BasePort.Direction.Input, BasePort.Capacity.Multi, typeof(int));
-        yield return new BasePort("Output", BasePort.Orientation.Horizontal, BasePort.Direction.Output, BasePort.Capacity.Multi, typeof(int));
+        this[nameof(value)] = new BindableProperty<int>(0, v => value = v);
+
+        AddPort(new BasePort("Input", BasePort.Orientation.Horizontal, BasePort.Direction.Input, BasePort.Capacity.Multi, typeof(int)));
+        AddPort(new BasePort("Output", BasePort.Orientation.Horizontal, BasePort.Direction.Output, BasePort.Capacity.Multi, typeof(int)));
     }
 }

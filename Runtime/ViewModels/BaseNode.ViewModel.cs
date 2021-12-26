@@ -22,18 +22,25 @@ namespace CZToolKit.GraphProcessor
 {
     public abstract partial class BaseNode : IntegratedViewModel, IGraphElement
     {
-        [NonSerialized]
-        BaseGraph owner;
-        [NonSerialized]
-        Dictionary<string, BasePort> ports;
+        #region Fields
+        [NonSerialized] BaseGraph owner;
+        [NonSerialized] Dictionary<string, BasePort> ports;
+
+        public event Action<BasePort> onPortAdded;
+        public event Action<BasePort> onPortRemoved;
+        #endregion
+
+        #region Properties
         public BaseGraph Owner { get { return owner; } }
         public string GUID { get { return guid; } }
+
+        public IGraphOwner GraphOwner
+        {
+            get { return Owner.GraphOwner; }
+        }
         public IReadOnlyDictionary<string, BasePort> Ports
         {
-            get
-            {
-                return ports;
-            }
+            get { return ports; }
         }
         public string Title
         {
@@ -55,31 +62,12 @@ namespace CZToolKit.GraphProcessor
             get { return GetPropertyValue<Vector2>(POSITION_NAME); }
             internal set { SetPropertyValue(POSITION_NAME, value); }
         }
+        #endregion
 
-        protected virtual IEnumerable<BasePort> GetPorts()
-        {
-            yield break;
-        }
-
-        #region API
-        public virtual void Enable(BaseGraph graph)
+        internal void Enable(BaseGraph graph)
         {
             owner = graph;
             ports = new Dictionary<string, BasePort>();
-            foreach (var port in GetPorts())
-            {
-                ports[port.name] = port;
-                port.Enable(this);
-            }
-        }
-
-        public virtual void Initialize(IGraphOwner graphOwner)
-        {
-
-        }
-
-        protected override void BindProperties()
-        {
             this[TITLE_NAME] = new BindableProperty<string>(GetType().Name);
             this[TITLE_COLOR_NAME] = new BindableProperty<Color>(new Color(0.2f, 0.2f, 0.2f, 0.8f));
             this[TOOLTIP_NAME] = new BindableProperty<string>();
@@ -100,8 +88,16 @@ namespace CZToolKit.GraphProcessor
 
             if (Util_Attribute.TryGetTypeAttribute(type, out NodeTooltipAttribute tooltip))
                 Tooltip = tooltip.Tooltip;
+
+            OnEnabled();
         }
 
+        internal void Initialize()
+        {
+            OnInitialized();
+        }
+
+        #region API
         public IEnumerable<BaseNode> GetConnections(string portName)
         {
             if (!Ports.TryGetValue(portName, out var port))
@@ -122,7 +118,50 @@ namespace CZToolKit.GraphProcessor
             }
         }
 
-        public object GetValue(string port)
+        public void AddPort(BasePort port)
+        {
+            if (ports.ContainsKey(port.name))
+            {
+                throw new ArgumentException($"Already contains port:{port.name}");
+            }
+            ports[port.name] = port;
+            port.Enable(this);
+            onPortAdded?.Invoke(port);
+        }
+
+        public void RemovePort(string portName)
+        {
+            RemovePort(ports[portName]);
+        }
+
+        public void RemovePort(BasePort port)
+        {
+            if (port.Owner != this)
+            {
+                return;
+            }
+            if (!ports.ContainsKey(port.name))
+            {
+                throw new ArgumentException($"Not contains port:{port.name}");
+            }
+            Owner.Disconnect(this, port);
+            ports.Remove(port.name);
+            onPortRemoved?.Invoke(port);
+        }
+        #endregion
+
+        #region Overrides
+        protected virtual void OnEnabled()
+        {
+
+        }
+
+        protected virtual void OnInitialized()
+        {
+
+        }
+
+        public virtual object GetValue(string port)
         {
             throw new NotImplementedException();
         }

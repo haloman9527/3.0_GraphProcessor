@@ -21,18 +21,18 @@ namespace CZToolKit.GraphProcessor.Editors
 {
     public static class GraphProcessorStyles
     {
-        const string BassicStyleFile = "GraphProcessor/Styles/BasicStyle";
-        const string GraphViewStyleFile = "GraphProcessor/Styles/BaseGraphView";
-        const string BaseNodeViewStyleFile = "GraphProcessor/Styles/BaseNodeView";
-        const string SimpleNodeViewStyleFile = "GraphProcessor/Styles/SimpleNodeView";
-        const string SettingNodeViewStyleFile = "GraphProcessor/Styles/SettingsNodeView";
-        const string PortViewStyleFile = "GraphProcessor/Styles/PortView";
-        const string PortViewTypesStyleFile = "GraphProcessor/Styles/PortViewTypes";
-        const string EdgeStyleFile = "GraphProcessor/Styles/EdgeView";
-        const string GroupStyleFile = "GraphProcessor/Styles/GroupView";
-        const string NodeSettingViewStyleFile = "GraphProcessor/Styles/NodeSettings";
-        const string NodeSettingsTreeFile = "GraphProcessor/UXML/NodeSettings";
-        const string RelayNodeViewStyleFile = "GraphProcessor/Styles/RelayNode";
+        public const string BassicStyleFile = "GraphProcessor/Styles/BasicStyle";
+        public const string GraphViewStyleFile = "GraphProcessor/Styles/BaseGraphView";
+        public const string BaseNodeViewStyleFile = "GraphProcessor/Styles/BaseNodeView";
+        public const string SimpleNodeViewStyleFile = "GraphProcessor/Styles/SimpleNodeView";
+        public const string SettingNodeViewStyleFile = "GraphProcessor/Styles/SettingsNodeView";
+        public const string PortViewStyleFile = "GraphProcessor/Styles/PortView";
+        public const string PortViewTypesStyleFile = "GraphProcessor/Styles/PortViewTypes";
+        public const string EdgeStyleFile = "GraphProcessor/Styles/EdgeView";
+        public const string GroupStyleFile = "GraphProcessor/Styles/GroupView";
+        public const string NodeSettingViewStyleFile = "GraphProcessor/Styles/NodeSettings";
+        public const string NodeSettingsTreeFile = "GraphProcessor/UXML/NodeSettings";
+        public const string RelayNodeViewStyleFile = "GraphProcessor/Styles/RelayNode";
 
         public static StyleSheet BasicStyle { get; } = Resources.Load<StyleSheet>(BassicStyleFile);
         public static StyleSheet GraphViewStyle { get; } = Resources.Load<StyleSheet>(GraphViewStyleFile);
