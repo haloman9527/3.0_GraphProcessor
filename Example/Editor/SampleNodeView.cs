@@ -39,7 +39,7 @@ public class SampleNodeView : BaseNodeView
 
     private void OnClick()
     {
-        Owner.CommandDispacter.Do(new AddPortCommand(Model, portName, BasePort.Orientation.Horizontal, BasePort.Direction.Output, BasePort.Capacity.Single, typeof(float)));
+        Owner.CommandDispacter.Do(new AddPortCommand(Model, portName, BasePort.Orientation.Horizontal, BasePort.Direction.Output, BasePort.Capacity.Single, typeof(object)));
     }
 
     private void OnGUI()

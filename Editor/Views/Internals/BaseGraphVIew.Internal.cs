@@ -105,9 +105,6 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             graphViewChanged = GraphViewChangedCallback;
             viewTransformChanged = ViewTransformChangedCallback;
-            //serializeGraphElements = SerializeGraphElementsCallback;
-            //canPasteSerializedData = CanPasteSerializedDataCallback;
-            //unserializeAndPaste = DeserializeAndPasteCallback;
 
             CreateNodeMenu = ScriptableObject.CreateInstance<CreateNodeMenuWindow>();
             CreateNodeMenu.Initialize(this, GetNodeTypes());
@@ -117,13 +114,13 @@ namespace CZToolKit.GraphProcessor.Editors
         /// <summary> 生成所有NodeView </summary>
         IEnumerator GenerateNodeViews()
         {
-            int c = 0;
+            int step = 0;
             foreach (var node in Model.Nodes.Values)
             {
                 if (node == null) continue;
                 AddNodeView(node);
-                c++;
-                if (c % 5 == 0)
+                step++;
+                if (step % 5 == 0)
                     yield return null;
             }
         }
@@ -131,7 +128,7 @@ namespace CZToolKit.GraphProcessor.Editors
         /// <summary> 连接节点 </summary>
         IEnumerator LinkNodeViews()
         {
-            int c = 0;
+            int step = 0;
             foreach (var edge in Model.Connections)
             {
                 if (edge == null) continue;
@@ -140,8 +137,8 @@ namespace CZToolKit.GraphProcessor.Editors
                 if (!NodeViews.TryGetValue(edge.ToNodeGUID, out toNodeView)) yield break;
 
                 ConnectView(fromNodeView, toNodeView, edge);
-                c++;
-                if (c % 5 == 0)
+                step++;
+                if (step % 5 == 0)
                     yield return null;
             }
         }

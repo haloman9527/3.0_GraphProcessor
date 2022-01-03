@@ -70,6 +70,11 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             this.BringToFront();
         }
+
+        protected override EdgeControl CreateEdgeControl()
+        {
+            return new EdgeControl1(this);
+        }
     }
 
     public class EdgeControl1 : EdgeControl

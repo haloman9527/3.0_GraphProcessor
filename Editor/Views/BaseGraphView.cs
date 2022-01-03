@@ -98,6 +98,10 @@ namespace CZToolKit.GraphProcessor.Editors
 
         protected virtual void UpdateInspector()
         {
+            if (!Selection.activeObject == ObjectInspector.Instance)
+            {
+                return;
+            }
             foreach (var element in selection)
             {
                 switch (element)
@@ -121,8 +125,6 @@ namespace CZToolKit.GraphProcessor.Editors
 
         protected virtual bool IsCompatible(BasePortView portView, BasePortView toPortView, NodeAdapter nodeAdapter)
         {
-            if (toPortView.node == portView.node)
-                return false;
             if (toPortView.direction == portView.direction)
                 return false;
             // 类型兼容查询

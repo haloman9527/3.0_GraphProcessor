@@ -1,14 +1,13 @@
-#node 
-{
+#node {
     background-color: rgba(0, 63, 63, 1);
 }
 
 #divider{
-    background-color:rgba(255, 128, 0, 1)
+    background-color:rgba(255, 128, 0, 1);
 }
 
 #node-border > .node-controls{
-    background-color:rgba(50, 50, 50, 1)
+    background-color:rgba(50, 50, 50, 1);
 }
 
 #title 

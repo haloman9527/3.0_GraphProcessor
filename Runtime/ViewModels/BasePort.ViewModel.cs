@@ -27,6 +27,7 @@ namespace CZToolKit.GraphProcessor
 
         public event Action<BaseConnection> onConnected;
         public event Action<BaseConnection> onDisconnected;
+        public event Action onSorted;
         #endregion
 
         #region Properties
@@ -71,6 +72,7 @@ namespace CZToolKit.GraphProcessor
                 newConnections.Add(connection);
             }
             connections = newConnections;
+            onSorted?.Invoke();
         }
 
         /// <summary> 获取连接的第一个接口的值 </summary>
