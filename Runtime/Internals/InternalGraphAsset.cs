@@ -18,19 +18,11 @@ using UnityEngine;
 
 namespace CZToolKit.GraphProcessor.Internal
 {
-    public abstract class InternalBaseGraphAsset : ScriptableObject, IGraphAsset, ICloneable
+    public abstract class InternalBaseGraphAsset : ScriptableObject, IGraphAsset
     {
-        #region Properties
-        public abstract BaseGraph Graph
-        {
-            get;
-        }
-        #endregion
+        public abstract Type GraphType { get; }
+        public abstract void SaveGraph(BaseGraph graph);
 
-        public abstract void SaveGraph();
-
-        public abstract void CheckGraphSerialization();
-
-        public virtual object Clone() { return Instantiate(this); }
+        public abstract BaseGraph DeserializeGraph();
     }
 }

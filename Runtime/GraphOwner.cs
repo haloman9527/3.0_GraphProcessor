@@ -23,26 +23,9 @@ using UnityObject = UnityEngine.Object;
 
 namespace CZToolKit.GraphProcessor
 {
-    public abstract class GraphOwner<TGraph> : InternalGraphOwner, ISerializationCallbackReceiver
-        where TGraph : BaseGraph, new()
+    public abstract class GraphOwner<TGraph> : InternalGraphOwner where TGraph : BaseGraph, new()
     {
-        #region 字段
-        [HideInInspector]
-        [SerializeField]
-        TGraph graph = new TGraph();
-        #endregion
-
         #region 属性
-        public override BaseGraph Graph
-        {
-            get { return graph; }
-        }
-
-        public TGraph T_Graph
-        {
-            get { return graph; }
-        }
-
         public override Type GraphType { get { return typeof(TGraph); } }
 
         #endregion
@@ -58,23 +41,9 @@ namespace CZToolKit.GraphProcessor
         [SerializeField]
         List<UnityObject> graphUnityReferences;
 
-        public override void SaveGraph()
+        public override void SaveGraph(BaseGraph graph)
         {
             serializedGraph = GraphSerializer.SerializeValue(graph, out graphUnityReferences);
-        }
-
-        void DeserializeGraph()
-        {
-            graph = GraphSerializer.DeserializeValue<TGraph>(serializedGraph, graphUnityReferences);
-            graph.Enable();
-            graph.Initialize(this);
-        }
-
-        public override void CheckGraphSerialization()
-        {
-            if (initializedGraph) return;
-            initializedGraph = true;
-            DeserializeGraph();
         }
         #endregion
 
@@ -107,23 +76,11 @@ namespace CZToolKit.GraphProcessor
         }
         #endregion
 
-        public void OnBeforeSerialize()
-        {
-            //SaveGraph();
-            //SaveVariables();
-        }
-
-        public void OnAfterDeserialize()
-        {
-            CheckGraphSerialization();
-            CheckVaraiblesSerialization();
-        }
-
         #endregion
 
         private void Reset()
         {
-            graph = new TGraph();
+            SaveGraph(new TGraph());
         }
     }
 }

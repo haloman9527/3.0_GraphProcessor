@@ -56,7 +56,7 @@ public class SampleGraphWindow : BaseGraphWindow
     {
         if (GraphAsset is IGraphAsset graphAsset)
         {
-            graphAsset.SaveGraph();
+            graphAsset.SaveGraph(Graph);
         }
         if (GraphOwner is IGraphOwner graphOwner)
         {

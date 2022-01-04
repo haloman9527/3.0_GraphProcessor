@@ -18,7 +18,6 @@ using CZToolKit.GraphProcessor.Internal;
 using System;
 using UnityEngine;
 
-
 namespace CZToolKit.GraphProcessor
 {
     public abstract class GraphAssetOwner<TGraphAsset, TGraph> : InternalGraphAssetOwner
@@ -26,8 +25,8 @@ namespace CZToolKit.GraphProcessor
         where TGraph : BaseGraph, new()
     {
         #region 字段
-        [SerializeField]
-        TGraphAsset graphAsset;
+        [NonSerialized] TGraph graph;
+        [SerializeField] TGraphAsset graphAsset;
         #endregion
 
         #region 属性
@@ -57,8 +56,15 @@ namespace CZToolKit.GraphProcessor
 
         public override BaseGraph Graph { get { return T_Graph; } }
 
-        public TGraph T_Graph { get { return graphAsset.T_Graph; } }
-
+        public TGraph T_Graph
+        {
+            get
+            {
+                if (graph == null && graphAsset != null)
+                    graph = graphAsset.DeserializeTGraph();
+                return graph;
+            }
+        }
         #endregion
     }
 }

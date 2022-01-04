@@ -212,7 +212,7 @@ namespace CZToolKit.GraphProcessor.Editors
             GraphOwner = null;
             GraphAsset = graphAsset as UnityObject;
 
-            InternalLoad(graphAsset.Graph);
+            InternalLoad(graphAsset.DeserializeGraph());
         }
 
         // 直接加载Graph对象
@@ -286,8 +286,7 @@ namespace CZToolKit.GraphProcessor.Editors
         public static BaseGraphWindow Open(IGraphAsset graphAsset)
         {
             if (graphAsset == null) return null;
-            if (graphAsset.Graph == null) return null;
-            var window = GetGraphWindow(graphAsset.Graph.GetType());
+            var window = GetGraphWindow(graphAsset.GraphType);
             window.Load(graphAsset);
             return window;
         }

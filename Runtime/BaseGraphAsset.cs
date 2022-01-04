@@ -23,30 +23,11 @@ using UnityObject = UnityEngine.Object;
 namespace CZToolKit.GraphProcessor
 {
     [Serializable]
-    public abstract class BaseGraphAsset<GraphClass> : InternalBaseGraphAsset, ISerializationCallbackReceiver
-        where GraphClass : BaseGraph, new()
+    public abstract class BaseGraphAsset<GraphClass> : InternalBaseGraphAsset where GraphClass : BaseGraph, new()
     {
-        #region 字段
-        [HideInInspector]
-        [SerializeField]
-        GraphClass graph = new GraphClass();
-        #endregion
-
-        #region 属性
-        public GraphClass T_Graph { get { return graph; } }
-        public override BaseGraph Graph { get { return graph; } }
-        #endregion
-
-        public BaseGraphAsset() { }
-
-        protected virtual void OnEnable()
-        {
-            CheckGraphSerialization();
-        }
+        public override Type GraphType => typeof(GraphClass);
 
         #region Serialize
-        [NonSerialized]
-        bool initializedGraph;
         [HideInInspector]
         [SerializeField]
         [TextArea(20, 20)]
@@ -55,34 +36,23 @@ namespace CZToolKit.GraphProcessor
         [SerializeField]
         List<UnityObject> graphUnityReferences = new List<UnityObject>();
 
-        public override void SaveGraph()
+        public override void SaveGraph(BaseGraph graph)
         {
             serializedGraph = GraphSerializer.SerializeValue(graph, out graphUnityReferences);
         }
 
-        void DeserializeGraph()
+        public override sealed BaseGraph DeserializeGraph()
         {
-            graph = GraphSerializer.DeserializeValue<GraphClass>(serializedGraph, graphUnityReferences);
+            var graph = GraphSerializer.DeserializeValue<GraphClass>(serializedGraph, graphUnityReferences);
             if (graph == null)
                 graph = new GraphClass();
             graph.Enable();
+            return graph;
         }
 
-        public void OnBeforeSerialize()
+        public GraphClass DeserializeTGraph()
         {
-
-        }
-
-        public void OnAfterDeserialize()
-        {
-            CheckGraphSerialization();
-        }
-
-        public override void CheckGraphSerialization()
-        {
-            if (initializedGraph) return;
-            initializedGraph = true;
-            DeserializeGraph();
+            return DeserializeGraph() as GraphClass;
         }
         #endregion
     }

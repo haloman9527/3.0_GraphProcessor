@@ -36,11 +36,7 @@ namespace CZToolKit.GraphProcessor.Internal
 
         #region Serialize
         public abstract void SaveVariables();
-
-        public abstract void SaveGraph();
-
-        public abstract void CheckGraphSerialization();
-
+        public abstract void SaveGraph(BaseGraph graph);
         protected abstract void CheckVaraiblesSerialization();
         #endregion
 
@@ -136,6 +132,11 @@ namespace CZToolKit.GraphProcessor.Internal
                 if (variables[i] != null)
                     sharedVariableIndex.Add(variables[i].GUID, i);
             }
+        }
+
+        public BaseGraph DeserializeGraph()
+        {
+            throw new NotImplementedException();
         }
     }
 }
