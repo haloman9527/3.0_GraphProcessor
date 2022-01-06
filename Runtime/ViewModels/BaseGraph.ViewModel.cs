@@ -190,9 +190,9 @@ namespace CZToolKit.GraphProcessor
             return node;
         }
 
-        public BaseNode AddNode(Type tpye, Vector2 position)
+        public BaseNode AddNode(Type type, Vector2 position)
         {
-            BaseNode node = BaseNode.CreateNew(this, tpye, position);
+            BaseNode node = BaseNode.CreateNew(this, type, position);
             AddNode(node);
             return node;
         }
