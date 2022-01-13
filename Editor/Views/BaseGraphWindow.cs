@@ -86,14 +86,25 @@ namespace CZToolKit.GraphProcessor.Editors
             };
             toolbar.AddButtonToLeft(btnAllView);
 
-            ToolbarButton btnPing = new ToolbarButton()
+
+            IMGUIContainer drawName = new IMGUIContainer(() =>
             {
-                text = "Ping",
-                tooltip = "提示正在编辑的Graph文件的位置",
-                style = { width = 60 }
-            };
-            btnPing.clicked += () => EditorGUIUtility.PingObject(GraphAsset);
-            toolbar.AddButtonToRight(btnPing);
+                if (GraphAsset != null && GUILayout.Button(GraphAsset.name, GUI.skin.label))
+                {
+                    EditorGUIUtility.PingObject(GraphAsset);
+                }
+            });
+            drawName.style.flexGrow = 1;
+            toolbar.AddToLeft(drawName);
+
+            //ToolbarButton btnPing = new ToolbarButton()
+            //{
+            //    text = "Ping",
+            //    tooltip = "提示正在编辑的Graph文件的位置",
+            //    style = { width = 60 }
+            //};
+            //btnPing.clicked += () => ;
+            //toolbar.AddButtonToRight(btnPing);
 
             ToolbarButton btnReload = new ToolbarButton()
             {
