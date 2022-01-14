@@ -31,9 +31,14 @@ namespace CZToolKit.GraphProcessor
         #endregion
 
         #region Properties
-        public BaseGraph Owner { get { return owner; } }
-        public string GUID { get { return guid; } }
-
+        public BaseGraph Owner
+        {
+            get { return owner; }
+        }
+        public string GUID
+        {
+            get { return guid; }
+        }
         public IGraphOwner GraphOwner
         {
             get { return Owner.GraphOwner; }
