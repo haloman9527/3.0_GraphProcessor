@@ -168,7 +168,7 @@ namespace CZToolKit.GraphProcessor.Editors
         // 重新加载Graph
         public virtual void Reload()
         {
-            if (GraphOwner is IGraphAssetOwner graphAssetOwner)
+            if (GraphOwner is IGraphAssetOwner graphAssetOwner && graphAssetOwner.GraphAsset != null)
             {
                 Load(graphAssetOwner);
             }
