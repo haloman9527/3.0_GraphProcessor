@@ -31,6 +31,19 @@ namespace CZToolKit.GraphProcessor.Editors
 
         static GUIHelper.ContextDataCache ContextDataCache = new GUIHelper.ContextDataCache();
 
+        BaseNode node;
+
+        public BaseNode Node
+        {
+            get { return node; }
+        }
+
+        public override void OnEnable()
+        {
+            base.OnEnable();
+            node = Target as BaseNode;
+        }
+
         public override void OnInspectorGUI()
         {
             if (!ContextDataCache.TryGetContextData<GUIStyle>("BigLabel", out var bigLabel))

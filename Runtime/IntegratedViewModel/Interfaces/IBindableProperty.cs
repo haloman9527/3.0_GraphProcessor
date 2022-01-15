@@ -24,9 +24,10 @@ namespace CZToolKit.GraphProcessor
         object ValueBoxed { get; set; }
         Type ValueType { get; }
 
-        void ValueChanged();
         void SetValueWithoutNotify(object value);
         IBindableProperty<T> AsBindableProperty<T>();
+        void RegisterValueChangedEvent<T>(Action<T> onValueChanged);
+        void UnregisterValueChangedEvent<T>(Action<T> onValueChanged);
         void ClearChangedEvent();
     }
 
@@ -37,8 +38,8 @@ namespace CZToolKit.GraphProcessor
         T Value { get; set; }
 
         void ValueChanged();
-        void RegesterValueChangedEvent(Action<T> onValueChanged);
-        void UnregesterValueChangedEvent(Action<T> onValueChanged);
+        void RegisterValueChangedEvent(Action<T> onValueChanged);
+        void UnregisterValueChangedEvent(Action<T> onValueChanged);
         void SetValueWithoutNotify(T value);
         void ClearChangedEvent();
     }

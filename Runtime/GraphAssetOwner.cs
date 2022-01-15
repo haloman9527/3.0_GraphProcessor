@@ -16,7 +16,10 @@
 using CZToolKit.Core.SharedVariable;
 using CZToolKit.GraphProcessor.Internal;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
+
+using UnityObject = UnityEngine.Object;
 
 namespace CZToolKit.GraphProcessor
 {
@@ -52,6 +55,8 @@ namespace CZToolKit.GraphProcessor
 
         public override Type GraphAssetType { get { return typeof(TGraphAsset); } }
 
+        public override Type GraphType { get { return typeof(TGraph); } }
+
         public TGraphAsset T_GraphAsset { get { return graphAsset; } }
 
         public override BaseGraph Graph { get { return T_Graph; } }
@@ -60,10 +65,50 @@ namespace CZToolKit.GraphProcessor
         {
             get
             {
-                if (graph == null && graphAsset != null)
-                    graph = graphAsset.DeserializeTGraph();
+                if (graph == null)
+                {
+                    if (graphAsset != null)
+                        graph = graphAsset.DeserializeTGraph();
+                    else
+                        graph = DeserializeTGraph();
+                }
                 return graph;
             }
+        }
+        #endregion
+
+        #region Serialize
+        [HideInInspector]
+        [SerializeField]
+        string serializedGraph;
+        [HideInInspector]
+        [SerializeField]
+        List<UnityObject> graphUnityReferences;
+
+        public override void SaveGraph(BaseGraph graph)
+        {
+            if (GraphAsset != null)
+            {
+                graphAsset.SaveGraph(graph);
+            }
+            else
+            {
+                serializedGraph = GraphSerializer.SerializeValue(graph, out graphUnityReferences);
+            }
+        }
+
+        public override BaseGraph DeserializeGraph()
+        {
+            var graph = GraphSerializer.DeserializeValue<TGraph>(serializedGraph, graphUnityReferences);
+            if (graph == null)
+                graph = new TGraph();
+            graph.Enable();
+            return graph;
+        }
+
+        public TGraph DeserializeTGraph()
+        {
+            return DeserializeGraph() as TGraph;
         }
         #endregion
     }

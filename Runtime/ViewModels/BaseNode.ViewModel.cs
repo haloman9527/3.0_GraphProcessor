@@ -149,7 +149,7 @@ namespace CZToolKit.GraphProcessor
             {
                 throw new ArgumentException($"Not contains port:{port.name}");
             }
-            Owner.Disconnect(this, port);
+            Owner.Disconnect(port);
             ports.Remove(port.name);
             onPortRemoved?.Invoke(port);
         }

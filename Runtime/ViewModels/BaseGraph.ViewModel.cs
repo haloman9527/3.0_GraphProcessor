@@ -54,7 +54,7 @@ namespace CZToolKit.GraphProcessor
         }
         public IGraphOwner GraphOwner
         {
-            get; 
+            get;
             private set;
         }
         public IVariableOwner VarialbeOwner
@@ -220,10 +220,10 @@ namespace CZToolKit.GraphProcessor
             connection.Enable(this);
 
             if (fromPort.capacity == BasePort.Capacity.Single)
-                Disconnect(connection.FromNode, fromPort);
+                Disconnect(fromPort);
 
             if (toPort.capacity == BasePort.Capacity.Single)
-                Disconnect(connection.ToNode, toPort);
+                Disconnect(toPort);
 
             connections.Add(connection);
 
@@ -263,18 +263,19 @@ namespace CZToolKit.GraphProcessor
             onDisconnected?.Invoke(connection);
         }
 
-        public void Disconnect(BaseNode node, BasePort port)
+        public void Disconnect(BasePort port)
         {
-            Disconnect(node, port.name);
+            if (port.Owner == null || !nodes.ContainsKey(port.Owner.GUID))
+                return;
+            foreach (var connection in port.Connections.ToArray())
+            {
+                Disconnect(connection);
+            }
         }
 
         public void Disconnect(BaseNode node, string portName)
         {
-            foreach (var connection in connections.ToArray())
-            {
-                if ((connection.FromNode == node && connection.FromPortName == portName) || (connection.ToNode == node && connection.ToPortName == portName))
-                    Disconnect(connection);
-            }
+            Disconnect(node.Ports[portName]);
         }
         #endregion
 

@@ -87,12 +87,12 @@ namespace CZToolKit.GraphProcessor
 
         public void BindingProperty<T>(string propertyName, Action<T> onValueChangedCallback)
         {
-            this[propertyName].AsBindableProperty<T>().RegesterValueChangedEvent(onValueChangedCallback);
+            this[propertyName].AsBindableProperty<T>().RegisterValueChangedEvent(onValueChangedCallback);
         }
 
         public void UnBindingProperty<T>(string propertyName, Action<T> onValueChangedCallback)
         {
-            this[propertyName].AsBindableProperty<T>().UnregesterValueChangedEvent(onValueChangedCallback);
+            this[propertyName].AsBindableProperty<T>().UnregisterValueChangedEvent(onValueChangedCallback);
         }
     }
 }

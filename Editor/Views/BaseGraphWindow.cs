@@ -33,25 +33,45 @@ namespace CZToolKit.GraphProcessor.Editors
     public class BaseGraphWindow : BasicEditorWindow
     {
         #region 字段
-        protected UnityObject graphOwner;
-        protected UnityObject graphAsset;
-        protected bool locked = false;
-        [NonSerialized]
-        Dictionary<Type, Action<UnityObject>> graphAssetProcessor = new Dictionary<Type, Action<UnityObject>>();
+        [SerializeField] protected UnityObject graphOwner;
+        [SerializeField] protected UnityObject graphAsset;
+        [SerializeField] protected bool locked = false;
         #endregion
 
         #region 属性
         public IGraphOwner GraphOwner
         {
             get { return graphOwner as IGraphOwner; }
-            protected set { if (value != null) graphOwner = value.Self(); }
+            protected set { graphOwner = value as UnityObject; }
         }
-        public UnityObject GraphAsset { get { return graphAsset; } protected set { graphAsset = value; } }
-        public BaseGraph Graph { get; private set; }
-        public BaseGraphView GraphView { get; private set; }
-        public ToolbarView Toolbar { get { return GraphViewParent?.Toolbar; } }
-        public GraphViewParentElement GraphViewParent { get; private set; }
-        public CommandDispatcher CommandDispatcher { get; private set; }
+        public UnityObject GraphAsset
+        {
+            get { return graphAsset; }
+            protected set { graphAsset = value; }
+        }
+        public BaseGraph Graph
+        {
+            get;
+            private set;
+        }
+        public BaseGraphView GraphView
+        {
+            get; private set;
+        }
+        public ToolbarView Toolbar
+        {
+            get { return GraphViewParent?.Toolbar; }
+        }
+        public GraphViewParentElement GraphViewParent
+        {
+            get;
+            private set;
+        }
+        public CommandDispatcher CommandDispatcher
+        {
+            get;
+            private set;
+        }
         #endregion
 
         #region Unity
@@ -75,36 +95,30 @@ namespace CZToolKit.GraphProcessor.Editors
         #region 方法
         protected virtual void BuildToolbar(ToolbarView toolbar)
         {
-            ToolbarButton btnAllView = new ToolbarButton()
+            ToolbarButton btnOverview = new ToolbarButton()
             {
-                text = "全览",
+                text = "Overview",
                 tooltip = "查看所有节点"
             };
-            btnAllView.clicked += () =>
+            btnOverview.clicked += () =>
             {
                 GraphView.FrameAll();
             };
-            toolbar.AddButtonToLeft(btnAllView);
+            toolbar.AddButtonToLeft(btnOverview);
+            btnOverview.style.width = 80;
 
 
             IMGUIContainer drawName = new IMGUIContainer(() =>
             {
-                if (GraphAsset != null && GUILayout.Button(GraphAsset.name, GUI.skin.label))
+                GUILayout.BeginHorizontal();
+                if (GraphAsset != null && GUILayout.Button(GraphAsset.name, EditorStyles.toolbarButton))
                 {
                     EditorGUIUtility.PingObject(GraphAsset);
                 }
+                GUILayout.EndHorizontal();
             });
             drawName.style.flexGrow = 1;
             toolbar.AddToLeft(drawName);
-
-            //ToolbarButton btnPing = new ToolbarButton()
-            //{
-            //    text = "Ping",
-            //    tooltip = "提示正在编辑的Graph文件的位置",
-            //    style = { width = 60 }
-            //};
-            //btnPing.clicked += () => ;
-            //toolbar.AddButtonToRight(btnPing);
 
             ToolbarButton btnReload = new ToolbarButton()
             {
@@ -197,7 +211,7 @@ namespace CZToolKit.GraphProcessor.Editors
             Clear();
 
             GraphOwner = graphOwner;
-            GraphAsset = graphOwner.Self();
+            GraphAsset = (UnityObject)graphOwner;
 
             GraphOwner.Graph.Initialize(GraphOwner);
             InternalLoad(graphOwner.Graph);
@@ -236,21 +250,16 @@ namespace CZToolKit.GraphProcessor.Editors
 
             InternalLoad(graph);
         }
-
-        public void RegisterGraphAssetProcessor(Type targetType, Action<UnityObject> assetProcessor)
-        {
-            graphAssetProcessor[targetType] = assetProcessor;
-        }
         #endregion
 
-        #region
+        #region Overrides
         protected virtual BaseGraphView NewGraphView(BaseGraph graph, CommandDispatcher commandDispatcher)
         {
             return new BaseGraphView(graph, this, commandDispatcher);
         }
         #endregion
 
-        #region 静态
+        #region Static
         /// <summary> 从Graph类型获取对应的GraphWindow </summary>
         public static BaseGraphWindow GetGraphWindow(Type graphType)
         {

@@ -23,8 +23,6 @@ namespace CZToolKit.GraphProcessor
     {
         BaseGraph Graph { get; }
 
-        UnityObject Self();
-
         void SaveVariables();
     }
 }

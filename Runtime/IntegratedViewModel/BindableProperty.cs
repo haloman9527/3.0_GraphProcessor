@@ -61,13 +61,21 @@ namespace CZToolKit.GraphProcessor
         {
             return this as BindableProperty<T1>;
         }
-        public void RegesterValueChangedEvent(Action<T> onValueChanged)
+        public void RegisterValueChangedEvent(Action<T> onValueChanged)
         {
             this.onValueChanged += onValueChanged;
         }
-        public void UnregesterValueChangedEvent(Action<T> onValueChanged)
+        public void RegisterValueChangedEvent<T1>(Action<T1> onValueChanged)
+        {
+            AsBindableProperty<T1>().RegisterValueChangedEvent(onValueChanged);
+        }
+        public void UnregisterValueChangedEvent(Action<T> onValueChanged)
         {
             this.onValueChanged -= onValueChanged;
+        }
+        public void UnregisterValueChangedEvent<T1>(Action<T1> onValueChanged)
+        {
+            AsBindableProperty<T1>().UnregisterValueChangedEvent(onValueChanged);
         }
         public virtual void SetValueWithoutNotify(T value)
         {

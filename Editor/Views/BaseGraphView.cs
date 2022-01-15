@@ -98,10 +98,6 @@ namespace CZToolKit.GraphProcessor.Editors
 
         protected virtual void UpdateInspector()
         {
-            if (!Selection.activeObject == ObjectInspector.Instance)
-            {
-                return;
-            }
             foreach (var element in selection)
             {
                 switch (element)

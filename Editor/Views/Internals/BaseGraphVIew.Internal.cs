@@ -473,9 +473,10 @@ namespace CZToolKit.GraphProcessor.Editors
                 {
                     EditorUtility.SetDirty(GraphAsset);
                 }
-                if (GraphWindow.GraphOwner != null)
+                
+                if (GraphWindow.GraphOwner is UnityObject uobj && uobj != null)
                 {
-                    EditorUtility.SetDirty(GraphWindow.GraphOwner.Self());
+                    EditorUtility.SetDirty(uobj);
                 }
             }
             else
