@@ -41,6 +41,7 @@ namespace CZToolKit.GraphProcessor
                 if (graphAsset != value)
                 {
                     graphAsset = value as TGraphAsset;
+                    graph = null;
                     if (graphAsset != null)
                     {
                         foreach (var variable in T_Graph.Variables)

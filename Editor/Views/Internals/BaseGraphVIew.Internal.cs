@@ -49,7 +49,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
         #endregion
 
-        private BaseGraphView()
+        public BaseGraphView()
         {
             styleSheets.Add(GraphProcessorStyles.GraphViewStyle);
 
@@ -62,7 +62,8 @@ namespace CZToolKit.GraphProcessor.Editors
             this.StretchToParentSize();
         }
 
-        public BaseGraphView(BaseGraph graph, BaseGraphWindow window, CommandDispatcher commandDispacter) : this()
+        #region Initialize
+        public void SetUp(BaseGraph graph, BaseGraphWindow window, CommandDispatcher commandDispacter)
         {
             Model = graph;
             GraphWindow = window;
@@ -71,7 +72,6 @@ namespace CZToolKit.GraphProcessor.Editors
             RegisterCallback<DetachFromPanelEvent>(evt => { GraphWindow.StopCoroutine(coroutine); });
         }
 
-        #region Initialize
         IEnumerator Initialize()
         {
             // 初始化

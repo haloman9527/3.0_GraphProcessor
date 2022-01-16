@@ -188,10 +188,12 @@ namespace CZToolKit.GraphProcessor.Editors
 
         protected void InternalLoad(BaseGraph graph)
         {
-            CommandDispatcher commandDispatcher = new CommandDispatcher();
-            GraphView = NewGraphView(graph, commandDispatcher);
+            GraphView = NewGraphView(graph);
+            if (GraphView == null) 
+                return;
 
-            if (GraphView == null) return;
+            CommandDispatcher = new CommandDispatcher();
+            GraphView.SetUp(graph, this, CommandDispatcher);
 
             Graph = graph;
             GraphViewParent = new GraphViewParentElement();
@@ -202,7 +204,6 @@ namespace CZToolKit.GraphProcessor.Editors
 
             GraphView.RegisterCallback<KeyDownEvent>(KeyDownCallback);
             GraphViewParent.GraphViewElement.Add(GraphView);
-            CommandDispatcher = commandDispatcher;
         }
 
         // 从GraphOwner加载
@@ -253,9 +254,9 @@ namespace CZToolKit.GraphProcessor.Editors
         #endregion
 
         #region Overrides
-        protected virtual BaseGraphView NewGraphView(BaseGraph graph, CommandDispatcher commandDispatcher)
+        protected virtual BaseGraphView NewGraphView(BaseGraph graph)
         {
-            return new BaseGraphView(graph, this, commandDispatcher);
+            return new BaseGraphView();
         }
         #endregion
 

@@ -24,9 +24,9 @@ using UnityEngine.UIElements;
 [CustomGraphWindow(typeof(SampleGraph))]
 public class SampleGraphWindow : BaseGraphWindow
 {
-    protected override BaseGraphView NewGraphView(BaseGraph graph, CommandDispatcher commandDispatcher)
+    protected override BaseGraphView NewGraphView(BaseGraph graph)
     {
-        return new SampleGraphView(graph, this, commandDispatcher);
+        return new SampleGraphView();
     }
 
     protected override void BuildToolbar(ToolbarView toolbar)

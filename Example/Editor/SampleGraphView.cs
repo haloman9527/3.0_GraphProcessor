@@ -21,10 +21,6 @@ using System.Collections.Generic;
 
 public class SampleGraphView : BaseGraphView
 {
-    public SampleGraphView(BaseGraph graph, BaseGraphWindow window, CommandDispatcher commandDispacter) : base(graph, window, commandDispacter)
-    {
-    }
-
     protected override IEnumerable<Type> GetNodeTypes()
     {
         yield return typeof(SampleNode);
