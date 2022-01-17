@@ -73,26 +73,26 @@ namespace CZToolKit.GraphProcessor
         {
             owner = graph;
             ports = new Dictionary<string, BasePort>();
-            this[TITLE_NAME] = new BindableProperty<string>(GetType().Name);
-            this[TITLE_COLOR_NAME] = new BindableProperty<Color>(new Color(0.2f, 0.2f, 0.2f, 0.8f));
-            this[TOOLTIP_NAME] = new BindableProperty<string>();
-            this[POSITION_NAME] = new BindableProperty<Vector2>(position, v => position = v);
+
+            this[POSITION_NAME] = new BindableProperty<Vector2>(() => position, v => position = v);
 
             Type type = GetType();
-
-            if (Util_Attribute.TryGetTypeAttribute(type, out NodeMenuItemAttribute displayName))
-            {
-                if (displayName.titles != null && displayName.titles.Length != 0)
-                    Title = displayName.titles[displayName.titles.Length - 1];
-            }
+            string title = string.Empty;
+            if (Util_Attribute.TryGetTypeAttribute(type, out NodeMenuItemAttribute displayName) && displayName.titles != null && displayName.titles.Length != 0)
+                title = displayName.titles[displayName.titles.Length - 1];
             else
-                Title = type.Name;
+                title = type.Name;
+            this[TITLE_NAME] = new BindableProperty<string>(() => title, v => title = v);
 
-            if (Util_Attribute.TryGetTypeAttribute(type, out NodeTitleColorAttribute nodeTitleColor))
-                TitleColor = nodeTitleColor.color;
+            var titleColor = new Color(0.2f, 0.2f, 0.2f, 0.8f);
+            if (Util_Attribute.TryGetTypeAttribute(type, out NodeTitleColorAttribute nodeTitleColorAttribute))
+                titleColor = nodeTitleColorAttribute.color;
+            this[TITLE_COLOR_NAME] = new BindableProperty<Color>(() => titleColor, v => titleColor = v);
 
-            if (Util_Attribute.TryGetTypeAttribute(type, out NodeTooltipAttribute tooltip))
-                Tooltip = tooltip.Tooltip;
+            var tooltip = string.Empty;
+            if (Util_Attribute.TryGetTypeAttribute(type, out NodeTooltipAttribute tooltipAttribute))
+                tooltip = tooltipAttribute.Tooltip;
+            this[TOOLTIP_NAME] = new BindableProperty<string>(() => tooltip, v => tooltip = v);
 
             OnEnabled();
         }

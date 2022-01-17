@@ -24,7 +24,7 @@ public class SampleNode : BaseNode
     {
         base.OnEnabled();
 
-        this[nameof(value)] = new BindableProperty<int>(0, v => value = v);
+        this[nameof(value)] = new BindableProperty<int>(() => value, v => value = v);
 
         AddPort(new BasePort("Input", BasePort.Orientation.Vertical, BasePort.Direction.Input, BasePort.Capacity.Multi, typeof(int)));
         AddPort(new BasePort("Output", BasePort.Orientation.Vertical, BasePort.Direction.Output, BasePort.Capacity.Multi, typeof(int)));

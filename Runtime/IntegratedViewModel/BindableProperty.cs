@@ -20,22 +20,25 @@ namespace CZToolKit.GraphProcessor
     [Serializable]
     public class BindableProperty<T> : IBindableProperty, IBindableProperty<T>
     {
-        T value;
+        public event Func<T> getter;
+        public event Action<T> setter;
         public event Action<T> onValueChanged;
         public event Action<object> onBoxedValueChanged;
-        event Action<T> updateModel;
 
         public T Value
         {
-            get { return value; }
+            get
+            {
+                if (getter == null)
+                    return default;
+                return getter();
+            }
             set
             {
-                updateModel?.Invoke(value);
-                if (!Equals(this.value, value))
-                {
-                    this.value = value;
-                    ValueChanged();
-                }
+                if (setter == null || Equals(Value, value))
+                    return;
+                setter(value);
+                ValueChanged();
             }
         }
         public object ValueBoxed
@@ -46,9 +49,9 @@ namespace CZToolKit.GraphProcessor
         public Type ValueType { get { return typeof(T); } }
 
         public BindableProperty() { }
-        public BindableProperty(T defaultValue) { value = defaultValue; }
-        public BindableProperty(Action<T> updateModel) { this.updateModel = updateModel; }
-        public BindableProperty(T defaultValue, Action<T> updateModel) { value = defaultValue; this.updateModel = updateModel; }
+        public BindableProperty(Func<T> getter) { this.getter = getter; }
+        public BindableProperty(Action<T> setter) { this.setter = setter; }
+        public BindableProperty(Func<T> getter, Action<T> setter) { this.getter = getter; this.setter = setter; }
 
         public void ValueChanged()
         {
@@ -79,7 +82,7 @@ namespace CZToolKit.GraphProcessor
         }
         public virtual void SetValueWithoutNotify(T value)
         {
-            this.value = value;
+            Value = value;
         }
         public void SetValueWithoutNotify(object value)
         {

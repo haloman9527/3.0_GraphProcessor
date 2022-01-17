@@ -113,8 +113,8 @@ namespace CZToolKit.GraphProcessor
                 toPort.ConnectTo(connection);
             }
 
-            this[PAN_NAME] = new BindableProperty<Vector3>(pan, v => pan = v);
-            this[ZOOM_NAME] = new BindableProperty<Vector3>(zoom, v => zoom = v);
+            this[PAN_NAME] = new BindableProperty<Vector3>(() => pan, v => pan = v);
+            this[ZOOM_NAME] = new BindableProperty<Vector3>(() => zoom, v => zoom = v);
 
             OnEnabled();
         }
