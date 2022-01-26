@@ -13,6 +13,7 @@
  *
  */
 #endregion
+using CZToolKit.Core.BindableProperty;
 using CZToolKit.Core.SharedVariable;
 using System;
 using System.Linq;

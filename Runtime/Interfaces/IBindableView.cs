@@ -13,6 +13,7 @@
  *
  */
 #endregion
+using CZToolKit.Core.BindableProperty;
 
 namespace CZToolKit.GraphProcessor
 {

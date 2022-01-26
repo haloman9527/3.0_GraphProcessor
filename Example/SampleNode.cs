@@ -13,8 +13,8 @@
  *
  */
 #endregion
+using CZToolKit.Core.BindableProperty;
 using CZToolKit.GraphProcessor;
-using System.Collections.Generic;
 
 public class SampleNode : BaseNode
 {

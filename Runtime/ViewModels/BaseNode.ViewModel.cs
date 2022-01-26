@@ -14,6 +14,7 @@
  */
 #endregion
 using CZToolKit.Core;
+using CZToolKit.Core.BindableProperty;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
