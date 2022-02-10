@@ -14,48 +14,25 @@
  */
 #endregion
 #if UNITY_EDITOR
-
-using CZToolKit.Core;
 using System.Collections.Generic;
+using System.Reflection;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
-
     public class EdgeControlA : EdgeControl
     {
-        public class CurveInfo
-        {
-            public float minX = float.MaxValue, minY = float.MaxValue;
-            public float maxX = float.MinValue, maxY = float.MinValue;
-            public List<Vector2> points = new List<Vector2>();
-
-            public void SetDirty()
-            {
-                minX = float.MaxValue;
-                minY = float.MaxValue;
-                maxX = float.MinValue;
-                maxY = float.MinValue;
-                foreach (var point in points)
-                {
-                    minX = Mathf.Min(point.x, minX);
-                    maxX = Mathf.Max(point.x, maxX);
-                    minY = Mathf.Min(point.y, minY);
-                    maxY = Mathf.Max(point.y, maxY);
-                }
-            }
-        }
         // 构成曲线的点的个数(分辨率)
         public int resolution = 100;
         // 起点终点突出偏移
         public float nearCapOffset = 30;
         // 控点偏移，控制曲线曲率
         public float controlOffset = 100;
-        public Edge edgeView;
 
-        CurveInfo curveInfo = new CurveInfo();
+        Edge edgeView;
         bool pointsChanged;
+        CurveInfo curveInfo = new CurveInfo();
 
         public EdgeControlA(Edge connectionView)
         {
@@ -128,13 +105,13 @@ namespace CZToolKit.GraphProcessor.Editors
                 return;
             }
 
-            if (!(bool)(Util_Reflection.GetFieldInfo(typeof(EdgeControl), "m_RenderPointsDirty").GetValue(this)) && controlPoints != null)
+            if (!(bool)(RenderPointsDirtyField.GetValue(this)) && controlPoints != null)
                 return;
             if (!pointsChanged)
                 return;
             pointsChanged = false;
 
-            var renderPoints = Util_Reflection.GetFieldInfo(typeof(EdgeControl), "m_RenderPoints").GetValue(this) as List<Vector2>;
+            var renderPoints = RenderPointsField.GetValue(this) as List<Vector2>;
             renderPoints.Clear();
             renderPoints.AddRange(curveInfo.points);
 
@@ -154,11 +131,11 @@ namespace CZToolKit.GraphProcessor.Editors
 
             Rect r = new Rect(curveInfo.minX, curveInfo.minY, curveInfo.maxX - curveInfo.minX, curveInfo.maxY - curveInfo.minY);
             r.xMin -= 5;
-            r.xMax += 10;
+            r.xMax += 5;
             r.yMin -= 5;
             r.yMax += 5;
 
-            Util_Reflection.GetPropertyInfo(typeof(EdgeControl), "layout").SetValue(this, r);
+            LayoutProperty.SetValue(this, r);
         }
 
         public static Vector3 GetPoint(Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3, float t)
@@ -171,6 +148,43 @@ namespace CZToolKit.GraphProcessor.Editors
                 3f * oneMinusT * t * t * p2 +
                 t * t * t * p3;
         }
+
+        #region Static
+        static FieldInfo RenderPointsDirtyField;
+        static FieldInfo RenderPointsField;
+        static PropertyInfo LayoutProperty;
+
+        static EdgeControlA()
+        {
+            RenderPointsDirtyField = typeof(EdgeControl).GetField("m_RenderPointsDirty", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+            RenderPointsField = typeof(EdgeControl).GetField("m_RenderPoints", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+            LayoutProperty = typeof(EdgeControl).GetProperty("layout", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+        }
+        #endregion
+
+        #region Define
+        public class CurveInfo
+        {
+            public float minX = float.MaxValue, minY = float.MaxValue;
+            public float maxX = float.MinValue, maxY = float.MinValue;
+            public List<Vector2> points = new List<Vector2>();
+
+            public void SetDirty()
+            {
+                minX = float.MaxValue;
+                minY = float.MaxValue;
+                maxX = float.MinValue;
+                maxY = float.MinValue;
+                foreach (var point in points)
+                {
+                    minX = Mathf.Min(point.x, minX);
+                    maxX = Mathf.Max(point.x, maxX);
+                    minY = Mathf.Min(point.y, minY);
+                    maxY = Mathf.Max(point.y, maxY);
+                }
+            }
+        }
+        #endregion
     }
 }
 #endif

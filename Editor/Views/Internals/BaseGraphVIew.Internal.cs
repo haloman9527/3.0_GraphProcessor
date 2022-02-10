@@ -129,14 +129,13 @@ namespace CZToolKit.GraphProcessor.Editors
         IEnumerator LinkNodeViews()
         {
             int step = 0;
-            foreach (var edge in Model.Connections)
+            foreach (var connection in Model.Connections)
             {
-                if (edge == null) continue;
+                if (connection == null) continue;
                 BaseNodeView fromNodeView, toNodeView;
-                if (!NodeViews.TryGetValue(edge.FromNodeGUID, out fromNodeView)) yield break;
-                if (!NodeViews.TryGetValue(edge.ToNodeGUID, out toNodeView)) yield break;
-
-                ConnectView(fromNodeView, toNodeView, edge);
+                if (!NodeViews.TryGetValue(connection.FromNodeGUID, out fromNodeView)) throw new NullReferenceException($"找不到From节点{connection.FromNodeGUID}");
+                if (!NodeViews.TryGetValue(connection.ToNodeGUID, out toNodeView)) throw new NullReferenceException($"找不到To节点{connection.ToNodeGUID}");
+                ConnectView(fromNodeView, toNodeView, connection);
                 step++;
                 if (step % 5 == 0)
                     yield return null;
@@ -405,7 +404,6 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             Type nodeViewType = GetNodeViewType(node);
             BaseNodeView nodeView = Activator.CreateInstance(nodeViewType) as BaseNodeView;
-
             nodeView.SetUp(node, this);
             NodeViews[node.GUID] = nodeView;
             AddElement(nodeView);
@@ -420,7 +418,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
         public BaseConnectionView ConnectView(BaseNodeView from, BaseNodeView to, BaseConnection connection)
         {
-            var edgeView = Activator.CreateInstance(GetConnectionViewType(connection)) as BaseConnectionView;
+            var edgeView = Activator.CreateInstance(GetConnectionViewType(connection), true) as BaseConnectionView;
             edgeView.SetUp(connection, this);
             edgeView.userData = connection;
             edgeView.output = from.portViews[connection.FromPortName];
@@ -473,7 +471,7 @@ namespace CZToolKit.GraphProcessor.Editors
                 {
                     EditorUtility.SetDirty(GraphAsset);
                 }
-                
+
                 if (GraphWindow.GraphOwner is UnityObject uobj && uobj != null)
                 {
                     EditorUtility.SetDirty(uobj);
