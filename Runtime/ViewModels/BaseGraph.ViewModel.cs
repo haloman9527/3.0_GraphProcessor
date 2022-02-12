@@ -164,8 +164,11 @@ namespace CZToolKit.GraphProcessor
 
         public void AddNode(BaseNode node)
         {
+            if (node.Owner != null && node.Owner != this)
+                throw new Exception("节点存在其它Graph中");
             if (node.ContainsKey(node.GUID))
-                return;
+                throw new Exception("节点添加失败，GUID重复");
+
             node.Enable(this);
             nodes[node.GUID] = node;
             if (variables == null)
@@ -199,7 +202,8 @@ namespace CZToolKit.GraphProcessor
 
         public void RemoveNode(BaseNode node)
         {
-            if (node == null) return;
+            if (node == null)
+                throw new NullReferenceException("节点不能为空");
             Disconnect(node);
             nodes.Remove(node.GUID);
             onNodeRemoved?.Invoke(node);
@@ -207,24 +211,26 @@ namespace CZToolKit.GraphProcessor
 
         public bool Connect(BaseConnection connection)
         {
-            Nodes.TryGetValue(connection.FromNodeGUID, out var fromNode);
-            fromNode.Ports.TryGetValue(connection.FromPortName, out BasePort fromPort);
+            if (!Nodes.TryGetValue(connection.FromNodeGUID, out var fromNode))
+                return false;
+            if (!fromNode.Ports.TryGetValue(connection.FromPortName, out var fromPort))
+                return false;
 
-            Nodes.TryGetValue(connection.ToNodeGUID, out var toNode);
-            toNode.Ports.TryGetValue(connection.ToPortName, out BasePort toPort);
+            if (!Nodes.TryGetValue(connection.ToNodeGUID, out var toNode))
+                return false;
+            if (!toNode.Ports.TryGetValue(connection.ToPortName, out var toPort))
+                return false;
 
             var tmpConnection = fromPort.Connections.FirstOrDefault(tmp => tmp.ToNodeGUID == connection.ToNodeGUID && tmp.ToPortName == connection.ToPortName);
             if (tmpConnection != null)
                 return false;
 
-            connection.Enable(this);
-
             if (fromPort.capacity == BasePort.Capacity.Single)
                 Disconnect(fromPort);
-
             if (toPort.capacity == BasePort.Capacity.Single)
                 Disconnect(toPort);
 
+            connection.Enable(this);
             connections.Add(connection);
 
             fromPort.ConnectTo(connection);
@@ -257,7 +263,7 @@ namespace CZToolKit.GraphProcessor
 
             connection.FromNode.Ports.TryGetValue(connection.FromPortName, out BasePort fromPort);
             fromPort.DisconnectTo(connection);
-
+            
             connection.ToNode.Ports.TryGetValue(connection.ToPortName, out BasePort toPort);
             toPort.DisconnectTo(connection);
 
