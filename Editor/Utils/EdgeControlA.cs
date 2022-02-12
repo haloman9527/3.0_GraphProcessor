@@ -23,13 +23,6 @@ namespace CZToolKit.GraphProcessor.Editors
 {
     public class EdgeControlA : EdgeControl
     {
-        // 构成曲线的点的个数(分辨率)
-        public int resolution = 100;
-        // 起点终点突出偏移
-        public float nearCapOffset = 30;
-        // 控点偏移，控制曲线曲率
-        public float controlOffset = 100;
-
         Edge edgeView;
         bool pointsChanged;
         CurveInfo curveInfo = new CurveInfo();
@@ -43,56 +36,68 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             base.PointsChanged();
             ComputeControlPoints();
-            pointsChanged = true;
             if (controlPoints == null)
                 return;
-            Vector2 vector = controlPoints[0];
-            Vector2 vector2 = controlPoints[1];
-            Vector2 vector3 = controlPoints[2];
-            Vector2 vector4 = controlPoints[3];
-            if (edgeView.input?.node == edgeView.output?.node && inputOrientation == outputOrientation)
-            {
-                Vector2 fixedDis = Vector2.zero;
-                float xDis = vector2.x - vector3.x;
-                float xN = xDis >= 0 ? 1 : -1;
-                float yDis = vector2.y - vector3.y;
-                float yN = yDis >= 0 ? 1 : -1;
-                var a = 50;
-                switch (inputOrientation)
-                {
-                    case Orientation.Horizontal:
-                        var absyDis = yDis * yN;
-                        if (absyDis <= controlOffset && vector.x > vector4.x && xDis < controlOffset * 2)
-                        {
-                            var per = absyDis <= a ? absyDis / a : 1 - (absyDis - a) / (controlOffset - a) * (Mathf.Max(0, xDis) / controlOffset);
-                            fixedDis = per * new Vector3(0, controlOffset * 3) * yN;
-                        }
-                        break;
-                    case Orientation.Vertical:
-                        var absxDis = xDis * xN;
-                        if (absxDis <= controlOffset && vector.y > vector4.y && yDis < controlOffset * 2)
-                        {
-                            var per = absxDis <= a ? absxDis / a : 1 - (absxDis - a) / (controlOffset - a) * (Mathf.Max(0, yDis) / controlOffset);
-                            fixedDis = per * new Vector3(controlOffset * 3, 0) * xN;
-                        }
-                        break;
-                    default:
-                        break;
-                }
-                vector2 += fixedDis;
-                vector3 += fixedDis;
-            }
-
-            Vector2 inputDirection = inputOrientation == Orientation.Horizontal ? Vector2.left : Vector2.up;
-            Vector2 outputDirection = outputOrientation == Orientation.Horizontal ? Vector2.right : Vector2.down;
-
-            vector2 += inputDirection * nearCapOffset * 2;
-            vector3 += outputDirection * nearCapOffset * 2;
+            if (edgeView.input?.node != edgeView.output?.node)
+                return;
+            pointsChanged = true;
+            Vector2 vector0 = controlPoints[0];
+            Vector2 vector1 = controlPoints[1];
+            Vector2 vector2 = controlPoints[2];
+            Vector2 vector3 = controlPoints[3];
 
             curveInfo.points.Clear();
-            for (float i = 0; i < resolution; i++)
+            curveInfo.points.Add(vector0);
+            curveInfo.points.Add(vector1);
+            curveInfo.points.Add(vector2);
+            curveInfo.points.Add(vector3);
+            if (inputOrientation == outputOrientation && outputOrientation == Orientation.Horizontal)
             {
-                curveInfo.points.Add(GetPoint(vector, vector2, vector3, vector4, i / resolution));
+                var y = Mathf.Max(vector1.y, vector2.y);
+                var c1 = new Vector2(vector1.x, y + 10);
+                var c2 = new Vector2(vector2.x, c1.y);
+                curveInfo.points.Insert(2, c1);
+                curveInfo.points.Insert(3, c2);
+            }
+            else if (inputOrientation == outputOrientation && outputOrientation == Orientation.Vertical)
+            {
+                //var dis = vector0.x - vector3.x;
+                //vector1.y += 7;
+                //curveInfo.points[1] = vector1;
+                //vector2.y -= 7;
+                //curveInfo.points[2] = vector2;
+                //if (Mathf.Abs(dis) < 5 || dis <= 0)
+                //{
+                //    var outputOffset = (edgeView.output.parent.layout.width - edgeView.output.layout.center.x) + 20;
+                //    var c1 = new Vector2(vector1.x + outputOffset, vector1.y);
+                //    var c2 = new Vector2(c1.x, vector2.y);
+                //    curveInfo.points.Insert(2, c1);
+                //    curveInfo.points.Insert(3, c2);
+                //}
+                //else if (dis > 0)
+                //{
+                //    var outputOffset = edgeView.output.layout.center.x + 20;
+                //    var c1 = new Vector2(vector1.x - outputOffset, vector1.y);
+                //    var c2 = new Vector2(c1.x, vector2.y);
+                //    curveInfo.points.Insert(2, c1);
+                //    curveInfo.points.Insert(3, c2);
+                //}
+
+                var x = Mathf.Max(vector1.x, vector2.x);
+                var c1 = new Vector2(x + 10, vector1.y);
+                var c2 = new Vector2(c1.x, vector2.y);
+                curveInfo.points.Insert(2, c1);
+                curveInfo.points.Insert(3, c2);
+            }
+            else if (inputOrientation != outputOrientation && outputOrientation == Orientation.Horizontal)
+            {
+                var c = new Vector2(vector1.x, vector2.y);
+                curveInfo.points.Insert(2, c);
+            }
+            else if (inputOrientation != outputOrientation && outputOrientation == Orientation.Vertical)
+            {
+                var c = new Vector2(vector2.x, vector1.y);
+                curveInfo.points.Insert(2, c);
             }
             curveInfo.SetDirty();
         }
@@ -136,17 +141,6 @@ namespace CZToolKit.GraphProcessor.Editors
             r.yMax += 5;
 
             LayoutProperty.SetValue(this, r);
-        }
-
-        public static Vector3 GetPoint(Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3, float t)
-        {
-            t = Mathf.Clamp01(t);
-            float oneMinusT = 1f - t;
-            return
-                oneMinusT * oneMinusT * oneMinusT * p0 +
-                3f * oneMinusT * oneMinusT * t * p1 +
-                3f * oneMinusT * t * t * p2 +
-                t * t * t * p3;
         }
 
         #region Static

@@ -16,26 +16,17 @@
 #if UNITY_EDITOR
 using UnityEditor.Experimental.GraphView;
 using UnityEngine.UIElements;
-using UnityEngine;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
     public partial class BaseConnectionView : Edge, IBindableView<BaseConnection>
     {
-        public Label IndexLabel { get; private set; }
         public BaseConnection Model { get; private set; }
         protected BaseGraphView Owner { get; private set; }
 
         public BaseConnectionView() : base()
         {
             styleSheets.Add(GraphProcessorStyles.EdgeViewStyle);
-            IndexLabel = new Label();
-            IndexLabel.style.display = DisplayStyle.None;
-            IndexLabel.style.flexGrow = 1;
-            IndexLabel.style.fontSize = 20;
-            IndexLabel.style.color = new Color(1, 0.5f, 0, 1);
-            IndexLabel.style.unityTextAlign = TextAnchor.MiddleCenter;
-            edgeControl.Add(IndexLabel);
             this.RegisterCallback<MouseEnterEvent>(OnMouseEnter);
         }
 
@@ -50,31 +41,9 @@ namespace CZToolKit.GraphProcessor.Editors
 
         }
 
-        public void ShowIndex(int index)
-        {
-            IndexLabel.text = index.ToString();
-            IndexLabel.style.display = DisplayStyle.Flex;
-            BringToFront();
-        }
-
-        public void HideIndex()
-        {
-            IndexLabel.text = "";
-            IndexLabel.style.display = DisplayStyle.None;
-        }
-
         private void OnMouseEnter(MouseEnterEvent evt)
         {
             this.BringToFront();
-        }
-
-        protected override EdgeControl CreateEdgeControl()
-        {
-            return new EdgeControlA(this)
-            {
-                capRadius = 4f,
-                interceptWidth = 6f
-            };
         }
     }
 }

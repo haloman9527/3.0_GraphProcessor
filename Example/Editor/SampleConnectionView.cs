@@ -20,14 +20,10 @@ public class SampleConnectionView : BaseConnectionView
 {
     protected override EdgeControl CreateEdgeControl()
     {
-        return new SampleEdgeControl()
+        return new EdgeControlA(this)
         {
             capRadius = 4f,
             interceptWidth = 6f
         };
     }
-}
-
-public class SampleEdgeControl : EdgeControl
-{
 }

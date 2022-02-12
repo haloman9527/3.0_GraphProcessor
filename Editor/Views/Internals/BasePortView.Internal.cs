@@ -61,9 +61,6 @@ namespace CZToolKit.GraphProcessor.Editors
 
             portName = port.name;
             tooltip = port.name;
-
-            this.RegisterCallback<MouseEnterEvent>(OnMouseEnter);
-            this.RegisterCallback<MouseLeaveEvent>(OnMouseLeave);
         }
 
         public virtual void Connect(BaseConnectionView connection)
@@ -81,28 +78,6 @@ namespace CZToolKit.GraphProcessor.Editors
             if (connection is BaseConnectionView connectionView)
             {
                 ConnectionViews.Remove(connectionView.Model);
-            }
-        }
-
-        private void OnMouseEnter(MouseEnterEvent evt)
-        {
-            int index = 0;
-            foreach (var connection in Model.Connections)
-            {
-                ConnectionViews.TryGetValue(connection, out var connectionView);
-                connectionView.ShowIndex(index);
-                index++;
-            }
-        }
-
-        private void OnMouseLeave(MouseLeaveEvent evt)
-        {
-            int index = 0;
-            foreach (var connection in Model.Connections)
-            {
-                ConnectionViews.TryGetValue(connection, out var connectionView);
-                connectionView.HideIndex();
-                index++;
             }
         }
 
