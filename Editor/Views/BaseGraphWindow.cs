@@ -70,7 +70,7 @@ namespace CZToolKit.GraphProcessor.Editors
         public CommandDispatcher CommandDispatcher
         {
             get;
-            private set;
+            protected set;
         }
         #endregion
 
@@ -186,24 +186,20 @@ namespace CZToolKit.GraphProcessor.Editors
             }
         }
 
-        protected void InternalLoad(BaseGraph graph)
+        protected void InternalLoad(BaseGraph graph, CommandDispatcher commandDispatcher)
         {
             GraphView = NewGraphView(graph);
-            if (GraphView == null) 
+            if (GraphView == null)
                 return;
-
-            CommandDispatcher = new CommandDispatcher();
-            GraphView.SetUp(graph, this, CommandDispatcher);
-
+            GraphView.SetUp(graph, this, commandDispatcher);
             Graph = graph;
             GraphViewParent = new GraphViewParentElement();
             GraphViewParent.StretchToParentSize();
             rootVisualElement.Add(GraphViewParent);
-
-            BuildToolbar(GraphViewParent.Toolbar);
-
             GraphView.RegisterCallback<KeyDownEvent>(KeyDownCallback);
             GraphViewParent.GraphViewElement.Add(GraphView);
+
+            BuildToolbar(GraphViewParent.Toolbar);
         }
 
         // 从GraphOwner加载
@@ -213,9 +209,10 @@ namespace CZToolKit.GraphProcessor.Editors
 
             GraphOwner = graphOwner;
             GraphAsset = (UnityObject)graphOwner;
+            CommandDispatcher = new CommandDispatcher();
 
             GraphOwner.Graph.Initialize(GraphOwner);
-            InternalLoad(graphOwner.Graph);
+            InternalLoad(graphOwner.Graph, CommandDispatcher);
         }
 
         // 从GraphAssetOwner加载
@@ -225,9 +222,10 @@ namespace CZToolKit.GraphProcessor.Editors
 
             GraphOwner = graphAssetOwner;
             GraphAsset = graphAssetOwner.GraphAsset;
+            CommandDispatcher = new CommandDispatcher();
 
             GraphOwner.Graph.Initialize(GraphOwner);
-            InternalLoad(graphAssetOwner.Graph);
+            InternalLoad(graphAssetOwner.Graph, CommandDispatcher);
         }
 
         // 从Graph资源加载
@@ -237,8 +235,9 @@ namespace CZToolKit.GraphProcessor.Editors
 
             GraphOwner = null;
             GraphAsset = graphAsset as UnityObject;
+            CommandDispatcher = new CommandDispatcher();
 
-            InternalLoad(graphAsset.DeserializeGraph());
+            InternalLoad(graphAsset.DeserializeGraph(), CommandDispatcher);
         }
 
         // 直接加载Graph对象
@@ -248,8 +247,9 @@ namespace CZToolKit.GraphProcessor.Editors
 
             GraphAsset = null;
             GraphOwner = null;
+            CommandDispatcher = new CommandDispatcher();
 
-            InternalLoad(graph);
+            InternalLoad(graph, CommandDispatcher);
         }
         #endregion
 
