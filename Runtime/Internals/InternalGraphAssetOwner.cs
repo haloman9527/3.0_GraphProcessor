@@ -22,7 +22,7 @@ using UnityObject = UnityEngine.Object;
 
 namespace CZToolKit.GraphProcessor.Internal
 {
-    public abstract class InternalGraphAssetOwner : MonoBehaviour, IGraphAsset, IGraphAssetOwner, IVariableOwner, ISerializationCallbackReceiver
+    public abstract class InternalGraphAssetOwner : MonoBehaviour, IGraphAsset, IGraphOwner, IGraphAssetOwner, IVariableOwner, ISerializationCallbackReceiver
     {
         #region Fields
         List<SharedVariable> variables = new List<SharedVariable>();

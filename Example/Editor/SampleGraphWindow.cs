@@ -55,16 +55,12 @@ public class SampleGraphWindow : BaseGraphWindow
     void Save()
     {
         if (GraphAsset is IGraphAsset graphAsset)
-        {
             graphAsset.SaveGraph(Graph);
-        }
         if (GraphOwner is IGraphOwner graphOwner)
-        {
             graphOwner.SaveVariables();
-        }
-        GraphView.SetDirty(true);
+        GraphView.SetDirty();
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
-        GraphView.UnsetDirty();
+        GraphView.SetUndirty();
     }
 }

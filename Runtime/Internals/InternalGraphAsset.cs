@@ -22,7 +22,6 @@ namespace CZToolKit.GraphProcessor.Internal
     {
         public abstract Type GraphType { get; }
         public abstract void SaveGraph(BaseGraph graph);
-
         public abstract BaseGraph DeserializeGraph();
     }
 }

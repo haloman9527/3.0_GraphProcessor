@@ -19,7 +19,6 @@ using CZToolKit.Core.Editors;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -31,7 +30,9 @@ namespace CZToolKit.GraphProcessor.Editors
     public partial class BaseGraphView : GraphView, IBindableView<BaseGraph>
     {
         #region 属性
-        public bool IsDirty { get; private set; } = false;
+        public event Action onDirty;
+        public event Action onUndirty;
+
         public CreateNodeMenuWindow CreateNodeMenu { get; private set; }
         public BaseGraphWindow GraphWindow { get; private set; }
         public CommandDispatcher CommandDispacter { get; private set; }
@@ -87,16 +88,6 @@ namespace CZToolKit.GraphProcessor.Editors
             yield return GraphWindow.StartCoroutine(GenerateNodeViews());
             yield return GraphWindow.StartCoroutine(LinkNodeViews());
 
-            double nextCheckTime = EditorApplication.timeSinceStartup;
-            Add(new IMGUIContainer(() =>
-            {
-                if (IsDirty && EditorApplication.timeSinceStartup > nextCheckTime)
-                {
-                    IsDirty = false;
-                    SetDirty(true);
-                    nextCheckTime += 1;
-                }
-            }));
             UpdateInspector();
             OnInitialized();
         }
@@ -453,39 +444,23 @@ namespace CZToolKit.GraphProcessor.Editors
             RemoveElement(edgeView);
         }
 
-        public virtual void ResetPositionAndZoom()
+        /// <summary> 获取鼠标在GraphView中的坐标，如果鼠标不在GraphView内，则返回当前GraphView显示的中心点 </summary>
+        public Vector2 GetMousePosition()
         {
-            Model.Pan = Vector3.zero;
-            Model.Zoom = Vector3.one;
+            if (worldBound.Contains(Event.current.mousePosition))
+                return contentViewContainer.WorldToLocal(Event.current.mousePosition);
+            return contentViewContainer.WorldToLocal(worldBound.center);
         }
 
         // 标记Dirty
-        public void SetDirty(bool immediately = false)
+        public void SetDirty()
         {
-            if (!GraphWindow.titleContent.text.EndsWith(" *"))
-                GraphWindow.titleContent.text += " *";
-
-            if (immediately)
-            {
-                if (GraphAsset != null)
-                {
-                    EditorUtility.SetDirty(GraphAsset);
-                }
-
-                if (GraphWindow.GraphOwner is UnityObject uobj && uobj != null)
-                {
-                    EditorUtility.SetDirty(uobj);
-                }
-            }
-            else
-                IsDirty = true;
+            onDirty?.Invoke();
         }
 
-        public void UnsetDirty()
+        public void SetUndirty()
         {
-            if (GraphWindow.titleContent.text.EndsWith(" *"))
-                GraphWindow.titleContent.text = GraphWindow.titleContent.text.Replace(" *", "");
-            IsDirty = false;
+            onUndirty?.Invoke();
         }
         #endregion
     }

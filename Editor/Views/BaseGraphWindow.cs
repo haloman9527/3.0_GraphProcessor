@@ -191,7 +191,10 @@ namespace CZToolKit.GraphProcessor.Editors
             GraphView = NewGraphView(graph);
             if (GraphView == null)
                 return;
+            OnGraphViewUndirty();
             GraphView.SetUp(graph, this, commandDispatcher);
+            GraphView.onDirty += OnGraphViewDirty;
+            GraphView.onUndirty += OnGraphViewUndirty;
             Graph = graph;
             GraphViewParent = new GraphViewParentElement();
             GraphViewParent.StretchToParentSize();
@@ -250,6 +253,22 @@ namespace CZToolKit.GraphProcessor.Editors
             CommandDispatcher = new CommandDispatcher();
 
             InternalLoad(graph, CommandDispatcher);
+        }
+
+        public void OnGraphViewDirty()
+        {
+            if (!titleContent.text.EndsWith(" *"))
+                titleContent.text += " *";
+            if (GraphAsset != null)
+                EditorUtility.SetDirty(GraphAsset);
+            if (GraphOwner is UnityObject uobj && uobj != null)
+                EditorUtility.SetDirty(uobj);
+        }
+
+        public void OnGraphViewUndirty()
+        {
+            if (titleContent.text.EndsWith(" *"))
+                titleContent.text = titleContent.text.Replace(" *", "");
         }
         #endregion
 
