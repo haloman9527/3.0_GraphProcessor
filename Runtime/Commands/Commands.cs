@@ -299,6 +299,34 @@ namespace CZToolKit.GraphProcessor
         }
     }
 
+    public class MoveNodesCommand : ICommand
+    {
+        Dictionary<BaseNode, Vector2> oldPos = new Dictionary<BaseNode, Vector2>();
+        Dictionary<BaseNode, Vector2> newPos = new Dictionary<BaseNode, Vector2>();
+
+        public MoveNodesCommand(Dictionary<BaseNode, Vector2> newPos)
+        {
+            this.newPos = newPos;
+        }
+
+        public void Do()
+        {
+            foreach (var pair in newPos)
+            {
+                oldPos[pair.Key] = pair.Key.Position;
+                pair.Key.Position = pair.Value;
+            }
+        }
+
+        public void Undo()
+        {
+            foreach (var pair in oldPos)
+            {
+                pair.Key.Position = pair.Value;
+            }
+        }
+    }
+
     public class ChangeValueCommand : ICommand
     {
         object target;

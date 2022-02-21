@@ -218,13 +218,14 @@ namespace CZToolKit.GraphProcessor.Editors
             {
                 CommandDispacter.BeginGroup();
                 // 当节点移动之后，与之连接的接口重新排序
+                Dictionary<BaseNode, Vector2> newPos = new Dictionary<BaseNode, Vector2>();
                 HashSet<BasePort> ports = new HashSet<BasePort>();
                 changes.movedElements.RemoveAll(element =>
                 {
                     switch (element)
                     {
                         case BaseNodeView nodeView:
-                            CommandDispacter.Do(new MoveNodeCommand(nodeView.Model, nodeView.GetPosition().position));
+                            newPos[nodeView.Model] = nodeView.GetPosition().position;
                             // 记录需要重新排序的接口
                             foreach (var port in nodeView.Model.Ports.Values)
                             {
@@ -246,6 +247,8 @@ namespace CZToolKit.GraphProcessor.Editors
                     }
                     return false;
                 });
+
+                CommandDispacter.Do(new MoveNodesCommand(newPos));
                 // 排序
                 foreach (var port in ports)
                 {

@@ -168,11 +168,11 @@ namespace CZToolKit.GraphProcessor
                 throw new Exception("节点存在其它Graph中");
             if (node.ContainsKey(node.GUID))
                 throw new Exception("节点添加失败，GUID重复");
+            if (variables == null)
+                CollectionVariables();
 
             node.Enable(this);
             nodes[node.GUID] = node;
-            if (variables == null)
-                CollectionVariables();
             IEnumerable<SharedVariable> nodeVariables = SharedVariableUtility.CollectionObjectSharedVariables(node);
             variables.AddRange(nodeVariables);
             if (GraphOwner != null)
