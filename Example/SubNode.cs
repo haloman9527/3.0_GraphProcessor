@@ -15,6 +15,7 @@
 #endregion
 using CZToolKit.GraphProcessor;
 
+[NodeMenuItem("Sub")]
 public class SubNode : BaseNode
 {
     protected override void OnEnabled()

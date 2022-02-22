@@ -18,6 +18,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[NodeMenuItem("Add")]
 public class AddNode : BaseNode
 {
     protected override void OnEnabled()

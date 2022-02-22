@@ -16,6 +16,7 @@
 using CZToolKit.GraphProcessor;
 using UnityEngine;
 
+[NodeMenuItem("Debug")]
 public class DebugNode : BaseNode
 {
     protected override void OnEnabled()

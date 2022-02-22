@@ -16,6 +16,7 @@
 using CZToolKit.Core.BindableProperty;
 using CZToolKit.GraphProcessor;
 
+[NodeMenuItem("Float")]
 public class FloatNode : BaseNode
 {
     public float num;
