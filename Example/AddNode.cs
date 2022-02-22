@@ -14,12 +14,9 @@
  */
 #endregion
 using CZToolKit.GraphProcessor;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 
 [NodeMenuItem("Add")]
-public class AddNode : BaseNode
+public class AddNode : BaseNode, IGetValue<float>
 {
     protected override void OnEnabled()
     {
@@ -32,8 +29,15 @@ public class AddNode : BaseNode
 
     public override object GetValue(string port)
     {
-        var inputAValue = (float)Ports["InputA"].GetConnectionValue();
-        var inputBValue = (float)Ports["InputB"].GetConnectionValue();
+        var inputAValue = Ports["InputA"].GetConnectionValue<float>();
+        var inputBValue = Ports["InputB"].GetConnectionValue<float>();
+        return inputAValue + inputBValue;
+    }
+
+    float IGetValue<float>.GetValue(string port)
+    {
+        var inputAValue = Ports["InputA"].GetConnectionValue<float>();
+        var inputBValue = Ports["InputB"].GetConnectionValue<float>();
         return inputAValue + inputBValue;
     }
 }

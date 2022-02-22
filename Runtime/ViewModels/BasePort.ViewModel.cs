@@ -101,6 +101,34 @@ namespace CZToolKit.GraphProcessor
                 }
             }
         }
+
+        /// <summary> 获取连接的第一个接口的值 </summary>
+        /// <returns></returns>
+        public T GetConnectionValue<T>()
+        {
+            return GetConnectionValues<T>().FirstOrDefault();
+        }
+
+        /// <summary> 获取连接的接口的值 </summary>
+        public IEnumerable<T> GetConnectionValues<T>()
+        {
+            if (direction == Direction.Input)
+            {
+                foreach (var connection in Connections)
+                {
+                    if (connection.FromNode is IGetValue<T> a)
+                        yield return a.GetValue(connection.FromPortName);
+                }
+            }
+            else
+            {
+                foreach (var connection in Connections)
+                {
+                    if (connection.ToNode is IGetValue<T> a)
+                        yield return a.GetValue(connection.FromPortName);
+                }
+            }
+        }
         #endregion
 
         #region Overrides
