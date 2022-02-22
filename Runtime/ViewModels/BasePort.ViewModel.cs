@@ -116,16 +116,16 @@ namespace CZToolKit.GraphProcessor
             {
                 foreach (var connection in Connections)
                 {
-                    if (connection.FromNode is IGetValue<T> a)
-                        yield return a.GetValue(connection.FromPortName);
+                    if (connection.FromNode is IGetValue<T> fromPort)
+                        yield return fromPort.GetValue(connection.FromPortName);
                 }
             }
             else
             {
                 foreach (var connection in Connections)
                 {
-                    if (connection.ToNode is IGetValue<T> a)
-                        yield return a.GetValue(connection.FromPortName);
+                    if (connection.ToNode is IGetValue<T> toPort)
+                        yield return toPort.GetValue(connection.ToPortName);
                 }
             }
         }
