@@ -13,31 +13,18 @@
  *
  */
 #endregion
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+using CZToolKit.GraphProcessor;
 
-public class SampleGraphTest : MonoBehaviour
+public class SampleGraphTest : GraphAssetOwner<SampleGraphAsset, SampleGraph>
 {
-    public SampleGraph graph;
-
-    // Start is called before the first frame update
-    void Start()
+    private void Update()
     {
-        graph = new SampleGraph();
-
-        var nodeA = graph.AddNode<SampleNode>(Vector2.down * 100);
-        var nodeB = graph.AddNode<SampleNode>(Vector2.down * 200);
-
-        graph.Connect(nodeA, "Output", nodeB, "Input");
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        if (Input.GetButton("Jump"))
+        foreach (var node in T_Graph.Nodes.Values)
         {
-            CZToolKit.GraphProcessor.Editors.BaseGraphWindow.Open(graph);
+            if (node is DebugNode debugNode)
+            {
+                debugNode.DebugInput();
+            }
         }
     }
 }
