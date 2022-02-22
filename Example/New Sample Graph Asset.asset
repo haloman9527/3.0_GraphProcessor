@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   serializedGraph: "{\r\n    \"$id\": 0,\r\n    \"$type\": \"0|SampleGraph, CZToolKit.GraphProcessor\",\r\n   
     \"pan\": {\r\n        \"$type\": \"1|UnityEngine.Vector3, UnityEngine.CoreModule\",\r\n       
-    0,\r\n        0,\r\n        0\r\n    },\r\n    \"zoom\": {\r\n        \"$type\":
+    120,\r\n        62,\r\n        0\r\n    },\r\n    \"zoom\": {\r\n        \"$type\":
     1,\r\n        1,\r\n        1,\r\n        1\r\n    },\r\n    \"nodes\": {\r\n       
     \"$id\": 1,\r\n        \"$type\": \"2|System.Collections.Generic.Dictionary`2[[System.String,
     mscorlib],[CZToolKit.GraphProcessor.BaseNode, CZToolKit.GraphProcessor]], mscorlib\",\r\n       
@@ -52,7 +52,7 @@ MonoBehaviour:
     4,\r\n                    \"guid\": \"fdcdd263-225f-453a-bd51-f1745d3b428e\",\r\n                   
     \"position\": {\r\n                        \"$type\": 5,\r\n                       
     380,\r\n                        327\r\n                    },\r\n                   
-    \"num\": 10\r\n                }\r\n            }\r\n        ]\r\n    },\r\n   
+    \"num\": 14.38\r\n                }\r\n            }\r\n        ]\r\n    },\r\n   
     \"connections\": {\r\n        \"$id\": 9,\r\n        \"$type\": \"9|System.Collections.Generic.List`1[[CZToolKit.GraphProcessor.BaseConnection,
     CZToolKit.GraphProcessor]], mscorlib\",\r\n        \"$rlength\": 5,\r\n       
     \"$rcontent\": [\r\n            {\r\n                \"$id\": 10,\r\n               

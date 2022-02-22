@@ -21,7 +21,7 @@ using UnityEngine;
 
 namespace CZToolKit.GraphProcessor
 {
-    public abstract partial class BaseNode : IntegratedViewModel, IGraphElement, IGetValue
+    public abstract partial class BaseNode : IntegratedViewModel, IGraphElement
     {
         #region Fields
         [NonSerialized] BaseGraph owner;
@@ -165,11 +165,6 @@ namespace CZToolKit.GraphProcessor
         protected virtual void OnInitialized()
         {
 
-        }
-
-        public virtual object GetValue(string port)
-        {
-            throw new NotImplementedException();
         }
         #endregion
 

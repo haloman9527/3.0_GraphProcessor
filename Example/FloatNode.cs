@@ -17,7 +17,7 @@ using CZToolKit.Core.BindableProperty;
 using CZToolKit.GraphProcessor;
 
 [NodeMenuItem("Float")]
-public class FloatNode : BaseNode, IGetValue<float>
+public class FloatNode : BaseNode, IGetValue, IGetValue<float>
 {
     public float num;
 
@@ -30,7 +30,7 @@ public class FloatNode : BaseNode, IGetValue<float>
         this[nameof(num)] = new BindableProperty<float>(() => num, v => num = v);
     }
 
-    public override object GetValue(string port)
+    public object GetValue(string port)
     {
         return num;
     }

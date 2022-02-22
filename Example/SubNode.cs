@@ -16,7 +16,7 @@
 using CZToolKit.GraphProcessor;
 
 [NodeMenuItem("Sub")]
-public class SubNode : BaseNode, IGetValue<float>
+public class SubNode : BaseNode, IGetValue, IGetValue<float>
 {
     protected override void OnEnabled()
     {
@@ -27,7 +27,7 @@ public class SubNode : BaseNode, IGetValue<float>
         AddPort(new BasePort("Output", BasePort.Orientation.Horizontal, BasePort.Direction.Output, BasePort.Capacity.Multi, typeof(float)));
     }
 
-    public override object GetValue(string port)
+    public object GetValue(string port)
     {
         var inputAValue = Ports["InputA"].GetConnectionValue<float>();
         var inputBValue = Ports["InputB"].GetConnectionValue<float>();
