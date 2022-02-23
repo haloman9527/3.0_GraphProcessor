@@ -201,15 +201,13 @@ namespace CZToolKit.GraphProcessor
         BaseNode newFrom, newTo;
         string newFromPortName, newToPortName;
 
+        BasePort.Direction replacedDirection = BasePort.Direction.Input;
+        List<BaseConnection> replacedConnections = new List<BaseConnection>();
+
         public ConnectionRedirectCommand(BaseGraph graph, BaseConnection connection, BaseNode from, string fromPortName, BaseNode to, string toPortName)
         {
             this.graph = graph;
             this.connection = connection;
-
-            oldFrom = connection.FromNode;
-            oldFromPortName = connection.FromPortName;
-            oldTo = connection.ToNode;
-            oldToPortName = connection.ToPortName;
 
             newFrom = from;
             newFromPortName = fromPortName;
@@ -219,6 +217,25 @@ namespace CZToolKit.GraphProcessor
 
         public void Do()
         {
+            oldFrom = connection.FromNode;
+            oldFromPortName = connection.FromPortName;
+            oldTo = connection.ToNode;
+            oldToPortName = connection.ToPortName;
+
+            replacedConnections.Clear();
+            if (connection.FromNodeGUID == newFrom.GUID && connection.FromPortName == newFromPortName)
+            {
+                replacedDirection = BasePort.Direction.Input;
+                if (newTo.Ports[newToPortName].capacity == BasePort.Capacity.Single)
+                    replacedConnections.AddRange(newTo.Ports[newToPortName].Connections);
+            }
+            else
+            {
+                replacedDirection = BasePort.Direction.Output;
+                if (newFrom.Ports[newFromPortName].capacity == BasePort.Capacity.Single)
+                    replacedConnections.AddRange(newFrom.Ports[newFromPortName].Connections);
+            }
+
             connection.Redirect(newFrom, newFromPortName, newTo, newToPortName);
             graph.Connect(connection);
         }
@@ -228,6 +245,12 @@ namespace CZToolKit.GraphProcessor
             graph.Disconnect(connection);
             connection.Redirect(oldFrom, oldFromPortName, oldTo, oldToPortName);
             graph.Connect(connection);
+
+            // 还原
+            foreach (var connection in replacedConnections)
+            {
+                graph.Connect(connection);
+            }
         }
     }
 
