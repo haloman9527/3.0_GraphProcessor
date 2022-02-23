@@ -156,6 +156,7 @@ namespace CZToolKit.GraphProcessor
         string toPortName;
 
         BaseConnection connection;
+        HashSet<BaseConnection> replacedConnections = new HashSet<BaseConnection>();
 
         public ConnectCommand(BaseGraph graph, BaseNode from, string fromPortName, BaseNode to, string toPortName)
         {
@@ -174,6 +175,22 @@ namespace CZToolKit.GraphProcessor
 
         public void Do()
         {
+            replacedConnections.Clear();
+            if (from.Ports[fromPortName].capacity == BasePort.Capacity.Single)
+            {
+                foreach (var connection in from.Ports[fromPortName].Connections)
+                {
+                    replacedConnections.Add(connection);
+                }
+            }
+            if (to.Ports[toPortName].capacity == BasePort.Capacity.Single)
+            {
+                foreach (var connection in to.Ports[toPortName].Connections)
+                {
+                    replacedConnections.Add(connection);
+                }
+            }
+
             if (connection == null)
             {
                 connection = graph.Connect(from, fromPortName, to, toPortName);
@@ -187,6 +204,12 @@ namespace CZToolKit.GraphProcessor
         public void Undo()
         {
             graph.Disconnect(connection);
+
+            // 还原
+            foreach (var connection in replacedConnections)
+            {
+                graph.Connect(connection);
+            }
         }
     }
 
@@ -201,7 +224,6 @@ namespace CZToolKit.GraphProcessor
         BaseNode newFrom, newTo;
         string newFromPortName, newToPortName;
 
-        BasePort.Direction replacedDirection = BasePort.Direction.Input;
         List<BaseConnection> replacedConnections = new List<BaseConnection>();
 
         public ConnectionRedirectCommand(BaseGraph graph, BaseConnection connection, BaseNode from, string fromPortName, BaseNode to, string toPortName)
@@ -225,13 +247,11 @@ namespace CZToolKit.GraphProcessor
             replacedConnections.Clear();
             if (connection.FromNodeGUID == newFrom.GUID && connection.FromPortName == newFromPortName)
             {
-                replacedDirection = BasePort.Direction.Input;
                 if (newTo.Ports[newToPortName].capacity == BasePort.Capacity.Single)
                     replacedConnections.AddRange(newTo.Ports[newToPortName].Connections);
             }
             else
             {
-                replacedDirection = BasePort.Direction.Output;
                 if (newFrom.Ports[newFromPortName].capacity == BasePort.Capacity.Single)
                     replacedConnections.AddRange(newFrom.Ports[newFromPortName].Connections);
             }
