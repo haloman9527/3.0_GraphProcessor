@@ -58,14 +58,14 @@ namespace CZToolKit.GraphProcessor
         public void ConnectTo(BaseConnection connection)
         {
             connections.Add(connection);
-            connections.QuickSort(comparer);
+            Resort();
             onConnected?.Invoke(connection);
         }
 
         public void DisconnectTo(BaseConnection connection)
         {
             connections.Remove(connection);
-            connections.QuickSort(comparer);
+            Resort();
             onDisconnected?.Invoke(connection);
         }
 

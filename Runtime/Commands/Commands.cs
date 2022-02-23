@@ -149,11 +149,11 @@ namespace CZToolKit.GraphProcessor
 
     public class ConnectCommand : ICommand
     {
-        BaseGraph graph;
-        BaseNode from;
-        string fromPortName;
-        BaseNode to;
-        string toPortName;
+        private readonly BaseGraph graph;
+        private readonly BaseNode from;
+        private readonly string fromPortName;
+        private readonly BaseNode to;
+       private  readonly string toPortName;
 
         BaseConnection connection;
         HashSet<BaseConnection> replacedConnections = new HashSet<BaseConnection>();

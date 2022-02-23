@@ -32,6 +32,7 @@ public class DebugNodeView : BaseNodeView
     {
         base.OnInitialized();
         btnDebug.clicked += OnClick;
+
     }
 
     private void OnClick()
