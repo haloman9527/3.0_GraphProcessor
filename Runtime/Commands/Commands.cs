@@ -278,43 +278,22 @@ namespace CZToolKit.GraphProcessor
     {
         BaseGraph graph;
 
-        BaseNode from;
-        BaseNode to;
-
-        BaseConnection edge;
-        bool edgeControl;
+        BaseConnection connection;
 
         public DisconnectCommand(BaseGraph graph, BaseConnection connection)
         {
             this.graph = graph;
-            this.edge = connection;
-            edgeControl = true;
-        }
-
-        public DisconnectCommand(BaseGraph graph, BaseNode from, BaseNode to)
-        {
-            this.graph = graph;
-            this.from = from;
-            this.to = to;
-            edgeControl = false;
+            this.connection = connection;
         }
 
         public void Do()
         {
-            if (edgeControl)
-            {
-                graph.Disconnect(edge);
-            }
-            else
-            {
-                edge = graph.Connections.First(edge => edge.FromNode == from && edge.ToNode == to);
-                graph.Disconnect(edge);
-            }
+            graph.Disconnect(connection);
         }
 
         public void Undo()
         {
-            graph.Connect(edge);
+            graph.Connect(connection);
         }
     }
 
