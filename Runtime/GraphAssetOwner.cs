@@ -81,7 +81,7 @@ namespace CZToolKit.GraphProcessor
         #region Serialize
         [HideInInspector]
         [SerializeField]
-        string serializedGraph;
+        string serializedGraph = "";
         [HideInInspector]
         [SerializeField]
         List<UnityObject> graphUnityReferences;
