@@ -95,6 +95,16 @@ namespace CZToolKit.GraphProcessor.Editors
             toggle.style.unityTextAlign = TextAnchor.MiddleCenter;
             AddToLeft(toggle);
         }
+
+        public void RemoveFromLeft(int index)
+        {
+            Left.RemoveAt(index);
+        }
+
+        public void RemoveFromRight(int index)
+        {
+            Right.RemoveAt(index);
+        }
     }
 }
 #endif
