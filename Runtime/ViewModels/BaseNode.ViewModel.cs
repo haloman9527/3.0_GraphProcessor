@@ -14,7 +14,7 @@
  */
 #endregion
 using CZToolKit.Core;
-using CZToolKit.Core.BindableProperty;
+using CZToolKit.Core.IntegratedViewModel;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
