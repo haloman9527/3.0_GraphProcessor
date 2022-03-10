@@ -14,14 +14,14 @@
  */
 #endregion
 using CZToolKit.Core;
-using CZToolKit.Core.IntegratedViewModel;
+using CZToolKit.Core.ViewModel;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace CZToolKit.GraphProcessor
 {
-    public abstract partial class BaseNode : IntegratedViewModel, IGraphElement
+    public abstract partial class BaseNode : ViewModel, IGraphElement
     {
         #region Fields
         [NonSerialized] BaseGraph owner;

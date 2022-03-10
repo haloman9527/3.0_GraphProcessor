@@ -13,14 +13,14 @@
  *
  */
 #endregion
-using CZToolKit.Core.IntegratedViewModel;
+using CZToolKit.Core.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace CZToolKit.GraphProcessor
 {
-    public partial class BasePort : IntegratedViewModel, IGraphElement
+    public partial class BasePort : ViewModel, IGraphElement
     {
         #region Fields
         [NonSerialized] BaseNode owner;

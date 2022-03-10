@@ -171,6 +171,10 @@ namespace CZToolKit.GraphProcessor
         {
             this.graph = graph;
             this.connection = connection;
+            this.from = connection.FromNode;
+            this.fromPortName = connection.FromPortName;
+            this.to = connection.ToNode;
+            this.toPortName = connection.ToPortName;
         }
 
         public void Do()

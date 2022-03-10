@@ -13,7 +13,7 @@
  *
  */
 #endregion
-using CZToolKit.Core.IntegratedViewModel;
+using CZToolKit.Core.ViewModel;
 
 namespace CZToolKit.GraphProcessor
 {
@@ -22,7 +22,7 @@ namespace CZToolKit.GraphProcessor
         void UnBindingProperties();
     }
 
-    public interface IBindableView<VM> : IBindableView where VM : IntegratedViewModel
+    public interface IBindableView<VM> : IBindableView where VM : ViewModel
     {
         VM Model { get; }
     }

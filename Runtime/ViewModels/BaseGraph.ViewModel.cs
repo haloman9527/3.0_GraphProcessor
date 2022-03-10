@@ -13,7 +13,7 @@
  *
  */
 #endregion
-using CZToolKit.Core.IntegratedViewModel;
+using CZToolKit.Core.ViewModel;
 using CZToolKit.Core.SharedVariable;
 using System;
 using System.Linq;
@@ -22,7 +22,7 @@ using UnityEngine;
 
 namespace CZToolKit.GraphProcessor
 {
-    public abstract partial class BaseGraph : IntegratedViewModel
+    public abstract partial class BaseGraph : ViewModel
     {
         #region Fields
         public event Action<BaseNode> onNodeAdded;

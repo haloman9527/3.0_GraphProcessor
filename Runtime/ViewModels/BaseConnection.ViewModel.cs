@@ -13,12 +13,12 @@
  *
  */
 #endregion
-using CZToolKit.Core.IntegratedViewModel;
+using CZToolKit.Core.ViewModel;
 using System;
 
 namespace CZToolKit.GraphProcessor
 {
-    public partial class BaseConnection : IntegratedViewModel, IGraphElement
+    public partial class BaseConnection : ViewModel, IGraphElement
     {
         #region Fields
         [NonSerialized] BaseGraph owner;
@@ -72,8 +72,10 @@ namespace CZToolKit.GraphProcessor
         public static BaseConnection CreateNew(Type type, BaseNode from, string fromPortName, BaseNode to, string toPortName)
         {
             var connection = Activator.CreateInstance(type) as BaseConnection;
+            connection.fromNode = from;
             connection.from = from.GUID;
             connection.fromPortName = fromPortName;
+            connection.toNode = to;
             connection.to = to.GUID;
             connection.toPortName = toPortName;
             return connection;
