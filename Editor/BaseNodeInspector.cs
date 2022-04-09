@@ -31,21 +31,13 @@ namespace CZToolKit.GraphProcessor.Editors
 
         static GUIHelper.ContextDataCache ContextDataCache = new GUIHelper.ContextDataCache();
 
-        BaseNode node;
-
-        public BaseNode Node
-        {
-            get { return node; }
-        }
-
-        public override void OnEnable()
-        {
-            base.OnEnable();
-            node = Target as BaseNode;
-        }
-
         public override void OnInspectorGUI()
         {
+            if (!(Target is BaseNodeView view))
+                return;
+            if (view.Model == null)
+                return;
+
             if (!ContextDataCache.TryGetContextData<GUIStyle>("BigLabel", out var bigLabel))
             {
                 bigLabel.value = new GUIStyle(GUI.skin.label);
@@ -54,26 +46,22 @@ namespace CZToolKit.GraphProcessor.Editors
                 bigLabel.value.alignment = TextAnchor.MiddleLeft;
                 bigLabel.value.stretchWidth = true;
             }
+            EditorGUILayoutExtension.BeginVerticalBoxGroup();
+            bigLabel.value.alignment = TextAnchor.MiddleLeft;
+            GUILayout.Label(string.Concat("Node：", view.Model.GUID), bigLabel.value);
+            EditorGUILayoutExtension.EndVerticalBoxGroup();
 
-            if (Target is BaseNodeView view && view.Model != null)
+            EditorGUILayoutExtension.BeginVerticalBoxGroup();
+            foreach (var property in view.Model)
             {
-                EditorGUILayoutExtension.BeginVerticalBoxGroup();
-                bigLabel.value.alignment = TextAnchor.MiddleLeft;
-                GUILayout.Label(string.Concat("Node：", view.Model.GUID), bigLabel.value);
-                EditorGUILayoutExtension.EndVerticalBoxGroup();
+                if (IgnoreProperties.Contains(property.Key)) continue;
 
-                EditorGUILayoutExtension.BeginVerticalBoxGroup();
-                foreach (var property in view.Model)
-                {
-                    if (IgnoreProperties.Contains(property.Key)) continue;
+                object newValue = EditorGUILayoutExtension.DrawField(property.Value.ValueType, property.Value.ValueBoxed, GraphProcessorEditorUtility.GetDisplayName(property.Key));
+                if (newValue == null || !newValue.Equals(property.Value.ValueBoxed))
+                    property.Value.ValueBoxed = newValue;
 
-                    object newValue = EditorGUILayoutExtension.DrawField(property.Value.ValueType, property.Value.ValueBoxed, GraphProcessorEditorUtility.GetDisplayName(property.Key));
-                    if (newValue == null || !newValue.Equals(property.Value.ValueBoxed))
-                        property.Value.ValueBoxed = newValue;
-
-                }
-                EditorGUILayoutExtension.EndVerticalBoxGroup();
             }
+            EditorGUILayoutExtension.EndVerticalBoxGroup();
         }
     }
 }

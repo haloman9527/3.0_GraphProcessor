@@ -126,18 +126,9 @@ namespace CZToolKit.GraphProcessor
 
         public void AddPort(BasePort port)
         {
-            if (ports.ContainsKey(port.name))
-            {
-                throw new ArgumentException($"Already contains port:{port.name}");
-            }
-            ports[port.name] = port;
+            ports.Add(port.name, port);
             port.Enable(this);
             onPortAdded?.Invoke(port);
-        }
-
-        public void RemovePort(string portName)
-        {
-            RemovePort(ports[portName]);
         }
 
         public void RemovePort(BasePort port)
@@ -146,13 +137,14 @@ namespace CZToolKit.GraphProcessor
             {
                 return;
             }
-            if (!ports.ContainsKey(port.name))
-            {
-                throw new ArgumentException($"Not contains port:{port.name}");
-            }
             Owner.Disconnect(port);
             ports.Remove(port.name);
             onPortRemoved?.Invoke(port);
+        }
+
+        public void RemovePort(string portName)
+        {
+            RemovePort(ports[portName]);
         }
         #endregion
 
@@ -173,14 +165,12 @@ namespace CZToolKit.GraphProcessor
         public virtual void DrawGizmos(IGraphOwner graphOwner) { }
         #endregion
 
-        #region 常量
+        #region Static
         public const string TITLE_NAME = nameof(Title);
         public const string TITLE_COLOR_NAME = nameof(TitleColor);
         public const string TOOLTIP_NAME = nameof(Tooltip);
         public const string POSITION_NAME = nameof(Position);
-        #endregion
 
-        #region 静态
         /// <summary> 根据T创建一个节点，并设置位置 </summary>
         public static T CreateNew<T>(BaseGraph graph, Vector2 position) where T : BaseNode
         {

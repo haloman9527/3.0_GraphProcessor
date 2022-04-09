@@ -35,6 +35,11 @@ namespace CZToolKit.GraphProcessor
         #region Properties
         public BaseNode Owner { get { return owner; } }
         public IReadOnlyCollection<BaseConnection> Connections { get { return connections; } }
+        public Type Type
+        {
+            get { return GetPropertyValue<Type>(nameof(Type)); }
+            set { SetPropertyValue(nameof(Type), value); }
+        }
         #endregion
 
         internal void Enable(BaseNode node)
@@ -51,6 +56,7 @@ namespace CZToolKit.GraphProcessor
                     comparer = VerticalComparer;
                     break;
             }
+            this[nameof(Type)] = new BindableProperty<Type>(() => type, v => type = v);
             OnEnabled();
         }
 

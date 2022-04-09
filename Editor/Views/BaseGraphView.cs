@@ -18,6 +18,7 @@ using CZToolKit.Core;
 using CZToolKit.Core.Editors;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine.UIElements;
@@ -30,6 +31,13 @@ namespace CZToolKit.GraphProcessor.Editors
 
         public override void BuildContextualMenu(ContextualMenuPopulateEvent evt)
         {
+            evt.menu.AppendAction("Create Group", delegate
+            {
+                var group = new Group("New Group");
+                Model.AddGroup(group);
+                group.AddNodes(selection.Where(select => select is BaseNodeView).Select(select => (select as BaseNodeView).Model));
+            }, (DropdownMenuAction a) => canDeleteSelection && selection.Find(s => s is BaseNodeView) != null ? DropdownMenuAction.Status.Normal : DropdownMenuAction.Status.Hidden);
+
             base.BuildContextualMenu(evt);
 
             evt.menu.MenuItems().RemoveAll(item =>
@@ -60,7 +68,6 @@ namespace CZToolKit.GraphProcessor.Editors
                 {
                     DeleteSelectionCallback(AskUser.DontAskUser);
                 }, (DropdownMenuAction a) => canDeleteSelection ? DropdownMenuAction.Status.Normal : DropdownMenuAction.Status.Hidden);
-                evt.menu.AppendSeparator();
             }
         }
 
@@ -88,7 +95,10 @@ namespace CZToolKit.GraphProcessor.Editors
 
         protected virtual Type GetNodeViewType(BaseNode node)
         {
-            return GraphProcessorEditorUtility.GetNodeViewType(node.GetType());
+            var type = GraphProcessorEditorUtility.GetNodeViewType(node.GetType());
+            if (type == null)
+                type = typeof(BaseNodeView);
+            return type;
         }
 
         protected virtual Type GetConnectionViewType(BaseConnection connection)
@@ -123,7 +133,7 @@ namespace CZToolKit.GraphProcessor.Editors
             if (toPortView.direction == portView.direction)
                 return false;
             // 类型兼容查询
-            if (!toPortView.Model.type.IsAssignableFrom(portView.Model.type) && !portView.Model.type.IsAssignableFrom(toPortView.Model.type))
+            if (!toPortView.Model.Type.IsAssignableFrom(portView.Model.Type) && !portView.Model.Type.IsAssignableFrom(toPortView.Model.Type))
                 return false;
             return true;
         }

@@ -31,6 +31,9 @@ namespace CZToolKit.GraphProcessor
         public event Action<BaseConnection> onConnected;
         public event Action<BaseConnection> onDisconnected;
 
+        public event Action<Group> onGroupAdded;
+        public event Action<Group> onGroupRemoved;
+
         [NonSerialized] internal List<SharedVariable> variables = new List<SharedVariable>();
         #endregion
 
@@ -48,6 +51,10 @@ namespace CZToolKit.GraphProcessor
         public IReadOnlyDictionary<string, BaseNode> Nodes
         {
             get { return nodes; }
+        }
+        public IReadOnlyList<Group> Groups
+        {
+            get { return groups; }
         }
         public IReadOnlyList<BaseConnection> Connections
         {
@@ -74,6 +81,18 @@ namespace CZToolKit.GraphProcessor
 
         public void Enable()
         {
+            if (nodes == null)
+            {
+                nodes = new Dictionary<string, BaseNode>();
+            }
+            if (connections == null)
+            {
+                connections = new List<BaseConnection>();
+            }
+            if (groups == null)
+            {
+                groups = new List<Group>();
+            }
             foreach (var node in Nodes.Values)
             {
                 node.Enable(this);
@@ -111,6 +130,10 @@ namespace CZToolKit.GraphProcessor
 
                 fromPort.ConnectTo(connection);
                 toPort.ConnectTo(connection);
+            }
+            foreach (var group in Groups)
+            {
+                group.Enable(this);
             }
 
             this[PAN_NAME] = new BindableProperty<Vector3>(() => pan, v => pan = v);
@@ -171,8 +194,8 @@ namespace CZToolKit.GraphProcessor
             if (variables == null)
                 CollectionVariables();
 
+            nodes.Add(node.GUID, node);
             node.Enable(this);
-            nodes[node.GUID] = node;
             IEnumerable<SharedVariable> nodeVariables = SharedVariableUtility.CollectionObjectSharedVariables(node);
             variables.AddRange(nodeVariables);
             if (GraphOwner != null)
@@ -263,7 +286,7 @@ namespace CZToolKit.GraphProcessor
 
             connection.FromNode.Ports.TryGetValue(connection.FromPortName, out BasePort fromPort);
             fromPort.DisconnectTo(connection);
-            
+
             connection.ToNode.Ports.TryGetValue(connection.ToPortName, out BasePort toPort);
             toPort.DisconnectTo(connection);
 
@@ -286,6 +309,22 @@ namespace CZToolKit.GraphProcessor
             Disconnect(node.Ports[portName]);
         }
         #endregion
+
+        public void AddGroup(Group group)
+        {
+            if (groups.Contains(group))
+                return;
+            groups.Add(group);
+            group.Enable(this);
+            onGroupAdded?.Invoke(group);
+        }
+
+        public void RemoveGroup(Group group)
+        {
+            bool removed = groups.Remove(group);
+            if (removed)
+                onGroupRemoved?.Invoke(group);
+        }
 
         #region Overrides
         protected virtual void OnEnabled() { }

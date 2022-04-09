@@ -27,5 +27,6 @@ namespace CZToolKit.GraphProcessor
 
         [SerializeField] Dictionary<string, BaseNode> nodes = new Dictionary<string, BaseNode>();
         [SerializeField] List<BaseConnection> connections = new List<BaseConnection>();
+        [SerializeField] List<Group> groups = new List<Group>();
     }
 }

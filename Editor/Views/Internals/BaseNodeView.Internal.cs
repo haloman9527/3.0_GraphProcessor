@@ -16,6 +16,7 @@
 #if UNITY_EDITOR
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -121,10 +122,8 @@ namespace CZToolKit.GraphProcessor.Editors
                 }
             }
             RefreshPorts();
-
-            // 绑定
+            RefreshContentsHorizontalDivider();
             BindingProperties();
-
             OnInitialized();
         }
         #endregion
@@ -173,6 +172,7 @@ namespace CZToolKit.GraphProcessor.Editors
                     bottomPortContainer.Add(portView);
             }
             RefreshPorts();
+            RefreshContentsHorizontalDivider();
         }
 
         void OnPortRemoved(BasePort port)
@@ -180,6 +180,7 @@ namespace CZToolKit.GraphProcessor.Editors
             portViews[port.name].RemoveFromHierarchy();
             portViews.Remove(port.name);
             RefreshPorts();
+            RefreshContentsHorizontalDivider();
         }
 
         void OnTitleChanged(string title)
@@ -201,6 +202,14 @@ namespace CZToolKit.GraphProcessor.Editors
             TitleLabel.style.color = color.GetLuminance() > 0.5f && color.a > 0.5f ? Color.black : Color.white * 0.9f;
         }
         #endregion
+
+        void RefreshContentsHorizontalDivider()
+        {
+            if (portViews.Values.FirstOrDefault(port => port.orientation == Orientation.Horizontal) != null)
+                contentsHorizontalDivider.RemoveFromClassList("hidden");
+            else
+                contentsHorizontalDivider.AddToClassList("hidden");
+        }
 
         #region 方法
         public void HighlightOn()

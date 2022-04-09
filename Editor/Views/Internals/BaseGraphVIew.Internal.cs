@@ -38,6 +38,7 @@ namespace CZToolKit.GraphProcessor.Editors
         public CommandDispatcher CommandDispacter { get; private set; }
         public UnityObject GraphAsset { get { return GraphWindow.GraphAsset; } }
         public Dictionary<string, BaseNodeView> NodeViews { get; private set; } = new Dictionary<string, BaseNodeView>();
+        public Dictionary<Group, BaseGroupView> GroupViews { get; private set; } = new Dictionary<Group, BaseGroupView>();
 
         public BaseGraph Model { get; set; }
 
@@ -87,6 +88,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
             yield return GraphWindow.StartCoroutine(GenerateNodeViews());
             yield return GraphWindow.StartCoroutine(LinkNodeViews());
+            yield return GraphWindow.StartCoroutine(GenerateGroupViews());
 
             UpdateInspector();
             OnInitialized();
@@ -132,6 +134,20 @@ namespace CZToolKit.GraphProcessor.Editors
                     yield return null;
             }
         }
+
+        /// <summary> 生成所有GroupView </summary>
+        IEnumerator GenerateGroupViews()
+        {
+            int step = 0;
+            foreach (var group in Model.Groups)
+            {
+                if (group == null) continue;
+                AddGroupView(group);
+                step++;
+                if (step % 5 == 0)
+                    yield return null;
+            }
+        }
         #endregion
 
         #region 数据监听回调
@@ -156,6 +172,18 @@ namespace CZToolKit.GraphProcessor.Editors
         void OnNodeRemoved(BaseNode node)
         {
             RemoveNodeView(NodeViews[node.GUID]);
+            SetDirty();
+        }
+
+        void OnGroupAdded(Group group)
+        {
+            AddGroupView(group);
+            SetDirty();
+        }
+
+        void OnGroupRemoved(Group group)
+        {
+            RemoveGroupView(GroupViews[group]);
             SetDirty();
         }
 
@@ -184,6 +212,9 @@ namespace CZToolKit.GraphProcessor.Editors
 
             Model.onNodeAdded += OnNodeAdded;
             Model.onNodeRemoved += OnNodeRemoved;
+
+            Model.onGroupAdded += OnGroupAdded;
+            Model.onGroupRemoved += OnGroupRemoved;
 
             Model.onConnected += OnConnected;
             Model.onDisconnected += OnDisconnected;
@@ -219,7 +250,9 @@ namespace CZToolKit.GraphProcessor.Editors
                 CommandDispacter.BeginGroup();
                 // 当节点移动之后，与之连接的接口重新排序
                 Dictionary<BaseNode, Vector2> newPos = new Dictionary<BaseNode, Vector2>();
+                Dictionary<Group, Vector2> groupNewPos = new Dictionary<Group, Vector2>();
                 HashSet<BasePort> ports = new HashSet<BasePort>();
+
                 changes.movedElements.RemoveAll(element =>
                 {
                     switch (element)
@@ -242,13 +275,25 @@ namespace CZToolKit.GraphProcessor.Editors
                                 }
                             }
                             return true;
+                        case BaseGroupView groupView:
+                            groupNewPos[groupView.Model] = groupView.GetPosition().position;
+                            return true;
                         default:
                             break;
                     }
                     return false;
                 });
-
+                foreach (var pair in groupNewPos)
+                {
+                    foreach (var nodeGUID in pair.Key.Nodes)
+                    {
+                        var node = Model.Nodes[nodeGUID];
+                        var nodeView = NodeViews[nodeGUID];
+                        newPos[node] = nodeView.GetPosition().position;
+                    }
+                }
                 CommandDispacter.Do(new MoveNodesCommand(newPos));
+                CommandDispacter.Do(new MoveGroupsCommand(groupNewPos));
                 // 排序
                 foreach (var port in ports)
                 {
@@ -273,6 +318,7 @@ namespace CZToolKit.GraphProcessor.Editors
                     }
                     return GetPriority(element1).CompareTo(GetPriority(element2));
                 });
+
                 CommandDispacter.BeginGroup();
                 changes.elementsToRemove.RemoveAll(element =>
                 {
@@ -286,9 +332,14 @@ namespace CZToolKit.GraphProcessor.Editors
                             if (nodeView.selected)
                                 CommandDispacter.Do(new RemoveNodeCommand(Model, nodeView.Model));
                             return true;
+                        case BaseGroupView groupView:
+                            if (groupView.selected)
+                                Model.RemoveGroup(groupView.Model);
+                            return true;
                     }
                     return false;
                 });
+
                 CommandDispacter.EndGroup();
 
                 UpdateInspector();
@@ -408,6 +459,21 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             RemoveElement(nodeView);
             NodeViews.Remove(nodeView.Model.GUID);
+        }
+
+        public BaseGroupView AddGroupView(Group group)
+        {
+            BaseGroupView groupView = new BaseGroupView();
+            groupView.SetUp(group, this);
+            GroupViews[group] = groupView;
+            AddElement(groupView);
+            return groupView;
+        }
+
+        public void RemoveGroupView(BaseGroupView groupView)
+        {
+            groupView.RemoveFromHierarchy();
+            GroupViews.Remove(groupView.Model);
         }
 
         public BaseConnectionView ConnectView(BaseNodeView from, BaseNodeView to, BaseConnection connection)

@@ -21,7 +21,7 @@ using UnityEngine.UIElements;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
-    public partial class BasePortView : Port
+    public partial class BasePortView : Port, IBindableView<BasePort>
     {
         public Image Icon { get; }
         public BaseGraphView GraphView { get; private set; }
@@ -59,8 +59,20 @@ namespace CZToolKit.GraphProcessor.Editors
             Model = port;
             GraphView = graphView;
 
-            portName = port.name;
-            tooltip = port.name;
+            portName = Model.name;
+            tooltip = Model.name;
+
+            Model[nameof(Model.Type)].RegisterValueChangedEvent<Type>(OnPortTypeChanged);
+        }
+
+        public void UnBindingProperties()
+        {
+            Model[nameof(Model.Type)].UnregisterValueChangedEvent<Type>(OnPortTypeChanged);
+        }
+
+        private void OnPortTypeChanged(Type newPortType)
+        {
+            this.portType = newPortType;
         }
 
         public virtual void Connect(BaseConnectionView connection)

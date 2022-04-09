@@ -29,7 +29,7 @@ namespace CZToolKit.GraphProcessor
         [SerializeField] public readonly Orientation orientation;
         [SerializeField] public readonly Direction direction;
         [SerializeField] public readonly Capacity capacity;
-        [SerializeField] public readonly Type type;
+        [SerializeField] public Type type;
 
         public BasePort(string name, Orientation orientation, Direction direction, Capacity capacity, Type type = null)
         {

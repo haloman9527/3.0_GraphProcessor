@@ -77,6 +77,89 @@ namespace CZToolKit.GraphProcessor
         }
     }
 
+    public class MoveNodeCommand : ICommand
+    {
+        BaseNode node;
+        Vector2 currentPosition;
+        Vector2 targetPosition;
+
+        public MoveNodeCommand(BaseNode node, Vector2 position)
+        {
+            this.node = node;
+            currentPosition = node.Position;
+            targetPosition = position;
+        }
+
+        public void Do()
+        {
+            node.Position = targetPosition;
+        }
+
+        public void Undo()
+        {
+            node.Position = currentPosition;
+        }
+    }
+
+    public class MoveNodesCommand : ICommand
+    {
+        Dictionary<BaseNode, Vector2> oldPos = new Dictionary<BaseNode, Vector2>();
+        Dictionary<BaseNode, Vector2> newPos = new Dictionary<BaseNode, Vector2>();
+
+        public MoveNodesCommand(Dictionary<BaseNode, Vector2> newPos)
+        {
+            this.newPos = newPos;
+        }
+
+        public void Do()
+        {
+            foreach (var pair in newPos)
+            {
+                oldPos[pair.Key] = pair.Key.Position;
+                pair.Key.Position = pair.Value;
+            }
+        }
+
+        public void Undo()
+        {
+            foreach (var pair in oldPos)
+            {
+                pair.Key.Position = pair.Value;
+            }
+        }
+    }
+
+    public class MoveGroupsCommand : ICommand
+    {
+        Dictionary<Group, Vector2> oldPos = new Dictionary<Group, Vector2>();
+        Dictionary<Group, Vector2> newPos = new Dictionary<Group, Vector2>();
+
+        public MoveGroupsCommand(Dictionary<Group, Vector2> groups)
+        {
+            this.newPos = groups;
+            foreach (var pair in groups)
+            {
+                oldPos[pair.Key] = pair.Key.Position;
+            }
+        }
+
+        public void Do()
+        {
+            foreach (var pair in newPos)
+            {
+                pair.Key.Position = pair.Value;
+            }
+        }
+
+        public void Undo()
+        {
+            foreach (var pair in oldPos)
+            {
+                pair.Key.Position = pair.Value;
+            }
+        }
+    }
+
     public class AddPortCommand : ICommand
     {
         BaseNode node;
@@ -153,7 +236,7 @@ namespace CZToolKit.GraphProcessor
         private readonly BaseNode from;
         private readonly string fromPortName;
         private readonly BaseNode to;
-       private  readonly string toPortName;
+        private readonly string toPortName;
 
         BaseConnection connection;
         HashSet<BaseConnection> replacedConnections = new HashSet<BaseConnection>();
@@ -298,58 +381,6 @@ namespace CZToolKit.GraphProcessor
         public void Undo()
         {
             graph.Connect(connection);
-        }
-    }
-
-    public class MoveNodeCommand : ICommand
-    {
-        BaseNode node;
-        Vector2 currentPosition;
-        Vector2 targetPosition;
-
-        public MoveNodeCommand(BaseNode node, Vector2 position)
-        {
-            this.node = node;
-            currentPosition = node.Position;
-            targetPosition = position;
-        }
-
-        public void Do()
-        {
-            node.Position = targetPosition;
-        }
-
-        public void Undo()
-        {
-            node.Position = currentPosition;
-        }
-    }
-
-    public class MoveNodesCommand : ICommand
-    {
-        Dictionary<BaseNode, Vector2> oldPos = new Dictionary<BaseNode, Vector2>();
-        Dictionary<BaseNode, Vector2> newPos = new Dictionary<BaseNode, Vector2>();
-
-        public MoveNodesCommand(Dictionary<BaseNode, Vector2> newPos)
-        {
-            this.newPos = newPos;
-        }
-
-        public void Do()
-        {
-            foreach (var pair in newPos)
-            {
-                oldPos[pair.Key] = pair.Key.Position;
-                pair.Key.Position = pair.Value;
-            }
-        }
-
-        public void Undo()
-        {
-            foreach (var pair in oldPos)
-            {
-                pair.Key.Position = pair.Value;
-            }
         }
     }
 

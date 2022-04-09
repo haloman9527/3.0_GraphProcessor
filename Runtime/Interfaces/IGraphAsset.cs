@@ -23,4 +23,9 @@ namespace CZToolKit.GraphProcessor
         void SaveGraph(BaseGraph graph);
         BaseGraph DeserializeGraph();
     }
+
+    public interface IGraphAsset<T> : IGraphAsset where T : BaseGraph
+    {
+        T DeserializeTGraph();
+    }
 }

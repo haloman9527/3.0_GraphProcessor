@@ -22,7 +22,7 @@ using UnityEngine;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
-    [CustomEditor(typeof(InternalBaseGraphAsset), true)]
+    //[CustomEditor(typeof(InternalBaseGraphAsset), true)]
     public class BaseGraphAssetInspector : BasicEditor
     {
         static GUIHelper.ContextDataCache ContextDataCache = new GUIHelper.ContextDataCache();
@@ -61,15 +61,14 @@ namespace CZToolKit.GraphProcessor.Editors
                 bigLabel.value.stretchWidth = true;
             }
 
-            IGraphAsset graphAsset = target as IGraphAsset;
-
             EditorGUILayoutExtension.BeginVerticalBoxGroup();
-            //GUILayout.Label(string.Concat("Nodes：", graphAsset.Graph.Nodes.Count), bigLabel.value);
-            //GUILayout.Label(string.Concat("Connections：", graphAsset.Graph.Connections.Count), bigLabel.value);
+            // IGraphAsset graphAsset = target as IGraphAsset;
+            // GUILayout.Label(string.Concat("Nodes：", graphAsset.Graph.Nodes.Count), bigLabel.value);
+            // GUILayout.Label(string.Concat("Connections：", graphAsset.Graph.Connections.Count), bigLabel.value);
             EditorGUILayoutExtension.EndVerticalBoxGroup();
 
             if (GUILayout.Button("Open", GUILayout.Height(30)))
-                BaseGraphWindow.Open(target as InternalBaseGraphAsset);
+                BaseGraphWindow.Open(target as IGraphAsset);
         }
     }
 }
