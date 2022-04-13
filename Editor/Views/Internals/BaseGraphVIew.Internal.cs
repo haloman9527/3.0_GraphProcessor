@@ -65,9 +65,9 @@ namespace CZToolKit.GraphProcessor.Editors
         }
 
         #region Initialize
-        public void SetUp(BaseGraph graph, BaseGraphWindow window, CommandDispatcher commandDispacter)
+        public void SetUp(IGraph graph, BaseGraphWindow window, CommandDispatcher commandDispacter)
         {
-            Model = graph;
+            Model = graph as BaseGraph;
             GraphWindow = window;
             CommandDispacter = commandDispacter;
             EditorCoroutine coroutine = GraphWindow.StartCoroutine(Initialize());

@@ -87,12 +87,12 @@ namespace CZToolKit.GraphProcessor.Editors
             Owner.SetDirty();
         }
 
-        private void OnNodesAdded(IEnumerable<BaseNode> nodes)
+        private void OnNodesAdded(IEnumerable<INode> nodes)
         {
             base.AddElements(nodes.Select(node => Owner.NodeViews[node.GUID]));
         }
 
-        private void OnNodesRemoved(IEnumerable<BaseNode> nodes)
+        private void OnNodesRemoved(IEnumerable<INode> nodes)
         {
             base.RemoveElements(nodes.Select(node => Owner.NodeViews[node.GUID]));
         }

@@ -78,7 +78,7 @@ namespace CZToolKit.GraphProcessor.Editors
                 }
                 else
                 {
-                    GUIContent content = new GUIContent(GraphProcessorEditorUtility.GetNodeDisplayName(type));
+                    GUIContent content = new GUIContent(GraphProcessorEditorUtil.GetNodeDisplayName(type));
                     tempTree.Add(new SearchTreeEntry(content) { userData = type, level = 1 });
                 }
             }

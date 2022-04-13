@@ -232,10 +232,10 @@ namespace CZToolKit.GraphProcessor
 
     public class ConnectCommand : ICommand
     {
-        private readonly BaseGraph graph;
-        private readonly BaseNode from;
+        private readonly IGraph graph;
+        private readonly INode from;
         private readonly string fromPortName;
-        private readonly BaseNode to;
+        private readonly INode to;
         private readonly string toPortName;
 
         BaseConnection connection;
@@ -302,18 +302,18 @@ namespace CZToolKit.GraphProcessor
 
     public class ConnectionRedirectCommand : ICommand
     {
-        BaseGraph graph;
+        IGraph graph;
         BaseConnection connection;
 
-        BaseNode oldFrom, oldTo;
+        INode oldFrom, oldTo;
         string oldFromPortName, oldToPortName;
 
-        BaseNode newFrom, newTo;
+        INode newFrom, newTo;
         string newFromPortName, newToPortName;
 
         List<BaseConnection> replacedConnections = new List<BaseConnection>();
 
-        public ConnectionRedirectCommand(BaseGraph graph, BaseConnection connection, BaseNode from, string fromPortName, BaseNode to, string toPortName)
+        public ConnectionRedirectCommand(IGraph graph, BaseConnection connection, INode from, string fromPortName, INode to, string toPortName)
         {
             this.graph = graph;
             this.connection = connection;

@@ -21,15 +21,12 @@ using UnityEngine;
 
 namespace CZToolKit.GraphProcessor
 {
-    public partial class Group : ViewModel, IGraphElement
+    public partial class Group : ViewModel
     {
-        [NonSerialized] BaseGraph owner;
+        public event Action<IEnumerable<INode>> onElementsAdded;
+        public event Action<IEnumerable<INode>> onElementsRemoved;
 
-        public event Action<IEnumerable<BaseNode>> onElementsAdded;
-        public event Action<IEnumerable<BaseNode>> onElementsRemoved;
-
-        public BaseGraph Owner { get => owner; }
-
+        public IGraph Owner { get; internal set; }
 
         public string GroupName
         {
@@ -53,21 +50,21 @@ namespace CZToolKit.GraphProcessor
             this.groupName = groupName;
         }
 
-        internal void Enable(BaseGraph graph)
+        internal void Enable(IGraph graph)
         {
-            owner = graph;
+            Owner = graph;
             OnEnabled();
         }
 
-        protected virtual void OnEnabled()
+        public virtual void OnEnabled()
         {
             this[nameof(GroupName)] = new BindableProperty<string>(() => groupName, v => groupName = v);
             this[nameof(Position)] = new BindableProperty<Vector2>(() => position, v => position = v);
         }
 
-        public void AddNodes(IEnumerable<BaseNode> elements)
+        public void AddNodes(IEnumerable<INode> elements)
         {
-            var eles = new List<BaseNode>(elements.Where(element => !nodes.Contains(element.GUID) && element.Owner == this.owner));
+            var eles = new List<INode>(elements.Where(element => !nodes.Contains(element.GUID) && element.Owner == this.Owner));
             foreach (var element in eles)
             {
                 nodes.Add(element.GUID);
@@ -81,9 +78,9 @@ namespace CZToolKit.GraphProcessor
             onElementsAdded?.Invoke(eles);
         }
 
-        public void RemoveNodes(IEnumerable<BaseNode> elements)
+        public void RemoveNodes(IEnumerable<INode> elements)
         {
-            var eles = new List<BaseNode>(elements.Where(element => nodes.Contains(element.GUID) && element.Owner == this.owner));
+            var eles = new List<INode>(elements.Where(element => nodes.Contains(element.GUID) && element.Owner == this.Owner));
             foreach (var element in eles)
             {
                 nodes.Remove(element.GUID);
@@ -91,28 +88,28 @@ namespace CZToolKit.GraphProcessor
             onElementsRemoved?.Invoke(eles);
         }
 
-        public void AddNode(BaseNode element)
+        public void AddNode(INode element)
         {
-            AddNodes(new BaseNode[] { element });
+            AddNodes(new INode[] { element });
         }
 
-        public void RemoveNode(BaseNode element)
+        public void RemoveNode(INode element)
         {
-            RemoveNodes(new BaseNode[] { element });
+            RemoveNodes(new INode[] { element });
         }
 
-        public void AddNodesWithoutNotify(IEnumerable<BaseNode> elements)
+        public void AddNodesWithoutNotify(IEnumerable<INode> elements)
         {
-            elements = elements.Where(element => !nodes.Contains(element.GUID) && element.Owner == this.owner);
+            elements = elements.Where(element => !nodes.Contains(element.GUID) && element.Owner == this.Owner);
             foreach (var element in elements)
             {
                 nodes.Add(element.GUID);
             }
         }
 
-        public void RemoveNodesWithoutNotify(IEnumerable<BaseNode> elements)
+        public void RemoveNodesWithoutNotify(IEnumerable<INode> elements)
         {
-            elements = elements.Where(element => nodes.Contains(element.GUID) && element.Owner == this.owner);
+            elements = elements.Where(element => nodes.Contains(element.GUID) && element.Owner == this.Owner);
             foreach (var element in elements)
             {
                 nodes.Remove(element.GUID);

@@ -18,12 +18,12 @@ using UnityEngine.UIElements;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
-    public class GraphViewParentElement : VisualElement
+    public class GraphViewContainer : VisualElement
     {
         public ToolbarView Toolbar { get; private set; }
         public VisualElement GraphViewElement { get; private set; }
 
-        public GraphViewParentElement()
+        public GraphViewContainer()
         {
             name = "GraphViewParent";
 

@@ -49,7 +49,7 @@ namespace CZToolKit.GraphProcessor.Editors
             get { return graphAsset; }
             protected set { graphAsset = value; }
         }
-        public BaseGraph Graph
+        public IGraph Graph
         {
             get;
             private set;
@@ -62,7 +62,7 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             get { return GraphViewParent?.Toolbar; }
         }
-        public GraphViewParentElement GraphViewParent
+        public GraphViewContainer GraphViewParent
         {
             get;
             private set;
@@ -186,7 +186,7 @@ namespace CZToolKit.GraphProcessor.Editors
             }
         }
 
-        protected void InternalLoad(BaseGraph graph, CommandDispatcher commandDispatcher)
+        protected void InternalLoad(IGraph graph, CommandDispatcher commandDispatcher)
         {
             GraphView = NewGraphView(graph);
             if (GraphView == null)
@@ -196,7 +196,7 @@ namespace CZToolKit.GraphProcessor.Editors
             GraphView.onDirty += OnGraphViewDirty;
             GraphView.onUndirty += OnGraphViewUndirty;
             Graph = graph;
-            GraphViewParent = new GraphViewParentElement();
+            GraphViewParent = new GraphViewContainer();
             GraphViewParent.StretchToParentSize();
             rootVisualElement.Add(GraphViewParent);
             GraphView.RegisterCallback<KeyDownEvent>(KeyDownCallback);
@@ -224,7 +224,7 @@ namespace CZToolKit.GraphProcessor.Editors
             Clear();
 
             GraphOwner = graphAssetOwner;
-            GraphAsset = graphAssetOwner.GraphAsset;
+            GraphAsset = graphAssetOwner.GraphAsset as UnityObject;
             CommandDispatcher = new CommandDispatcher();
 
             GraphOwner.Graph.Initialize(GraphOwner);
@@ -273,7 +273,7 @@ namespace CZToolKit.GraphProcessor.Editors
         #endregion
 
         #region Overrides
-        protected virtual BaseGraphView NewGraphView(BaseGraph graph)
+        protected virtual BaseGraphView NewGraphView(IGraph graph)
         {
             return new BaseGraphView();
         }
@@ -283,7 +283,7 @@ namespace CZToolKit.GraphProcessor.Editors
         /// <summary> 从Graph类型获取对应的GraphWindow </summary>
         public static BaseGraphWindow GetGraphWindow(Type graphType)
         {
-            var windowType = GraphProcessorEditorUtility.GetGraphWindowType(graphType);
+            var windowType = GraphProcessorEditorUtil.GetGraphWindowType(graphType);
             UnityObject[] objs = Resources.FindObjectsOfTypeAll(windowType);
             BaseGraphWindow window = null;
             foreach (var obj in objs)

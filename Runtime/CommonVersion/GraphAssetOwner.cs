@@ -23,8 +23,8 @@ using UnityObject = UnityEngine.Object;
 
 namespace CZToolKit.GraphProcessor
 {
-    public abstract class GraphAssetOwner<TGraphAsset, TGraph> : InternalGraphAssetOwner
-        where TGraphAsset : BaseGraphAsset<TGraph>
+    public abstract class GraphAssetOwner<TGraphAsset, TGraph> : InternalGraphAssetOwner, IGraphAsset
+        where TGraphAsset : UnityObject, IGraphAsset<TGraph>
         where TGraph : BaseGraph, new()
     {
         #region 字段
@@ -33,7 +33,7 @@ namespace CZToolKit.GraphProcessor
         #endregion
 
         #region 属性
-        public override InternalBaseGraphAsset GraphAsset
+        public override UnityObject GraphAsset
         {
             get { return graphAsset; }
             set
@@ -54,13 +54,20 @@ namespace CZToolKit.GraphProcessor
             }
         }
 
-        public override Type GraphAssetType { get { return typeof(TGraphAsset); } }
+        public TGraphAsset T_GraphAsset
+        {
+            get { return graphAsset; }
+        }
 
-        public override Type GraphType { get { return typeof(TGraph); } }
+        public override Type GraphAssetType
+        {
+            get { return typeof(TGraphAsset); }
+        }
 
-        public TGraphAsset T_GraphAsset { get { return graphAsset; } }
-
-        public override BaseGraph Graph { get { return T_Graph; } }
+        public override IGraph Graph
+        {
+            get { return T_Graph; }
+        }
 
         public TGraph T_Graph
         {
@@ -76,6 +83,11 @@ namespace CZToolKit.GraphProcessor
                 return graph;
             }
         }
+
+        public override Type GraphType
+        {
+            get { return typeof(TGraph); }
+        }
         #endregion
 
         #region Serialize
@@ -86,19 +98,15 @@ namespace CZToolKit.GraphProcessor
         [SerializeField]
         List<UnityObject> graphUnityReferences;
 
-        public override void SaveGraph(BaseGraph graph)
+        public void SaveGraph(IGraph graph)
         {
             if (GraphAsset != null)
-            {
                 graphAsset.SaveGraph(graph);
-            }
             else
-            {
                 serializedGraph = GraphSerializer.SerializeValue(graph, out graphUnityReferences);
-            }
         }
 
-        public override BaseGraph DeserializeGraph()
+        public BaseGraph DeserializeGraph()
         {
             var graph = GraphSerializer.DeserializeValue<TGraph>(serializedGraph, graphUnityReferences);
             if (graph == null)

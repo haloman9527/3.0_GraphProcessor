@@ -23,7 +23,7 @@ using UnityEngine.UIElements;
 [CustomGraphWindow(typeof(SampleGraph))]
 public class SampleGraphWindow : BaseGraphWindow
 {
-    protected override BaseGraphView NewGraphView(BaseGraph graph)
+    protected override BaseGraphView NewGraphView(IGraph graph)
     {
         return new SampleGraphView();
     }
@@ -46,6 +46,7 @@ public class SampleGraphWindow : BaseGraphWindow
             {
                 case KeyCode.S:
                     Save();
+                    evt.StopImmediatePropagation();
                     break;
             }
         }
@@ -54,7 +55,7 @@ public class SampleGraphWindow : BaseGraphWindow
     void Save()
     {
         if (GraphAsset is IGraphAsset graphAsset)
-            graphAsset.SaveGraph(Graph);
+            graphAsset.SaveGraph(Graph as BaseGraph);
         if (GraphOwner is IGraphOwner graphOwner)
             graphOwner.SaveVariables();
         GraphView.SetDirty();

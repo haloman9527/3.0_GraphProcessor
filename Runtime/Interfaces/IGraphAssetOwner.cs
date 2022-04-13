@@ -13,12 +13,15 @@
  *
  */
 #endregion
-using CZToolKit.GraphProcessor.Internal;
+using System;
+
+using UnityObject = UnityEngine.Object;
 
 namespace CZToolKit.GraphProcessor
 {
     public interface IGraphAssetOwner : IGraphOwner
     {
-        InternalBaseGraphAsset GraphAsset { get; }
+        UnityObject GraphAsset { get; }
+        Type GraphAssetType { get; }
     }
 }

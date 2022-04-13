@@ -13,17 +13,15 @@
  *
  */
 #endregion
-using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace CZToolKit.GraphProcessor
 {
-    [Serializable]
-    public abstract partial class BaseNode
+    public partial class Group
     {
-        /// <summary> 唯一标识 </summary>
-        [SerializeField] string guid;
-        /// <summary> 位置坐标 </summary>
-        [SerializeField] Vector2 position;
+        [SerializeField] internal string groupName;
+        [SerializeField] internal Vector2 position;
+        [SerializeField] internal List<string> nodes = new List<string>();
     }
 }

@@ -13,15 +13,17 @@
  *
  */
 #endregion
-using System.Collections.Generic;
+using System;
 using UnityEngine;
 
 namespace CZToolKit.GraphProcessor
 {
-    public partial class Group
+    [Serializable]
+    public partial class BaseConnection
     {
-        [SerializeField] string groupName;
-        [SerializeField] Vector2 position;
-        [SerializeField] List<string> nodes = new List<string>();
+        [SerializeField] internal string from;
+        [SerializeField] internal string fromPortName;
+        [SerializeField] internal string to;
+        [SerializeField] internal string toPortName;
     }
 }

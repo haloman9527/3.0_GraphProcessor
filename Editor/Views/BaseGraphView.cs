@@ -95,7 +95,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
         protected virtual Type GetNodeViewType(BaseNode node)
         {
-            var type = GraphProcessorEditorUtility.GetNodeViewType(node.GetType());
+            var type = GraphProcessorEditorUtil.GetNodeViewType(node.GetType());
             if (type == null)
                 type = typeof(BaseNodeView);
             return type;

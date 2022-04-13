@@ -20,11 +20,11 @@ namespace CZToolKit.GraphProcessor
     public interface IGraphAsset
     {
         Type GraphType { get; }
-        void SaveGraph(BaseGraph graph);
+        void SaveGraph(IGraph graph);
         BaseGraph DeserializeGraph();
     }
 
-    public interface IGraphAsset<T> : IGraphAsset where T : BaseGraph
+    public interface IGraphAsset<T> : IGraphAsset where T : BaseGraph, IGraph, new()
     {
         T DeserializeTGraph();
     }

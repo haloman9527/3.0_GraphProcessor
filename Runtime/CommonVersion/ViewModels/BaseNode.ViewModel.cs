@@ -21,32 +21,31 @@ using UnityEngine;
 
 namespace CZToolKit.GraphProcessor
 {
-    public abstract partial class BaseNode : ViewModel, IGraphElement
+    public abstract partial class BaseNode : ViewModel, INode
     {
         #region Fields
-        [NonSerialized] BaseGraph owner;
-        [NonSerialized] Dictionary<string, BasePort> ports;
+        /// <summary> 唯一标识 </summary>
+        [NonSerialized] internal string guid;
+        [NonSerialized] internal Dictionary<string, BasePort> ports;
 
         public event Action<BasePort> onPortAdded;
         public event Action<BasePort> onPortRemoved;
         #endregion
 
         #region Properties
-        public BaseGraph Owner
+        public IGraph Owner
         {
-            get { return owner; }
+            get;
+            internal set;
         }
         public string GUID
         {
             get { return guid; }
         }
-        public IGraphOwner GraphOwner
+        public Vector2 Position
         {
-            get { return Owner.GraphOwner; }
-        }
-        public IReadOnlyDictionary<string, BasePort> Ports
-        {
-            get { return ports; }
+            get { return GetPropertyValue<Vector2>(POSITION_NAME); }
+            set { SetPropertyValue(POSITION_NAME, value); }
         }
         public string Title
         {
@@ -63,16 +62,15 @@ namespace CZToolKit.GraphProcessor
             get { return GetPropertyValue<string>(TOOLTIP_NAME); }
             set { SetPropertyValue(TOOLTIP_NAME, value); }
         }
-        public Vector2 Position
+        public IReadOnlyDictionary<string, BasePort> Ports
         {
-            get { return GetPropertyValue<Vector2>(POSITION_NAME); }
-            internal set { SetPropertyValue(POSITION_NAME, value); }
+            get { return ports; }
         }
         #endregion
 
         internal void Enable(BaseGraph graph)
         {
-            owner = graph;
+            Owner = graph;
             ports = new Dictionary<string, BasePort>();
 
             this[POSITION_NAME] = new BindableProperty<Vector2>(() => position, v => position = v);
@@ -104,7 +102,7 @@ namespace CZToolKit.GraphProcessor
         }
 
         #region API
-        public IEnumerable<BaseNode> GetConnections(string portName)
+        public IEnumerable<INode> GetConnections(string portName)
         {
             if (!Ports.TryGetValue(portName, out var port))
                 yield break;
@@ -165,35 +163,10 @@ namespace CZToolKit.GraphProcessor
         public virtual void DrawGizmos(IGraphOwner graphOwner) { }
         #endregion
 
-        #region Static
-        public const string TITLE_NAME = nameof(Title);
-        public const string TITLE_COLOR_NAME = nameof(TitleColor);
-        public const string TOOLTIP_NAME = nameof(Tooltip);
-        public const string POSITION_NAME = nameof(Position);
 
-        /// <summary> 根据T创建一个节点，并设置位置 </summary>
-        public static T CreateNew<T>(BaseGraph graph, Vector2 position) where T : BaseNode
-        {
-            return CreateNew(graph, typeof(T), position) as T;
-        }
-
-        /// <summary> 根据type创建一个节点，并设置位置 </summary>
-        public static BaseNode CreateNew(BaseGraph graph, Type type, Vector2 position)
-        {
-            if (!type.IsSubclassOf(typeof(BaseNode)))
-                return null;
-            var node = Activator.CreateInstance(type) as BaseNode;
-            node.position = position;
-            IDAllocation(node, graph);
-            return node;
-        }
-
-        /// <summary> 给节点分配一个GUID，这将会覆盖已有GUID </summary>
-        public static void IDAllocation(BaseNode node, BaseGraph graph)
-        {
-            node.guid = graph.GenerateNodeGUID();
-        }
-        #endregion
-
+        public const string POSITION_NAME = nameof(position);
+        public const string TITLE_NAME = "title";
+        public const string TITLE_COLOR_NAME = "titleColor";
+        public const string TOOLTIP_NAME = "tooltip";
     }
 }

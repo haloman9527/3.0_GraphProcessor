@@ -21,28 +21,27 @@ using UnityEditor;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
-    public static class GraphProcessorEditorUtility
+    public static class GraphProcessorEditorUtil
     {
         #region GraphWindowTypeCache
-        static Dictionary<Type, Type> WindowTypeCache;
+        static Dictionary<Type, Type> WindowTypesCache;
 
         public static Type GetGraphWindowType(Type graphType)
         {
-            if (WindowTypeCache == null)
+            if (WindowTypesCache == null)
             {
-                WindowTypeCache = new Dictionary<Type, Type>();
+                WindowTypesCache = new Dictionary<Type, Type>();
                 foreach (var type in TypeCache.GetTypesDerivedFrom<BaseGraphWindow>())
                 {
                     if (type.IsAbstract) continue;
-
                     foreach (var att in Util_Attribute.GetTypeAttributes(type, true))
                     {
                         if (att is CustomGraphWindowAttribute sAtt)
-                            WindowTypeCache[sAtt.targetGraphType] = type;
+                            WindowTypesCache[sAtt.targetGraphType] = type;
                     }
                 }
             }
-            if (WindowTypeCache.TryGetValue(graphType, out Type windowType))
+            if (WindowTypesCache.TryGetValue(graphType, out Type windowType))
                 return windowType;
             if (graphType.BaseType != null)
                 return GetGraphWindowType(graphType.BaseType);
@@ -53,29 +52,54 @@ namespace CZToolKit.GraphProcessor.Editors
         #endregion
 
         #region NodeViewTypeCache
-        static Dictionary<Type, Type> NodeViewTypeCache;
+        static Dictionary<Type, Type> NodeViewTypesCache;
 
         public static Type GetNodeViewType(Type nodeType)
         {
-            if (NodeViewTypeCache == null)
+            if (NodeViewTypesCache == null)
             {
-                NodeViewTypeCache = new Dictionary<Type, Type>();
+                NodeViewTypesCache = new Dictionary<Type, Type>();
                 foreach (var type in TypeCache.GetTypesDerivedFrom<BaseNodeView>())
                 {
                     if (type.IsAbstract) continue;
                     foreach (var att in Util_Attribute.GetTypeAttributes(type, true))
                     {
                         if (att is CustomNodeViewAttribute sAtt)
-                            NodeViewTypeCache[sAtt.targetNodeType] = type;
+                            NodeViewTypesCache[sAtt.targetNodeType] = type;
                     }
                 }
             }
-            if (NodeViewTypeCache.TryGetValue(nodeType, out Type nodeViewType))
+            if (NodeViewTypesCache.TryGetValue(nodeType, out Type nodeViewType))
                 return nodeViewType;
             if (nodeType.BaseType != null)
                 return GetNodeViewType(nodeType.BaseType);
             else
                 return null;
+        }
+        #endregion
+
+        #region NodeTypeCache
+        static Dictionary<Type, HashSet<Type>> NodeTypesCache;
+
+        public static IEnumerable<Type> GetNodeTypes(Type graphType)
+        {
+            if (NodeTypesCache == null)
+            {
+                NodeTypesCache = new Dictionary<Type, HashSet<Type>>();
+                foreach (var nodeType in TypeCache.GetTypesDerivedFrom<INode>())
+                {
+                    if (nodeType.IsAbstract) continue;
+                    foreach (var att in Util_Attribute.GetTypeAttributes<AttachableAttribute>(nodeType, true))
+                    {
+                        if (!NodeTypesCache.TryGetValue(graphType, out var nodeTypes))
+                            NodeTypesCache[graphType] = nodeTypes = new HashSet<Type>();
+                        nodeTypes.Add(nodeType);
+                    }
+                }
+            }
+
+            NodeTypesCache.TryGetValue(graphType, out var types);
+            return types;
         }
         #endregion
 

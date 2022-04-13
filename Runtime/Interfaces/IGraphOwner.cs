@@ -14,14 +14,14 @@
  */
 #endregion
 using CZToolKit.Core.SharedVariable;
-
-using UnityObject = UnityEngine.Object;
+using System;
 
 namespace CZToolKit.GraphProcessor
 {
     public interface IGraphOwner : IVariableOwner
     {
-        BaseGraph Graph { get; }
+        IGraph Graph { get; }
+        Type GraphType { get; }
 
         void SaveVariables();
     }

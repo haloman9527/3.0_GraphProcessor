@@ -22,7 +22,7 @@ using UnityEngine;
 
 namespace CZToolKit.GraphProcessor
 {
-    public abstract partial class BaseGraph : ViewModel
+    public partial class BaseGraph : ViewModel, IGraph, IGraph<BaseNode>
     {
         #region Fields
         public event Action<BaseNode> onNodeAdded;
@@ -77,25 +77,25 @@ namespace CZToolKit.GraphProcessor
                 return variables;
             }
         }
+
+        IReadOnlyDictionary<string, INode> IGraph.Nodes
+        {
+            get { return nodes as IReadOnlyDictionary<string, INode>; }
+        }
         #endregion
 
         public void Enable()
         {
             if (nodes == null)
-            {
                 nodes = new Dictionary<string, BaseNode>();
-            }
             if (connections == null)
-            {
                 connections = new List<BaseConnection>();
-            }
             if (groups == null)
-            {
                 groups = new List<Group>();
-            }
-            foreach (var node in Nodes.Values)
+            foreach (var pair in Nodes)
             {
-                node.Enable(this);
+                pair.Value.guid = pair.Key;
+                pair.Value.Enable(this);
             }
             for (int i = 0; i < connections.Count; i++)
             {
@@ -125,7 +125,8 @@ namespace CZToolKit.GraphProcessor
                     connections.RemoveAt(i--);
                     continue;
                 }
-
+                connection.fromNode = this.nodes[connection.FromNodeGUID];
+                connection.toNode = this.nodes[connection.ToNodeGUID];
                 connection.Enable(this);
 
                 fromPort.ConnectTo(connection);
@@ -176,15 +177,6 @@ namespace CZToolKit.GraphProcessor
         }
 
         #region API
-        public string GenerateNodeGUID()
-        {
-            while (true)
-            {
-                string guid = Guid.NewGuid().ToString();
-                if (!nodes.ContainsKey(guid)) return guid;
-            }
-        }
-
         public void AddNode(BaseNode node)
         {
             if (node.Owner != null && node.Owner != this)
@@ -211,14 +203,14 @@ namespace CZToolKit.GraphProcessor
 
         public T AddNode<T>(Vector2 position) where T : BaseNode
         {
-            T node = BaseNode.CreateNew<T>(this, position);
+            T node = NewNode<T>(position);
             AddNode(node);
             return node;
         }
 
         public BaseNode AddNode(Type type, Vector2 position)
         {
-            BaseNode node = BaseNode.CreateNew(this, type, position);
+            BaseNode node = NewNode(type, position);
             AddNode(node);
             return node;
         }
@@ -230,6 +222,26 @@ namespace CZToolKit.GraphProcessor
             Disconnect(node);
             nodes.Remove(node.GUID);
             onNodeRemoved?.Invoke(node);
+        }
+
+        public T NewNode<T>(Vector2 position) where T : BaseNode
+        {
+            return NewNode(typeof(T), position) as T;
+        }
+
+        public string GenerateNodeGUID()
+        {
+            while (true)
+            {
+                string guid = Guid.NewGuid().ToString();
+                if (!Nodes.ContainsKey(guid)) return guid;
+            }
+        }
+
+        /// <summary> 给节点分配一个GUID，这将会覆盖已有GUID </summary>
+        public void AllocID(BaseNode node)
+        {
+            node.guid = GenerateNodeGUID();
         }
 
         public bool Connect(BaseConnection connection)
@@ -263,7 +275,7 @@ namespace CZToolKit.GraphProcessor
             return true;
         }
 
-        public BaseConnection Connect(BaseNode from, string fromPortName, BaseNode to, string toPortName)
+        public BaseConnection Connect(INode from, string fromPortName, INode to, string toPortName)
         {
             var connection = NewConnection(from, fromPortName, to, toPortName);
             if (!Connect(connection))
@@ -271,7 +283,7 @@ namespace CZToolKit.GraphProcessor
             return connection;
         }
 
-        public void Disconnect(BaseNode node)
+        public void Disconnect(INode node)
         {
             foreach (var connection in Connections.ToArray())
             {
@@ -304,11 +316,32 @@ namespace CZToolKit.GraphProcessor
             }
         }
 
-        public void Disconnect(BaseNode node, string portName)
+        public void Disconnect(INode node, string portName)
         {
             Disconnect(node.Ports[portName]);
         }
-        #endregion
+
+        public virtual BaseConnection NewConnection(Type type, INode from, string fromPortName, INode to, string toPortName)
+        {
+            var connection = Activator.CreateInstance(type) as BaseConnection;
+            connection.fromNode = from;
+            connection.from = from.GUID;
+            connection.fromPortName = fromPortName;
+            connection.toNode = to;
+            connection.to = to.GUID;
+            connection.toPortName = toPortName;
+            return connection;
+        }
+
+        public T NewConnection<T>(INode from, string fromPortName, INode to, string toPortName) where T : BaseConnection
+        {
+            return NewConnection(typeof(T), from, fromPortName, to, toPortName) as T;
+        }
+
+        public BaseConnection NewConnection(INode from, string fromPortName, INode to, string toPortName)
+        {
+            return NewConnection(typeof(BaseConnection), from, fromPortName, to, toPortName);
+        }
 
         public void AddGroup(Group group)
         {
@@ -326,25 +359,22 @@ namespace CZToolKit.GraphProcessor
                 onGroupRemoved?.Invoke(group);
         }
 
+        public virtual BaseNode NewNode(Type type, Vector2 position)
+        {
+            if (!type.IsSubclassOf(typeof(BaseNode)))
+                return null;
+            var node = Activator.CreateInstance(type) as BaseNode;
+            node.Owner = this;
+            node.position = position;
+            AllocID(node);
+            return node;
+        }
+        #endregion
+
         #region Overrides
         protected virtual void OnEnabled() { }
 
         protected virtual void OnInitialized() { }
-
-        public T NewNode<T>(Vector2 position) where T : BaseNode
-        {
-            return NewNode(typeof(T), position) as T;
-        }
-
-        public virtual BaseNode NewNode(Type type, Vector2 position)
-        {
-            return BaseNode.CreateNew(this, type, position);
-        }
-
-        public virtual BaseConnection NewConnection(BaseNode from, string fromPortName, BaseNode to, string toPortName)
-        {
-            return BaseConnection.CreateNew<BaseConnection>(from, fromPortName, to, toPortName);
-        }
         #endregion
 
         #region Static

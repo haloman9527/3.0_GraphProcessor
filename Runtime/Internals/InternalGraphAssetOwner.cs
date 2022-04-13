@@ -22,7 +22,7 @@ using UnityObject = UnityEngine.Object;
 
 namespace CZToolKit.GraphProcessor.Internal
 {
-    public abstract class InternalGraphAssetOwner : MonoBehaviour, IGraphAsset, IGraphOwner, IGraphAssetOwner, IVariableOwner, ISerializationCallbackReceiver
+    public abstract class InternalGraphAssetOwner : MonoBehaviour, IGraphOwner, IGraphAssetOwner, IVariableOwner, ISerializationCallbackReceiver
     {
         #region Fields
         List<SharedVariable> variables = new List<SharedVariable>();
@@ -30,9 +30,9 @@ namespace CZToolKit.GraphProcessor.Internal
         #endregion
 
         #region Properties
-        public abstract InternalBaseGraphAsset GraphAsset { get; set; }
-        public abstract BaseGraph Graph { get; }
+        public abstract UnityObject GraphAsset { get; set; }
         public abstract Type GraphAssetType { get; }
+        public abstract IGraph Graph { get; }
         public abstract Type GraphType { get; }
         #endregion
 
@@ -60,10 +60,6 @@ namespace CZToolKit.GraphProcessor.Internal
         {
             serializedVariables = GraphSerializer.SerializeValue(variables, out variablesUnityReference);
         }
-
-        public abstract void SaveGraph(BaseGraph graph);
-
-        public abstract BaseGraph DeserializeGraph();
 
         void DeserializeVariables()
         {

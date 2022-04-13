@@ -13,11 +13,15 @@
  *
  */
 #endregion
+using System;
+using UnityEngine;
 
 namespace CZToolKit.GraphProcessor
 {
-    public interface IGraphElement
+    [Serializable]
+    public abstract partial class BaseNode
     {
-
+        /// <summary> 位置坐标 </summary>
+        [SerializeField] internal Vector2 position;
     }
 }

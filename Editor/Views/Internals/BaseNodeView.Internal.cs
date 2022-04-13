@@ -131,10 +131,10 @@ namespace CZToolKit.GraphProcessor.Editors
         #region 数据监听
         protected virtual void BindingProperties()
         {
+            Model.BindingProperty<Vector2>(BaseNode.POSITION_NAME, OnPositionChanged);
             Model.BindingProperty<string>(BaseNode.TITLE_NAME, OnTitleChanged);
             Model.BindingProperty<Color>(BaseNode.TITLE_COLOR_NAME, OnTitleColorChanged);
             Model.BindingProperty<string>(BaseNode.TOOLTIP_NAME, OnTooltipChanged);
-            Model.BindingProperty<Vector2>(BaseNode.POSITION_NAME, OnPositionChanged);
 
             Model.onPortAdded += OnPortAdded;
             Model.onPortRemoved += OnPortRemoved;

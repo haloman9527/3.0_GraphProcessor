@@ -20,10 +20,9 @@ using System.Linq;
 
 namespace CZToolKit.GraphProcessor
 {
-    public partial class BasePort : ViewModel, IGraphElement
+    public partial class BasePort : ViewModel
     {
         #region Fields
-        [NonSerialized] BaseNode owner;
         [NonSerialized] List<BaseConnection> connections;
         [NonSerialized] Func<BaseConnection, BaseConnection, int> comparer;
 
@@ -33,7 +32,11 @@ namespace CZToolKit.GraphProcessor
         #endregion
 
         #region Properties
-        public BaseNode Owner { get { return owner; } }
+        public INode Owner
+        {
+            get;
+            internal set;
+        }
         public IReadOnlyCollection<BaseConnection> Connections { get { return connections; } }
         public Type Type
         {
@@ -42,9 +45,9 @@ namespace CZToolKit.GraphProcessor
         }
         #endregion
 
-        internal void Enable(BaseNode node)
+        internal void Enable(INode node)
         {
-            owner = node;
+            Owner = node;
             switch (orientation)
             {
                 case Orientation.Horizontal:
