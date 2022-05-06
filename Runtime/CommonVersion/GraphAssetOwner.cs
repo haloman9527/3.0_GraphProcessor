@@ -23,13 +23,13 @@ using UnityObject = UnityEngine.Object;
 
 namespace CZToolKit.GraphProcessor
 {
-    public abstract class GraphAssetOwner<TGraphAsset, TGraph> : InternalGraphAssetOwner, IGraphAsset
+    public abstract class GraphAssetOwner<TGraphAsset, TGraph> : InternalGraphAssetOwner, IGraphSerialization
         where TGraphAsset : UnityObject, IGraphAsset<TGraph>
-        where TGraph : BaseGraph, new()
+        where TGraph : BaseGraph, IGraphForMono, new()
     {
         #region 字段
-        [NonSerialized] TGraph graph;
         [SerializeField] TGraphAsset graphAsset;
+        [NonSerialized] TGraph graph;
         #endregion
 
         #region 属性
@@ -59,11 +59,6 @@ namespace CZToolKit.GraphProcessor
             get { return graphAsset; }
         }
 
-        public override Type GraphAssetType
-        {
-            get { return typeof(TGraphAsset); }
-        }
-
         public override IGraph Graph
         {
             get { return T_Graph; }
@@ -75,13 +70,18 @@ namespace CZToolKit.GraphProcessor
             {
                 if (graph == null)
                 {
-                    if (graphAsset != null)
-                        graph = graphAsset.DeserializeTGraph();
+                    if (T_GraphAsset != null)
+                        graph = T_GraphAsset.DeserializeTGraph();
                     else
                         graph = DeserializeTGraph();
                 }
                 return graph;
             }
+        }
+
+        public override Type GraphAssetType
+        {
+            get { return typeof(TGraphAsset); }
         }
 
         public override Type GraphType

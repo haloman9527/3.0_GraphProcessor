@@ -13,13 +13,19 @@
  *
  */
 #endregion
-using System;
+using CZToolKit.Core.SharedVariable;
 
 namespace CZToolKit.GraphProcessor
 {
-    public interface IGraphOwner
+    public interface IGraphForMono : IVariableSource
     {
-        IGraph Graph { get; }
-        Type GraphType { get; }
+        IGraphOwner GraphOwner { get; }
+
+        void Initialize(IGraphOwner graphOwner);
+    }
+
+    public interface INodeForMono
+    {
+        void Initialize();
     }
 }

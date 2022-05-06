@@ -25,11 +25,11 @@ namespace CZToolKit.GraphProcessor
         public enum Orientation { Horizontal, Vertical }
         public enum Capacity { Single, Multi }
 
-        [SerializeField] internal readonly string name;
-        [SerializeField] internal readonly Orientation orientation;
-        [SerializeField] internal readonly Direction direction;
-        [SerializeField] internal readonly Capacity capacity;
-        [SerializeField] internal Type type;
+        [SerializeField] [HideInInspector] internal readonly string name;
+        [SerializeField] [HideInInspector] internal readonly Orientation orientation;
+        [SerializeField] [HideInInspector] internal readonly Direction direction;
+        [SerializeField] [HideInInspector] internal readonly Capacity capacity;
+        [SerializeField] [HideInInspector] internal Type type;
 
         public BasePort(string name, Orientation orientation, Direction direction, Capacity capacity, Type type = null)
         {

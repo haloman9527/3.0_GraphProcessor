@@ -16,11 +16,11 @@
 #define USE_ODIN
 
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 #if UNITY_EDITOR
 using UnityEditor;
-using System.Collections.Generic;
 #endif
 
 #if USE_ODIN

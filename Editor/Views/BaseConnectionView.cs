@@ -23,6 +23,11 @@ namespace CZToolKit.GraphProcessor.Editors
 {
     public partial class BaseConnectionView
     {
+        protected override EdgeControl CreateEdgeControl()
+        {
+            return new BetterEdgeControl(this);
+        }
+
         public class FlowPoint : Manipulator
         {
             VisualElement point { get; set; }

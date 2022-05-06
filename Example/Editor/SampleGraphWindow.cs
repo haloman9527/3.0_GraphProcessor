@@ -13,6 +13,7 @@
  *
  */
 #endregion
+#if UNITY_EDITOR
 using CZToolKit.GraphProcessor;
 using CZToolKit.GraphProcessor.Editors;
 using UnityEditor;
@@ -54,13 +55,14 @@ public class SampleGraphWindow : BaseGraphWindow
 
     void Save()
     {
-        if (GraphAsset is IGraphAsset graphAsset)
-            graphAsset.SaveGraph(Graph as BaseGraph);
-        if (GraphOwner is IGraphOwner graphOwner)
-            graphOwner.SaveVariables();
+        if (GraphAsset is IGraphSerialization graphSerialization)
+            graphSerialization.SaveGraph(Graph);
+        if (GraphOwner is IVariableSerialization variableSerialization)
+            variableSerialization.SaveVariables();
         GraphView.SetDirty();
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
         GraphView.SetUndirty();
     }
 }
+#endif

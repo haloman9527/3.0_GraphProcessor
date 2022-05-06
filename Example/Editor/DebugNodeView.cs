@@ -13,6 +13,7 @@
  *
  */
 #endregion
+#if UNITY_EDITOR
 using CZToolKit.GraphProcessor.Editors;
 using UnityEngine.UIElements;
 
@@ -40,3 +41,4 @@ public class DebugNodeView : BaseNodeView
         (Model as DebugNode).DebugInput();
     }
 }
+#endif

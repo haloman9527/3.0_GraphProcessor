@@ -79,15 +79,24 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             titleContent = new GUIContent("Graph Processor");
             rootVisualElement.styleSheets.Add(GraphProcessorStyles.BasicStyle);
-
+            EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
             Reload();
         }
 
         protected virtual void OnDestroy()
         {
+            EditorApplication.playModeStateChanged -= OnPlayModeStateChanged;
             if (Selection.activeObject is ObjectInspector objectInspector && objectInspector.Target is GraphElement)
-            {
                 Selection.activeObject = null;
+        }
+
+        protected virtual void OnPlayModeStateChanged(PlayModeStateChange obj)
+        {
+            switch (obj)
+            {
+                case PlayModeStateChange.EnteredEditMode:
+                    Reload();
+                    break;
             }
         }
         #endregion
@@ -153,9 +162,7 @@ namespace CZToolKit.GraphProcessor.Editors
         public virtual void Clear()
         {
             if (GraphViewParent != null)
-            {
                 GraphViewParent.RemoveFromHierarchy();
-            }
 
             Graph = null;
             GraphView = null;
@@ -193,6 +200,7 @@ namespace CZToolKit.GraphProcessor.Editors
                 return;
             OnGraphViewUndirty();
             GraphView.SetUp(graph, this, commandDispatcher);
+            GraphView.BindingProperties();
             GraphView.onDirty += OnGraphViewDirty;
             GraphView.onUndirty += OnGraphViewUndirty;
             Graph = graph;
@@ -209,31 +217,35 @@ namespace CZToolKit.GraphProcessor.Editors
         public void Load(IGraphOwner graphOwner)
         {
             Clear();
-
             GraphOwner = graphOwner;
             GraphAsset = (UnityObject)graphOwner;
             CommandDispatcher = new CommandDispatcher();
 
-            GraphOwner.Graph.Initialize(GraphOwner);
-            InternalLoad(graphOwner.Graph, CommandDispatcher);
+            (GraphOwner.Graph as IGraphForMono)?.Initialize(GraphOwner);
+            InternalLoad(GraphOwner.Graph, CommandDispatcher);
         }
 
         // 从GraphAssetOwner加载
         public void Load(IGraphAssetOwner graphAssetOwner)
         {
             Clear();
-
             GraphOwner = graphAssetOwner;
-            GraphAsset = graphAssetOwner.GraphAsset as UnityObject;
+            GraphAsset = graphAssetOwner.GraphAsset;
             CommandDispatcher = new CommandDispatcher();
 
-            GraphOwner.Graph.Initialize(GraphOwner);
-            InternalLoad(graphAssetOwner.Graph, CommandDispatcher);
+            (GraphOwner.Graph as IGraphForMono)?.Initialize(GraphOwner);
+            InternalLoad(GraphOwner.Graph, CommandDispatcher);
         }
 
         // 从Graph资源加载
         public void Load(IGraphAsset graphAsset)
         {
+            var graphAssetOwner = Selection.activeGameObject?.GetComponent<IGraphAssetOwner>();
+            if (graphAssetOwner != null && graphAssetOwner.GraphAsset == (UnityObject)graphAsset)
+            {
+                Load(graphAssetOwner);
+                return;
+            }
             Clear();
 
             GraphOwner = null;
@@ -247,7 +259,6 @@ namespace CZToolKit.GraphProcessor.Editors
         public void Load(BaseGraph graph)
         {
             Clear();
-
             GraphAsset = null;
             GraphOwner = null;
             CommandDispatcher = new CommandDispatcher();

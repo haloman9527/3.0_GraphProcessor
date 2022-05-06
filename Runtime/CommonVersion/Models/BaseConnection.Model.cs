@@ -21,9 +21,9 @@ namespace CZToolKit.GraphProcessor
     [Serializable]
     public partial class BaseConnection
     {
-        [SerializeField] internal string from;
-        [SerializeField] internal string fromPortName;
-        [SerializeField] internal string to;
-        [SerializeField] internal string toPortName;
+        [SerializeField] [HideInInspector] internal string from;
+        [SerializeField] [HideInInspector] internal string fromPortName;
+        [SerializeField] [HideInInspector] internal string to;
+        [SerializeField] [HideInInspector] internal string toPortName;
     }
 }

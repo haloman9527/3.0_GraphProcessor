@@ -15,7 +15,10 @@
 #endregion
 #if UNITY_EDITOR
 using CZToolKit.Core.Editors;
+using System;
 using UnityEditor;
+using UnityEditor.Experimental.GraphView;
+using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace CZToolKit.GraphProcessor.Editors
@@ -24,7 +27,11 @@ namespace CZToolKit.GraphProcessor.Editors
     {
         protected virtual void OnInitialized() { }
 
-        public virtual BasePortView NewPortView(BasePort port)
+        protected virtual void OnBindingProperties() { }
+
+        protected virtual void OnUnBindingProperties() { }
+
+        protected virtual BasePortView NewPortView(BasePort port)
         {
             return new BasePortView(port, new EdgeConnectorListener());
         }
@@ -43,11 +50,48 @@ namespace CZToolKit.GraphProcessor.Editors
             base.OnSelected();
             BringToFront();
         }
+
+        public void HighlightOn()
+        {
+            nodeBorder.AddToClassList("highlight");
+        }
+
+        public void HighlightOff()
+        {
+            nodeBorder.RemoveFromClassList("highlight");
+        }
+
+        public void Flash()
+        {
+            HighlightOn();
+            schedule.Execute(_ => { HighlightOff(); }).ExecuteLater(2000);
+        }
+
+        public void AddBadge(IconBadge badge)
+        {
+            Add(badge);
+            badges.Add(badge);
+            badge.AttachTo(topContainer, SpriteAlignment.RightCenter);
+        }
+
+        public void RemoveBadge(Func<IconBadge, bool> callback)
+        {
+            badges.RemoveAll(b =>
+            {
+                if (callback(b))
+                {
+                    b.Detach();
+                    b.RemoveFromHierarchy();
+                    return true;
+                }
+                return false;
+            });
+        }
     }
 
     public class BaseNodeView<M> : BaseNodeView where M : BaseNode
     {
-        public M T_Model { get { return Model as M; } }
+        public M T_Model { get { return base.Model as M; } }
     }
 }
 #endif

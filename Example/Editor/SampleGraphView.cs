@@ -13,6 +13,7 @@
  *
  */
 #endregion
+#if UNITY_EDITOR
 using CZToolKit.GraphProcessor;
 using CZToolKit.GraphProcessor.Editors;
 using System;
@@ -28,8 +29,9 @@ public class SampleGraphView : BaseGraphView
         yield return typeof(DebugNode);
     }
 
-    protected override Type GetConnectionViewType(BaseConnection connection)
+    protected override BaseConnectionView NewConnectionView(BaseConnection connection)
     {
-        return typeof(SampleConnectionView);
+        return new SampleConnectionView();
     }
 }
+#endif

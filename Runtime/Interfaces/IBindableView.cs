@@ -19,6 +19,7 @@ namespace CZToolKit.GraphProcessor
 {
     public interface IBindableView
     {
+        void BindingProperties();
         void UnBindingProperties();
     }
 

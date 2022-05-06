@@ -22,11 +22,11 @@ namespace CZToolKit.GraphProcessor
     [Serializable]
     public partial class BaseGraph
     {
-        [SerializeField] internal Vector3 pan = Vector3.zero;
-        [SerializeField] internal Vector3 zoom = Vector3.one;
+        [SerializeField] [HideInInspector] internal Vector3 pan = Vector3.zero;
+        [SerializeField] [HideInInspector] internal Vector3 zoom = Vector3.one;
 
-        [SerializeField] internal Dictionary<string, BaseNode> nodes = new Dictionary<string, BaseNode>();
-        [SerializeField] internal List<BaseConnection> connections = new List<BaseConnection>();
-        [SerializeField] internal List<Group> groups = new List<Group>();
+        [SerializeField] [HideInInspector] internal Dictionary<string, BaseNode> nodes = new Dictionary<string, BaseNode>();
+        [SerializeField] [HideInInspector] internal List<BaseConnection> connections = new List<BaseConnection>();
+        [SerializeField] [HideInInspector] internal List<Group> groups = new List<Group>();
     }
 }

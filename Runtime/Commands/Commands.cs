@@ -129,6 +129,50 @@ namespace CZToolKit.GraphProcessor
         }
     }
 
+    public class AddGroupCommand : ICommand
+    {
+        public IGraph graph;
+        public Group group;
+
+        public AddGroupCommand(IGraph graph, Group group)
+        {
+            this.graph = graph;
+            this.group = group;
+        }
+
+        public void Do()
+        {
+            graph.AddGroup(group);
+        }
+
+        public void Undo()
+        {
+            graph.RemoveGroup(group);
+        }
+    }
+
+    public class RemoveGroupCommand : ICommand
+    {
+        public IGraph graph;
+        public Group group;
+
+        public RemoveGroupCommand(IGraph graph, Group group)
+        {
+            this.graph = graph;
+            this.group = group;
+        }
+
+        public void Do()
+        {
+            graph.RemoveGroup(group);
+        }
+
+        public void Undo()
+        {
+            graph.AddGroup(group);
+        }
+    }
+
     public class MoveGroupsCommand : ICommand
     {
         Dictionary<Group, Vector2> oldPos = new Dictionary<Group, Vector2>();
@@ -157,6 +201,30 @@ namespace CZToolKit.GraphProcessor
             {
                 pair.Key.Position = pair.Value;
             }
+        }
+    }
+
+    public class RenameGroupCommand : ICommand
+    {
+        public Group group;
+        public string oldName;
+        public string newName;
+
+        public RenameGroupCommand(Group group, string newName)
+        {
+            this.group = group;
+            this.oldName = group.GroupName;
+            this.newName = newName;
+        }
+
+        public void Do()
+        {
+            group.GroupName = newName;
+        }
+
+        public void Undo()
+        {
+            group.GroupName = oldName;
         }
     }
 
@@ -381,31 +449,6 @@ namespace CZToolKit.GraphProcessor
         public void Undo()
         {
             graph.Connect(connection);
-        }
-    }
-
-    public class ChangeValueCommand : ICommand
-    {
-        object target;
-        System.Reflection.FieldInfo field;
-        object oldValue, newValue;
-
-        public ChangeValueCommand(object target, System.Reflection.FieldInfo field, object newValue)
-        {
-            this.target = target;
-            this.field = field;
-            this.newValue = newValue;
-        }
-
-        public void Do()
-        {
-            oldValue = field.GetValue(target);
-            field.SetValue(target, newValue);
-        }
-
-        public void Undo()
-        {
-            field.SetValue(target, oldValue);
         }
     }
 }

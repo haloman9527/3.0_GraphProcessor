@@ -32,12 +32,6 @@ namespace CZToolKit.GraphProcessor.Editors
         public Group Model { get; protected set; }
         public BaseGraphView Owner { get; private set; }
 
-        public override string title
-        {
-            get => Model.GroupName;
-            set => Model.GroupName = value;
-        }
-
         public BaseGroupView()
         {
             TitleLabel = headerContainer.Q<Label>();
@@ -51,29 +45,26 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             this.Model = group;
             this.Owner = graphView;
-
+            this.title = Model.GroupName;
+            base.SetPosition(new Rect(Model.Position, GetPosition().size));
+            base.AddElements(Model.Nodes.Select(nodeGUID => Owner.NodeViews[nodeGUID]));
             this.AddManipulator(new ContextualMenuManipulator(BuildContextualMenu));
 
-            this.title = Model.GroupName;
-            this.TitleLabel.text = Model.GroupName;
-            base.SetPosition(new Rect(Model.Position, GetPosition().size));
-            base.AddElements(Model.Nodes.Select(v => Owner.NodeViews[v]));
-
-            Model[nameof(group.GroupName)].RegisterValueChangedEvent<string>(OnTitleChanged);
-            Model[nameof(group.Position)].RegisterValueChangedEvent<Vector2>(OnPositionChanged);
-            Model.onElementsAdded += OnNodesAdded;
-            Model.onElementsRemoved += OnNodesRemoved;
             Initialized = true;
         }
 
-        private void OnPositionChanged(Vector2 newPos)
+        public void BindingProperties()
         {
-            base.SetPosition(new Rect(newPos, GetPosition().size));
+            Model[nameof(Model.groupName)].RegisterValueChangedEvent<string>(OnTitleChanged);
+            Model[nameof(Model.position)].RegisterValueChangedEvent<Vector2>(OnPositionChanged);
+            Model.onElementsAdded += OnNodesAdded;
+            Model.onElementsRemoved += OnNodesRemoved;
         }
 
         public void UnBindingProperties()
         {
-            Model[nameof(Model.GroupName)].UnregisterValueChangedEvent<string>(OnTitleChanged);
+            Model[nameof(Model.groupName)].UnregisterValueChangedEvent<string>(OnTitleChanged);
+            Model[nameof(Model.position)].UnregisterValueChangedEvent<Vector2>(OnPositionChanged);
             Model.onElementsAdded -= OnNodesAdded;
             Model.onElementsRemoved -= OnNodesRemoved;
         }
@@ -83,8 +74,12 @@ namespace CZToolKit.GraphProcessor.Editors
             if (string.IsNullOrEmpty(title))
                 return;
             this.title = Model.GroupName;
-            this.TitleLabel.text = Model.GroupName;
             Owner.SetDirty();
+        }
+
+        private void OnPositionChanged(Vector2 newPos)
+        {
+            base.SetPosition(new Rect(newPos, GetPosition().size));
         }
 
         private void OnNodesAdded(IEnumerable<INode> nodes)
@@ -97,21 +92,26 @@ namespace CZToolKit.GraphProcessor.Editors
             base.RemoveElements(nodes.Select(node => Owner.NodeViews[node.GUID]));
         }
 
-        protected virtual void BuildContextualMenu(ContextualMenuPopulateEvent obj)
+        protected void BuildContextualMenu(ContextualMenuPopulateEvent obj)
         {
 
         }
 
         protected override void OnGroupRenamed(string oldName, string newName)
         {
-            Model.GroupName = newName;
+            if (string.IsNullOrEmpty(newName))
+                return;
+            Owner.CommandDispacter.Do(new RenameGroupCommand(Model, newName));
         }
 
         public override bool AcceptsElement(GraphElement element, ref string reasonWhyNotAccepted)
         {
+            if (!base.AcceptsElement(element,ref reasonWhyNotAccepted))
+                return false;
             if (element is BaseNodeView)
                 return true;
-            reasonWhyNotAccepted = "Nested group is not supported yet.";
+            if (element is BaseConnectionView)
+                return true;
             return false;
         }
 
@@ -130,10 +130,6 @@ namespace CZToolKit.GraphProcessor.Editors
             base.OnElementsRemoved(elements);
             if (!Initialized)
                 return;
-            var nodes = elements.Where(element => element is BaseNodeView).Select(element => (element as BaseNodeView).Model);
-            Model.RemoveNodesWithoutNotify(nodes);
-            if (Model.Nodes.Count <= 0)
-                Model.Owner.RemoveGroup(Model);
             Owner.SetDirty();
         }
     }

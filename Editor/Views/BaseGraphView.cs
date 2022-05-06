@@ -27,15 +27,21 @@ namespace CZToolKit.GraphProcessor.Editors
 {
     public partial class BaseGraphView
     {
+        List<Port> compatiblePorts = new List<Port>();
+
         protected virtual void OnInitialized() { }
+
+        protected virtual void OnBindingProperties() { }
+
+        protected virtual void OnUnbindingProperties() { }
 
         public override void BuildContextualMenu(ContextualMenuPopulateEvent evt)
         {
             evt.menu.AppendAction("Create Group", delegate
             {
                 var group = new Group("New Group");
-                Model.AddGroup(group);
-                group.AddNodes(selection.Where(select => select is BaseNodeView).Select(select => (select as BaseNodeView).Model));
+                group.nodes.AddRange(selection.Where(select => select is BaseNodeView).Select(select => (select as BaseNodeView).Model.guid));
+                CommandDispacter.Do(new AddGroupCommand(Model, group));
             }, (DropdownMenuAction a) => canDeleteSelection && selection.Find(s => s is BaseNodeView) != null ? DropdownMenuAction.Status.Normal : DropdownMenuAction.Status.Hidden);
 
             base.BuildContextualMenu(evt);
@@ -74,13 +80,31 @@ namespace CZToolKit.GraphProcessor.Editors
         public override List<Port> GetCompatiblePorts(Port startPortView, NodeAdapter nodeAdapter)
         {
             BasePortView portView = startPortView as BasePortView;
-            List<Port> compatiblePorts = new List<Port>();
-            ports.ForEach(_portView =>
+
+            compatiblePorts.Clear();
+            switch (portView.Model.direction)
             {
-                var toPortView = _portView as BasePortView;
-                if (IsCompatible(portView, toPortView, nodeAdapter))
-                    compatiblePorts.Add(_portView);
-            });
+                case BasePort.Direction.Input:
+                    {
+                        ports.ForEach(_portView =>
+                        {
+                            var fromPortView = _portView as BasePortView;
+                            if (IsCompatible(fromPortView, portView, nodeAdapter))
+                                compatiblePorts.Add(_portView);
+                        });
+                    }
+                    break;
+                case BasePort.Direction.Output:
+                    {
+                        ports.ForEach(_portView =>
+                        {
+                            var toPortView = _portView as BasePortView;
+                            if (IsCompatible(portView, toPortView, nodeAdapter))
+                                compatiblePorts.Add(_portView);
+                        });
+                    }
+                    break;
+            }
             return compatiblePorts;
         }
 
@@ -93,17 +117,17 @@ namespace CZToolKit.GraphProcessor.Editors
             }
         }
 
-        protected virtual Type GetNodeViewType(BaseNode node)
+        protected virtual BaseNodeView NewNodeView(BaseNode node)
         {
             var type = GraphProcessorEditorUtil.GetNodeViewType(node.GetType());
             if (type == null)
-                type = typeof(BaseNodeView);
-            return type;
+                return new BaseNodeView();
+            return Activator.CreateInstance(type) as BaseNodeView;
         }
 
-        protected virtual Type GetConnectionViewType(BaseConnection connection)
+        protected virtual BaseConnectionView NewConnectionView(BaseConnection connection)
         {
-            return typeof(BaseConnectionView);
+            return new BaseConnectionView();
         }
 
         protected virtual void UpdateInspector()
@@ -114,26 +138,26 @@ namespace CZToolKit.GraphProcessor.Editors
                 {
                     case BaseNodeView nodeView:
                         ObjectEditor.DrawObjectInInspector("Node", nodeView, GraphAsset);
-                        Selection.activeObject = ObjectInspector.Instance;
                         return;
                     case BaseConnectionView edgeView:
                         ObjectEditor.DrawObjectInInspector("Connection", edgeView, GraphAsset);
-                        Selection.activeObject = ObjectInspector.Instance;
                         return;
                     default:
                         break;
                 }
             }
+
+            if (Selection.activeGameObject != null && Selection.activeGameObject.GetComponent<IGraphAssetOwner>() != null)
+                return;
             ObjectEditor.DrawObjectInInspector("Graph", this, GraphAsset);
-            Selection.activeObject = ObjectInspector.Instance;
         }
 
-        protected virtual bool IsCompatible(BasePortView portView, BasePortView toPortView, NodeAdapter nodeAdapter)
+        protected virtual bool IsCompatible(BasePortView fromPortView, BasePortView toPortView, NodeAdapter nodeAdapter)
         {
-            if (toPortView.direction == portView.direction)
+            if (toPortView.direction == fromPortView.direction)
                 return false;
             // 类型兼容查询
-            if (!toPortView.Model.Type.IsAssignableFrom(portView.Model.Type) && !portView.Model.Type.IsAssignableFrom(toPortView.Model.Type))
+            if (!toPortView.Model.Type.IsAssignableFrom(fromPortView.Model.Type) && !fromPortView.Model.Type.IsAssignableFrom(toPortView.Model.Type))
                 return false;
             return true;
         }

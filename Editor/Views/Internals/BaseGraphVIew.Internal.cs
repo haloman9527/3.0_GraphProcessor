@@ -81,10 +81,12 @@ namespace CZToolKit.GraphProcessor.Editors
             viewTransform.scale = Model.Zoom == default ? Vector3.one : Model.Zoom;
 
             // 绑定
-            BindingProperties();
-            RegisterCallback<DetachFromPanelEvent>(evt => { UnBindingProperties(); });
+            CreateNodeMenu = ScriptableObject.CreateInstance<CreateNodeMenuWindow>();
+            CreateNodeMenu.Initialize(this, GetNodeTypes());
 
-            InitializeCallbacks();
+            graphViewChanged = GraphViewChangedCallback;
+            viewTransformChanged = ViewTransformChangedCallback;
+            nodeCreationRequest = c => SearchWindow.Open(new SearchWindowContext(c.screenMousePosition), CreateNodeMenu);
 
             yield return GraphWindow.StartCoroutine(GenerateNodeViews());
             yield return GraphWindow.StartCoroutine(LinkNodeViews());
@@ -94,14 +96,45 @@ namespace CZToolKit.GraphProcessor.Editors
             OnInitialized();
         }
 
-        void InitializeCallbacks()
+        public void BindingProperties()
         {
-            graphViewChanged = GraphViewChangedCallback;
-            viewTransformChanged = ViewTransformChangedCallback;
+            RegisterCallback<DetachFromPanelEvent>(evt => { UnBindingProperties(); });
 
-            CreateNodeMenu = ScriptableObject.CreateInstance<CreateNodeMenuWindow>();
-            CreateNodeMenu.Initialize(this, GetNodeTypes());
-            nodeCreationRequest = c => SearchWindow.Open(new SearchWindowContext(c.screenMousePosition), CreateNodeMenu);
+            Model.BindingProperty<Vector3>(BaseGraph.PAN_NAME, OnPositionChanged);
+            Model.BindingProperty<Vector3>(BaseGraph.ZOOM_NAME, OnScaleChanged);
+
+            Model.onNodeAdded += OnNodeAdded;
+            Model.onNodeRemoved += OnNodeRemoved;
+
+            Model.onGroupAdded += OnGroupAdded;
+            Model.onGroupRemoved += OnGroupRemoved;
+
+            Model.onConnected += OnConnected;
+            Model.onDisconnected += OnDisconnected;
+
+            OnBindingProperties();
+        }
+
+        public void UnBindingProperties()
+        {
+            this.Query<GraphElement>().ForEach(element =>
+            {
+                if (element is IBindableView bindableView)
+                {
+                    bindableView.UnBindingProperties();
+                }
+            });
+
+            Model.UnBindingProperty<Vector3>(BaseGraph.PAN_NAME, OnPositionChanged);
+            Model.UnBindingProperty<Vector3>(BaseGraph.ZOOM_NAME, OnScaleChanged);
+
+            Model.onNodeAdded -= OnNodeAdded;
+            Model.onNodeRemoved -= OnNodeRemoved;
+
+            Model.onConnected -= OnConnected;
+            Model.onDisconnected -= OnDisconnected;
+
+            OnUnbindingProperties();
         }
 
         /// <summary> 生成所有NodeView </summary>
@@ -150,7 +183,7 @@ namespace CZToolKit.GraphProcessor.Editors
         }
         #endregion
 
-        #region 数据监听回调
+        #region Callbacks
         void OnPositionChanged(Vector3 position)
         {
             viewTransform.position = position;
@@ -205,43 +238,6 @@ namespace CZToolKit.GraphProcessor.Editors
             SetDirty();
         }
 
-        protected virtual void BindingProperties()
-        {
-            Model.BindingProperty<Vector3>(BaseGraph.PAN_NAME, OnPositionChanged);
-            Model.BindingProperty<Vector3>(BaseGraph.ZOOM_NAME, OnScaleChanged);
-
-            Model.onNodeAdded += OnNodeAdded;
-            Model.onNodeRemoved += OnNodeRemoved;
-
-            Model.onGroupAdded += OnGroupAdded;
-            Model.onGroupRemoved += OnGroupRemoved;
-
-            Model.onConnected += OnConnected;
-            Model.onDisconnected += OnDisconnected;
-        }
-
-        public virtual void UnBindingProperties()
-        {
-            this.Query<GraphElement>().ForEach(element =>
-            {
-                if (element is IBindableView bindableView)
-                {
-                    bindableView.UnBindingProperties();
-                }
-            });
-
-            Model.UnBindingProperty<Vector3>(BaseGraph.PAN_NAME, OnPositionChanged);
-            Model.UnBindingProperty<Vector3>(BaseGraph.ZOOM_NAME, OnScaleChanged);
-
-            Model.onNodeAdded -= OnNodeAdded;
-            Model.onNodeRemoved -= OnNodeRemoved;
-
-            Model.onConnected -= OnConnected;
-            Model.onDisconnected -= OnDisconnected;
-        }
-        #endregion
-
-        #region 回调方法
         /// <summary> GraphView发生改变时调用 </summary>
         GraphViewChange GraphViewChangedCallback(GraphViewChange changes)
         {
@@ -334,7 +330,7 @@ namespace CZToolKit.GraphProcessor.Editors
                             return true;
                         case BaseGroupView groupView:
                             if (groupView.selected)
-                                Model.RemoveGroup(groupView.Model);
+                                CommandDispacter.Do(new RemoveGroupCommand(Model, groupView.Model));
                             return true;
                     }
                     return false;
@@ -352,24 +348,6 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             Model.Pan = viewTransform.position;
             Model.Zoom = viewTransform.scale;
-        }
-
-        public sealed override void AddToSelection(ISelectable selectable)
-        {
-            base.AddToSelection(selectable);
-            UpdateInspector();
-        }
-
-        public sealed override void RemoveFromSelection(ISelectable selectable)
-        {
-            base.RemoveFromSelection(selectable);
-            UpdateInspector();
-        }
-
-        public sealed override void ClearSelection()
-        {
-            base.ClearSelection();
-            UpdateInspector();
         }
 
         //string SerializeGraphElementsCallback(IEnumerable<GraphElement> elements)
@@ -447,9 +425,9 @@ namespace CZToolKit.GraphProcessor.Editors
         #region 方法
         public BaseNodeView AddNodeView(BaseNode node)
         {
-            Type nodeViewType = GetNodeViewType(node);
-            BaseNodeView nodeView = Activator.CreateInstance(nodeViewType) as BaseNodeView;
+            BaseNodeView nodeView = NewNodeView(node);
             nodeView.SetUp(node, this);
+            nodeView.BindingProperties();
             NodeViews[node.GUID] = nodeView;
             AddElement(nodeView);
             return nodeView;
@@ -457,6 +435,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
         public void RemoveNodeView(BaseNodeView nodeView)
         {
+            nodeView.UnBindingProperties();
             RemoveElement(nodeView);
             NodeViews.Remove(nodeView.Model.GUID);
         }
@@ -465,6 +444,7 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             BaseGroupView groupView = new BaseGroupView();
             groupView.SetUp(group, this);
+            groupView.BindingProperties();
             GroupViews[group] = groupView;
             AddElement(groupView);
             return groupView;
@@ -472,45 +452,48 @@ namespace CZToolKit.GraphProcessor.Editors
 
         public void RemoveGroupView(BaseGroupView groupView)
         {
+            groupView.UnBindingProperties();
             groupView.RemoveFromHierarchy();
             GroupViews.Remove(groupView.Model);
         }
 
         public BaseConnectionView ConnectView(BaseNodeView from, BaseNodeView to, BaseConnection connection)
         {
-            var edgeView = Activator.CreateInstance(GetConnectionViewType(connection), true) as BaseConnectionView;
-            edgeView.SetUp(connection, this);
-            edgeView.userData = connection;
-            edgeView.output = from.portViews[connection.FromPortName];
-            edgeView.input = to.portViews[connection.ToPortName];
-            from.portViews[connection.FromPortName].Connect(edgeView);
-            to.portViews[connection.ToPortName].Connect(edgeView);
-            AddElement(edgeView);
-            return edgeView;
+            var connectionoView = NewConnectionView(connection);
+            connectionoView.SetUp(connection, this);
+            connectionoView.BindingProperties();
+            connectionoView.userData = connection;
+            connectionoView.output = from.portViews[connection.FromPortName];
+            connectionoView.input = to.portViews[connection.ToPortName];
+            from.portViews[connection.FromPortName].Connect(connectionoView);
+            to.portViews[connection.ToPortName].Connect(connectionoView);
+            AddElement(connectionoView);
+            return connectionoView;
         }
 
-        public void DisconnectView(BaseConnectionView edgeView)
+        public void DisconnectView(BaseConnectionView connectionView)
         {
-            BasePortView inputPortView = edgeView.input as BasePortView;
+            BasePortView inputPortView = connectionView.input as BasePortView;
             BaseNodeView inputNodeView = inputPortView.node as BaseNodeView;
             if (inputPortView != null)
             {
-                inputPortView.Disconnect(edgeView);
+                inputPortView.Disconnect(connectionView);
             }
-            inputPortView.Disconnect(edgeView);
+            inputPortView.Disconnect(connectionView);
 
-            BasePortView outputPortView = edgeView.output as BasePortView;
+            BasePortView outputPortView = connectionView.output as BasePortView;
             BaseNodeView outputNodeView = outputPortView.node as BaseNodeView;
             if (outputPortView != null)
             {
-                outputPortView.Disconnect(edgeView);
+                outputPortView.Disconnect(connectionView);
             }
-            outputPortView.Disconnect(edgeView);
+            outputPortView.Disconnect(connectionView);
 
             inputNodeView.RefreshPorts();
             outputNodeView.RefreshPorts();
 
-            RemoveElement(edgeView);
+            connectionView.UnBindingProperties();
+            RemoveElement(connectionView);
         }
 
         /// <summary> 获取鼠标在GraphView中的坐标，如果鼠标不在GraphView内，则返回当前GraphView显示的中心点 </summary>
@@ -519,6 +502,24 @@ namespace CZToolKit.GraphProcessor.Editors
             if (worldBound.Contains(Event.current.mousePosition))
                 return contentViewContainer.WorldToLocal(Event.current.mousePosition);
             return contentViewContainer.WorldToLocal(worldBound.center);
+        }
+
+        public sealed override void AddToSelection(ISelectable selectable)
+        {
+            base.AddToSelection(selectable);
+            UpdateInspector();
+        }
+
+        public sealed override void RemoveFromSelection(ISelectable selectable)
+        {
+            base.RemoveFromSelection(selectable);
+            UpdateInspector();
+        }
+
+        public sealed override void ClearSelection()
+        {
+            base.ClearSelection();
+            UpdateInspector();
         }
 
         // 标记Dirty

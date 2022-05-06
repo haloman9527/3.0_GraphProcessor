@@ -21,13 +21,13 @@ using UnityEngine;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
-    public class EdgeControlA : EdgeControl
+    public class BetterEdgeControl : EdgeControl
     {
         Edge edgeView;
         bool pointsChanged;
         CurveInfo curveInfo = new CurveInfo();
 
-        public EdgeControlA(Edge connectionView)
+        public BetterEdgeControl(Edge connectionView)
         {
             this.edgeView = connectionView;
         }
@@ -148,7 +148,7 @@ namespace CZToolKit.GraphProcessor.Editors
         static FieldInfo RenderPointsField;
         static PropertyInfo LayoutProperty;
 
-        static EdgeControlA()
+        static BetterEdgeControl()
         {
             RenderPointsDirtyField = typeof(EdgeControl).GetField("m_RenderPointsDirty", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
             RenderPointsField = typeof(EdgeControl).GetField("m_RenderPoints", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);

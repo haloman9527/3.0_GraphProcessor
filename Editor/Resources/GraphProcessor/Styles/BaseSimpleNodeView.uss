@@ -34,10 +34,6 @@
     flex-direction: row;
 }
 
-#contents > .contents-horizontal-divider{
-    display: none;
-}
-
 .highlight{
     border-radius: 8px;
 }
@@ -48,13 +44,4 @@
 
 #selection-border {
     border-radius: 9px;
-}
-
-.port > Label {
-    visibility: hidden;
-    margin-left: 0;
-    margin-right: 0;
-    padding-left: 0;
-    padding-right: 0;
-    width: 0;
 }

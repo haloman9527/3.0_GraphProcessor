@@ -40,8 +40,8 @@ namespace CZToolKit.GraphProcessor
         public IReadOnlyCollection<BaseConnection> Connections { get { return connections; } }
         public Type Type
         {
-            get { return GetPropertyValue<Type>(nameof(Type)); }
-            set { SetPropertyValue(nameof(Type), value); }
+            get { return GetPropertyValue<Type>(nameof(type)); }
+            set { SetPropertyValue(nameof(type), value); }
         }
         #endregion
 
@@ -59,7 +59,7 @@ namespace CZToolKit.GraphProcessor
                     comparer = VerticalComparer;
                     break;
             }
-            this[nameof(Type)] = new BindableProperty<Type>(() => type, v => type = v);
+            this[nameof(type)] = new BindableProperty<Type>(() => type, v => type = v);
             OnEnabled();
         }
 

@@ -29,15 +29,11 @@ namespace CZToolKit.GraphProcessor
 
         Vector3 Pan { get; set; }
         Vector3 Zoom { get; set; }
-        IGraphOwner GraphOwner { get; }
-        IVariableOwner VarialbeOwner { get; }
         IReadOnlyDictionary<string, INode> Nodes { get; }
         IReadOnlyList<BaseConnection> Connections { get; }
         IReadOnlyList<Group> Groups { get; }
-        IReadOnlyList<SharedVariable> Variables { get; }
 
         void Enable();
-        void Initialize(IGraphOwner graphOwner);
         bool Connect(BaseConnection connection);
         BaseConnection Connect(INode from, string fromPortName, INode to, string toPortName);
         void Disconnect(INode node);
@@ -45,7 +41,6 @@ namespace CZToolKit.GraphProcessor
         void Disconnect(INode node, string portName);
         void Disconnect(BasePort port);
         BaseConnection NewConnection(Type type, INode from, string fromPortName, INode to, string toPortName);
-        T NewConnection<T>(INode from, string fromPortName, INode to, string toPortName) where T : BaseConnection;
         BaseConnection NewConnection(INode from, string fromPortName, INode to, string toPortName);
         void AddGroup(Group group);
         void RemoveGroup(Group group);

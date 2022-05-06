@@ -30,14 +30,14 @@ namespace CZToolKit.GraphProcessor
 
         public string GroupName
         {
-            get { return GetPropertyValue<string>(nameof(GroupName)); }
-            set { SetPropertyValue(nameof(GroupName), value); }
+            get { return GetPropertyValue<string>(nameof(groupName)); }
+            set { SetPropertyValue(nameof(groupName), value); }
         }
 
         public Vector2 Position
         {
-            get { return GetPropertyValue<Vector2>(nameof(Position)); }
-            set { SetPropertyValue(nameof(Position), value); }
+            get { return GetPropertyValue<Vector2>(nameof(position)); }
+            set { SetPropertyValue(nameof(position), value); }
         }
 
         public IReadOnlyList<string> Nodes
@@ -53,13 +53,13 @@ namespace CZToolKit.GraphProcessor
         internal void Enable(IGraph graph)
         {
             Owner = graph;
+            this[nameof(groupName)] = new BindableProperty<string>(() => groupName, v => groupName = v);
+            this[nameof(position)] = new BindableProperty<Vector2>(() => position, v => position = v);
             OnEnabled();
         }
 
         public virtual void OnEnabled()
         {
-            this[nameof(GroupName)] = new BindableProperty<string>(() => groupName, v => groupName = v);
-            this[nameof(Position)] = new BindableProperty<Vector2>(() => position, v => position = v);
         }
 
         public void AddNodes(IEnumerable<INode> elements)

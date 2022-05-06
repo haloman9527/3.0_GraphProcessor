@@ -20,8 +20,8 @@ namespace CZToolKit.GraphProcessor
 {
     public partial class Group
     {
-        [SerializeField] internal string groupName;
-        [SerializeField] internal Vector2 position;
-        [SerializeField] internal List<string> nodes = new List<string>();
+        [SerializeField] [HideInInspector] internal string groupName;
+        [SerializeField] [HideInInspector] internal Vector2 position;
+        [SerializeField] [HideInInspector] internal List<string> nodes = new List<string>();
     }
 }

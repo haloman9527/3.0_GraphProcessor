@@ -15,9 +15,6 @@
 #endregion
 #if UNITY_EDITOR
 using CZToolKit.Core.Editors;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 
 namespace CZToolKit.GraphProcessor.Editors
@@ -26,11 +23,6 @@ namespace CZToolKit.GraphProcessor.Editors
     public class BaseGraphInspector : ObjectEditor
     {
         static GUIHelper.ContextDataCache ContextDataCache = new GUIHelper.ContextDataCache();
-        static HashSet<string> IgnoreProperties = new HashSet<string>()
-        {
-            BaseGraph.PAN_NAME,
-            BaseGraph.ZOOM_NAME
-        };
 
         public override void OnInspectorGUI()
         {
@@ -53,23 +45,6 @@ namespace CZToolKit.GraphProcessor.Editors
                 GUILayout.Label(string.Concat("Nodes：", view.Model.Nodes.Count), bigLabel.value);
                 GUILayout.Label(string.Concat("Connections：", view.Model.Connections.Count), bigLabel.value);
                 EditorGUILayoutExtension.EndVerticalBoxGroup();
-
-                EditorGUI.BeginChangeCheck();
-                EditorGUILayoutExtension.BeginVerticalBoxGroup();
-                foreach (var property in view.Model)
-                {
-                    if (IgnoreProperties.Contains(property.Key)) continue;
-
-                    object newValue = EditorGUILayoutExtension.DrawField(property.Value.ValueBoxed, GraphProcessorEditorUtil.GetDisplayName(property.Key));
-                    if (newValue == null || !newValue.Equals(property.Value.ValueBoxed))
-                        property.Value.ValueBoxed = newValue;
-
-                }
-                EditorGUILayoutExtension.EndVerticalBoxGroup();
-                if (EditorGUI.EndChangeCheck())
-                {
-
-                }
             }
         }
     }

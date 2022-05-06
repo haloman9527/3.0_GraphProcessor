@@ -62,20 +62,31 @@ namespace CZToolKit.GraphProcessor.Editors
             portName = Model.name;
             tooltip = Model.name;
 
-            Model[nameof(Model.Type)].RegisterValueChangedEvent<Type>(OnPortTypeChanged);
+            OnInitialized();
+        }
+
+        public void BindingProperties()
+        {
+            Model[nameof(Model.type)].RegisterValueChangedEvent<Type>(OnPortTypeChanged);
+
+            OnBindingProperties();
         }
 
         public void UnBindingProperties()
         {
-            Model[nameof(Model.Type)].UnregisterValueChangedEvent<Type>(OnPortTypeChanged);
+            Model[nameof(Model.type)].UnregisterValueChangedEvent<Type>(OnPortTypeChanged);
+
+            OnUnBindingProperties();
         }
 
+        #region Callback
         private void OnPortTypeChanged(Type newPortType)
         {
             this.portType = newPortType;
         }
+        #endregion
 
-        public virtual void Connect(BaseConnectionView connection)
+        public void Connect(BaseConnectionView connection)
         {
             base.Connect(connection);
             if (connection is BaseConnectionView connectionView)
@@ -84,7 +95,7 @@ namespace CZToolKit.GraphProcessor.Editors
             }
         }
 
-        public virtual void Disconnect(BaseConnectionView connection)
+        public void Disconnect(BaseConnectionView connection)
         {
             base.Disconnect(connection);
             if (connection is BaseConnectionView connectionView)
@@ -92,6 +103,12 @@ namespace CZToolKit.GraphProcessor.Editors
                 ConnectionViews.Remove(connectionView.Model);
             }
         }
+
+        protected virtual void OnInitialized() { }
+
+        protected virtual void OnBindingProperties() { }
+
+        protected virtual void OnUnBindingProperties() { }
 
         #region 不建议使用
         /// <summary>

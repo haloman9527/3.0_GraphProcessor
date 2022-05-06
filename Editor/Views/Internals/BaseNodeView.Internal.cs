@@ -87,7 +87,7 @@ namespace CZToolKit.GraphProcessor.Editors
             TitleLabel.style.flexWrap = Wrap.Wrap;
         }
 
-        #region Initialization
+        #region Initialize
         public void SetUp(BaseNode node, BaseGraphView graphView)
         {
             Model = node;
@@ -123,13 +123,10 @@ namespace CZToolKit.GraphProcessor.Editors
             }
             RefreshPorts();
             RefreshContentsHorizontalDivider();
-            BindingProperties();
             OnInitialized();
         }
-        #endregion
 
-        #region 数据监听
-        protected virtual void BindingProperties()
+        public void BindingProperties()
         {
             Model.BindingProperty<Vector2>(BaseNode.POSITION_NAME, OnPositionChanged);
             Model.BindingProperty<string>(BaseNode.TITLE_NAME, OnTitleChanged);
@@ -138,9 +135,16 @@ namespace CZToolKit.GraphProcessor.Editors
 
             Model.onPortAdded += OnPortAdded;
             Model.onPortRemoved += OnPortRemoved;
+
+            foreach (var portView in portViews.Values)
+            {
+                portView.BindingProperties();
+            }
+
+            OnBindingProperties();
         }
 
-        public virtual void UnBindingProperties()
+        public void UnBindingProperties()
         {
             Model.UnBindingProperty<string>(BaseNode.TITLE_NAME, OnTitleChanged);
             Model.UnBindingProperty<Color>(BaseNode.TITLE_COLOR_NAME, OnTitleColorChanged);
@@ -149,12 +153,30 @@ namespace CZToolKit.GraphProcessor.Editors
 
             Model.onPortAdded -= OnPortAdded;
             Model.onPortRemoved -= OnPortRemoved;
+
+            foreach (var portView in portViews.Values)
+            {
+                portView.UnBindingProperties();
+            }
+
+            OnUnBindingProperties();
         }
 
+        void RefreshContentsHorizontalDivider()
+        {
+            if (portViews.Values.FirstOrDefault(port => port.orientation == Orientation.Horizontal) != null)
+                contentsHorizontalDivider.RemoveFromClassList("hidden");
+            else
+                contentsHorizontalDivider.AddToClassList("hidden");
+        }
+        #endregion
+
+        #region Callbacks
         void OnPortAdded(BasePort port)
         {
             BasePortView portView = NewPortView(port);
             portView.SetUp(port, Owner);
+            portView.BindingProperties();
             portViews[port.name] = portView;
 
             if (portView.orientation == Orientation.Horizontal)
@@ -178,6 +200,7 @@ namespace CZToolKit.GraphProcessor.Editors
         void OnPortRemoved(BasePort port)
         {
             portViews[port.name].RemoveFromHierarchy();
+            portViews[port.name].UnBindingProperties();
             portViews.Remove(port.name);
             RefreshPorts();
             RefreshContentsHorizontalDivider();
@@ -203,31 +226,6 @@ namespace CZToolKit.GraphProcessor.Editors
         }
         #endregion
 
-        void RefreshContentsHorizontalDivider()
-        {
-            if (portViews.Values.FirstOrDefault(port => port.orientation == Orientation.Horizontal) != null)
-                contentsHorizontalDivider.RemoveFromClassList("hidden");
-            else
-                contentsHorizontalDivider.AddToClassList("hidden");
-        }
-
-        #region 方法
-        public void HighlightOn()
-        {
-            nodeBorder.AddToClassList("highlight");
-        }
-
-        public void HighlightOff()
-        {
-            nodeBorder.RemoveFromClassList("highlight");
-        }
-
-        public void Flash()
-        {
-            HighlightOn();
-            schedule.Execute(_ => { HighlightOff(); }).ExecuteLater(2000);
-        }
-
         public void SetDeletable(bool deletable)
         {
             if (deletable)
@@ -239,9 +237,9 @@ namespace CZToolKit.GraphProcessor.Editors
         public void SetMovable(bool movable)
         {
             if (movable)
-                capabilities |= Capabilities.Movable;
+                capabilities = capabilities | Capabilities.Movable;
             else
-                capabilities &= ~Capabilities.Movable;
+                capabilities = capabilities & (~Capabilities.Movable);
         }
 
         public void SetSelectable(bool selectable)
@@ -251,29 +249,6 @@ namespace CZToolKit.GraphProcessor.Editors
             else
                 capabilities &= ~Capabilities.Selectable;
         }
-
-        public void AddBadge(IconBadge badge)
-        {
-            Add(badge);
-            badges.Add(badge);
-            badge.AttachTo(topContainer, SpriteAlignment.RightCenter);
-        }
-
-
-        public void RemoveBadge(Func<IconBadge, bool> callback)
-        {
-            badges.RemoveAll(b =>
-            {
-                if (callback(b))
-                {
-                    b.Detach();
-                    b.RemoveFromHierarchy();
-                    return true;
-                }
-                return false;
-            });
-        }
-        #endregion
     }
 }
 #endif

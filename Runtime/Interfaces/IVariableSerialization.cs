@@ -13,13 +13,11 @@
  *
  */
 #endregion
-using System;
 
 namespace CZToolKit.GraphProcessor
 {
-    public interface IGraphOwner
+    public interface IVariableSerialization
     {
-        IGraph Graph { get; }
-        Type GraphType { get; }
+        void SaveVariables();
     }
 }

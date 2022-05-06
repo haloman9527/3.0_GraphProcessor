@@ -17,15 +17,13 @@ using System;
 
 namespace CZToolKit.GraphProcessor
 {
-    public interface IGraphAsset
+    public interface IGraphAsset : IGraphSerialization
     {
         Type GraphType { get; }
-        void SaveGraph(IGraph graph);
-        BaseGraph DeserializeGraph();
     }
 
-    public interface IGraphAsset<T> : IGraphAsset where T : BaseGraph, IGraph, new()
+    public interface IGraphAsset<T> : IGraphSerialization<T> where T : BaseGraph, IGraph, new()
     {
-        T DeserializeTGraph();
+        Type GraphType { get; }
     }
 }

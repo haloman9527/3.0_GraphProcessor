@@ -83,7 +83,7 @@ namespace CZToolKit.GraphProcessor
                 title = type.Name;
             this[TITLE_NAME] = new BindableProperty<string>(() => title, v => title = v);
 
-            var titleColor = new Color(0.2f, 0.2f, 0.2f, 0.8f);
+            var titleColor = DefaultTitleColor;
             if (Util_Attribute.TryGetTypeAttribute(type, out NodeTitleColorAttribute nodeTitleColorAttribute))
                 titleColor = nodeTitleColorAttribute.color;
             this[TITLE_COLOR_NAME] = new BindableProperty<Color>(() => titleColor, v => titleColor = v);
@@ -168,5 +168,7 @@ namespace CZToolKit.GraphProcessor
         public const string TITLE_NAME = "title";
         public const string TITLE_COLOR_NAME = "titleColor";
         public const string TOOLTIP_NAME = "tooltip";
+
+        public static Color DefaultTitleColor = new Color(0.2f, 0.2f, 0.2f, 0.8f);
     }
 }

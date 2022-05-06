@@ -36,6 +36,11 @@ namespace CZToolKit.GraphProcessor.Editors
             Owner = graphView;
         }
 
+        public virtual void BindingProperties()
+        {
+
+        }
+
         public virtual void UnBindingProperties()
         {
 

@@ -14,7 +14,6 @@
  */
 #endregion
 using CZToolKit.Core.ViewModel;
-using CZToolKit.Core.SharedVariable;
 using System;
 using System.Linq;
 using System.Collections.Generic;
@@ -33,8 +32,6 @@ namespace CZToolKit.GraphProcessor
 
         public event Action<Group> onGroupAdded;
         public event Action<Group> onGroupRemoved;
-
-        [NonSerialized] internal List<SharedVariable> variables = new List<SharedVariable>();
         #endregion
 
         #region Properties
@@ -48,6 +45,10 @@ namespace CZToolKit.GraphProcessor
             get { return GetPropertyValue<Vector3>(ZOOM_NAME); }
             set { SetPropertyValue(ZOOM_NAME, value); }
         }
+        IReadOnlyDictionary<string, INode> IGraph.Nodes
+        {
+            get { return nodes as IReadOnlyDictionary<string, INode>; }
+        }
         public IReadOnlyDictionary<string, BaseNode> Nodes
         {
             get { return nodes; }
@@ -59,28 +60,6 @@ namespace CZToolKit.GraphProcessor
         public IReadOnlyList<BaseConnection> Connections
         {
             get { return connections; }
-        }
-        public IGraphOwner GraphOwner
-        {
-            get;
-            private set;
-        }
-        public IVariableOwner VarialbeOwner
-        {
-            get { return GraphOwner; }
-        }
-        public IReadOnlyList<SharedVariable> Variables
-        {
-            get
-            {
-                if (variables == null) CollectionVariables();
-                return variables;
-            }
-        }
-
-        IReadOnlyDictionary<string, INode> IGraph.Nodes
-        {
-            get { return nodes as IReadOnlyDictionary<string, INode>; }
         }
         #endregion
 
@@ -143,39 +122,6 @@ namespace CZToolKit.GraphProcessor
             OnEnabled();
         }
 
-        public void Initialize(IGraphOwner graphOwner)
-        {
-            GraphOwner = graphOwner;
-            InitializePropertyMapping();
-            foreach (var node in nodes.Values)
-            {
-                node.Initialize();
-            }
-            OnInitialized();
-        }
-
-        private void InitializePropertyMapping()
-        {
-            if (variables == null)
-                CollectionVariables();
-            foreach (var variable in variables)
-            {
-                variable.InitializePropertyMapping(VarialbeOwner);
-            }
-        }
-
-        private void CollectionVariables()
-        {
-            if (variables == null)
-                variables = new List<SharedVariable>();
-            else
-                variables.Clear();
-            foreach (var node in nodes.Values)
-            {
-                variables.AddRange(SharedVariableUtility.CollectionObjectSharedVariables(node));
-            }
-        }
-
         #region API
         public void AddNode(BaseNode node)
         {
@@ -183,21 +129,8 @@ namespace CZToolKit.GraphProcessor
                 throw new Exception("节点存在其它Graph中");
             if (node.ContainsKey(node.GUID))
                 throw new Exception("节点添加失败，GUID重复");
-            if (variables == null)
-                CollectionVariables();
-
             nodes.Add(node.GUID, node);
             node.Enable(this);
-            IEnumerable<SharedVariable> nodeVariables = SharedVariableUtility.CollectionObjectSharedVariables(node);
-            variables.AddRange(nodeVariables);
-            if (GraphOwner != null)
-            {
-                node.Initialize();
-                foreach (var variable in nodeVariables)
-                {
-                    variable.InitializePropertyMapping(GraphOwner);
-                }
-            }
             onNodeAdded?.Invoke(node);
         }
 
@@ -321,7 +254,7 @@ namespace CZToolKit.GraphProcessor
             Disconnect(node.Ports[portName]);
         }
 
-        public virtual BaseConnection NewConnection(Type type, INode from, string fromPortName, INode to, string toPortName)
+        public BaseConnection NewConnection(Type type, INode from, string fromPortName, INode to, string toPortName)
         {
             var connection = Activator.CreateInstance(type) as BaseConnection;
             connection.fromNode = from;
@@ -331,16 +264,6 @@ namespace CZToolKit.GraphProcessor
             connection.to = to.GUID;
             connection.toPortName = toPortName;
             return connection;
-        }
-
-        public T NewConnection<T>(INode from, string fromPortName, INode to, string toPortName) where T : BaseConnection
-        {
-            return NewConnection(typeof(T), from, fromPortName, to, toPortName) as T;
-        }
-
-        public BaseConnection NewConnection(INode from, string fromPortName, INode to, string toPortName)
-        {
-            return NewConnection(typeof(BaseConnection), from, fromPortName, to, toPortName);
         }
 
         public void AddGroup(Group group)
@@ -369,12 +292,15 @@ namespace CZToolKit.GraphProcessor
             AllocID(node);
             return node;
         }
+
+        public virtual BaseConnection NewConnection(INode from, string fromPortName, INode to, string toPortName)
+        {
+            return NewConnection(typeof(BaseConnection), from, fromPortName, to, toPortName);
+        }
         #endregion
 
         #region Overrides
         protected virtual void OnEnabled() { }
-
-        protected virtual void OnInitialized() { }
         #endregion
 
         #region Static
