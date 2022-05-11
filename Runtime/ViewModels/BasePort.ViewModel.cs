@@ -45,6 +45,15 @@ namespace CZToolKit.GraphProcessor
         }
         #endregion
 
+        public BasePort(string name, Orientation orientation, Direction direction, Capacity capacity, Type type = null)
+        {
+            this.name = name;
+            this.orientation = orientation;
+            this.direction = direction;
+            this.capacity = capacity;
+            this.type = type == null ? typeof(object) : type;
+        }
+
         internal void Enable(INode node)
         {
             Owner = node;

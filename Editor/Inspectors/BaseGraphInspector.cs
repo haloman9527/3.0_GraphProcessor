@@ -15,6 +15,8 @@
 #endregion
 #if UNITY_EDITOR
 using CZToolKit.Core.Editors;
+using Sirenix.OdinInspector.Editor;
+using UnityEditor;
 using UnityEngine;
 
 namespace CZToolKit.GraphProcessor.Editors
@@ -24,8 +26,21 @@ namespace CZToolKit.GraphProcessor.Editors
     {
         static GUIHelper.ContextDataCache ContextDataCache = new GUIHelper.ContextDataCache();
 
+        PropertyTree propertyTree;
+
+        public override void OnEnable()
+        {
+            var view = Target as BaseGraphView;
+            if (view.Model != null)
+                propertyTree = PropertyTree.Create(view.Model);
+        }
+
         public override void OnInspectorGUI()
         {
+            var view = Target as BaseGraphView;
+            if (view == null || view.Model == null)
+                return;
+
             if (!ContextDataCache.TryGetContextData<GUIStyle>("BigLabel", out var bigLabel))
             {
                 bigLabel.value = new GUIStyle(GUI.skin.label);
@@ -36,16 +51,21 @@ namespace CZToolKit.GraphProcessor.Editors
             }
 
             EditorGUILayoutExtension.BeginVerticalBoxGroup();
-            GUILayout.Label("Graph", bigLabel.value);
+            GUILayout.Label(string.Concat("Nodes：", view.Model.Nodes.Count), bigLabel.value);
+            GUILayout.Label(string.Concat("Connections：", view.Model.Connections.Count), bigLabel.value);
             EditorGUILayoutExtension.EndVerticalBoxGroup();
 
-            if (Target is BaseGraphView view && view.Model != null)
+            if (propertyTree == null)
+                return;
+            propertyTree.BeginDraw(false);
+            foreach (var property in propertyTree.EnumerateTree(false, true))
             {
-                EditorGUILayoutExtension.BeginVerticalBoxGroup();
-                GUILayout.Label(string.Concat("Nodes：", view.Model.Nodes.Count), bigLabel.value);
-                GUILayout.Label(string.Concat("Connections：", view.Model.Connections.Count), bigLabel.value);
-                EditorGUILayoutExtension.EndVerticalBoxGroup();
+                EditorGUI.BeginChangeCheck();
+                property.Draw();
+                if (EditorGUI.EndChangeCheck() && view.Model.TryGetValue(property.Name, out var bindableProperty))
+                    bindableProperty.SetValueWithNotify(property.ValueEntry.WeakSmartValue);
             }
+            propertyTree.EndDraw();
         }
     }
 }

@@ -58,7 +58,6 @@ namespace CZToolKit.GraphProcessor.Editors
         public BaseNodeView()
         {
             styleSheets.Add(GraphProcessorStyles.BaseNodeViewStyle);
-            styleSheets.Add(GraphProcessorStyles.PortViewTypesStyle);
 
             nodeBorder = this.Q(name: "node-border");
 

@@ -13,7 +13,6 @@
  *
  */
 #endregion
-using CZToolKit.Core.SharedVariable;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -22,10 +21,10 @@ namespace CZToolKit.GraphProcessor
 {
     public interface IGraph
     {
-        event Action<BaseConnection> onConnected;
-        event Action<BaseConnection> onDisconnected;
-        event Action<Group> onGroupAdded;
-        event Action<Group> onGroupRemoved;
+        event Action<BaseConnection> OnConnected;
+        event Action<BaseConnection> OnDisconnected;
+        event Action<Group> OnGroupAdded;
+        event Action<Group> OnGroupRemoved;
 
         Vector3 Pan { get; set; }
         Vector3 Zoom { get; set; }
@@ -48,8 +47,8 @@ namespace CZToolKit.GraphProcessor
 
     public interface IGraph<NodeType> where NodeType : INode
     {
-        event Action<NodeType> onNodeAdded;
-        event Action<NodeType> onNodeRemoved;
+        event Action<NodeType> OnNodeAdded;
+        event Action<NodeType> OnNodeRemoved;
 
         IReadOnlyDictionary<string, NodeType> Nodes { get; }
 

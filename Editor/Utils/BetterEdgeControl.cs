@@ -61,28 +61,6 @@ namespace CZToolKit.GraphProcessor.Editors
             }
             else if (inputOrientation == outputOrientation && outputOrientation == Orientation.Vertical)
             {
-                //var dis = vector0.x - vector3.x;
-                //vector1.y += 7;
-                //curveInfo.points[1] = vector1;
-                //vector2.y -= 7;
-                //curveInfo.points[2] = vector2;
-                //if (Mathf.Abs(dis) < 5 || dis <= 0)
-                //{
-                //    var outputOffset = (edgeView.output.parent.layout.width - edgeView.output.layout.center.x) + 20;
-                //    var c1 = new Vector2(vector1.x + outputOffset, vector1.y);
-                //    var c2 = new Vector2(c1.x, vector2.y);
-                //    curveInfo.points.Insert(2, c1);
-                //    curveInfo.points.Insert(3, c2);
-                //}
-                //else if (dis > 0)
-                //{
-                //    var outputOffset = edgeView.output.layout.center.x + 20;
-                //    var c1 = new Vector2(vector1.x - outputOffset, vector1.y);
-                //    var c2 = new Vector2(c1.x, vector2.y);
-                //    curveInfo.points.Insert(2, c1);
-                //    curveInfo.points.Insert(3, c2);
-                //}
-
                 var x = Mathf.Max(vector1.x, vector2.x);
                 var c1 = new Vector2(x + 10, vector1.y);
                 var c2 = new Vector2(c1.x, vector2.y);

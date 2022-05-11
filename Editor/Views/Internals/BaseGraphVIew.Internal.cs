@@ -103,14 +103,14 @@ namespace CZToolKit.GraphProcessor.Editors
             Model.BindingProperty<Vector3>(BaseGraph.PAN_NAME, OnPositionChanged);
             Model.BindingProperty<Vector3>(BaseGraph.ZOOM_NAME, OnScaleChanged);
 
-            Model.onNodeAdded += OnNodeAdded;
-            Model.onNodeRemoved += OnNodeRemoved;
+            Model.OnNodeAdded += OnNodeAdded;
+            Model.OnNodeRemoved += OnNodeRemoved;
 
-            Model.onGroupAdded += OnGroupAdded;
-            Model.onGroupRemoved += OnGroupRemoved;
+            Model.OnGroupAdded += OnGroupAdded;
+            Model.OnGroupRemoved += OnGroupRemoved;
 
-            Model.onConnected += OnConnected;
-            Model.onDisconnected += OnDisconnected;
+            Model.OnConnected += OnConnected;
+            Model.OnDisconnected += OnDisconnected;
 
             OnBindingProperties();
         }
@@ -128,11 +128,11 @@ namespace CZToolKit.GraphProcessor.Editors
             Model.UnBindingProperty<Vector3>(BaseGraph.PAN_NAME, OnPositionChanged);
             Model.UnBindingProperty<Vector3>(BaseGraph.ZOOM_NAME, OnScaleChanged);
 
-            Model.onNodeAdded -= OnNodeAdded;
-            Model.onNodeRemoved -= OnNodeRemoved;
+            Model.OnNodeAdded -= OnNodeAdded;
+            Model.OnNodeRemoved -= OnNodeRemoved;
 
-            Model.onConnected -= OnConnected;
-            Model.onDisconnected -= OnDisconnected;
+            Model.OnConnected -= OnConnected;
+            Model.OnDisconnected -= OnDisconnected;
 
             OnUnbindingProperties();
         }
@@ -261,13 +261,9 @@ namespace CZToolKit.GraphProcessor.Editors
                                 foreach (var connection in port.Connections)
                                 {
                                     if (port.direction == BasePort.Direction.Input)
-                                    {
                                         ports.Add(connection.FromNode.Ports[connection.FromPortName]);
-                                    }
                                     else
-                                    {
                                         ports.Add(connection.ToNode.Ports[connection.ToPortName]);
-                                    }
                                 }
                             }
                             return true;
@@ -307,7 +303,7 @@ namespace CZToolKit.GraphProcessor.Editors
                         {
                             case Edge edgeView:
                                 return 0;
-                            case BaseNodeView nodeView:
+                            case Node nodeView:
                                 return 1;
                         }
                         return 4;
@@ -349,77 +345,6 @@ namespace CZToolKit.GraphProcessor.Editors
             Model.Pan = viewTransform.position;
             Model.Zoom = viewTransform.scale;
         }
-
-        //string SerializeGraphElementsCallback(IEnumerable<GraphElement> elements)
-        //{
-        //    var data = new ClipBoard();
-
-        //    foreach (var element in elements)
-        //    {
-        //        switch (element)
-        //        {
-        //            case BaseNodeView nodeView:
-        //                data.copiedNodes.Add(nodeView.Model);
-        //                break;
-        //            case BaseConnectionView edgeView:
-        //                data.copiedEdges.Add(edgeView.Model);
-        //                break;
-        //            default:
-        //                break;
-        //        }
-        //    }
-        //    return JsonSerializer.SerializeValue(data, out ClipBoard.objectReferences);
-        //}
-
-        //bool CanPasteSerializedDataCallback(string serializedData)
-        //{
-        //    return !string.IsNullOrEmpty(serializedData);
-        //}
-
-        //void DeserializeAndPasteCallback(string operationName, string serializedData)
-        //{
-        //    if (string.IsNullOrEmpty(serializedData))
-        //        return;
-        //    var data = JsonSerializer.DeserializeValue<ClipBoard>(serializedData, ClipBoard.objectReferences);
-        //    if (data == null)
-        //        return;
-
-        //    CommandDispacter.BeginGroup();
-        //    ClearSelection();
-        //    Dictionary<string, BaseNode> copiedNodesMap = new Dictionary<string, BaseNode>();
-        //    foreach (var node in data.copiedNodes)
-        //    {
-        //        if (node == null)
-        //            continue;
-        //        string sourceGUID = node.GUID;
-        //        // 新节点重置id
-        //        BaseNode.IDAllocation(node, Model);
-        //        // 新节点与旧id存入字典
-        //        copiedNodesMap[sourceGUID] = node;
-        //        node.Position += new Vector2(20, 20);
-        //        CommandDispacter.Do(new AddNodeCommand(Model, node));
-        //        AddToSelection(NodeViews[node.GUID]);
-        //    }
-        //    foreach (var edge in data.copiedEdges)
-        //    {
-        //        copiedNodesMap.TryGetValue(edge.FromNodeGUID, out var fromNode);
-        //        copiedNodesMap.TryGetValue(edge.ToNodeGUID, out var toNode);
-
-        //        fromNode = fromNode == null ? Model.Nodes[edge.FromNodeGUID] : Model.Nodes[fromNode.GUID];
-        //        toNode = toNode == null ? Model.Nodes[edge.ToNodeGUID] : Model.Nodes[toNode.GUID];
-
-        //        if (fromNode == null || toNode == null) continue;
-
-        //        if (NodeViews.TryGetValue(fromNode.GUID, out BaseNodeView inputNodeView)
-        //            && NodeViews.TryGetValue(toNode.GUID, out BaseNodeView outputNodeView))
-        //        {
-        //            CommandDispacter.Do(new ConnectCommand(Model, inputNodeView.Model, edge.FromPortName, outputNodeView.Model, edge.ToPortName));
-        //        }
-        //    }
-
-        //    SetDirty();
-        //    CommandDispacter.EndGroup();
-        //}
         #endregion
 
         #region 方法

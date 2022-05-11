@@ -42,22 +42,22 @@ namespace CZToolKit.GraphProcessor
         {
             get { return guid; }
         }
-        public Vector2 Position
+        public virtual Vector2 Position
         {
             get { return GetPropertyValue<Vector2>(POSITION_NAME); }
             set { SetPropertyValue(POSITION_NAME, value); }
         }
-        public string Title
+        public virtual string Title
         {
             get { return GetPropertyValue<string>(TITLE_NAME); }
             set { SetPropertyValue(TITLE_NAME, value); }
         }
-        public Color TitleColor
+        public virtual Color TitleColor
         {
             get { return GetPropertyValue<Color>(TITLE_COLOR_NAME); }
             set { SetPropertyValue(TITLE_COLOR_NAME, value); }
         }
-        public string Tooltip
+        public virtual string Tooltip
         {
             get { return GetPropertyValue<string>(TOOLTIP_NAME); }
             set { SetPropertyValue(TOOLTIP_NAME, value); }

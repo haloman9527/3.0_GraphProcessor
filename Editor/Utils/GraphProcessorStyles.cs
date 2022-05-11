@@ -26,18 +26,14 @@ namespace CZToolKit.GraphProcessor.Editors
         public const string BaseNodeViewStyleFile = "GraphProcessor/Styles/BaseNodeView";
         public const string BaseSimpleNodeViewStyleFile = "GraphProcessor/Styles/BaseSimpleNodeView";
         public const string BasePortViewStyleFile = "GraphProcessor/Styles/BasePortView";
-        public const string PortViewTypesStyleFile = "GraphProcessor/Styles/PortViewTypes";
         public const string BaseEdgeStyleFile = "GraphProcessor/Styles/BaseEdgeView";
-        public const string GroupStyleFile = "GraphProcessor/Styles/GroupView";
 
         public static StyleSheet BasicStyle { get; } = Resources.Load<StyleSheet>(BassicStyleFile);
         public static StyleSheet GraphViewStyle { get; } = Resources.Load<StyleSheet>(BaseGraphViewStyleFile);
         public static StyleSheet BaseNodeViewStyle { get; } = Resources.Load<StyleSheet>(BaseNodeViewStyleFile);
         public static StyleSheet SimpleNodeViewStyle { get; } = Resources.Load<StyleSheet>(BaseSimpleNodeViewStyleFile);
         public static StyleSheet PortViewStyle { get; } = Resources.Load<StyleSheet>(BasePortViewStyleFile);
-        public static StyleSheet PortViewTypesStyle { get; } = Resources.Load<StyleSheet>(PortViewTypesStyleFile);
         public static StyleSheet EdgeViewStyle { get; } = Resources.Load<StyleSheet>(BaseEdgeStyleFile);
-        public static StyleSheet GroupViewStyle { get; } = Resources.Load<StyleSheet>(GroupStyleFile);
     }
 }
 #endif

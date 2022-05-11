@@ -24,14 +24,14 @@ namespace CZToolKit.GraphProcessor
     public partial class BaseGraph : ViewModel, IGraph, IGraph<BaseNode>
     {
         #region Fields
-        public event Action<BaseNode> onNodeAdded;
-        public event Action<BaseNode> onNodeRemoved;
+        public event Action<BaseNode> OnNodeAdded;
+        public event Action<BaseNode> OnNodeRemoved;
 
-        public event Action<BaseConnection> onConnected;
-        public event Action<BaseConnection> onDisconnected;
+        public event Action<BaseConnection> OnConnected;
+        public event Action<BaseConnection> OnDisconnected;
 
-        public event Action<Group> onGroupAdded;
-        public event Action<Group> onGroupRemoved;
+        public event Action<Group> OnGroupAdded;
+        public event Action<Group> OnGroupRemoved;
         #endregion
 
         #region Properties
@@ -131,7 +131,7 @@ namespace CZToolKit.GraphProcessor
                 throw new Exception("节点添加失败，GUID重复");
             nodes.Add(node.GUID, node);
             node.Enable(this);
-            onNodeAdded?.Invoke(node);
+            OnNodeAdded?.Invoke(node);
         }
 
         public T AddNode<T>(Vector2 position) where T : BaseNode
@@ -154,7 +154,7 @@ namespace CZToolKit.GraphProcessor
                 throw new NullReferenceException("节点不能为空");
             Disconnect(node);
             nodes.Remove(node.GUID);
-            onNodeRemoved?.Invoke(node);
+            OnNodeRemoved?.Invoke(node);
         }
 
         public T NewNode<T>(Vector2 position) where T : BaseNode
@@ -204,7 +204,7 @@ namespace CZToolKit.GraphProcessor
             fromPort.ConnectTo(connection);
             toPort.ConnectTo(connection);
 
-            onConnected?.Invoke(connection);
+            OnConnected?.Invoke(connection);
             return true;
         }
 
@@ -236,7 +236,7 @@ namespace CZToolKit.GraphProcessor
             toPort.DisconnectTo(connection);
 
             connections.Remove(connection);
-            onDisconnected?.Invoke(connection);
+            OnDisconnected?.Invoke(connection);
         }
 
         public void Disconnect(BasePort port)
@@ -272,15 +272,19 @@ namespace CZToolKit.GraphProcessor
                 return;
             groups.Add(group);
             group.Enable(this);
-            onGroupAdded?.Invoke(group);
+            OnGroupAdded?.Invoke(group);
         }
 
         public void RemoveGroup(Group group)
         {
             bool removed = groups.Remove(group);
             if (removed)
-                onGroupRemoved?.Invoke(group);
+                OnGroupRemoved?.Invoke(group);
         }
+        #endregion
+
+        #region Overrides
+        protected virtual void OnEnabled() { }
 
         public virtual BaseNode NewNode(Type type, Vector2 position)
         {
@@ -297,10 +301,6 @@ namespace CZToolKit.GraphProcessor
         {
             return NewConnection(typeof(BaseConnection), from, fromPortName, to, toPortName);
         }
-        #endregion
-
-        #region Overrides
-        protected virtual void OnEnabled() { }
         #endregion
 
         #region Static

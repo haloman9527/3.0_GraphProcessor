@@ -67,6 +67,21 @@ namespace CZToolKit.GraphProcessor.Editors
             schedule.Execute(_ => { HighlightOff(); }).ExecuteLater(2000);
         }
 
+        //public override void SetPosition(Rect newPos)
+        //{
+        //    if (GridSnap > 0)
+        //    {
+        //        var x = newPos.x % GridSnap;
+        //        x = x < 0 ? GridSnap + x : x;
+        //        newPos.x = newPos.x - x + (int)(x / GridSnap * 2) * GridSnap;
+
+        //        var y = newPos.y % GridSnap;
+        //        y = y < 0 ? GridSnap + y : y;
+        //        newPos.y = newPos.y - y + (int)(y / GridSnap * 2) * GridSnap;
+        //    }
+        //    base.SetPosition(newPos);
+        //}
+
         public void AddBadge(IconBadge badge)
         {
             Add(badge);

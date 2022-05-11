@@ -34,19 +34,21 @@ namespace CZToolKit.GraphProcessor.Editors
 
         public override void OnInspectorGUI()
         {
+            var view = Target as BaseConnectionView;
+            if (view == null || view.Model == null)
+                return;
             if (propertyTree == null)
                 return;
-            var view = Target as BaseConnectionView;
-            var model = view.Model;
             propertyTree.BeginDraw(false);
             foreach (var property in propertyTree.EnumerateTree(false, true))
             {
                 EditorGUI.BeginChangeCheck();
                 property.Draw();
-                if (EditorGUI.EndChangeCheck() && model.TryGetValue(property.Name, out var bindableProperty))
+                if (EditorGUI.EndChangeCheck() && view.Model.TryGetValue(property.Name, out var bindableProperty))
                     bindableProperty.NotifyValueChanged();
             }
             propertyTree.EndDraw();
+            Editor.Repaint();
         }
     }
 }

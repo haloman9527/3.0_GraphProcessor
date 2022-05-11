@@ -40,7 +40,7 @@ public class SampleGraph : BaseGraph, IGraphForMono
     {
         base.OnEnabled();
 
-        onNodeAdded += OnNodeAdded;
+        OnNodeAdded += NodeAdded;
     }
 
     public void Initialize(IGraphOwner graphOwner)
@@ -68,7 +68,7 @@ public class SampleGraph : BaseGraph, IGraphForMono
 
     protected virtual void OnInitialized() { }
 
-    public void OnNodeAdded(BaseNode node)
+    public void NodeAdded(BaseNode node)
     {
         if (!(node is INodeForMono monoNode))
             return;

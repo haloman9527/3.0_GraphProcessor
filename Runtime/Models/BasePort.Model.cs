@@ -21,9 +21,6 @@ namespace CZToolKit.GraphProcessor
     [Serializable]
     public partial class BasePort
     {
-        public enum Direction { Input, Output }
-        public enum Orientation { Horizontal, Vertical }
-        public enum Capacity { Single, Multi }
 
         [SerializeField] [HideInInspector] internal readonly string name;
         [SerializeField] [HideInInspector] internal readonly Orientation orientation;
@@ -31,13 +28,20 @@ namespace CZToolKit.GraphProcessor
         [SerializeField] [HideInInspector] internal readonly Capacity capacity;
         [SerializeField] [HideInInspector] internal Type type;
 
-        public BasePort(string name, Orientation orientation, Direction direction, Capacity capacity, Type type = null)
+        public enum Direction
         {
-            this.name = name;
-            this.orientation = orientation;
-            this.direction = direction;
-            this.capacity = capacity;
-            this.type = type == null ? typeof(object) : type;
+            Input,
+            Output
+        }
+        public enum Orientation
+        {
+            Horizontal,
+            Vertical
+        }
+        public enum Capacity
+        {
+            Single,
+            Multi
         }
     }
 }

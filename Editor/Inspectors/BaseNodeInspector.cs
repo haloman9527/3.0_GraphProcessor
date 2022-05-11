@@ -28,27 +28,30 @@ namespace CZToolKit.GraphProcessor.Editors
         public override void OnEnable()
         {
             var view = Target as BaseNodeView;
-            if (view.Model != null)
+            if (view != null && view.Model != null)
                 propertyTree = PropertyTree.Create(view.Model);
         }
 
         public override void OnInspectorGUI()
         {
+            var view = Target as BaseNodeView;
+            if (view == null || view.Model == null)
+                return;
             if (propertyTree == null)
                 return;
-            var view = Target as BaseNodeView;
-            var model = view.Model;
             propertyTree.BeginDraw(false);
             foreach (var property in propertyTree.EnumerateTree(false, true))
             {
                 EditorGUI.BeginChangeCheck();
                 property.Draw();
-                if (EditorGUI.EndChangeCheck() && model.TryGetValue(property.Name, out var bindableProperty))
+                if (EditorGUI.EndChangeCheck() && view.Model.TryGetValue(property.Name, out var bindableProperty))
                 {
                     bindableProperty.SetValueWithNotify(property.ValueEntry.WeakSmartValue);
+                    Editor.Repaint();
                 }
             }
             propertyTree.EndDraw();
+            Editor.Repaint();
         }
     }
 }
