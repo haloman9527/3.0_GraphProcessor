@@ -24,8 +24,6 @@ namespace CZToolKit.GraphProcessor
     public abstract partial class BaseNode : ViewModel, INode
     {
         #region Fields
-        /// <summary> 唯一标识 </summary>
-        [NonSerialized] internal string guid;
         [NonSerialized] internal Dictionary<string, BasePort> ports;
 
         public event Action<BasePort> onPortAdded;
@@ -33,14 +31,16 @@ namespace CZToolKit.GraphProcessor
         #endregion
 
         #region Properties
-        public IGraph Owner
+        /// <summary> 唯一标识 </summary>
+        public string GUID
         {
             get;
             internal set;
         }
-        public string GUID
+        public IGraph Owner
         {
-            get { return guid; }
+            get;
+            internal set;
         }
         public virtual Vector2 Position
         {

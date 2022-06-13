@@ -73,7 +73,7 @@ namespace CZToolKit.GraphProcessor
                 groups = new List<Group>();
             foreach (var pair in Nodes)
             {
-                pair.Value.guid = pair.Key;
+                pair.Value.GUID = pair.Key;
                 pair.Value.Enable(this);
             }
             for (int i = 0; i < connections.Count; i++)
@@ -174,7 +174,7 @@ namespace CZToolKit.GraphProcessor
         /// <summary> 给节点分配一个GUID，这将会覆盖已有GUID </summary>
         public void AllocID(BaseNode node)
         {
-            node.guid = GenerateNodeGUID();
+            node.GUID = GenerateNodeGUID();
         }
 
         public bool Connect(BaseConnection connection)

@@ -40,7 +40,7 @@ namespace CZToolKit.GraphProcessor.Editors
             evt.menu.AppendAction("Create Group", delegate
             {
                 var group = new Group("New Group");
-                group.nodes.AddRange(selection.Where(select => select is BaseNodeView).Select(select => (select as BaseNodeView).Model.guid));
+                group.nodes.AddRange(selection.Where(select => select is BaseNodeView).Select(select => (select as BaseNodeView).Model.GUID));
                 CommandDispacter.Do(new AddGroupCommand(Model, group));
             }, (DropdownMenuAction a) => canDeleteSelection && selection.Find(s => s is BaseNodeView) != null ? DropdownMenuAction.Status.Normal : DropdownMenuAction.Status.Hidden);
 
