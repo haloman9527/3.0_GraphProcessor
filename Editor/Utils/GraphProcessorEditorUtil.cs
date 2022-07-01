@@ -78,31 +78,6 @@ namespace CZToolKit.GraphProcessor.Editors
         }
         #endregion
 
-        #region NodeTypeCache
-        static Dictionary<Type, HashSet<Type>> NodeTypesCache;
-
-        public static IEnumerable<Type> GetNodeTypes(Type graphType)
-        {
-            if (NodeTypesCache == null)
-            {
-                NodeTypesCache = new Dictionary<Type, HashSet<Type>>();
-                foreach (var nodeType in TypeCache.GetTypesDerivedFrom<INode>())
-                {
-                    if (nodeType.IsAbstract) continue;
-                    foreach (var att in Util_Attribute.GetTypeAttributes<AttachableAttribute>(nodeType, true))
-                    {
-                        if (!NodeTypesCache.TryGetValue(graphType, out var nodeTypes))
-                            NodeTypesCache[graphType] = nodeTypes = new HashSet<Type>();
-                        nodeTypes.Add(nodeType);
-                    }
-                }
-            }
-
-            NodeTypesCache.TryGetValue(graphType, out var types);
-            return types;
-        }
-        #endregion
-
         #region NodeNames
         public static string GetNodeDisplayName(Type nodeType)
         {

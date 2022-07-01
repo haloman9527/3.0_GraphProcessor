@@ -91,7 +91,7 @@ namespace CZToolKit.GraphProcessor.Editors
             var windowMousePosition = windowRoot.ChangeCoordinatesTo(windowRoot.parent, context.screenMousePosition - graphView.GraphWindow.position.position);
             var graphMousePosition = graphView.contentViewContainer.WorldToLocal(windowMousePosition);
 
-            graphView.CommandDispacter.Do(new AddNodeCommand(graphView.Model, graphView.Model.NewNode(searchTreeEntry.userData as Type, graphMousePosition)));
+            graphView.CommandDispacter.Do(new AddNodeCommand(graphView.Model, graphView.Model.NewNode(searchTreeEntry.userData as Type, graphMousePosition.ToInternalVector2())));
             graphView.GraphWindow.Focus();
             return true;
         }

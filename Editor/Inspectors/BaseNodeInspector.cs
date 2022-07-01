@@ -13,7 +13,7 @@
  *
  */
 #endregion
-#if UNITY_EDITOR
+#if UNITY_EDITOR && ODIN_INSPECTOR
 using CZToolKit.Core.Editors;
 using Sirenix.OdinInspector.Editor;
 using UnityEditor;

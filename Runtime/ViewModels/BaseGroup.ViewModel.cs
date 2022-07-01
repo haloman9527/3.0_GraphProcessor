@@ -17,7 +17,6 @@ using CZToolKit.Core.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 
 namespace CZToolKit.GraphProcessor
 {
@@ -34,9 +33,9 @@ namespace CZToolKit.GraphProcessor
             set { SetPropertyValue(nameof(groupName), value); }
         }
 
-        public Vector2 Position
+        public InternalVector2 Position
         {
-            get { return GetPropertyValue<Vector2>(nameof(position)); }
+            get { return GetPropertyValue<InternalVector2>(nameof(position)); }
             set { SetPropertyValue(nameof(position), value); }
         }
 
@@ -44,6 +43,8 @@ namespace CZToolKit.GraphProcessor
         {
             get => nodes;
         }
+        
+        public Group() { }
 
         public Group(string groupName)
         {
@@ -53,8 +54,9 @@ namespace CZToolKit.GraphProcessor
         internal void Enable(IGraph graph)
         {
             Owner = graph;
+            position = position == default ? InternalVector2.zero : position;
             this[nameof(groupName)] = new BindableProperty<string>(() => groupName, v => groupName = v);
-            this[nameof(position)] = new BindableProperty<Vector2>(() => position, v => position = v);
+            this[nameof(position)] = new BindableProperty<InternalVector2>(() => position, v => position = v);
             OnEnabled();
         }
 

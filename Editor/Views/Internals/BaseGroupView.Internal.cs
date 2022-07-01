@@ -46,7 +46,7 @@ namespace CZToolKit.GraphProcessor.Editors
             this.Model = group;
             this.Owner = graphView;
             this.title = Model.GroupName;
-            base.SetPosition(new Rect(Model.Position, GetPosition().size));
+            base.SetPosition(new Rect(Model.Position.ToVector2(), GetPosition().size));
             base.AddElements(Model.Nodes.Select(nodeGUID => Owner.NodeViews[nodeGUID]));
             this.AddManipulator(new ContextualMenuManipulator(BuildContextualMenu));
 
@@ -56,7 +56,7 @@ namespace CZToolKit.GraphProcessor.Editors
         public void BindingProperties()
         {
             Model[nameof(Model.groupName)].RegisterValueChangedEvent<string>(OnTitleChanged);
-            Model[nameof(Model.position)].RegisterValueChangedEvent<Vector2>(OnPositionChanged);
+            Model[nameof(Model.position)].RegisterValueChangedEvent<InternalVector2>(OnPositionChanged);
             Model.onElementsAdded += OnNodesAdded;
             Model.onElementsRemoved += OnNodesRemoved;
         }
@@ -64,7 +64,7 @@ namespace CZToolKit.GraphProcessor.Editors
         public void UnBindingProperties()
         {
             Model[nameof(Model.groupName)].UnregisterValueChangedEvent<string>(OnTitleChanged);
-            Model[nameof(Model.position)].UnregisterValueChangedEvent<Vector2>(OnPositionChanged);
+            Model[nameof(Model.position)].UnregisterValueChangedEvent<InternalVector2>(OnPositionChanged);
             Model.onElementsAdded -= OnNodesAdded;
             Model.onElementsRemoved -= OnNodesRemoved;
         }
@@ -77,9 +77,9 @@ namespace CZToolKit.GraphProcessor.Editors
             Owner.SetDirty();
         }
 
-        private void OnPositionChanged(Vector2 newPos)
+        private void OnPositionChanged(InternalVector2 newPos)
         {
-            base.SetPosition(new Rect(newPos, GetPosition().size));
+            base.SetPosition(new Rect(newPos.ToVector2(), GetPosition().size));
         }
 
         private void OnNodesAdded(IEnumerable<INode> nodes)

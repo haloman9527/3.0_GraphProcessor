@@ -14,18 +14,17 @@
  */
 #endregion
 using System;
-using UnityEngine;
 
 namespace CZToolKit.GraphProcessor
 {
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
     public class NodeTitleColorAttribute : Attribute
     {
-        public Color color;
+        public InternalColor color;
 
         public NodeTitleColorAttribute(float r, float g, float b)
         {
-            color = new Color(r, g, b, 1);
+            color = new InternalColor(r, g, b, 1);
         }
     }
 }

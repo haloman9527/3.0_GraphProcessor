@@ -37,13 +37,18 @@ namespace CZToolKit.GraphProcessor
             get;
             internal set;
         }
-        public IReadOnlyCollection<BaseConnection> Connections { get { return connections; } }
+        public IReadOnlyCollection<BaseConnection> Connections
+        {
+            get { return connections; }
+        }
         public Type Type
         {
             get { return GetPropertyValue<Type>(nameof(type)); }
             set { SetPropertyValue(nameof(type), value); }
         }
         #endregion
+
+        public BasePort() { }
 
         public BasePort(string name, Orientation orientation, Direction direction, Capacity capacity, Type type = null)
         {

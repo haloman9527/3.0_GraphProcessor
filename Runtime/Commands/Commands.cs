@@ -17,7 +17,6 @@ using CZToolKit.Core;
 using System;
 using System.Linq;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace CZToolKit.GraphProcessor
 {
@@ -80,10 +79,10 @@ namespace CZToolKit.GraphProcessor
     public class MoveNodeCommand : ICommand
     {
         BaseNode node;
-        Vector2 currentPosition;
-        Vector2 targetPosition;
+        InternalVector2 currentPosition;
+        InternalVector2 targetPosition;
 
-        public MoveNodeCommand(BaseNode node, Vector2 position)
+        public MoveNodeCommand(BaseNode node, InternalVector2 position)
         {
             this.node = node;
             currentPosition = node.Position;
@@ -103,10 +102,10 @@ namespace CZToolKit.GraphProcessor
 
     public class MoveNodesCommand : ICommand
     {
-        Dictionary<BaseNode, Vector2> oldPos = new Dictionary<BaseNode, Vector2>();
-        Dictionary<BaseNode, Vector2> newPos = new Dictionary<BaseNode, Vector2>();
+        Dictionary<BaseNode, InternalVector2> oldPos = new Dictionary<BaseNode, InternalVector2>();
+        Dictionary<BaseNode, InternalVector2> newPos = new Dictionary<BaseNode, InternalVector2>();
 
-        public MoveNodesCommand(Dictionary<BaseNode, Vector2> newPos)
+        public MoveNodesCommand(Dictionary<BaseNode, InternalVector2> newPos)
         {
             this.newPos = newPos;
         }
@@ -175,10 +174,10 @@ namespace CZToolKit.GraphProcessor
 
     public class MoveGroupsCommand : ICommand
     {
-        Dictionary<Group, Vector2> oldPos = new Dictionary<Group, Vector2>();
-        Dictionary<Group, Vector2> newPos = new Dictionary<Group, Vector2>();
+        Dictionary<Group, InternalVector2> oldPos = new Dictionary<Group, InternalVector2>();
+        Dictionary<Group, InternalVector2> newPos = new Dictionary<Group, InternalVector2>();
 
-        public MoveGroupsCommand(Dictionary<Group, Vector2> groups)
+        public MoveGroupsCommand(Dictionary<Group, InternalVector2> groups)
         {
             this.newPos = groups;
             foreach (var pair in groups)

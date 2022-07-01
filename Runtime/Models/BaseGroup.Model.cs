@@ -14,14 +14,22 @@
  */
 #endregion
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace CZToolKit.GraphProcessor
 {
+#if UNITY_5_3_OR_NEWER
     public partial class Group
     {
-        [SerializeField] [HideInInspector] internal string groupName;
-        [SerializeField] [HideInInspector] internal Vector2 position;
-        [SerializeField] [HideInInspector] internal List<string> nodes = new List<string>();
+        [UnityEngine.HideInInspector] public string groupName;
+        [UnityEngine.HideInInspector] public InternalVector2 position;
+        [UnityEngine.HideInInspector] public List<string> nodes = new List<string>();
     }
+#else
+    public partial class Group
+    {
+        public string groupName;
+        public InternalVector2 position;
+        public List<string> nodes = new List<string>();
+    }
+#endif
 }

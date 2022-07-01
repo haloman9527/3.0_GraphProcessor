@@ -1,4 +1,4 @@
-#region ×¢ ÊÍ
+#region æ³¨ é‡Š
 /***
  *
  *  Title:
@@ -7,13 +7,13 @@
  *  
  *  Date:
  *  Version:
- *  Writer: °ëÖ»ÁúÏºÈË
+ *  Writer: åŠåªé¾™è™¾äºº
  *  Github: https://github.com/HalfLobsterMan
  *  Blog: https://www.crosshair.top/
  *
  */
 #endregion
-#if UNITY_EDITOR
+#if UNITY_EDITOR && ODIN_INSPECTOR
 using CZToolKit.Core.Editors;
 using Sirenix.OdinInspector.Editor;
 using UnityEditor;

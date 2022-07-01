@@ -93,11 +93,11 @@ namespace CZToolKit.GraphProcessor.Editors
             Owner = graphView;
 
             // 初始化
-            base.SetPosition(new Rect(Model.Position == default ? Vector2.zero : Model.Position, GetPosition().size));
+            base.SetPosition(new Rect(Model.Position.ToVector2(), GetPosition().size));
             title = Model.Title;
             tooltip = Model.Tooltip;
-            titleContainer.style.backgroundColor = Model.TitleColor;
-            TitleLabel.style.color = Model.TitleColor.GetLuminance() > 0.5f && Model.TitleColor.a > 0.5f ? Color.black : Color.white * 0.9f;
+            titleContainer.style.backgroundColor = Model.TitleColor.ToColor();
+            TitleLabel.style.color = Model.TitleColor.ToColor().GetLuminance() > 0.5f && Model.TitleColor.a > 0.5f ? Color.black : Color.white * 0.9f;
 
             foreach (var port in Model.Ports.Values)
             {
@@ -127,9 +127,9 @@ namespace CZToolKit.GraphProcessor.Editors
 
         public void BindingProperties()
         {
-            Model.BindingProperty<Vector2>(BaseNode.POSITION_NAME, OnPositionChanged);
+            Model.BindingProperty<InternalVector2>(BaseNode.POSITION_NAME, OnPositionChanged);
             Model.BindingProperty<string>(BaseNode.TITLE_NAME, OnTitleChanged);
-            Model.BindingProperty<Color>(BaseNode.TITLE_COLOR_NAME, OnTitleColorChanged);
+            Model.BindingProperty<InternalColor>(BaseNode.TITLE_COLOR_NAME, OnTitleColorChanged);
             Model.BindingProperty<string>(BaseNode.TOOLTIP_NAME, OnTooltipChanged);
 
             Model.onPortAdded += OnPortAdded;
@@ -146,9 +146,9 @@ namespace CZToolKit.GraphProcessor.Editors
         public void UnBindingProperties()
         {
             Model.UnBindingProperty<string>(BaseNode.TITLE_NAME, OnTitleChanged);
-            Model.UnBindingProperty<Color>(BaseNode.TITLE_COLOR_NAME, OnTitleColorChanged);
+            Model.UnBindingProperty<InternalColor>(BaseNode.TITLE_COLOR_NAME, OnTitleColorChanged);
             Model.UnBindingProperty<string>(BaseNode.TOOLTIP_NAME, OnTooltipChanged);
-            Model.UnBindingProperty<Vector2>(BaseNode.POSITION_NAME, OnPositionChanged);
+            Model.UnBindingProperty<InternalVector2>(BaseNode.POSITION_NAME, OnPositionChanged);
 
             Model.onPortAdded -= OnPortAdded;
             Model.onPortRemoved -= OnPortRemoved;
@@ -213,15 +213,15 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             base.tooltip = tooltip;
         }
-        void OnPositionChanged(Vector2 position)
+        void OnPositionChanged(InternalVector2 position)
         {
-            base.SetPosition(new Rect(position, GetPosition().size));
+            base.SetPosition(new Rect(position.ToVector2(), GetPosition().size));
             Owner.SetDirty();
         }
-        void OnTitleColorChanged(Color color)
+        void OnTitleColorChanged(InternalColor color)
         {
-            titleContainer.style.backgroundColor = color;
-            TitleLabel.style.color = color.GetLuminance() > 0.5f && color.a > 0.5f ? Color.black : Color.white * 0.9f;
+            titleContainer.style.backgroundColor = color.ToColor();
+            TitleLabel.style.color = color.ToColor().GetLuminance() > 0.5f && color.a > 0.5f ? Color.black : Color.white * 0.9f;
         }
         #endregion
 

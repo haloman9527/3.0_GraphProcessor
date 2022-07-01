@@ -14,16 +14,26 @@
  */
 #endregion
 using System;
-using UnityEngine;
 
 namespace CZToolKit.GraphProcessor
 {
+#if UNITY_5_3_OR_NEWER
     [Serializable]
     public partial class BaseConnection
     {
-        [SerializeField] [HideInInspector] internal string from;
-        [SerializeField] [HideInInspector] internal string fromPortName;
-        [SerializeField] [HideInInspector] internal string to;
-        [SerializeField] [HideInInspector] internal string toPortName;
+        [UnityEngine.HideInInspector] public string from;
+        [UnityEngine.HideInInspector] public string fromPortName;
+        [UnityEngine.HideInInspector] public string to;
+        [UnityEngine.HideInInspector] public string toPortName;
     }
+#else
+    [Serializable]
+    public partial class BaseConnection
+    {
+        public string from;
+        public string fromPortName;
+        public string to;
+        public string toPortName;
+    }
+#endif
 }

@@ -15,7 +15,6 @@
 #endregion
 using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace CZToolKit.GraphProcessor
 {
@@ -26,8 +25,8 @@ namespace CZToolKit.GraphProcessor
         event Action<Group> OnGroupAdded;
         event Action<Group> OnGroupRemoved;
 
-        Vector3 Pan { get; set; }
-        Vector3 Zoom { get; set; }
+        InternalVector3 Pan { get; set; }
+        InternalVector3 Zoom { get; set; }
         IReadOnlyDictionary<string, INode> Nodes { get; }
         IReadOnlyList<BaseConnection> Connections { get; }
         IReadOnlyList<Group> Groups { get; }
@@ -53,10 +52,10 @@ namespace CZToolKit.GraphProcessor
         IReadOnlyDictionary<string, NodeType> Nodes { get; }
 
         void AddNode(NodeType node);
-        NodeType AddNode(Type type, Vector2 position);
-        T AddNode<T>(Vector2 position) where T : NodeType;
+        NodeType AddNode(Type type, InternalVector2 position);
+        T AddNode<T>(InternalVector2 position) where T : NodeType;
         void RemoveNode(NodeType node);
-        NodeType NewNode(Type type, Vector2 position);
-        T NewNode<T>(Vector2 position) where T : NodeType;
+        NodeType NewNode(Type type, InternalVector2 position);
+        T NewNode<T>(InternalVector2 position) where T : NodeType;
     }
 }

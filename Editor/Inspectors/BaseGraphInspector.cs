@@ -13,11 +13,11 @@
  *
  */
 #endregion
-#if UNITY_EDITOR
+#if UNITY_EDITOR && ODIN_INSPECTOR
 using CZToolKit.Core.Editors;
-using Sirenix.OdinInspector.Editor;
 using UnityEditor;
 using UnityEngine;
+using Sirenix.OdinInspector.Editor;
 
 namespace CZToolKit.GraphProcessor.Editors
 {

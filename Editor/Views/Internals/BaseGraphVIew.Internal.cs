@@ -77,8 +77,8 @@ namespace CZToolKit.GraphProcessor.Editors
         IEnumerator Initialize()
         {
             // 初始化
-            viewTransform.position = Model.Pan == default ? Vector3.zero : Model.Pan;
-            viewTransform.scale = Model.Zoom == default ? Vector3.one : Model.Zoom;
+            viewTransform.position = Model.Pan.ToVector3();
+            viewTransform.scale = Model.Zoom.ToVector3();
 
             // 绑定
             CreateNodeMenu = ScriptableObject.CreateInstance<CreateNodeMenuWindow>();
@@ -100,8 +100,8 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             RegisterCallback<DetachFromPanelEvent>(evt => { UnBindingProperties(); });
 
-            Model.BindingProperty<Vector3>(BaseGraph.PAN_NAME, OnPositionChanged);
-            Model.BindingProperty<Vector3>(BaseGraph.ZOOM_NAME, OnScaleChanged);
+            Model.BindingProperty<InternalVector3>(BaseGraph.PAN_NAME, OnPositionChanged);
+            Model.BindingProperty<InternalVector3>(BaseGraph.ZOOM_NAME, OnScaleChanged);
 
             Model.OnNodeAdded += OnNodeAdded;
             Model.OnNodeRemoved += OnNodeRemoved;
@@ -125,8 +125,8 @@ namespace CZToolKit.GraphProcessor.Editors
                 }
             });
 
-            Model.UnBindingProperty<Vector3>(BaseGraph.PAN_NAME, OnPositionChanged);
-            Model.UnBindingProperty<Vector3>(BaseGraph.ZOOM_NAME, OnScaleChanged);
+            Model.UnBindingProperty<InternalVector3>(BaseGraph.PAN_NAME, OnPositionChanged);
+            Model.UnBindingProperty<InternalVector3>(BaseGraph.ZOOM_NAME, OnScaleChanged);
 
             Model.OnNodeAdded -= OnNodeAdded;
             Model.OnNodeRemoved -= OnNodeRemoved;
@@ -184,15 +184,15 @@ namespace CZToolKit.GraphProcessor.Editors
         #endregion
 
         #region Callbacks
-        void OnPositionChanged(Vector3 position)
+        void OnPositionChanged(InternalVector3 position)
         {
-            viewTransform.position = position;
+            viewTransform.position = position.ToVector3();
             SetDirty();
         }
 
-        void OnScaleChanged(Vector3 scale)
+        void OnScaleChanged(InternalVector3 scale)
         {
-            viewTransform.scale = scale;
+            viewTransform.scale = scale.ToVector3();
             SetDirty();
         }
 
@@ -245,8 +245,8 @@ namespace CZToolKit.GraphProcessor.Editors
             {
                 CommandDispacter.BeginGroup();
                 // 当节点移动之后，与之连接的接口重新排序
-                Dictionary<BaseNode, Vector2> newPos = new Dictionary<BaseNode, Vector2>();
-                Dictionary<Group, Vector2> groupNewPos = new Dictionary<Group, Vector2>();
+                Dictionary<BaseNode, InternalVector2> newPos = new Dictionary<BaseNode, InternalVector2>();
+                Dictionary<Group, InternalVector2> groupNewPos = new Dictionary<Group, InternalVector2>();
                 HashSet<BasePort> ports = new HashSet<BasePort>();
 
                 changes.movedElements.RemoveAll(element =>
@@ -254,7 +254,7 @@ namespace CZToolKit.GraphProcessor.Editors
                     switch (element)
                     {
                         case BaseNodeView nodeView:
-                            newPos[nodeView.Model] = nodeView.GetPosition().position;
+                            newPos[nodeView.Model] = nodeView.GetPosition().position.ToInternalVector2();
                             // 记录需要重新排序的接口
                             foreach (var port in nodeView.Model.Ports.Values)
                             {
@@ -268,7 +268,7 @@ namespace CZToolKit.GraphProcessor.Editors
                             }
                             return true;
                         case BaseGroupView groupView:
-                            groupNewPos[groupView.Model] = groupView.GetPosition().position;
+                            groupNewPos[groupView.Model] = groupView.GetPosition().position.ToInternalVector2();
                             return true;
                         default:
                             break;
@@ -281,7 +281,7 @@ namespace CZToolKit.GraphProcessor.Editors
                     {
                         var node = Model.Nodes[nodeGUID];
                         var nodeView = NodeViews[nodeGUID];
-                        newPos[node] = nodeView.GetPosition().position;
+                        newPos[node] = nodeView.GetPosition().position.ToInternalVector2();
                     }
                 }
                 CommandDispacter.Do(new MoveNodesCommand(newPos));
@@ -342,8 +342,8 @@ namespace CZToolKit.GraphProcessor.Editors
         /// <summary> 转换发生改变时调用 </summary>
         void ViewTransformChangedCallback(GraphView view)
         {
-            Model.Pan = viewTransform.position;
-            Model.Zoom = viewTransform.scale;
+            Model.Pan = viewTransform.position.ToInternalVector3();
+            Model.Zoom = viewTransform.scale.ToInternalVector3();
         }
         #endregion
 
@@ -378,7 +378,7 @@ namespace CZToolKit.GraphProcessor.Editors
         public void RemoveGroupView(BaseGroupView groupView)
         {
             groupView.UnBindingProperties();
-            groupView.RemoveFromHierarchy();
+            RemoveElement(groupView);
             GroupViews.Remove(groupView.Model);
         }
 

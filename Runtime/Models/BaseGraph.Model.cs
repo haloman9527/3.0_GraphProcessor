@@ -15,17 +15,28 @@
 #endregion
 using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace CZToolKit.GraphProcessor
 {
+#if UNITY_5_3_OR_NEWER
     [Serializable]
     public partial class BaseGraph
     {
-        [SerializeField] [HideInInspector] internal Vector3 pan = Vector3.zero;
-        [SerializeField] [HideInInspector] internal Vector3 zoom = Vector3.one;
-        [SerializeField] [HideInInspector] internal Dictionary<string, BaseNode> nodes = new Dictionary<string, BaseNode>();
-        [SerializeField] [HideInInspector] internal List<BaseConnection> connections = new List<BaseConnection>();
-        [SerializeField] [HideInInspector] internal List<Group> groups = new List<Group>();
+        [UnityEngine.HideInInspector] public InternalVector3 pan = new InternalVector3(0, 0, 0);
+        [UnityEngine.HideInInspector] public InternalVector3 zoom = new InternalVector3(0, 0, 0);
+        [UnityEngine.HideInInspector] public Dictionary<string, BaseNode> nodes = new Dictionary<string, BaseNode>();
+        [UnityEngine.HideInInspector] public List<BaseConnection> connections = new List<BaseConnection>();
+        [UnityEngine.HideInInspector] public List<Group> groups = new List<Group>();
     }
+#else
+    [Serializable]
+    public partial class BaseGraph
+    {
+        public InternalVector3 pan = new InternalVector3(0, 0, 0);
+        public InternalVector3 zoom = new InternalVector3(0, 0, 0);
+        public Dictionary<string, BaseNode> nodes = new Dictionary<string, BaseNode>();
+        public List<BaseConnection> connections = new List<BaseConnection>();
+        public List<Group> groups = new List<Group>();
+    }
+#endif
 }

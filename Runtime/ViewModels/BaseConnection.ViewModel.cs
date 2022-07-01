@@ -35,6 +35,8 @@ namespace CZToolKit.GraphProcessor
         public INode ToNode { get { return toNode; } }
         #endregion
 
+        public BaseConnection() { }
+
         internal void Enable(IGraph graph)
         {
             Owner = graph;

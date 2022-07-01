@@ -15,7 +15,6 @@
 #endregion
 using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace CZToolKit.GraphProcessor
 {
@@ -26,11 +25,11 @@ namespace CZToolKit.GraphProcessor
 
         IGraph Owner { get; }
         string GUID { get; }
-        IReadOnlyDictionary<string, BasePort> Ports { get; }
         string Title { get; set; }
-        Color TitleColor { get; set; }
         string Tooltip { get; set; }
-        Vector2 Position { get; set; }
+        InternalVector2 Position { get; set; }
+        InternalColor TitleColor { get; set; }
+        IReadOnlyDictionary<string, BasePort> Ports { get; }
 
         IEnumerable<INode> GetConnections(string portName);
         void AddPort(BasePort port);

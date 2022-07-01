@@ -17,7 +17,6 @@ using CZToolKit.Core.ViewModel;
 using System;
 using System.Linq;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace CZToolKit.GraphProcessor
 {
@@ -35,14 +34,14 @@ namespace CZToolKit.GraphProcessor
         #endregion
 
         #region Properties
-        public Vector3 Pan
+        public InternalVector3 Pan
         {
-            get { return GetPropertyValue<Vector3>(PAN_NAME); }
+            get { return GetPropertyValue<InternalVector3>(PAN_NAME); }
             set { SetPropertyValue(PAN_NAME, value); }
         }
-        public Vector3 Zoom
+        public InternalVector3 Zoom
         {
-            get { return GetPropertyValue<Vector3>(ZOOM_NAME); }
+            get { return GetPropertyValue<InternalVector3>(ZOOM_NAME); }
             set { SetPropertyValue(ZOOM_NAME, value); }
         }
         IReadOnlyDictionary<string, INode> IGraph.Nodes
@@ -63,6 +62,8 @@ namespace CZToolKit.GraphProcessor
         }
         #endregion
 
+        public BaseGraph() { }
+
         public void Enable()
         {
             if (nodes == null)
@@ -71,6 +72,13 @@ namespace CZToolKit.GraphProcessor
                 connections = new List<BaseConnection>();
             if (groups == null)
                 groups = new List<Group>();
+
+            pan = pan == default ? InternalVector3.zero : pan;
+            zoom = zoom == default ? InternalVector3.one : zoom;
+
+            this[PAN_NAME] = new BindableProperty<InternalVector3>(() => pan, v => pan = v);
+            this[ZOOM_NAME] = new BindableProperty<InternalVector3>(() => zoom, v => zoom = v);
+
             foreach (var pair in Nodes)
             {
                 pair.Value.GUID = pair.Key;
@@ -116,9 +124,6 @@ namespace CZToolKit.GraphProcessor
                 group.Enable(this);
             }
 
-            this[PAN_NAME] = new BindableProperty<Vector3>(() => pan, v => pan = v);
-            this[ZOOM_NAME] = new BindableProperty<Vector3>(() => zoom, v => zoom = v);
-
             OnEnabled();
         }
 
@@ -134,14 +139,14 @@ namespace CZToolKit.GraphProcessor
             OnNodeAdded?.Invoke(node);
         }
 
-        public T AddNode<T>(Vector2 position) where T : BaseNode
+        public T AddNode<T>(InternalVector2 position) where T : BaseNode
         {
             T node = NewNode<T>(position);
             AddNode(node);
             return node;
         }
 
-        public BaseNode AddNode(Type type, Vector2 position)
+        public BaseNode AddNode(Type type, InternalVector2 position)
         {
             BaseNode node = NewNode(type, position);
             AddNode(node);
@@ -157,7 +162,7 @@ namespace CZToolKit.GraphProcessor
             OnNodeRemoved?.Invoke(node);
         }
 
-        public T NewNode<T>(Vector2 position) where T : BaseNode
+        public T NewNode<T>(InternalVector2 position) where T : BaseNode
         {
             return NewNode(typeof(T), position) as T;
         }
@@ -286,7 +291,7 @@ namespace CZToolKit.GraphProcessor
         #region Overrides
         protected virtual void OnEnabled() { }
 
-        public virtual BaseNode NewNode(Type type, Vector2 position)
+        public virtual BaseNode NewNode(Type type, InternalVector2 position)
         {
             if (!type.IsSubclassOf(typeof(BaseNode)))
                 return null;

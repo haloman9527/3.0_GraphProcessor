@@ -14,14 +14,22 @@
  */
 #endregion
 using System;
-using UnityEngine;
 
 namespace CZToolKit.GraphProcessor
 {
+#if UNITY_5_3_OR_NEWER
     [Serializable]
     public abstract partial class BaseNode
     {
         /// <summary> 位置坐标 </summary>
-        [SerializeField] [HideInInspector] internal Vector2 position;
+        [UnityEngine.HideInInspector] public InternalVector2 position;
     }
+#else
+    [Serializable]
+    public abstract partial class BaseNode
+    {
+        /// <summary> 位置坐标 </summary>
+        public InternalVector2 position;
+    }
+#endif
 }
