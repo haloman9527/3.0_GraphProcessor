@@ -93,7 +93,7 @@ namespace CZToolKit.GraphProcessor
         #region Serialize
         [HideInInspector]
         [SerializeField]
-        string serializedGraph = "";
+        byte[] serializedGraph;
         [HideInInspector]
         [SerializeField]
         List<UnityObject> graphUnityReferences;
@@ -103,12 +103,14 @@ namespace CZToolKit.GraphProcessor
             if (GraphAsset != null)
                 graphAsset.SaveGraph(graph);
             else
-                serializedGraph = GraphSerializer.SerializeValue(graph, out graphUnityReferences);
+                serializedGraph = Sirenix.Serialization.SerializationUtility.SerializeValue(graph, Sirenix.Serialization.DataFormat.JSON, out graphUnityReferences);
         }
 
         public BaseGraph DeserializeGraph()
         {
-            var graph = GraphSerializer.DeserializeValue<TGraph>(serializedGraph, graphUnityReferences);
+            TGraph graph = null;
+            if (serializedGraph != null && serializedGraph.Length > 0)
+                graph = Sirenix.Serialization.SerializationUtility.DeserializeValue<TGraph>(serializedGraph, Sirenix.Serialization.DataFormat.JSON, graphUnityReferences);
             if (graph == null)
                 graph = new TGraph();
             graph.Enable();

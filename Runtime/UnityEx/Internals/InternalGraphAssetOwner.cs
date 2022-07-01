@@ -39,7 +39,7 @@ namespace CZToolKit.GraphProcessor.Internal
         #region Serialize
         [HideInInspector]
         [SerializeField]
-        string serializedVariables;
+        byte[] serializedVariables;
         [HideInInspector]
         [SerializeField]
         List<UnityObject> variablesUnityReference;
@@ -58,15 +58,13 @@ namespace CZToolKit.GraphProcessor.Internal
 
         public void SaveVariables()
         {
-            serializedVariables = GraphSerializer.SerializeValue(variables, out variablesUnityReference);
+            serializedVariables = Sirenix.Serialization.SerializationUtility.SerializeValue(variables, Sirenix.Serialization.DataFormat.JSON, out variablesUnityReference);
         }
 
         void DeserializeVariables()
         {
-            if (string.IsNullOrEmpty(serializedVariables))
-                variables = new List<SharedVariable>();
-            else
-                variables = GraphSerializer.DeserializeValue<List<SharedVariable>>(serializedVariables, variablesUnityReference);
+            if (serializedVariables != null && serializedVariables.Length > 0)
+                variables = Sirenix.Serialization.SerializationUtility.DeserializeValue<List<SharedVariable>>(serializedVariables, Sirenix.Serialization.DataFormat.JSON, variablesUnityReference);
             if (variables == null)
                 variables = new List<SharedVariable>();
 

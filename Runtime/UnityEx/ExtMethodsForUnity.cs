@@ -4,7 +4,7 @@
  *  Title:
  *  
  *  Description:
- *  
+ *      为Unity编写的一些扩展方法
  *  Date:
  *  Version:
  *  Writer: 半只龙虾人
@@ -16,7 +16,7 @@
 
 namespace CZToolKit.GraphProcessor
 {
-    public static class ExtensionForUnity
+    public static class ExtMethodsForUnity
     {
         public static UnityEngine.Color ToColor(this InternalColor self)
         {

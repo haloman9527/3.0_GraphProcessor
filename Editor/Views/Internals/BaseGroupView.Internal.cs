@@ -132,6 +132,12 @@ namespace CZToolKit.GraphProcessor.Editors
                 return;
             Owner.SetDirty();
         }
+
+        public override void OnSelected()
+        {
+            base.OnSelected();
+            this.BringToFront();
+        }
     }
 }
 #endif
