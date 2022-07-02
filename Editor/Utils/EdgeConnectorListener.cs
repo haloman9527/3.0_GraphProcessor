@@ -32,9 +32,9 @@ namespace CZToolKit.GraphProcessor.Editors
             BasePort toPort = (edge.input as BasePortView).Model;
             // 如果连线不是一个新建的连线就重定向
             if (edge.userData is BaseConnection connection)
-                tempGraphView.CommandDispacter.Do(new ConnectionRedirectCommand(tempGraphView.Model, connection, from, fromPort.name, to, toPort.name));
+                tempGraphView.CommandDispacter.Do(new ConnectionRedirectCommand(tempGraphView.Model, connection, from, fromPort.Name, to, toPort.Name));
             else
-                tempGraphView.CommandDispacter.Do(new ConnectCommand(tempGraphView.Model, from, fromPort.name, to, toPort.name));
+                tempGraphView.CommandDispacter.Do(new ConnectCommand(tempGraphView.Model, from, fromPort.Name, to, toPort.Name));
         }
 
         /// <summary> 拖到空白松开时触发 </summary>

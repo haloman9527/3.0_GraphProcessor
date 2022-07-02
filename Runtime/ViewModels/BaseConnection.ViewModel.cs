@@ -26,13 +26,43 @@ namespace CZToolKit.GraphProcessor
         #endregion
 
         #region Properties
-        public IGraph Owner { get; internal set; }
-        public string FromNodeGUID { get { return from; } }
-        public string ToNodeGUID { get { return to; } }
-        public string FromPortName { get { return fromPortName; } }
-        public string ToPortName { get { return toPortName; } }
-        public INode FromNode { get { return fromNode; } }
-        public INode ToNode { get { return toNode; } }
+        public IGraph Owner
+        {
+            get;
+            internal set;
+        }
+        public string FromNodeGUID
+        {
+            get { return from; }
+        }
+        public string ToNodeGUID
+        {
+            get { return to; }
+        }
+        public string FromPortName
+        {
+            get { return fromPortName; }
+        }
+        public string ToPortName
+        {
+            get { return toPortName; }
+        }
+        public INode FromNode
+        {
+            get { return fromNode; }
+        }
+        public BasePort FromPort
+        {
+            get { return FromNode.Ports[FromPortName]; }
+        }
+        public INode ToNode
+        {
+            get { return toNode; }
+        }
+        public BasePort ToPort
+        {
+            get { return ToNode.Ports[toPortName]; }
+        }
         #endregion
 
         public BaseConnection() { }

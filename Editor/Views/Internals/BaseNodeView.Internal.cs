@@ -36,9 +36,9 @@ namespace CZToolKit.GraphProcessor.Editors
         public readonly VisualElement contentsHorizontalDivider;
         public readonly VisualElement portsVerticalDivider;
         public readonly VisualElement controlsHorizontalDivider;
-        public readonly Dictionary<string, BasePortView> portViews = new Dictionary<string, BasePortView>();
-        [NonSerialized]
+
         List<IconBadge> badges = new List<IconBadge>();
+        Dictionary<string, BasePortView> portViews = new Dictionary<string, BasePortView>();
         #endregion
 
         #region 属性
@@ -51,8 +51,20 @@ namespace CZToolKit.GraphProcessor.Editors
                 return titleLabel;
             }
         }
-        public BaseGraphView Owner { get; private set; }
-        public BaseNode Model { get; protected set; }
+        public BaseGraphView Owner
+        {
+            get;
+            private set;
+        }
+        public BaseNode Model
+        {
+            get;
+            protected set;
+        }
+        public IReadOnlyDictionary<string, BasePortView> PortViews
+        {
+            get { return portViews; }
+        }
         #endregion
 
         public BaseNodeView()
@@ -103,7 +115,7 @@ namespace CZToolKit.GraphProcessor.Editors
             {
                 BasePortView portView = NewPortView(port);
                 portView.SetUp(port, Owner);
-                portViews[port.name] = portView;
+                portViews[port.Name] = portView;
 
                 if (portView.orientation == Orientation.Horizontal)
                 {
@@ -176,7 +188,7 @@ namespace CZToolKit.GraphProcessor.Editors
             BasePortView portView = NewPortView(port);
             portView.SetUp(port, Owner);
             portView.BindingProperties();
-            portViews[port.name] = portView;
+            portViews[port.Name] = portView;
 
             if (portView.orientation == Orientation.Horizontal)
             {
@@ -198,9 +210,9 @@ namespace CZToolKit.GraphProcessor.Editors
 
         void OnPortRemoved(BasePort port)
         {
-            portViews[port.name].RemoveFromHierarchy();
-            portViews[port.name].UnBindingProperties();
-            portViews.Remove(port.name);
+            portViews[port.Name].RemoveFromHierarchy();
+            portViews[port.Name].UnBindingProperties();
+            portViews.Remove(port.Name);
             RefreshPorts();
             RefreshContentsHorizontalDivider();
         }

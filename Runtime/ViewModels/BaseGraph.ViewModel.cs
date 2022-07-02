@@ -81,6 +81,8 @@ namespace CZToolKit.GraphProcessor
 
             foreach (var pair in Nodes)
             {
+                if (pair.Value == null)
+                    continue;
                 pair.Value.GUID = pair.Key;
                 pair.Value.Enable(this);
             }
@@ -97,9 +99,21 @@ namespace CZToolKit.GraphProcessor
                     connections.RemoveAt(i--);
                     continue;
                 }
+                if (fromNode == null)
+                {
+                    connections.RemoveAt(i--);
+                    nodes.Remove(connection.FromNodeGUID);
+                    continue;
+                }
                 if (!nodes.TryGetValue(connection.ToNodeGUID, out var toNode))
                 {
                     connections.RemoveAt(i--);
+                    continue;
+                }
+                if (toNode == null)
+                {
+                    connections.RemoveAt(i--);
+                    nodes.Remove(connection.ToNodeGUID);
                     continue;
                 }
                 if (!fromNode.Ports.TryGetValue(connection.FromPortName, out var fromPort))
@@ -198,9 +212,9 @@ namespace CZToolKit.GraphProcessor
             if (tmpConnection != null)
                 return false;
 
-            if (fromPort.capacity == BasePort.Capacity.Single)
+            if (fromPort.PortCapacity == BasePort.Capacity.Single)
                 Disconnect(fromPort);
-            if (toPort.capacity == BasePort.Capacity.Single)
+            if (toPort.PortCapacity == BasePort.Capacity.Single)
                 Disconnect(toPort);
 
             connection.Enable(this);

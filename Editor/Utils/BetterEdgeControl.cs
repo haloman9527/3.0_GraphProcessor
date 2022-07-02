@@ -19,6 +19,8 @@ using System.Reflection;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
+using PortViewOrientation = UnityEditor.Experimental.GraphView.Orientation;
+
 namespace CZToolKit.GraphProcessor.Editors
 {
     public class BetterEdgeControl : EdgeControl
@@ -51,7 +53,7 @@ namespace CZToolKit.GraphProcessor.Editors
             curveInfo.points.Add(vector1);
             curveInfo.points.Add(vector2);
             curveInfo.points.Add(vector3);
-            if (inputOrientation == outputOrientation && outputOrientation == Orientation.Horizontal)
+            if (inputOrientation == outputOrientation && outputOrientation == PortViewOrientation.Horizontal)
             {
                 var y = Mathf.Max(vector1.y, vector2.y);
                 var c1 = new Vector2(vector1.x, y + 10);
@@ -59,7 +61,7 @@ namespace CZToolKit.GraphProcessor.Editors
                 curveInfo.points.Insert(2, c1);
                 curveInfo.points.Insert(3, c2);
             }
-            else if (inputOrientation == outputOrientation && outputOrientation == Orientation.Vertical)
+            else if (inputOrientation == outputOrientation && outputOrientation == PortViewOrientation.Vertical)
             {
                 var x = Mathf.Max(vector1.x, vector2.x);
                 var c1 = new Vector2(x + 10, vector1.y);
@@ -67,12 +69,12 @@ namespace CZToolKit.GraphProcessor.Editors
                 curveInfo.points.Insert(2, c1);
                 curveInfo.points.Insert(3, c2);
             }
-            else if (inputOrientation != outputOrientation && outputOrientation == Orientation.Horizontal)
+            else if (inputOrientation != outputOrientation && outputOrientation == PortViewOrientation.Horizontal)
             {
                 var c = new Vector2(vector1.x, vector2.y);
                 curveInfo.points.Insert(2, c);
             }
-            else if (inputOrientation != outputOrientation && outputOrientation == Orientation.Vertical)
+            else if (inputOrientation != outputOrientation && outputOrientation == PortViewOrientation.Vertical)
             {
                 var c = new Vector2(vector2.x, vector1.y);
                 curveInfo.points.Insert(2, c);

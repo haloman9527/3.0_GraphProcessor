@@ -260,7 +260,7 @@ namespace CZToolKit.GraphProcessor.Editors
                             {
                                 foreach (var connection in port.Connections)
                                 {
-                                    if (port.direction == BasePort.Direction.Input)
+                                    if (port.PortDirection == BasePort.Direction.Input)
                                         ports.Add(connection.FromNode.Ports[connection.FromPortName]);
                                     else
                                         ports.Add(connection.ToNode.Ports[connection.ToPortName]);
@@ -388,10 +388,10 @@ namespace CZToolKit.GraphProcessor.Editors
             connectionoView.SetUp(connection, this);
             connectionoView.BindingProperties();
             connectionoView.userData = connection;
-            connectionoView.output = from.portViews[connection.FromPortName];
-            connectionoView.input = to.portViews[connection.ToPortName];
-            from.portViews[connection.FromPortName].Connect(connectionoView);
-            to.portViews[connection.ToPortName].Connect(connectionoView);
+            connectionoView.output = from.PortViews[connection.FromPortName];
+            connectionoView.input = to.PortViews[connection.ToPortName];
+            from.PortViews[connection.FromPortName].Connect(connectionoView);
+            to.PortViews[connection.ToPortName].Connect(connectionoView);
             AddElement(connectionoView);
             return connectionoView;
         }

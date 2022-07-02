@@ -82,7 +82,7 @@ namespace CZToolKit.GraphProcessor.Editors
             BasePortView portView = startPortView as BasePortView;
 
             compatiblePorts.Clear();
-            switch (portView.Model.direction)
+            switch (portView.Model.PortDirection)
             {
                 case BasePort.Direction.Input:
                     {

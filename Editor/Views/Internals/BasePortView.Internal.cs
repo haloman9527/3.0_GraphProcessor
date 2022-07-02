@@ -59,22 +59,22 @@ namespace CZToolKit.GraphProcessor.Editors
             Model = port;
             GraphView = graphView;
 
-            portName = Model.name;
-            tooltip = Model.name;
+            portName = Model.Name;
+            tooltip = Model.Name;
 
             OnInitialized();
         }
 
         public void BindingProperties()
         {
-            Model[nameof(Model.type)].RegisterValueChangedEvent<Type>(OnPortTypeChanged);
+            Model[nameof(BasePort.Type)].RegisterValueChangedEvent<Type>(OnPortTypeChanged);
 
             OnBindingProperties();
         }
 
         public void UnBindingProperties()
         {
-            Model[nameof(Model.type)].UnregisterValueChangedEvent<Type>(OnPortTypeChanged);
+            Model[nameof(BasePort.Type)].UnregisterValueChangedEvent<Type>(OnPortTypeChanged);
 
             OnUnBindingProperties();
         }

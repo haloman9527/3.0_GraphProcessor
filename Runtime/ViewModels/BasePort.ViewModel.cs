@@ -20,9 +20,36 @@ using System.Linq;
 
 namespace CZToolKit.GraphProcessor
 {
+    public partial class BasePort
+    {
+        #region Define
+        public enum Direction
+        {
+            Input,
+            Output
+        }
+        public enum Orientation
+        {
+            Horizontal,
+            Vertical
+        }
+        public enum Capacity
+        {
+            Single,
+            Multi
+        }
+        #endregion
+    }
+
     public partial class BasePort : ViewModel
     {
         #region Fields
+        readonly string name;
+        readonly Orientation portOrientation;
+        readonly Direction portDirection;
+        readonly Capacity portCapacity;
+        Type type;
+
         [NonSerialized] List<BaseConnection> connections;
         [NonSerialized] Func<BaseConnection, BaseConnection, int> comparer;
 
@@ -37,14 +64,30 @@ namespace CZToolKit.GraphProcessor
             get;
             internal set;
         }
-        public IReadOnlyCollection<BaseConnection> Connections
+        public string Name
         {
-            get { return connections; }
+            get { return name; }
+        }
+        public Direction PortDirection
+        {
+            get { return portDirection; }
+        }
+        public Orientation PortOrientation
+        {
+            get { return portOrientation; }
+        }
+        public Capacity PortCapacity
+        {
+            get { return portCapacity; }
         }
         public Type Type
         {
-            get { return GetPropertyValue<Type>(nameof(type)); }
-            set { SetPropertyValue(nameof(type), value); }
+            get { return GetPropertyValue<Type>(nameof(Type)); }
+            set { SetPropertyValue(nameof(Type), value); }
+        }
+        public IReadOnlyCollection<BaseConnection> Connections
+        {
+            get { return connections; }
         }
         #endregion
 
@@ -53,16 +96,16 @@ namespace CZToolKit.GraphProcessor
         public BasePort(string name, Orientation orientation, Direction direction, Capacity capacity, Type type = null)
         {
             this.name = name;
-            this.orientation = orientation;
-            this.direction = direction;
-            this.capacity = capacity;
+            this.portOrientation = orientation;
+            this.portDirection = direction;
+            this.portCapacity = capacity;
             this.type = type == null ? typeof(object) : type;
         }
 
         internal void Enable(INode node)
         {
             Owner = node;
-            switch (orientation)
+            switch (portOrientation)
             {
                 case Orientation.Horizontal:
                     connections = new List<BaseConnection>();
@@ -73,7 +116,7 @@ namespace CZToolKit.GraphProcessor
                     comparer = VerticalComparer;
                     break;
             }
-            this[nameof(type)] = new BindableProperty<Type>(() => type, v => type = v);
+            this[nameof(Type)] = new BindableProperty<Type>(() => type, v => type = v);
             OnEnabled();
         }
 
@@ -109,7 +152,7 @@ namespace CZToolKit.GraphProcessor
         /// <summary> 获取连接的接口的值 </summary>
         public IEnumerable<object> GetConnectionValues()
         {
-            if (direction == Direction.Input)
+            if (portDirection == Direction.Input)
             {
                 foreach (var connection in Connections)
                 {
@@ -137,7 +180,7 @@ namespace CZToolKit.GraphProcessor
         /// <summary> 获取连接的接口的值 </summary>
         public IEnumerable<T> GetConnectionValues<T>()
         {
-            if (direction == Direction.Input)
+            if (portDirection == Direction.Input)
             {
                 foreach (var connection in Connections)
                 {
@@ -165,8 +208,8 @@ namespace CZToolKit.GraphProcessor
         {
             // 若需要重新排序的是input接口，则根据FromNode排序
             // 若需要重新排序的是output接口，则根据ToNode排序
-            var nodeX = direction == Direction.Input ? x.FromNode : x.ToNode;
-            var nodeY = direction == Direction.Input ? y.FromNode : y.ToNode;
+            var nodeX = portDirection == Direction.Input ? x.FromNode : x.ToNode;
+            var nodeY = portDirection == Direction.Input ? y.FromNode : y.ToNode;
 
             // 则使用x坐标比较排序
             // 遵循从左到右
@@ -189,8 +232,8 @@ namespace CZToolKit.GraphProcessor
         {
             // 若需要重新排序的是input接口，则根据FromNode排序
             // 若需要重新排序的是output接口，则根据ToNode排序
-            var nodeX = direction == Direction.Input ? x.FromNode : x.ToNode;
-            var nodeY = direction == Direction.Input ? y.FromNode : y.ToNode;
+            var nodeX = portDirection == Direction.Input ? x.FromNode : x.ToNode;
+            var nodeY = portDirection == Direction.Input ? y.FromNode : y.ToNode;
 
             // 则使用y坐标比较排序
             // 遵循从上到下

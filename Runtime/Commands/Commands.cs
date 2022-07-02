@@ -229,11 +229,11 @@ namespace CZToolKit.GraphProcessor
 
     public class AddPortCommand : ICommand
     {
-        BaseNode node;
+        INode node;
         BasePort port;
         bool successed = false;
 
-        public AddPortCommand(BaseNode node, string name, BasePort.Orientation orientation, BasePort.Direction direction, BasePort.Capacity capacity, Type type = null)
+        public AddPortCommand(INode node, string name, BasePort.Orientation orientation, BasePort.Direction direction, BasePort.Capacity capacity, Type type = null)
         {
             this.node = node;
             port = new BasePort(name, orientation, direction, capacity, type);
@@ -242,7 +242,7 @@ namespace CZToolKit.GraphProcessor
         public void Do()
         {
             successed = false;
-            if (!node.Ports.ContainsKey(port.name))
+            if (!node.Ports.ContainsKey(port.Name))
             {
                 node.AddPort(port);
                 successed = true;
@@ -261,11 +261,11 @@ namespace CZToolKit.GraphProcessor
 
     public class RemovePortCommand : ICommand
     {
-        BaseNode node;
+        INode node;
         BasePort port;
         bool successed = false;
 
-        public RemovePortCommand(BaseNode node, BasePort port)
+        public RemovePortCommand(INode node, BasePort port)
         {
             this.node = node;
             this.port = port;
@@ -280,7 +280,7 @@ namespace CZToolKit.GraphProcessor
         public void Do()
         {
             successed = false;
-            if (node.Ports.ContainsKey(port.name))
+            if (node.Ports.ContainsKey(port.Name))
             {
                 node.AddPort(port);
                 successed = true;
@@ -330,14 +330,14 @@ namespace CZToolKit.GraphProcessor
         public void Do()
         {
             replacedConnections.Clear();
-            if (from.Ports[fromPortName].capacity == BasePort.Capacity.Single)
+            if (from.Ports[fromPortName].PortCapacity == BasePort.Capacity.Single)
             {
                 foreach (var connection in from.Ports[fromPortName].Connections)
                 {
                     replacedConnections.Add(connection);
                 }
             }
-            if (to.Ports[toPortName].capacity == BasePort.Capacity.Single)
+            if (to.Ports[toPortName].PortCapacity == BasePort.Capacity.Single)
             {
                 foreach (var connection in to.Ports[toPortName].Connections)
                 {
@@ -401,12 +401,12 @@ namespace CZToolKit.GraphProcessor
             replacedConnections.Clear();
             if (connection.FromNodeGUID == newFrom.GUID && connection.FromPortName == newFromPortName)
             {
-                if (newTo.Ports[newToPortName].capacity == BasePort.Capacity.Single)
+                if (newTo.Ports[newToPortName].PortCapacity == BasePort.Capacity.Single)
                     replacedConnections.AddRange(newTo.Ports[newToPortName].Connections);
             }
             else
             {
-                if (newFrom.Ports[newFromPortName].capacity == BasePort.Capacity.Single)
+                if (newFrom.Ports[newFromPortName].PortCapacity == BasePort.Capacity.Single)
                     replacedConnections.AddRange(newFrom.Ports[newFromPortName].Connections);
             }
 

@@ -4,5 +4,4 @@ GridBackground {
     --thick-line-color: rgba(193, 196, 192, 0.07);
     --spacing: 30;
     --thick-lines: 5;
-    b
 }

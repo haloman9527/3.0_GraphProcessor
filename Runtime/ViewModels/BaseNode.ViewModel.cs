@@ -108,7 +108,7 @@ namespace CZToolKit.GraphProcessor
         {
             if (!Ports.TryGetValue(portName, out var port))
                 yield break;
-            if (port.direction == BasePort.Direction.Input)
+            if (port.PortDirection == BasePort.Direction.Input)
             {
                 foreach (var connection in port.Connections)
                 {
@@ -126,7 +126,7 @@ namespace CZToolKit.GraphProcessor
 
         public void AddPort(BasePort port)
         {
-            ports.Add(port.name, port);
+            ports.Add(port.Name, port);
             port.Enable(this);
             onPortAdded?.Invoke(port);
         }
@@ -134,11 +134,9 @@ namespace CZToolKit.GraphProcessor
         public void RemovePort(BasePort port)
         {
             if (port.Owner != this)
-            {
                 return;
-            }
             Owner.Disconnect(port);
-            ports.Remove(port.name);
+            ports.Remove(port.Name);
             onPortRemoved?.Invoke(port);
         }
 
