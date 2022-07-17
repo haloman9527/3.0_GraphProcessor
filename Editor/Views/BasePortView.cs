@@ -18,12 +18,13 @@ using UnityEditor.Experimental.GraphView;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
+    [CustomView(typeof(BasePortVM))]
     public partial class BasePortView
     {
-        public BasePortView(BasePort port, IEdgeConnectorListener connectorListener) : this(
-            orientation: port.PortOrientation == BasePort.Orientation.Horizontal ? Orientation.Horizontal : Orientation.Vertical,
-            direction: port.PortDirection == BasePort.Direction.Input ? Direction.Input : Direction.Output,
-            capacity: port.PortCapacity == BasePort.Capacity.Single ? Capacity.Single : Capacity.Multi,
+        public BasePortView(BasePortVM port, IEdgeConnectorListener connectorListener) : this(
+            orientation: port.Orientation == BasePort.Orientation.Horizontal ? Orientation.Horizontal : Orientation.Vertical,
+            direction: port.Direction == BasePort.Direction.Input ? Direction.Input : Direction.Output,
+            capacity: port.Capacity == BasePort.Capacity.Single ? Capacity.Single : Capacity.Multi,
             port.Type, connectorListener)
         {
 

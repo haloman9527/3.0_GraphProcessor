@@ -22,7 +22,7 @@ namespace CZToolKit.GraphProcessor
         Type GraphType { get; }
     }
 
-    public interface IGraphAsset<T> : IGraphSerialization<T> where T : BaseGraph, IGraph, new()
+    public interface IGraphAsset<T> : IGraphSerialization<T> where T : BaseGraph, new()
     {
         Type GraphType { get; }
     }

@@ -29,7 +29,7 @@ public class SampleGraphView : BaseGraphView
         yield return typeof(DebugNode);
     }
 
-    protected override BaseConnectionView NewConnectionView(BaseConnection connection)
+    protected override BaseConnectionView NewConnectionView(BaseConnectionVM connection)
     {
         return new SampleConnectionView();
     }

@@ -26,15 +26,13 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             BaseGraphView tempGraphView = graphView as BaseGraphView;
 
-            BaseNode from = (edge.output.node as BaseNodeView).Model;
-            BasePort fromPort = (edge.output as BasePortView).Model;
-            BaseNode to = (edge.input.node as BaseNodeView).Model;
-            BasePort toPort = (edge.input as BasePortView).Model;
+            BasePortVM from = (edge.output as BasePortView).ViewModel;
+            BasePortVM to = (edge.input as BasePortView).ViewModel;
             // 如果连线不是一个新建的连线就重定向
-            if (edge.userData is BaseConnection connection)
-                tempGraphView.CommandDispacter.Do(new ConnectionRedirectCommand(tempGraphView.Model, connection, from, fromPort.Name, to, toPort.Name));
+            if (edge.userData is BaseConnectionVM connection)
+                tempGraphView.CommandDispacter.Do(new ConnectionRedirectCommand(tempGraphView.ViewModel, connection, from, to));
             else
-                tempGraphView.CommandDispacter.Do(new ConnectCommand(tempGraphView.Model, from, fromPort.Name, to, toPort.Name));
+                tempGraphView.CommandDispacter.Do(new ConnectCommand(tempGraphView.ViewModel, from, to));
         }
 
         /// <summary> 拖到空白松开时触发 </summary>

@@ -20,17 +20,17 @@ namespace CZToolKit.GraphProcessor
 {
 #if UNITY_5_3_OR_NEWER
     [Serializable]
-    public partial class BaseGraph
+    public class BaseGraph
     {
         [UnityEngine.HideInInspector] public InternalVector3 pan = new InternalVector3(0, 0, 0);
         [UnityEngine.HideInInspector] public InternalVector3 zoom = new InternalVector3(0, 0, 0);
         [UnityEngine.HideInInspector] public Dictionary<string, BaseNode> nodes = new Dictionary<string, BaseNode>();
         [UnityEngine.HideInInspector] public List<BaseConnection> connections = new List<BaseConnection>();
-        [UnityEngine.HideInInspector] public List<Group> groups = new List<Group>();
+        [UnityEngine.HideInInspector] public List<BaseGroup> groups = new List<BaseGroup>();
     }
 #else
     [Serializable]
-    public partial class BaseGraph
+    public class BaseGraph
     {
         public InternalVector3 pan = new InternalVector3(0, 0, 0);
         public InternalVector3 zoom = new InternalVector3(0, 0, 0);

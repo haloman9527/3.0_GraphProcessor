@@ -28,14 +28,14 @@ namespace CZToolKit.GraphProcessor.Editors
         public override void OnEnable()
         {
             var view = Target as BaseConnectionView;
-            if (view.Model != null)
-                propertyTree = PropertyTree.Create(view.Model);
+            if (view.ViewModel != null)
+                propertyTree = PropertyTree.Create(view.ViewModel.Model);
         }
 
         public override void OnInspectorGUI()
         {
             var view = Target as BaseConnectionView;
-            if (view == null || view.Model == null)
+            if (view == null || view.ViewModel == null)
                 return;
             if (propertyTree == null)
                 return;
@@ -44,7 +44,7 @@ namespace CZToolKit.GraphProcessor.Editors
             {
                 EditorGUI.BeginChangeCheck();
                 property.Draw();
-                if (EditorGUI.EndChangeCheck() && view.Model.TryGetValue(property.Name, out var bindableProperty))
+                if (EditorGUI.EndChangeCheck() && view.ViewModel.TryGetValue(property.Name, out var bindableProperty))
                     bindableProperty.NotifyValueChanged();
             }
             propertyTree.EndDraw();

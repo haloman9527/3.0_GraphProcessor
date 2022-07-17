@@ -27,7 +27,7 @@ using UnityObject = UnityEngine.Object;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
-    public partial class BaseGraphView : GraphView, IBindableView<BaseGraph>
+    public partial class BaseGraphView : GraphView, IBindableView<BaseGraphVM>
     {
         #region 属性
         public event Action onDirty;
@@ -38,9 +38,9 @@ namespace CZToolKit.GraphProcessor.Editors
         public CommandDispatcher CommandDispacter { get; private set; }
         public UnityObject GraphAsset { get { return GraphWindow.GraphAsset; } }
         public Dictionary<string, BaseNodeView> NodeViews { get; private set; } = new Dictionary<string, BaseNodeView>();
-        public Dictionary<Group, BaseGroupView> GroupViews { get; private set; } = new Dictionary<Group, BaseGroupView>();
+        public Dictionary<BaseGroupVM, BaseGroupView> GroupViews { get; private set; } = new Dictionary<BaseGroupVM, BaseGroupView>();
 
-        public BaseGraph Model { get; set; }
+        public BaseGraphVM ViewModel { get; set; }
 
         #region 不建议使用自带复制粘贴功能，建议自己实现
         protected sealed override bool canCopySelection => false;
@@ -65,9 +65,9 @@ namespace CZToolKit.GraphProcessor.Editors
         }
 
         #region Initialize
-        public void SetUp(IGraph graph, BaseGraphWindow window, CommandDispatcher commandDispacter)
+        public void SetUp(BaseGraphVM graph, BaseGraphWindow window, CommandDispatcher commandDispacter)
         {
-            Model = graph as BaseGraph;
+            ViewModel = graph as BaseGraphVM;
             GraphWindow = window;
             CommandDispacter = commandDispacter;
             EditorCoroutine coroutine = GraphWindow.StartCoroutine(Initialize());
@@ -77,8 +77,8 @@ namespace CZToolKit.GraphProcessor.Editors
         IEnumerator Initialize()
         {
             // 初始化
-            viewTransform.position = Model.Pan.ToVector3();
-            viewTransform.scale = Model.Zoom.ToVector3();
+            viewTransform.position = ViewModel.Pan.ToVector3();
+            viewTransform.scale = ViewModel.Zoom.ToVector3();
 
             // 绑定
             CreateNodeMenu = ScriptableObject.CreateInstance<CreateNodeMenuWindow>();
@@ -100,17 +100,17 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             RegisterCallback<DetachFromPanelEvent>(evt => { UnBindingProperties(); });
 
-            Model.BindingProperty<InternalVector3>(BaseGraph.PAN_NAME, OnPositionChanged);
-            Model.BindingProperty<InternalVector3>(BaseGraph.ZOOM_NAME, OnScaleChanged);
+            ViewModel.BindingProperty<InternalVector3>(nameof(BaseGraph.pan), OnPositionChanged);
+            ViewModel.BindingProperty<InternalVector3>(nameof(BaseGraph.zoom), OnScaleChanged);
 
-            Model.OnNodeAdded += OnNodeAdded;
-            Model.OnNodeRemoved += OnNodeRemoved;
+            ViewModel.OnNodeAdded += OnNodeAdded;
+            ViewModel.OnNodeRemoved += OnNodeRemoved;
 
-            Model.OnGroupAdded += OnGroupAdded;
-            Model.OnGroupRemoved += OnGroupRemoved;
+            ViewModel.OnGroupAdded += OnGroupAdded;
+            ViewModel.OnGroupRemoved += OnGroupRemoved;
 
-            Model.OnConnected += OnConnected;
-            Model.OnDisconnected += OnDisconnected;
+            ViewModel.OnConnected += OnConnected;
+            ViewModel.OnDisconnected += OnDisconnected;
 
             OnBindingProperties();
         }
@@ -125,14 +125,14 @@ namespace CZToolKit.GraphProcessor.Editors
                 }
             });
 
-            Model.UnBindingProperty<InternalVector3>(BaseGraph.PAN_NAME, OnPositionChanged);
-            Model.UnBindingProperty<InternalVector3>(BaseGraph.ZOOM_NAME, OnScaleChanged);
+            ViewModel.UnBindingProperty<InternalVector3>(nameof(BaseGraph.pan), OnPositionChanged);
+            ViewModel.UnBindingProperty<InternalVector3>(nameof(BaseGraph.zoom), OnScaleChanged);
 
-            Model.OnNodeAdded -= OnNodeAdded;
-            Model.OnNodeRemoved -= OnNodeRemoved;
+            ViewModel.OnNodeAdded -= OnNodeAdded;
+            ViewModel.OnNodeRemoved -= OnNodeRemoved;
 
-            Model.OnConnected -= OnConnected;
-            Model.OnDisconnected -= OnDisconnected;
+            ViewModel.OnConnected -= OnConnected;
+            ViewModel.OnDisconnected -= OnDisconnected;
 
             OnUnbindingProperties();
         }
@@ -141,7 +141,7 @@ namespace CZToolKit.GraphProcessor.Editors
         IEnumerator GenerateNodeViews()
         {
             int step = 0;
-            foreach (var node in Model.Nodes.Values)
+            foreach (var node in ViewModel.Nodes.Values)
             {
                 if (node == null) continue;
                 AddNodeView(node);
@@ -155,7 +155,7 @@ namespace CZToolKit.GraphProcessor.Editors
         IEnumerator LinkNodeViews()
         {
             int step = 0;
-            foreach (var connection in Model.Connections)
+            foreach (var connection in ViewModel.Connections)
             {
                 if (connection == null) continue;
                 BaseNodeView fromNodeView, toNodeView;
@@ -172,7 +172,7 @@ namespace CZToolKit.GraphProcessor.Editors
         IEnumerator GenerateGroupViews()
         {
             int step = 0;
-            foreach (var group in Model.Groups)
+            foreach (var group in ViewModel.Groups)
             {
                 if (group == null) continue;
                 AddGroupView(group);
@@ -196,31 +196,31 @@ namespace CZToolKit.GraphProcessor.Editors
             SetDirty();
         }
 
-        void OnNodeAdded(BaseNode node)
+        void OnNodeAdded(BaseNodeVM node)
         {
             AddNodeView(node);
             SetDirty();
         }
 
-        void OnNodeRemoved(BaseNode node)
+        void OnNodeRemoved(BaseNodeVM node)
         {
             RemoveNodeView(NodeViews[node.GUID]);
             SetDirty();
         }
 
-        void OnGroupAdded(Group group)
+        void OnGroupAdded(BaseGroupVM group)
         {
             AddGroupView(group);
             SetDirty();
         }
 
-        void OnGroupRemoved(Group group)
+        void OnGroupRemoved(BaseGroupVM group)
         {
             RemoveGroupView(GroupViews[group]);
             SetDirty();
         }
 
-        void OnConnected(BaseConnection connection)
+        void OnConnected(BaseConnectionVM connection)
         {
             var from = NodeViews[connection.FromNodeGUID];
             var to = NodeViews[connection.ToNodeGUID];
@@ -228,7 +228,7 @@ namespace CZToolKit.GraphProcessor.Editors
             SetDirty();
         }
 
-        void OnDisconnected(BaseConnection connection)
+        void OnDisconnected(BaseConnectionVM connection)
         {
             edges.ForEach(edge =>
             {
@@ -245,22 +245,22 @@ namespace CZToolKit.GraphProcessor.Editors
             {
                 CommandDispacter.BeginGroup();
                 // 当节点移动之后，与之连接的接口重新排序
-                Dictionary<BaseNode, InternalVector2> newPos = new Dictionary<BaseNode, InternalVector2>();
-                Dictionary<Group, InternalVector2> groupNewPos = new Dictionary<Group, InternalVector2>();
-                HashSet<BasePort> ports = new HashSet<BasePort>();
+                Dictionary<BaseNodeVM, InternalVector2> newPos = new Dictionary<BaseNodeVM, InternalVector2>();
+                Dictionary<BaseGroupVM, InternalVector2> groupNewPos = new Dictionary<BaseGroupVM, InternalVector2>();
+                HashSet<BasePortVM> ports = new HashSet<BasePortVM>();
 
                 changes.movedElements.RemoveAll(element =>
                 {
                     switch (element)
                     {
                         case BaseNodeView nodeView:
-                            newPos[nodeView.Model] = nodeView.GetPosition().position.ToInternalVector2();
+                            newPos[nodeView.ViewModel] = nodeView.GetPosition().position.ToInternalVector2();
                             // 记录需要重新排序的接口
-                            foreach (var port in nodeView.Model.Ports.Values)
+                            foreach (var port in nodeView.ViewModel.Ports.Values)
                             {
                                 foreach (var connection in port.Connections)
                                 {
-                                    if (port.PortDirection == BasePort.Direction.Input)
+                                    if (port.Direction == BasePort.Direction.Input)
                                         ports.Add(connection.FromNode.Ports[connection.FromPortName]);
                                     else
                                         ports.Add(connection.ToNode.Ports[connection.ToPortName]);
@@ -268,7 +268,7 @@ namespace CZToolKit.GraphProcessor.Editors
                             }
                             return true;
                         case BaseGroupView groupView:
-                            groupNewPos[groupView.Model] = groupView.GetPosition().position.ToInternalVector2();
+                            groupNewPos[groupView.ViewModel] = groupView.GetPosition().position.ToInternalVector2();
                             return true;
                         default:
                             break;
@@ -279,7 +279,7 @@ namespace CZToolKit.GraphProcessor.Editors
                 {
                     foreach (var nodeGUID in pair.Key.Nodes)
                     {
-                        var node = Model.Nodes[nodeGUID];
+                        var node = ViewModel.Nodes[nodeGUID];
                         var nodeView = NodeViews[nodeGUID];
                         newPos[node] = nodeView.GetPosition().position.ToInternalVector2();
                     }
@@ -318,15 +318,15 @@ namespace CZToolKit.GraphProcessor.Editors
                     {
                         case BaseConnectionView edgeView:
                             if (edgeView.selected)
-                                CommandDispacter.Do(new DisconnectCommand(Model, edgeView.Model));
+                                CommandDispacter.Do(new DisconnectCommand(ViewModel, edgeView.ViewModel));
                             return true;
                         case BaseNodeView nodeView:
                             if (nodeView.selected)
-                                CommandDispacter.Do(new RemoveNodeCommand(Model, nodeView.Model));
+                                CommandDispacter.Do(new RemoveNodeCommand(ViewModel, nodeView.ViewModel));
                             return true;
                         case BaseGroupView groupView:
                             if (groupView.selected)
-                                CommandDispacter.Do(new RemoveGroupCommand(Model, groupView.Model));
+                                CommandDispacter.Do(new RemoveGroupCommand(ViewModel, groupView.ViewModel));
                             return true;
                     }
                     return false;
@@ -342,13 +342,13 @@ namespace CZToolKit.GraphProcessor.Editors
         /// <summary> 转换发生改变时调用 </summary>
         void ViewTransformChangedCallback(GraphView view)
         {
-            Model.Pan = viewTransform.position.ToInternalVector3();
-            Model.Zoom = viewTransform.scale.ToInternalVector3();
+            ViewModel.Pan = viewTransform.position.ToInternalVector3();
+            ViewModel.Zoom = viewTransform.scale.ToInternalVector3();
         }
         #endregion
 
         #region 方法
-        public BaseNodeView AddNodeView(BaseNode node)
+        public BaseNodeView AddNodeView(BaseNodeVM node)
         {
             BaseNodeView nodeView = NewNodeView(node);
             nodeView.SetUp(node, this);
@@ -362,12 +362,12 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             nodeView.UnBindingProperties();
             RemoveElement(nodeView);
-            NodeViews.Remove(nodeView.Model.GUID);
+            NodeViews.Remove(nodeView.ViewModel.GUID);
         }
 
-        public BaseGroupView AddGroupView(Group group)
+        public BaseGroupView AddGroupView(BaseGroupVM group)
         {
-            BaseGroupView groupView = new BaseGroupView();
+            BaseGroupView groupView = NewGroupView(group);
             groupView.SetUp(group, this);
             groupView.BindingProperties();
             GroupViews[group] = groupView;
@@ -379,10 +379,10 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             groupView.UnBindingProperties();
             RemoveElement(groupView);
-            GroupViews.Remove(groupView.Model);
+            GroupViews.Remove(groupView.ViewModel);
         }
 
-        public BaseConnectionView ConnectView(BaseNodeView from, BaseNodeView to, BaseConnection connection)
+        public BaseConnectionView ConnectView(BaseNodeView from, BaseNodeView to, BaseConnectionVM connection)
         {
             var connectionoView = NewConnectionView(connection);
             connectionoView.SetUp(connection, this);

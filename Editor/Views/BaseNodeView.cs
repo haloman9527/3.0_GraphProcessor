@@ -23,6 +23,7 @@ using UnityEngine.UIElements;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
+    [CustomView(typeof(BaseNodeVM))]
     public partial class BaseNodeView
     {
         protected virtual void OnInitialized() { }
@@ -31,14 +32,18 @@ namespace CZToolKit.GraphProcessor.Editors
 
         protected virtual void OnUnBindingProperties() { }
 
-        protected virtual BasePortView NewPortView(BasePort port)
+        protected virtual BasePortView NewPortView(BasePortVM port)
         {
             return new BasePortView(port, new EdgeConnectorListener());
         }
 
         public override void BuildContextualMenu(ContextualMenuPopulateEvent evt)
         {
-            foreach (var script in EditorUtilityExtension.FindAllScriptFromType(Model.GetType()))
+            foreach (var script in EditorUtilityExtension.FindAllScriptFromType(ViewModel.GetType()))
+            {
+                evt.menu.AppendAction($"Open Script/" + script.name, _ => { AssetDatabase.OpenAsset(script); });
+            }
+            foreach (var script in EditorUtilityExtension.FindAllScriptFromType(ViewModel.Model.GetType()))
             {
                 evt.menu.AppendAction($"Open Script/" + script.name, _ => { AssetDatabase.OpenAsset(script); });
             }
@@ -104,9 +109,9 @@ namespace CZToolKit.GraphProcessor.Editors
         }
     }
 
-    public class BaseNodeView<M> : BaseNodeView where M : BaseNode
+    public class BaseNodeView<M> : BaseNodeView where M : BaseNodeVM
     {
-        public M T_Model { get { return base.Model as M; } }
+        public M T_ViewModel { get { return base.ViewModel as M; } }
     }
 }
 #endif

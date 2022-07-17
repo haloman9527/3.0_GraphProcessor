@@ -52,29 +52,30 @@ namespace CZToolKit.GraphProcessor.Editors
         #endregion
 
         #region NodeViewTypeCache
-        static Dictionary<Type, Type> NodeViewTypesCache;
+        static Dictionary<Type, Type> ViewTypesCache;
 
-        public static Type GetNodeViewType(Type nodeType)
+        public static Type GetViewType(Type viewModelType)
         {
-            if (NodeViewTypesCache == null)
+            if (ViewTypesCache == null)
             {
-                NodeViewTypesCache = new Dictionary<Type, Type>();
-                foreach (var type in TypeCache.GetTypesDerivedFrom<BaseNodeView>())
+                ViewTypesCache = new Dictionary<Type, Type>();
+                foreach (var type in TypeCache.GetTypesWithAttribute<CustomViewAttribute>())
                 {
                     if (type.IsAbstract) continue;
-                    foreach (var att in Util_Attribute.GetTypeAttributes(type, true))
-                    {
-                        if (att is CustomNodeViewAttribute sAtt)
-                            NodeViewTypesCache[sAtt.targetNodeType] = type;
-                    }
+                    var attribute = type.GetCustomAttributes(false)[0] as CustomViewAttribute;
+                    ViewTypesCache[attribute.viewModelType] = type;
                 }
             }
-            if (NodeViewTypesCache.TryGetValue(nodeType, out Type nodeViewType))
-                return nodeViewType;
-            if (nodeType.BaseType != null)
-                return GetNodeViewType(nodeType.BaseType);
-            else
-                return null;
+
+            var viewType = (Type)null;
+            while (viewType == null)
+            {
+                ViewTypesCache.TryGetValue(viewModelType, out viewType);
+                if (viewModelType.BaseType == null)
+                    break;
+                viewModelType = viewModelType.BaseType;
+            }
+            return viewType;
         }
         #endregion
 

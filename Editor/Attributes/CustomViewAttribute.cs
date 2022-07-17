@@ -19,13 +19,13 @@ using System;
 namespace CZToolKit.GraphProcessor.Editors
 {
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
-    public class CustomNodeViewAttribute : Attribute
+    public class CustomViewAttribute : Attribute
     {
-        public Type targetNodeType;
+        public Type viewModelType;
 
-        public CustomNodeViewAttribute(Type targetNodeType)
+        public CustomViewAttribute(Type viewModelType)
         {
-            this.targetNodeType = targetNodeType;
+            this.viewModelType = viewModelType;
         }
     }
 }

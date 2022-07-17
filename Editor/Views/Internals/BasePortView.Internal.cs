@@ -21,12 +21,12 @@ using UnityEngine.UIElements;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
-    public partial class BasePortView : Port, IBindableView<BasePort>
+    public partial class BasePortView : Port, IBindableView<BasePortVM>
     {
         public Image Icon { get; }
         public BaseGraphView GraphView { get; private set; }
-        public BasePort Model { get; private set; }
-        public Dictionary<BaseConnection, BaseConnectionView> ConnectionViews { get; private set; }
+        public BasePortVM ViewModel { get; private set; }
+        public Dictionary<BaseConnectionVM, BaseConnectionView> ConnectionViews { get; private set; }
 
         protected BasePortView(Orientation orientation, Direction direction, Capacity capacity, Type type, IEdgeConnectorListener connectorListener) : base(orientation, direction, capacity, type)
         {
@@ -50,31 +50,31 @@ namespace CZToolKit.GraphProcessor.Editors
             }
 
             m_EdgeConnector = new EdgeConnector<BaseConnectionView>(connectorListener);
-            ConnectionViews = new Dictionary<BaseConnection, BaseConnectionView>();
+            ConnectionViews = new Dictionary<BaseConnectionVM, BaseConnectionView>();
             this.AddManipulator(m_EdgeConnector);
         }
 
-        public void SetUp(BasePort port, BaseGraphView graphView)
+        public void SetUp(BasePortVM port, BaseGraphView graphView)
         {
-            Model = port;
+            ViewModel = port;
             GraphView = graphView;
 
-            portName = Model.Name;
-            tooltip = Model.Name;
+            portName = ViewModel.Name;
+            tooltip = ViewModel.Name;
 
             OnInitialized();
         }
 
         public void BindingProperties()
         {
-            Model[nameof(BasePort.Type)].RegisterValueChangedEvent<Type>(OnPortTypeChanged);
+            ViewModel[nameof(BasePort.type)].RegisterValueChangedEvent<Type>(OnPortTypeChanged);
 
             OnBindingProperties();
         }
 
         public void UnBindingProperties()
         {
-            Model[nameof(BasePort.Type)].UnregisterValueChangedEvent<Type>(OnPortTypeChanged);
+            ViewModel[nameof(BasePort.type)].UnregisterValueChangedEvent<Type>(OnPortTypeChanged);
 
             OnUnBindingProperties();
         }
@@ -91,7 +91,7 @@ namespace CZToolKit.GraphProcessor.Editors
             base.Connect(connection);
             if (connection is BaseConnectionView connectionView)
             {
-                ConnectionViews[connectionView.Model] = connectionView;
+                ConnectionViews[connectionView.ViewModel] = connectionView;
             }
         }
 
@@ -100,7 +100,7 @@ namespace CZToolKit.GraphProcessor.Editors
             base.Disconnect(connection);
             if (connection is BaseConnectionView connectionView)
             {
-                ConnectionViews.Remove(connectionView.Model);
+                ConnectionViews.Remove(connectionView.ViewModel);
             }
         }
 

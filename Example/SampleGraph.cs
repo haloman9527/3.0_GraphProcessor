@@ -18,7 +18,11 @@ using CZToolKit.GraphProcessor;
 using System;
 using System.Collections.Generic;
 
-public class SampleGraph : BaseGraph, IGraphForMono
+[Serializable]
+public class SampleGraph : BaseGraph { }
+
+[ViewModel(typeof(SampleGraph))]
+public class SampleGraphVM : BaseGraphVM
 {
     [NonSerialized] internal List<SharedVariable> variables;
 
@@ -36,53 +40,5 @@ public class SampleGraph : BaseGraph, IGraphForMono
         get { return variables; }
     }
 
-    protected override void OnEnabled()
-    {
-        base.OnEnabled();
-
-        OnNodeAdded += NodeAdded;
-    }
-
-    public void Initialize(IGraphOwner graphOwner)
-    {
-        GraphOwner = graphOwner;
-
-        foreach (var node in Nodes.Values)
-        {
-            if (node is INodeForMono monoNode)
-                monoNode.Initialize();
-        }
-
-        variables = new List<SharedVariable>();
-        foreach (var node in Nodes.Values)
-        {
-            variables.AddRange(SharedVariableUtility.CollectionObjectSharedVariables(node));
-        }
-        foreach (var variable in variables)
-        {
-            variable.InitializePropertyMapping(VarialbeOwner);
-        }
-
-        OnInitialized();
-    }
-
-    protected virtual void OnInitialized() { }
-
-    public void NodeAdded(BaseNode node)
-    {
-        if (!(node is INodeForMono monoNode))
-            return;
-        if (GraphOwner != null)
-            monoNode.Initialize();
-
-        IEnumerable<SharedVariable> nodeVariables = SharedVariableUtility.CollectionObjectSharedVariables(node);
-        variables.AddRange(nodeVariables);
-        if (VarialbeOwner != null)
-        {
-            foreach (var variable in nodeVariables)
-            {
-                variable.InitializePropertyMapping(VarialbeOwner);
-            }
-        }
-    }
+    public SampleGraphVM(BaseGraph model) : base(model) { }
 }

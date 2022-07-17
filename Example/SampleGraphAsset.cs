@@ -33,9 +33,9 @@ public class SampleGraphAsset : ScriptableObject, IGraphAsset, IGraphAsset<Sampl
 
     public Type GraphType => typeof(SampleGraph);
 
-    public void SaveGraph(IGraph graph)
+    public void SaveGraph(BaseGraph graph)
     {
-        serializedGraph = SerializationUtility.SerializeValue(graph, DataFormat.JSON, out graphUnityReferences);
+        serializedGraph = SerializationUtility.SerializeValue(graph, DataFormat.Binary, out graphUnityReferences);
     }
 
     public BaseGraph DeserializeGraph()
@@ -47,10 +47,11 @@ public class SampleGraphAsset : ScriptableObject, IGraphAsset, IGraphAsset<Sampl
     {
         SampleGraph graph = null;
         if (serializedGraph != null && serializedGraph.Length > 0)
-            graph = SerializationUtility.DeserializeValue<SampleGraph>(serializedGraph, DataFormat.JSON, graphUnityReferences);
+            graph = SerializationUtility.DeserializeValue<SampleGraph>(serializedGraph, DataFormat.Binary, graphUnityReferences);
         if (graph == null)
+        {
             graph = new SampleGraph();
-        graph.Enable();
+        }
         return graph;
     }
 }

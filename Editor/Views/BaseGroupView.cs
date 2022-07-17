@@ -13,11 +13,14 @@
  *
  */
 #endregion
+#if UNITY_EDITOR
 
-namespace CZToolKit.GraphProcessor
+namespace CZToolKit.GraphProcessor.Editors
 {
-    public interface ISubGraph
+    [CustomView(typeof(BaseGroupVM))]
+    public partial class BaseGroupView
     {
-        IGraph Parent { get; set; }
+        
     }
 }
+#endif

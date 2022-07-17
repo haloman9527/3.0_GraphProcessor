@@ -17,26 +17,32 @@ using CZToolKit.Core.ViewModel;
 using CZToolKit.GraphProcessor;
 
 [NodeMenuItem("Float")]
-public class FloatNode : BaseNode, IGetValue, IGetValue<float>
+public class FloatNode : BaseNode
 {
     public float num;
+}
 
-    protected override void OnEnabled()
+[ViewModel(typeof(FloatNode))]
+public class FloatNodeVM : BaseNodeVM, IGetValue, IGetValue<float>
+{
+    public FloatNode T_Model
     {
-        base.OnEnabled();
+        get { return Model as FloatNode; }
+    }
 
-        AddPort(new BasePort("Output", BasePort.Orientation.Horizontal, BasePort.Direction.Output, BasePort.Capacity.Multi, typeof(float)));
-
-        this[nameof(num)] = new BindableProperty<float>(() => num, v => num = v);
+    public FloatNodeVM(BaseNode model) : base(model)
+    {
+        this[nameof(FloatNode.num)] = new BindableProperty<float>(() => T_Model.num, v => T_Model.num = v);
+        AddPort(new BasePortVM("Output", BasePort.Orientation.Horizontal, BasePort.Direction.Output, BasePort.Capacity.Multi, typeof(float)));
     }
 
     public object GetValue(string port)
     {
-        return num;
+        return T_Model.num;
     }
 
     float IGetValue<float>.GetValue(string port)
     {
-        return num;
+        return T_Model.num;
     }
 }

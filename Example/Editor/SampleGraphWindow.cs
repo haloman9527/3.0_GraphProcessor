@@ -24,7 +24,7 @@ using UnityEngine.UIElements;
 [CustomGraphWindow(typeof(SampleGraph))]
 public class SampleGraphWindow : BaseGraphWindow
 {
-    protected override BaseGraphView NewGraphView(IGraph graph)
+    protected override BaseGraphView NewGraphView(BaseGraphVM graph)
     {
         return new SampleGraphView();
     }
@@ -56,9 +56,7 @@ public class SampleGraphWindow : BaseGraphWindow
     void Save()
     {
         if (GraphAsset is IGraphSerialization graphSerialization)
-            graphSerialization.SaveGraph(Graph);
-        if (GraphOwner is IVariableSerialization variableSerialization)
-            variableSerialization.SaveVariables();
+            graphSerialization.SaveGraph(Graph.Model);
         GraphView.SetDirty();
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();

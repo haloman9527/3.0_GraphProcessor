@@ -20,7 +20,7 @@ using System.Linq;
 
 namespace CZToolKit.GraphProcessor
 {
-    public partial class BasePort
+    public class BasePort
     {
         #region Define
         public enum Direction
@@ -39,96 +39,102 @@ namespace CZToolKit.GraphProcessor
             Multi
         }
         #endregion
+
+        public string name;
+        public Orientation orientation;
+        public Direction direction;
+        public Capacity capacity;
+        public Type type;
     }
 
-    public partial class BasePort : ViewModel
+    [ViewModel(typeof(BasePort))]
+    public class BasePortVM : ViewModel
     {
         #region Fields
-        readonly string name;
-        readonly Orientation portOrientation;
-        readonly Direction portDirection;
-        readonly Capacity portCapacity;
-        Type type;
 
-        [NonSerialized] List<BaseConnection> connections;
-        [NonSerialized] Func<BaseConnection, BaseConnection, int> comparer;
+        [NonSerialized] List<BaseConnectionVM> connections;
+        [NonSerialized] Func<BaseConnectionVM, BaseConnectionVM, int> comparer;
 
-        public event Action<BaseConnection> onConnected;
-        public event Action<BaseConnection> onDisconnected;
+        public event Action<BaseConnectionVM> onConnected;
+        public event Action<BaseConnectionVM> onDisconnected;
         public event Action onSorted;
         #endregion
 
         #region Properties
-        public INode Owner
+        public BasePort Model
         {
             get;
-            internal set;
+        }
+        public BaseNodeVM Owner
+        {
+            get;
+            private set;
         }
         public string Name
         {
-            get { return name; }
+            get { return Model.name; }
         }
-        public Direction PortDirection
+        public BasePort.Direction Direction
         {
-            get { return portDirection; }
+            get { return Model.direction; }
         }
-        public Orientation PortOrientation
+        public BasePort.Orientation Orientation
         {
-            get { return portOrientation; }
+            get { return Model.orientation; }
         }
-        public Capacity PortCapacity
+        public BasePort.Capacity Capacity
         {
-            get { return portCapacity; }
+            get { return Model.capacity; }
         }
         public Type Type
         {
-            get { return GetPropertyValue<Type>(nameof(Type)); }
-            set { SetPropertyValue(nameof(Type), value); }
+            get { return GetPropertyValue<Type>(nameof(BasePort.type)); }
+            set { SetPropertyValue(nameof(BasePort.type), value); }
         }
-        public IReadOnlyCollection<BaseConnection> Connections
+        public IReadOnlyCollection<BaseConnectionVM> Connections
         {
             get { return connections; }
         }
         #endregion
 
-        public BasePort() { }
-
-        public BasePort(string name, Orientation orientation, Direction direction, Capacity capacity, Type type = null)
+        public BasePortVM(string name, BasePort.Orientation orientation, BasePort.Direction direction, BasePort.Capacity capacity, Type type = null)
         {
-            this.name = name;
-            this.portOrientation = orientation;
-            this.portDirection = direction;
-            this.portCapacity = capacity;
-            this.type = type == null ? typeof(object) : type;
-        }
-
-        internal void Enable(INode node)
-        {
-            Owner = node;
-            switch (portOrientation)
+            this.Model = new BasePort()
             {
-                case Orientation.Horizontal:
-                    connections = new List<BaseConnection>();
+                name = name,
+                orientation = orientation,
+                direction = direction,
+                capacity = capacity,
+                type = type == null ? typeof(object) : type
+            };
+            this[nameof(BasePort.type)] = new BindableProperty<Type>(() => Model.type, v => Model.type = v);
+            switch (Model.orientation)
+            {
+                case BasePort.Orientation.Horizontal:
+                    connections = new List<BaseConnectionVM>();
                     comparer = HorizontalComparer;
                     break;
-                case Orientation.Vertical:
-                    connections = new List<BaseConnection>();
+                case BasePort.Orientation.Vertical:
+                    connections = new List<BaseConnectionVM>();
                     comparer = VerticalComparer;
                     break;
             }
-            this[nameof(Type)] = new BindableProperty<Type>(() => type, v => type = v);
-            OnEnabled();
+        }
+
+        internal void Enable(BaseNodeVM node)
+        {
+            Owner = node;
         }
 
         #region API
-        public void ConnectTo(BaseConnection connection)
+        public void ConnectTo(BaseConnectionVM connection)
         {
             connections.Add(connection);
             Resort();
             onConnected?.Invoke(connection);
         }
 
-        public void DisconnectTo(BaseConnection connection)
+        public void DisconnectTo(BaseConnectionVM connection)
         {
             connections.Remove(connection);
             Resort();
@@ -152,7 +158,7 @@ namespace CZToolKit.GraphProcessor
         /// <summary> 获取连接的接口的值 </summary>
         public IEnumerable<object> GetConnectionValues()
         {
-            if (portDirection == Direction.Input)
+            if (Model.direction == BasePort.Direction.Input)
             {
                 foreach (var connection in Connections)
                 {
@@ -180,7 +186,7 @@ namespace CZToolKit.GraphProcessor
         /// <summary> 获取连接的接口的值 </summary>
         public IEnumerable<T> GetConnectionValues<T>()
         {
-            if (portDirection == Direction.Input)
+            if (Model.direction == BasePort.Direction.Input)
             {
                 foreach (var connection in Connections)
                 {
@@ -199,17 +205,13 @@ namespace CZToolKit.GraphProcessor
         }
         #endregion
 
-        #region Overrides
-        protected virtual void OnEnabled() { }
-        #endregion
-
-        #region Static
-        private int VerticalComparer(BaseConnection x, BaseConnection y)
+        #region Helper
+        private int VerticalComparer(BaseConnectionVM x, BaseConnectionVM y)
         {
             // 若需要重新排序的是input接口，则根据FromNode排序
             // 若需要重新排序的是output接口，则根据ToNode排序
-            var nodeX = portDirection == Direction.Input ? x.FromNode : x.ToNode;
-            var nodeY = portDirection == Direction.Input ? y.FromNode : y.ToNode;
+            var nodeX = Model.direction == BasePort.Direction.Input ? x.FromNode : x.ToNode;
+            var nodeY = Model.direction == BasePort.Direction.Input ? y.FromNode : y.ToNode;
 
             // 则使用x坐标比较排序
             // 遵循从左到右
@@ -228,12 +230,12 @@ namespace CZToolKit.GraphProcessor
             return 0;
         }
 
-        private int HorizontalComparer(BaseConnection x, BaseConnection y)
+        private int HorizontalComparer(BaseConnectionVM x, BaseConnectionVM y)
         {
             // 若需要重新排序的是input接口，则根据FromNode排序
             // 若需要重新排序的是output接口，则根据ToNode排序
-            var nodeX = portDirection == Direction.Input ? x.FromNode : x.ToNode;
-            var nodeY = portDirection == Direction.Input ? y.FromNode : y.ToNode;
+            var nodeX = Model.direction == BasePort.Direction.Input ? x.FromNode : x.ToNode;
+            var nodeY = Model.direction == BasePort.Direction.Input ? y.FromNode : y.ToNode;
 
             // 则使用y坐标比较排序
             // 遵循从上到下

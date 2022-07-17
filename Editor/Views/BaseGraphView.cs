@@ -25,6 +25,7 @@ using UnityEngine.UIElements;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
+    [CustomView(typeof(BaseGraphVM))]
     public partial class BaseGraphView
     {
         List<Port> compatiblePorts = new List<Port>();
@@ -39,9 +40,9 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             evt.menu.AppendAction("Create Group", delegate
             {
-                var group = new Group("New Group");
-                group.nodes.AddRange(selection.Where(select => select is BaseNodeView).Select(select => (select as BaseNodeView).Model.GUID));
-                CommandDispacter.Do(new AddGroupCommand(Model, group));
+                var group = new BaseGroup() { groupName = "New Group" };
+                group.nodes.AddRange(selection.Where(select => select is BaseNodeView).Select(select => (select as BaseNodeView).ViewModel.GUID));
+                CommandDispacter.Do(new AddGroupCommand(ViewModel, new BaseGroupVM(group)));
             }, (DropdownMenuAction a) => canDeleteSelection && selection.Find(s => s is BaseNodeView) != null ? DropdownMenuAction.Status.Normal : DropdownMenuAction.Status.Hidden);
 
             base.BuildContextualMenu(evt);
@@ -82,7 +83,7 @@ namespace CZToolKit.GraphProcessor.Editors
             BasePortView portView = startPortView as BasePortView;
 
             compatiblePorts.Clear();
-            switch (portView.Model.PortDirection)
+            switch (portView.ViewModel.Direction)
             {
                 case BasePort.Direction.Input:
                     {
@@ -117,15 +118,19 @@ namespace CZToolKit.GraphProcessor.Editors
             }
         }
 
-        protected virtual BaseNodeView NewNodeView(BaseNode node)
+        protected virtual BaseNodeView NewNodeView(BaseNodeVM nodeVM)
         {
-            var type = GraphProcessorEditorUtil.GetNodeViewType(node.GetType());
-            if (type == null)
-                return new BaseNodeView();
+            var type = GraphProcessorEditorUtil.GetViewType(nodeVM.GetType());
             return Activator.CreateInstance(type) as BaseNodeView;
         }
 
-        protected virtual BaseConnectionView NewConnectionView(BaseConnection connection)
+        protected virtual BaseGroupView NewGroupView(BaseGroupVM groupVM)
+        {
+            var type = GraphProcessorEditorUtil.GetViewType(groupVM.GetType());
+            return Activator.CreateInstance(type) as BaseGroupView;
+        }
+
+        protected virtual BaseConnectionView NewConnectionView(BaseConnectionVM connectionVM)
         {
             return new BaseConnectionView();
         }
@@ -157,7 +162,7 @@ namespace CZToolKit.GraphProcessor.Editors
             if (toPortView.direction == fromPortView.direction)
                 return false;
             // 类型兼容查询
-            if (!toPortView.Model.Type.IsAssignableFrom(fromPortView.Model.Type) && !fromPortView.Model.Type.IsAssignableFrom(toPortView.Model.Type))
+            if (!toPortView.ViewModel.Type.IsAssignableFrom(fromPortView.ViewModel.Type) && !fromPortView.ViewModel.Type.IsAssignableFrom(toPortView.ViewModel.Type))
                 return false;
             return true;
         }

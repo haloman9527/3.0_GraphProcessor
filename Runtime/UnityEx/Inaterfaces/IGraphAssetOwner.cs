@@ -22,6 +22,5 @@ namespace CZToolKit.GraphProcessor
     public interface IGraphAssetOwner : IGraphOwner
     {
         UnityObject GraphAsset { get; }
-        Type GraphAssetType { get; }
     }
 }

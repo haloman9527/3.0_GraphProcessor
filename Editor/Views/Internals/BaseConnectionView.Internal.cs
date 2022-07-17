@@ -19,9 +19,9 @@ using UnityEngine.UIElements;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
-    public partial class BaseConnectionView : Edge, IBindableView<BaseConnection>
+    public partial class BaseConnectionView : Edge, IBindableView<BaseConnectionVM>
     {
-        public BaseConnection Model { get; private set; }
+        public BaseConnectionVM ViewModel { get; private set; }
         protected BaseGraphView Owner { get; private set; }
 
         public BaseConnectionView() : base()
@@ -30,9 +30,9 @@ namespace CZToolKit.GraphProcessor.Editors
             this.RegisterCallback<MouseEnterEvent>(OnMouseEnter);
         }
 
-        public void SetUp(BaseConnection connection, BaseGraphView graphView)
+        public void SetUp(BaseConnectionVM connection, BaseGraphView graphView)
         {
-            Model = connection;
+            ViewModel = connection;
             Owner = graphView;
         }
 

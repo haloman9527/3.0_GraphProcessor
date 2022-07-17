@@ -24,12 +24,12 @@ using GroupView = UnityEditor.Experimental.GraphView.Group;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
-    public partial class BaseGroupView : GroupView, IBindableView<Group>
+    public partial class BaseGroupView : GroupView, IBindableView<BaseGroupVM>
     {
         public bool Initialized { get; private set; }
         public TextField TitleField { get; private set; }
         public Label TitleLabel { get; private set; }
-        public Group Model { get; protected set; }
+        public BaseGroupVM ViewModel { get; protected set; }
         public BaseGraphView Owner { get; private set; }
 
         public BaseGroupView()
@@ -41,13 +41,13 @@ namespace CZToolKit.GraphProcessor.Editors
             TitleField.RegisterCallback<FocusOutEvent>(evt => { Input.imeCompositionMode = IMECompositionMode.Auto; });
         }
 
-        public void SetUp(Group group, BaseGraphView graphView)
+        public void SetUp(BaseGroupVM group, BaseGraphView graphView)
         {
-            this.Model = group;
+            this.ViewModel = group;
             this.Owner = graphView;
-            this.title = Model.GroupName;
-            base.SetPosition(new Rect(Model.Position.ToVector2(), GetPosition().size));
-            base.AddElements(Model.Nodes.Select(nodeGUID => Owner.NodeViews[nodeGUID]));
+            this.title = ViewModel.GroupName;
+            base.SetPosition(new Rect(ViewModel.Position.ToVector2(), GetPosition().size));
+            base.AddElements(ViewModel.Nodes.Select(nodeGUID => Owner.NodeViews[nodeGUID]));
             this.AddManipulator(new ContextualMenuManipulator(BuildContextualMenu));
 
             Initialized = true;
@@ -55,25 +55,25 @@ namespace CZToolKit.GraphProcessor.Editors
 
         public void BindingProperties()
         {
-            Model[nameof(Model.groupName)].RegisterValueChangedEvent<string>(OnTitleChanged);
-            Model[nameof(Model.position)].RegisterValueChangedEvent<InternalVector2>(OnPositionChanged);
-            Model.onElementsAdded += OnNodesAdded;
-            Model.onElementsRemoved += OnNodesRemoved;
+            ViewModel[nameof(BaseGroup.groupName)].RegisterValueChangedEvent<string>(OnTitleChanged);
+            ViewModel[nameof(BaseGroup.position)].RegisterValueChangedEvent<InternalVector2>(OnPositionChanged);
+            ViewModel.onNodesAdded += OnNodesAdded;
+            ViewModel.onNodesRemoved += OnNodesRemoved;
         }
 
         public void UnBindingProperties()
         {
-            Model[nameof(Model.groupName)].UnregisterValueChangedEvent<string>(OnTitleChanged);
-            Model[nameof(Model.position)].UnregisterValueChangedEvent<InternalVector2>(OnPositionChanged);
-            Model.onElementsAdded -= OnNodesAdded;
-            Model.onElementsRemoved -= OnNodesRemoved;
+            ViewModel[nameof(BaseGroup.groupName)].UnregisterValueChangedEvent<string>(OnTitleChanged);
+            ViewModel[nameof(BaseGroup.position)].UnregisterValueChangedEvent<InternalVector2>(OnPositionChanged);
+            ViewModel.onNodesAdded -= OnNodesAdded;
+            ViewModel.onNodesRemoved -= OnNodesRemoved;
         }
 
         private void OnTitleChanged(string title)
         {
             if (string.IsNullOrEmpty(title))
                 return;
-            this.title = Model.GroupName;
+            this.title = ViewModel.GroupName;
             Owner.SetDirty();
         }
 
@@ -82,12 +82,12 @@ namespace CZToolKit.GraphProcessor.Editors
             base.SetPosition(new Rect(newPos.ToVector2(), GetPosition().size));
         }
 
-        private void OnNodesAdded(IEnumerable<INode> nodes)
+        private void OnNodesAdded(IEnumerable<BaseNodeVM> nodes)
         {
             base.AddElements(nodes.Select(node => Owner.NodeViews[node.GUID]));
         }
 
-        private void OnNodesRemoved(IEnumerable<INode> nodes)
+        private void OnNodesRemoved(IEnumerable<BaseNodeVM> nodes)
         {
             base.RemoveElements(nodes.Select(node => Owner.NodeViews[node.GUID]));
         }
@@ -101,12 +101,12 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             if (string.IsNullOrEmpty(newName))
                 return;
-            Owner.CommandDispacter.Do(new RenameGroupCommand(Model, newName));
+            Owner.CommandDispacter.Do(new RenameGroupCommand(ViewModel, newName));
         }
 
         public override bool AcceptsElement(GraphElement element, ref string reasonWhyNotAccepted)
         {
-            if (!base.AcceptsElement(element,ref reasonWhyNotAccepted))
+            if (!base.AcceptsElement(element, ref reasonWhyNotAccepted))
                 return false;
             if (element is BaseNodeView)
                 return true;
@@ -120,8 +120,8 @@ namespace CZToolKit.GraphProcessor.Editors
             base.OnElementsAdded(elements);
             if (!Initialized)
                 return;
-            var nodes = elements.Where(element => element is BaseNodeView).Select(element => (element as BaseNodeView).Model);
-            Model.AddNodesWithoutNotify(nodes);
+            var nodes = elements.Where(element => element is BaseNodeView).Select(element => (element as BaseNodeView).ViewModel);
+            ViewModel.AddNodesWithoutNotify(nodes);
             Owner.SetDirty();
         }
 

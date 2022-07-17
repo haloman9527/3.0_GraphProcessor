@@ -16,13 +16,26 @@
 using CZToolKit.GraphProcessor;
 using UnityEngine;
 
-public class SampleGraphTest : GraphAssetOwner<SampleGraphAsset, SampleGraph>
+public class SampleGraphTest : GraphAssetOwner<SampleGraphAsset, SampleGraphVM>
 {
+    public override BaseGraph DeserializeGraph()
+    {
+        if (T_GraphAsset != null)
+            return T_GraphAsset.DeserializeGraph();
+        return null;
+    }
+
+    public override void SaveGraph(BaseGraph graph)
+    {
+        if (T_GraphAsset != null)
+            T_GraphAsset.SaveGraph(graph);
+    }
+
     private void Update()
     {
         foreach (var node in T_Graph.Nodes.Values)
         {
-            if (node is DebugNode debugNode)
+            if (node is DebugNodeVM debugNode)
             {
                 debugNode.DebugInput();
             }

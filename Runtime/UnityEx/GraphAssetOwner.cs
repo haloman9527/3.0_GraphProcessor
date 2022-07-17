@@ -13,10 +13,7 @@
  *
  */
 #endregion
-using CZToolKit.Core.SharedVariable;
 using CZToolKit.GraphProcessor.Internal;
-using System;
-using System.Collections.Generic;
 using UnityEngine;
 
 using UnityObject = UnityEngine.Object;
@@ -24,34 +21,23 @@ using UnityObject = UnityEngine.Object;
 namespace CZToolKit.GraphProcessor
 {
     public abstract class GraphAssetOwner<TGraphAsset, TGraph> : InternalGraphAssetOwner, IGraphSerialization
-        where TGraphAsset : UnityObject, IGraphAsset<TGraph>
-        where TGraph : BaseGraph, IGraphForMono, new()
+        where TGraphAsset : UnityObject, IGraphAsset
+        where TGraph : BaseGraphVM
     {
-        #region 字段
+        #region Fields
         [SerializeField] TGraphAsset graphAsset;
-        [NonSerialized] TGraph graph;
+        [SerializeField] TGraph graph;
         #endregion
 
-        #region 属性
+        #region Properties
         public override UnityObject GraphAsset
         {
             get { return graphAsset; }
-            set
-            {
-                if (graphAsset != value)
-                {
-                    graphAsset = value as TGraphAsset;
-                    graph = null;
-                    if (graphAsset != null)
-                    {
-                        foreach (var variable in T_Graph.Variables)
-                        {
-                            if (GetVariable(variable.GUID) == null)
-                                SetVariable(variable.Clone() as SharedVariable);
-                        }
-                    }
-                }
-            }
+        }
+
+        public override BaseGraphVM Graph
+        {
+            get { return T_Graph; }
         }
 
         public TGraphAsset T_GraphAsset
@@ -59,63 +45,28 @@ namespace CZToolKit.GraphProcessor
             get { return graphAsset; }
         }
 
-        public override IGraph Graph
-        {
-            get { return T_Graph; }
-        }
-
-        public TGraph T_Graph
+        public virtual TGraph T_Graph
         {
             get
             {
-                if (graph == null)
+                if (graph == null && graphAsset != null)
                 {
-                    if (T_GraphAsset != null)
-                        graph = T_GraphAsset.DeserializeTGraph();
-                    else
-                        graph = DeserializeTGraph();
+                    var graphData = DeserializeGraph();
+                    if (graphData != null)
+                    {
+                        graph = GraphProcessorUtil.CreateViewModel(graphData) as TGraph;
+                    }
                 }
                 return graph;
             }
-        }
-
-        public override Type GraphAssetType
-        {
-            get { return typeof(TGraphAsset); }
-        }
-
-        public override Type GraphType
-        {
-            get { return typeof(TGraph); }
+            set { graph = value; }
         }
         #endregion
 
         #region Serialize
-        [HideInInspector]
-        [SerializeField]
-        byte[] serializedGraph;
-        [HideInInspector]
-        [SerializeField]
-        List<UnityObject> graphUnityReferences;
+        public abstract void SaveGraph(BaseGraph graph);
 
-        public void SaveGraph(IGraph graph)
-        {
-            if (GraphAsset != null)
-                graphAsset.SaveGraph(graph);
-            else
-                serializedGraph = Sirenix.Serialization.SerializationUtility.SerializeValue(graph, Sirenix.Serialization.DataFormat.JSON, out graphUnityReferences);
-        }
-
-        public BaseGraph DeserializeGraph()
-        {
-            TGraph graph = null;
-            if (serializedGraph != null && serializedGraph.Length > 0)
-                graph = Sirenix.Serialization.SerializationUtility.DeserializeValue<TGraph>(serializedGraph, Sirenix.Serialization.DataFormat.JSON, graphUnityReferences);
-            if (graph == null)
-                graph = new TGraph();
-            graph.Enable();
-            return graph;
-        }
+        public abstract BaseGraph DeserializeGraph();
 
         public TGraph DeserializeTGraph()
         {

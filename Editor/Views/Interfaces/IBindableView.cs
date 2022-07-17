@@ -25,6 +25,6 @@ namespace CZToolKit.GraphProcessor
 
     public interface IBindableView<VM> : IBindableView where VM : ViewModel
     {
-        VM Model { get; }
+        VM ViewModel { get; }
     }
 }

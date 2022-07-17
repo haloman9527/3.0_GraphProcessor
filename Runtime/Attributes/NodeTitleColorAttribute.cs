@@ -20,7 +20,7 @@ namespace CZToolKit.GraphProcessor
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
     public class NodeTitleColorAttribute : Attribute
     {
-        public InternalColor color;
+        public readonly InternalColor color;
 
         public NodeTitleColorAttribute(float r, float g, float b)
         {

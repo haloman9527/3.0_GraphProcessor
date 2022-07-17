@@ -17,12 +17,14 @@ using CZToolKit.GraphProcessor;
 using UnityEngine;
 
 [NodeMenuItem("Debug")]
-public class DebugNode : BaseNode
+public class DebugNode : BaseNode { }
+
+[ViewModel(typeof(DebugNode))]
+public class DebugNodeVM : BaseNodeVM
 {
-    protected override void OnEnabled()
+    public DebugNodeVM(BaseNode model) : base(model)
     {
-        base.OnEnabled();
-        AddPort(new BasePort("Input", BasePort.Orientation.Horizontal, BasePort.Direction.Input, BasePort.Capacity.Single));
+        AddPort(new BasePortVM("Input", BasePort.Orientation.Horizontal, BasePort.Direction.Input, BasePort.Capacity.Single));
     }
 
     public void DebugInput()

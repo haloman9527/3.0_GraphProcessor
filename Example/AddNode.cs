@@ -16,15 +16,16 @@
 using CZToolKit.GraphProcessor;
 
 [NodeMenuItem("Add")]
-public class AddNode : BaseNode, IGetValue, IGetValue<float>
-{
-    protected override void OnEnabled()
-    {
-        base.OnEnabled();
+public class AddNode : BaseNode { }
 
-        AddPort(new BasePort("InputA", BasePort.Orientation.Horizontal, BasePort.Direction.Input, BasePort.Capacity.Single, typeof(float)));
-        AddPort(new BasePort("InputB", BasePort.Orientation.Horizontal, BasePort.Direction.Input, BasePort.Capacity.Single, typeof(float)));
-        AddPort(new BasePort("Output", BasePort.Orientation.Horizontal, BasePort.Direction.Output, BasePort.Capacity.Multi, typeof(float)));
+[ViewModel(typeof(AddNode))]
+public class AddNodeVM : BaseNodeVM, IGetValue, IGetValue<float>
+{
+    public AddNodeVM(BaseNode model) : base(model)
+    {
+        AddPort(new BasePortVM("InputA", BasePort.Orientation.Horizontal, BasePort.Direction.Input, BasePort.Capacity.Single, typeof(float)));
+        AddPort(new BasePortVM("InputB", BasePort.Orientation.Horizontal, BasePort.Direction.Input, BasePort.Capacity.Single, typeof(float)));
+        AddPort(new BasePortVM("Output", BasePort.Orientation.Horizontal, BasePort.Direction.Output, BasePort.Capacity.Multi, typeof(float)));
     }
 
     public object GetValue(string port)

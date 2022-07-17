@@ -31,14 +31,14 @@ namespace CZToolKit.GraphProcessor.Editors
         public override void OnEnable()
         {
             var view = Target as BaseGraphView;
-            if (view.Model != null)
-                propertyTree = PropertyTree.Create(view.Model);
+            if (view.ViewModel != null)
+                propertyTree = PropertyTree.Create(view.ViewModel.Model);
         }
 
         public override void OnInspectorGUI()
         {
             var view = Target as BaseGraphView;
-            if (view == null || view.Model == null)
+            if (view == null || view.ViewModel == null)
                 return;
 
             if (!ContextDataCache.TryGetContextData<GUIStyle>("BigLabel", out var bigLabel))
@@ -51,8 +51,8 @@ namespace CZToolKit.GraphProcessor.Editors
             }
 
             EditorGUILayoutExtension.BeginVerticalBoxGroup();
-            GUILayout.Label(string.Concat("Nodes：", view.Model.Nodes.Count), bigLabel.value);
-            GUILayout.Label(string.Concat("Connections：", view.Model.Connections.Count), bigLabel.value);
+            GUILayout.Label(string.Concat("Nodes：", view.ViewModel.Nodes.Count), bigLabel.value);
+            GUILayout.Label(string.Concat("Connections：", view.ViewModel.Connections.Count), bigLabel.value);
             EditorGUILayoutExtension.EndVerticalBoxGroup();
 
             if (propertyTree == null)
@@ -62,7 +62,7 @@ namespace CZToolKit.GraphProcessor.Editors
             {
                 EditorGUI.BeginChangeCheck();
                 property.Draw();
-                if (EditorGUI.EndChangeCheck() && view.Model.TryGetValue(property.Name, out var bindableProperty))
+                if (EditorGUI.EndChangeCheck() && view.ViewModel.TryGetValue(property.Name, out var bindableProperty))
                     bindableProperty.SetValueWithNotify(property.ValueEntry.WeakSmartValue);
             }
             propertyTree.EndDraw();

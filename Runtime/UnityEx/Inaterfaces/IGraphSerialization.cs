@@ -18,11 +18,11 @@ namespace CZToolKit.GraphProcessor
 {
     public interface IGraphSerialization
     {
-        void SaveGraph(IGraph graph);
+        void SaveGraph(BaseGraph graph);
         BaseGraph DeserializeGraph();
     }
 
-    public interface IGraphSerialization<T> : IGraphSerialization where T : BaseGraph, IGraph, new()
+    public interface IGraphSerialization<T> : IGraphSerialization where T : BaseGraph, new()
     {
         T DeserializeTGraph();
     }
