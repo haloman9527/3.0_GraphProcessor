@@ -21,12 +21,8 @@ public class SubNode : BaseNode { }
 [ViewModel(typeof(SubNode))]
 public class SubNodeVM : BaseNodeVM, IGetValue, IGetValue<float>
 {
-    public SubNodeVM(BaseNode model) : base(model) { }
-
-    protected override void OnEnabled()
+    public SubNodeVM(BaseNode model) : base(model)
     {
-        base.OnEnabled();
-
         AddPort(new BasePortVM("InputA", BasePort.Orientation.Horizontal, BasePort.Direction.Input, BasePort.Capacity.Single, typeof(float)));
         AddPort(new BasePortVM("InputB", BasePort.Orientation.Horizontal, BasePort.Direction.Input, BasePort.Capacity.Single, typeof(float)));
         AddPort(new BasePortVM("Output", BasePort.Orientation.Horizontal, BasePort.Direction.Output, BasePort.Capacity.Multi, typeof(float)));

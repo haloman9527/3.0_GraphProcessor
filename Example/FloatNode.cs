@@ -28,11 +28,12 @@ public class FloatNodeVM : BaseNodeVM, IGetValue, IGetValue<float>
 {
     public FloatNode T_Model
     {
-        get { return Model as FloatNode; }
+        get;
     }
 
     public FloatNodeVM(BaseNode model) : base(model)
     {
+        T_Model = Model as FloatNode;
         this[nameof(FloatNode.num)] = new BindableProperty<float>(() => T_Model.num, v => T_Model.num = v);
         AddPort(new BasePortVM("Output", BasePort.Orientation.Horizontal, BasePort.Direction.Output, BasePort.Capacity.Multi, typeof(float)));
     }
