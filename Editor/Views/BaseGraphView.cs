@@ -25,7 +25,7 @@ using UnityEngine.UIElements;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
-    [CustomView(typeof(BaseGraphVM))]
+    [CustomView(typeof(BaseGraph))]
     public partial class BaseGraphView
     {
         List<Port> compatiblePorts = new List<Port>();
@@ -120,19 +120,17 @@ namespace CZToolKit.GraphProcessor.Editors
 
         protected virtual BaseNodeView NewNodeView(BaseNodeVM nodeVM)
         {
-            var type = GraphProcessorEditorUtil.GetViewType(nodeVM.GetType());
-            return Activator.CreateInstance(type) as BaseNodeView;
+            return Activator.CreateInstance(GraphProcessorEditorUtil.GetViewType(nodeVM.ModelType)) as BaseNodeView;
         }
 
         protected virtual BaseGroupView NewGroupView(BaseGroupVM groupVM)
         {
-            var type = GraphProcessorEditorUtil.GetViewType(groupVM.GetType());
-            return Activator.CreateInstance(type) as BaseGroupView;
+            return Activator.CreateInstance(GraphProcessorEditorUtil.GetViewType(groupVM.ModelType)) as BaseGroupView;
         }
 
         protected virtual BaseConnectionView NewConnectionView(BaseConnectionVM connectionVM)
         {
-            return new BaseConnectionView();
+            return Activator.CreateInstance(GraphProcessorEditorUtil.GetViewType(connectionVM.ModelType)) as BaseConnectionView;
         }
 
         protected virtual void UpdateInspector()

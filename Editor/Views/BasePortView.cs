@@ -18,7 +18,7 @@ using UnityEditor.Experimental.GraphView;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
-    [CustomView(typeof(BasePortVM))]
+    [CustomView(typeof(BasePort))]
     public partial class BasePortView
     {
         public BasePortView(BasePortVM port, IEdgeConnectorListener connectorListener) : this(

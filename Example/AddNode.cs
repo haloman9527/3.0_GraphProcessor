@@ -15,6 +15,7 @@
 #endregion
 using CZToolKit.GraphProcessor;
 
+[NodeTooltip("加法节点")]
 [NodeMenuItem("Add")]
 public class AddNode : BaseNode { }
 

@@ -17,10 +17,7 @@
 
 namespace CZToolKit.GraphProcessor.Editors
 {
-    [CustomView(typeof(BaseGroupVM))]
-    public partial class BaseGroupView
-    {
-        
-    }
+    [CustomView(typeof(BaseGroup))]
+    public partial class BaseGroupView { }
 }
 #endif

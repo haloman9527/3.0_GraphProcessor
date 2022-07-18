@@ -21,7 +21,7 @@ using UnityEngine.UIElements;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
-    [CustomView(typeof(BaseConnectionVM))]
+    [CustomView(typeof(BaseConnection))]
     public partial class BaseConnectionView
     {
         protected override EdgeControl CreateEdgeControl()

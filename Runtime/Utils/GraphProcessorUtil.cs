@@ -19,7 +19,7 @@ using System.Collections.Generic;
 
 namespace CZToolKit.GraphProcessor
 {
-    public static class GraphProcessorUtil
+    public static partial class GraphProcessorUtil
     {
         static Dictionary<Type, Type> ViewModelTypeCache;
 
@@ -31,8 +31,13 @@ namespace CZToolKit.GraphProcessor
                 foreach (var type in Util_TypeCache.GetTypesWithAttribute<ViewModelAttribute>())
                 {
                     if (type.IsAbstract) continue;
-                    var attribute = type.GetCustomAttributes(false)[0] as ViewModelAttribute;
-                    ViewModelTypeCache[attribute.modelType] = type;
+                    foreach (var attribute in type.GetCustomAttributes(false))
+                    {
+                        if (!(attribute is ViewModelAttribute viewModelAttribute))
+                            continue;
+                        ViewModelTypeCache[viewModelAttribute.targetType] = type;
+                        break;
+                    }
                 }
             }
 

@@ -65,6 +65,10 @@ namespace CZToolKit.GraphProcessor
         {
             get;
         }
+        public Type ModelType
+        {
+            get;
+        }
         public BaseNodeVM Owner
         {
             get;
@@ -107,6 +111,7 @@ namespace CZToolKit.GraphProcessor
                 capacity = capacity,
                 type = type == null ? typeof(object) : type
             };
+            this.ModelType = typeof(BasePort);
             this[nameof(BasePort.type)] = new BindableProperty<Type>(() => Model.type, v => Model.type = v);
             switch (Model.orientation)
             {

@@ -31,6 +31,10 @@ namespace CZToolKit.GraphProcessor
         {
             get;
         }
+        public Type ModelType
+        {
+            get;
+        }
         public BaseGraphVM Owner
         {
             get;
@@ -72,7 +76,8 @@ namespace CZToolKit.GraphProcessor
 
         public BaseConnectionVM(BaseConnection model)
         {
-            this.Model = model;
+            Model = model;
+            ModelType = model.GetType();
         }
 
         internal void Enable(BaseGraphVM graph)

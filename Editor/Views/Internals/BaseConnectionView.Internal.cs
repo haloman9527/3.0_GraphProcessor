@@ -19,10 +19,19 @@ using UnityEngine.UIElements;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
+    [CustomView(typeof(BaseConnection))]
     public partial class BaseConnectionView : Edge, IBindableView<BaseConnectionVM>
     {
-        public BaseConnectionVM ViewModel { get; private set; }
-        protected BaseGraphView Owner { get; private set; }
+        public BaseConnectionVM ViewModel
+        {
+            get;
+            private set;
+        }
+        protected BaseGraphView Owner
+        {
+            get;
+            private set;
+        }
 
         public BaseConnectionView() : base()
         {

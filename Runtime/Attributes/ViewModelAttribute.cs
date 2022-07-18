@@ -5,11 +5,11 @@ namespace CZToolKit.GraphProcessor
     [AttributeUsage(AttributeTargets.Class)]
     public class ViewModelAttribute : Attribute
     {
-        public Type modelType;
+        public Type targetType;
 
-        public ViewModelAttribute(Type modelType)
+        public ViewModelAttribute(Type targetType)
         {
-            this.modelType = modelType;
+            this.targetType = targetType;
         }
     }
 }

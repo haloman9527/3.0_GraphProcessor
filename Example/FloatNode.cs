@@ -16,6 +16,7 @@
 using CZToolKit.Core.ViewModel;
 using CZToolKit.GraphProcessor;
 
+[NodeTooltip("浮点数节点")]
 [NodeMenuItem("Float")]
 public class FloatNode : BaseNode
 {

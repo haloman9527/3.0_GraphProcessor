@@ -23,7 +23,7 @@ using UnityEngine.UIElements;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
-    [CustomView(typeof(BaseNodeVM))]
+    [CustomView(typeof(BaseNode))]
     public partial class BaseNodeView
     {
         protected virtual void OnInitialized() { }
@@ -34,7 +34,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
         protected virtual BasePortView NewPortView(BasePortVM port)
         {
-            return new BasePortView(port, new EdgeConnectorListener());
+            return Activator.CreateInstance(GraphProcessorEditorUtil.GetViewType(port.ModelType), port, new EdgeConnectorListener()) as BasePortView;
         }
 
         public override void BuildContextualMenu(ContextualMenuPopulateEvent evt)

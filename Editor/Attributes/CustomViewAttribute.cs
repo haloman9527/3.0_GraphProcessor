@@ -21,11 +21,11 @@ namespace CZToolKit.GraphProcessor.Editors
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
     public class CustomViewAttribute : Attribute
     {
-        public Type viewModelType;
+        public Type targetType;
 
-        public CustomViewAttribute(Type viewModelType)
+        public CustomViewAttribute(Type targetType)
         {
-            this.viewModelType = viewModelType;
+            this.targetType = targetType;
         }
     }
 }

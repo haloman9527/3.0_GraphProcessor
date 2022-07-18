@@ -31,6 +31,10 @@ namespace CZToolKit.GraphProcessor
         {
             get;
         }
+        public Type ModelType
+        {
+            get;
+        }
         public BaseGraphVM Owner
         {
             get;
@@ -55,6 +59,7 @@ namespace CZToolKit.GraphProcessor
         public BaseGroupVM(BaseGroup model)
         {
             Model = model;
+            ModelType = model.GetType();
             Model.position = Model.position == default ? InternalVector2.zero : Model.position;
             this[nameof(BaseGroup.groupName)] = new BindableProperty<string>(() => Model.groupName, v => Model.groupName = v);
             this[nameof(BaseGroup.position)] = new BindableProperty<InternalVector2>(() => Model.position, v => Model.position = v);

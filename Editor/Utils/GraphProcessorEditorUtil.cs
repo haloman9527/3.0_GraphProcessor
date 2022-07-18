@@ -34,10 +34,10 @@ namespace CZToolKit.GraphProcessor.Editors
                 foreach (var type in TypeCache.GetTypesDerivedFrom<BaseGraphWindow>())
                 {
                     if (type.IsAbstract) continue;
-                    foreach (var att in Util_Attribute.GetTypeAttributes(type, true))
+                    foreach (var attribute in graphType.GetCustomAttributes(true))
                     {
-                        if (att is CustomGraphWindowAttribute sAtt)
-                            WindowTypesCache[sAtt.targetGraphType] = type;
+                        if (attribute is CustomGraphWindowAttribute customGraphWindowAttribute)
+                            WindowTypesCache[customGraphWindowAttribute.targetGraphType] = type;
                     }
                 }
             }
@@ -51,10 +51,10 @@ namespace CZToolKit.GraphProcessor.Editors
 
         #endregion
 
-        #region NodeViewTypeCache
+        #region ViewTypeCache
         static Dictionary<Type, Type> ViewTypesCache;
 
-        public static Type GetViewType(Type viewModelType)
+        public static Type GetViewType(Type targetType)
         {
             if (ViewTypesCache == null)
             {
@@ -62,18 +62,23 @@ namespace CZToolKit.GraphProcessor.Editors
                 foreach (var type in TypeCache.GetTypesWithAttribute<CustomViewAttribute>())
                 {
                     if (type.IsAbstract) continue;
-                    var attribute = type.GetCustomAttributes(false)[0] as CustomViewAttribute;
-                    ViewTypesCache[attribute.viewModelType] = type;
+                    foreach (var attribute in type.GetCustomAttributes(false))
+                    {
+                        if (!(attribute is CustomViewAttribute customViewAttribute))
+                            continue;
+                        ViewTypesCache[customViewAttribute.targetType] = type;
+                        break;
+                    }
                 }
             }
 
             var viewType = (Type)null;
             while (viewType == null)
             {
-                ViewTypesCache.TryGetValue(viewModelType, out viewType);
-                if (viewModelType.BaseType == null)
+                ViewTypesCache.TryGetValue(targetType, out viewType);
+                if (targetType.BaseType == null)
                     break;
-                viewModelType = viewModelType.BaseType;
+                targetType = targetType.BaseType;
             }
             return viewType;
         }
