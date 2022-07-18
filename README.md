@@ -10,4 +10,5 @@ MVVM架构
 
 
 > 截图
-# ![GOAP](Examples/ScreenShot/1.png)
+# ![](ScreenShot_1.png)
+# ![](ScreenShot_2.png)

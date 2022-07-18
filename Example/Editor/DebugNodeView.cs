@@ -17,7 +17,7 @@
 using CZToolKit.GraphProcessor.Editors;
 using UnityEngine.UIElements;
 
-[CustomView(typeof(DebugNodeVM))]
+[CustomView(typeof(DebugNode))]
 public class DebugNodeView : BaseNodeView
 {
     Button btnDebug;
