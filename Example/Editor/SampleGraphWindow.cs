@@ -21,7 +21,7 @@ using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-[CustomGraphWindow(typeof(SampleGraph))]
+[CustomView(typeof(SampleGraph))]
 public class SampleGraphWindow : BaseGraphWindow
 {
     protected override BaseGraphView NewGraphView(BaseGraphVM graph)

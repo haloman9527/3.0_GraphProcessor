@@ -41,6 +41,10 @@ namespace CZToolKit.GraphProcessor
         {
             get;
         }
+        public Type ModelType
+        {
+            get;
+        }
         public InternalVector3 Pan
         {
             get { return GetPropertyValue<InternalVector3>(nameof(BaseGraph.pan)); }
@@ -68,6 +72,7 @@ namespace CZToolKit.GraphProcessor
         public BaseGraphVM(BaseGraph model)
         {
             Model = model;
+            ModelType = model.GetType();
             Model.pan = Model.pan == default ? InternalVector3.zero : Model.pan;
             Model.zoom = Model.zoom == default ? InternalVector3.one : Model.zoom;
 

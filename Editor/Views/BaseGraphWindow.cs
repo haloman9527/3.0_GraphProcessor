@@ -301,7 +301,7 @@ namespace CZToolKit.GraphProcessor.Editors
         /// <summary> 从Graph类型获取对应的GraphWindow </summary>
         public static BaseGraphWindow GetGraphWindow(Type graphType)
         {
-            var windowType = GraphProcessorEditorUtil.GetGraphWindowType(graphType);
+            var windowType = GraphProcessorEditorUtil.GetViewType(graphType);
             UnityObject[] objs = Resources.FindObjectsOfTypeAll(windowType);
             BaseGraphWindow window = null;
             foreach (var obj in objs)
@@ -335,7 +335,7 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             if (graphAssetOwner == null) return null;
             if (graphAssetOwner.GraphAsset == null) return null;
-            var window = GetGraphWindow(graphAssetOwner.Graph.GetType());
+            var window = GetGraphWindow(graphAssetOwner.Graph.ModelType);
             window.Load(graphAssetOwner);
             return window;
         }

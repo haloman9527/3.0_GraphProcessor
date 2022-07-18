@@ -23,34 +23,6 @@ namespace CZToolKit.GraphProcessor.Editors
 {
     public static class GraphProcessorEditorUtil
     {
-        #region GraphWindowTypeCache
-        static Dictionary<Type, Type> WindowTypesCache;
-
-        public static Type GetGraphWindowType(Type graphType)
-        {
-            if (WindowTypesCache == null)
-            {
-                WindowTypesCache = new Dictionary<Type, Type>();
-                foreach (var type in TypeCache.GetTypesDerivedFrom<BaseGraphWindow>())
-                {
-                    if (type.IsAbstract) continue;
-                    foreach (var attribute in graphType.GetCustomAttributes(true))
-                    {
-                        if (attribute is CustomGraphWindowAttribute customGraphWindowAttribute)
-                            WindowTypesCache[customGraphWindowAttribute.targetGraphType] = type;
-                    }
-                }
-            }
-            if (WindowTypesCache.TryGetValue(graphType, out Type windowType))
-                return windowType;
-            if (graphType.BaseType != null)
-                return GetGraphWindowType(graphType.BaseType);
-            else
-                return typeof(BaseGraphWindow);
-        }
-
-        #endregion
-
         #region ViewTypeCache
         static Dictionary<Type, Type> ViewTypesCache;
 
