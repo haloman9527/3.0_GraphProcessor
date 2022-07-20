@@ -325,7 +325,7 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             if (graphOwner == null) return null;
             if (graphOwner.Graph == null) return null;
-            var window = GetGraphWindow(graphOwner.Graph.GetType());
+            var window = GetGraphWindow(graphOwner.Graph.ModelType);
             window.Load(graphOwner);
             return window;
         }
