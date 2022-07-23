@@ -110,6 +110,11 @@ namespace CZToolKit.GraphProcessor
             OnEnabled();
         }
 
+        internal void Disable()
+        {
+            OnDisabled();
+        }
+
         #region API
         public IEnumerable<BaseNodeVM> GetConnections(string portName)
         {
@@ -154,10 +159,9 @@ namespace CZToolKit.GraphProcessor
         #endregion
 
         #region Overrides
-        protected virtual void OnEnabled()
-        {
+        protected virtual void OnEnabled() { }
 
-        }
+        protected virtual void OnDisabled() { }
         #endregion
 
         #region Helper

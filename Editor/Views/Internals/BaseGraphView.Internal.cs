@@ -33,7 +33,7 @@ namespace CZToolKit.GraphProcessor.Editors
         public event Action onDirty;
         public event Action onUndirty;
 
-        public CreateNodeMenuWindow CreateNodeMenu { get; private set; }
+        public NodeMenuWindow CreateNodeMenu { get; private set; }
         public BaseGraphWindow GraphWindow { get; private set; }
         public CommandDispatcher CommandDispacter { get; private set; }
         public UnityObject GraphAsset { get { return GraphWindow.GraphAsset; } }
@@ -64,7 +64,6 @@ namespace CZToolKit.GraphProcessor.Editors
             this.StretchToParentSize();
         }
 
-        #region Initialize
         public void SetUp(BaseGraphVM graph, BaseGraphWindow window, CommandDispatcher commandDispacter)
         {
             ViewModel = graph as BaseGraphVM;
@@ -74,67 +73,26 @@ namespace CZToolKit.GraphProcessor.Editors
             RegisterCallback<DetachFromPanelEvent>(evt => { GraphWindow.StopCoroutine(coroutine); });
         }
 
+        #region Initialize
         IEnumerator Initialize()
         {
-            // 初始化
+            UpdateInspector();
+
             viewTransform.position = ViewModel.Pan.ToVector3();
             viewTransform.scale = ViewModel.Zoom.ToVector3();
-
-            // 绑定
-            CreateNodeMenu = ScriptableObject.CreateInstance<CreateNodeMenuWindow>();
-            CreateNodeMenu.Initialize(this, GetNodeTypes());
-
-            graphViewChanged = GraphViewChangedCallback;
-            viewTransformChanged = ViewTransformChangedCallback;
-            nodeCreationRequest = c => SearchWindow.Open(new SearchWindowContext(c.screenMousePosition), CreateNodeMenu);
-
             yield return GraphWindow.StartCoroutine(GenerateNodeViews());
             yield return GraphWindow.StartCoroutine(LinkNodeViews());
             yield return GraphWindow.StartCoroutine(GenerateGroupViews());
 
-            UpdateInspector();
+            CreateNodeMenu = ScriptableObject.CreateInstance<NodeMenuWindow>();
+            CreateNodeMenu.Initialize(this, GetNodeTypes());
+            nodeCreationRequest = c => SearchWindow.Open(new SearchWindowContext(c.screenMousePosition), CreateNodeMenu);
+            graphViewChanged = OnGraphViewChangedCallback;
+            viewTransformChanged = OnViewTransformChanged;
+
+            RegisterCallback<KeyDownEvent>(KeyDownCallback);
+
             OnInitialized();
-        }
-
-        public void BindingProperties()
-        {
-            RegisterCallback<DetachFromPanelEvent>(evt => { UnBindingProperties(); });
-
-            ViewModel.BindingProperty<InternalVector3>(nameof(BaseGraph.pan), OnPositionChanged);
-            ViewModel.BindingProperty<InternalVector3>(nameof(BaseGraph.zoom), OnScaleChanged);
-
-            ViewModel.OnNodeAdded += OnNodeAdded;
-            ViewModel.OnNodeRemoved += OnNodeRemoved;
-
-            ViewModel.OnGroupAdded += OnGroupAdded;
-            ViewModel.OnGroupRemoved += OnGroupRemoved;
-
-            ViewModel.OnConnected += OnConnected;
-            ViewModel.OnDisconnected += OnDisconnected;
-
-            OnBindingProperties();
-        }
-
-        public void UnBindingProperties()
-        {
-            this.Query<GraphElement>().ForEach(element =>
-            {
-                if (element is IBindableView bindableView)
-                {
-                    bindableView.UnBindingProperties();
-                }
-            });
-
-            ViewModel.UnBindingProperty<InternalVector3>(nameof(BaseGraph.pan), OnPositionChanged);
-            ViewModel.UnBindingProperty<InternalVector3>(nameof(BaseGraph.zoom), OnScaleChanged);
-
-            ViewModel.OnNodeAdded -= OnNodeAdded;
-            ViewModel.OnNodeRemoved -= OnNodeRemoved;
-
-            ViewModel.OnConnected -= OnConnected;
-            ViewModel.OnDisconnected -= OnDisconnected;
-
-            OnUnbindingProperties();
         }
 
         /// <summary> 生成所有NodeView </summary>
@@ -183,171 +141,48 @@ namespace CZToolKit.GraphProcessor.Editors
         }
         #endregion
 
-        #region Callbacks
-        void OnPositionChanged(InternalVector3 position)
+        #region API
+        public void BindingProperties()
         {
-            viewTransform.position = position.ToVector3();
-            SetDirty();
+            RegisterCallback<DetachFromPanelEvent>(evt => { UnBindingProperties(); });
+
+            ViewModel.BindingProperty<InternalVector3>(nameof(BaseGraph.pan), OnPositionChanged);
+            ViewModel.BindingProperty<InternalVector3>(nameof(BaseGraph.zoom), OnScaleChanged);
+
+            ViewModel.OnNodeAdded += OnNodeAdded;
+            ViewModel.OnNodeRemoved += OnNodeRemoved;
+
+            ViewModel.OnGroupAdded += OnGroupAdded;
+            ViewModel.OnGroupRemoved += OnGroupRemoved;
+
+            ViewModel.OnConnected += OnConnected;
+            ViewModel.OnDisconnected += OnDisconnected;
+
+            OnBindingProperties();
         }
 
-        void OnScaleChanged(InternalVector3 scale)
+        public void UnBindingProperties()
         {
-            viewTransform.scale = scale.ToVector3();
-            SetDirty();
-        }
-
-        void OnNodeAdded(BaseNodeVM node)
-        {
-            AddNodeView(node);
-            SetDirty();
-        }
-
-        void OnNodeRemoved(BaseNodeVM node)
-        {
-            RemoveNodeView(NodeViews[node.GUID]);
-            SetDirty();
-        }
-
-        void OnGroupAdded(BaseGroupVM group)
-        {
-            AddGroupView(group);
-            SetDirty();
-        }
-
-        void OnGroupRemoved(BaseGroupVM group)
-        {
-            RemoveGroupView(GroupViews[group]);
-            SetDirty();
-        }
-
-        void OnConnected(BaseConnectionVM connection)
-        {
-            var from = NodeViews[connection.FromNodeGUID];
-            var to = NodeViews[connection.ToNodeGUID];
-            ConnectView(from, to, connection);
-            SetDirty();
-        }
-
-        void OnDisconnected(BaseConnectionVM connection)
-        {
-            edges.ForEach(edge =>
+            this.Query<GraphElement>().ForEach(element =>
             {
-                if (edge.userData != connection) return;
-                DisconnectView(edge as BaseConnectionView);
+                if (element is IBindableView bindableView)
+                {
+                    bindableView.UnBindingProperties();
+                }
             });
-            SetDirty();
+
+            ViewModel.UnBindingProperty<InternalVector3>(nameof(BaseGraph.pan), OnPositionChanged);
+            ViewModel.UnBindingProperty<InternalVector3>(nameof(BaseGraph.zoom), OnScaleChanged);
+
+            ViewModel.OnNodeAdded -= OnNodeAdded;
+            ViewModel.OnNodeRemoved -= OnNodeRemoved;
+
+            ViewModel.OnConnected -= OnConnected;
+            ViewModel.OnDisconnected -= OnDisconnected;
+
+            OnUnbindingProperties();
         }
 
-        /// <summary> GraphView发生改变时调用 </summary>
-        GraphViewChange GraphViewChangedCallback(GraphViewChange changes)
-        {
-            if (changes.movedElements != null)
-            {
-                CommandDispacter.BeginGroup();
-                // 当节点移动之后，与之连接的接口重新排序
-                Dictionary<BaseNodeVM, InternalVector2> newPos = new Dictionary<BaseNodeVM, InternalVector2>();
-                Dictionary<BaseGroupVM, InternalVector2> groupNewPos = new Dictionary<BaseGroupVM, InternalVector2>();
-                HashSet<BasePortVM> ports = new HashSet<BasePortVM>();
-
-                changes.movedElements.RemoveAll(element =>
-                {
-                    switch (element)
-                    {
-                        case BaseNodeView nodeView:
-                            newPos[nodeView.ViewModel] = nodeView.GetPosition().position.ToInternalVector2();
-                            // 记录需要重新排序的接口
-                            foreach (var port in nodeView.ViewModel.Ports.Values)
-                            {
-                                foreach (var connection in port.Connections)
-                                {
-                                    if (port.Direction == BasePort.Direction.Input)
-                                        ports.Add(connection.FromNode.Ports[connection.FromPortName]);
-                                    else
-                                        ports.Add(connection.ToNode.Ports[connection.ToPortName]);
-                                }
-                            }
-                            return true;
-                        case BaseGroupView groupView:
-                            groupNewPos[groupView.ViewModel] = groupView.GetPosition().position.ToInternalVector2();
-                            return true;
-                        default:
-                            break;
-                    }
-                    return false;
-                });
-                foreach (var pair in groupNewPos)
-                {
-                    foreach (var nodeGUID in pair.Key.Nodes)
-                    {
-                        var node = ViewModel.Nodes[nodeGUID];
-                        var nodeView = NodeViews[nodeGUID];
-                        newPos[node] = nodeView.GetPosition().position.ToInternalVector2();
-                    }
-                }
-                CommandDispacter.Do(new MoveNodesCommand(newPos));
-                CommandDispacter.Do(new MoveGroupsCommand(groupNewPos));
-                // 排序
-                foreach (var port in ports)
-                {
-                    port.Resort();
-                }
-                CommandDispacter.EndGroup();
-            }
-            if (changes.elementsToRemove != null)
-            {
-                changes.elementsToRemove.Sort((element1, element2) =>
-                {
-                    int GetPriority(GraphElement element)
-                    {
-                        switch (element)
-                        {
-                            case Edge edgeView:
-                                return 0;
-                            case Node nodeView:
-                                return 1;
-                        }
-                        return 4;
-                    }
-                    return GetPriority(element1).CompareTo(GetPriority(element2));
-                });
-
-                CommandDispacter.BeginGroup();
-                changes.elementsToRemove.RemoveAll(element =>
-                {
-                    switch (element)
-                    {
-                        case BaseConnectionView edgeView:
-                            if (edgeView.selected)
-                                CommandDispacter.Do(new DisconnectCommand(ViewModel, edgeView.ViewModel));
-                            return true;
-                        case BaseNodeView nodeView:
-                            if (nodeView.selected)
-                                CommandDispacter.Do(new RemoveNodeCommand(ViewModel, nodeView.ViewModel));
-                            return true;
-                        case BaseGroupView groupView:
-                            if (groupView.selected)
-                                CommandDispacter.Do(new RemoveGroupCommand(ViewModel, groupView.ViewModel));
-                            return true;
-                    }
-                    return false;
-                });
-
-                CommandDispacter.EndGroup();
-
-                UpdateInspector();
-            }
-            return changes;
-        }
-
-        /// <summary> 转换发生改变时调用 </summary>
-        void ViewTransformChangedCallback(GraphView view)
-        {
-            ViewModel.Pan = viewTransform.position.ToInternalVector3();
-            ViewModel.Zoom = viewTransform.scale.ToInternalVector3();
-        }
-        #endregion
-
-        #region 方法
         public BaseNodeView AddNodeView(BaseNodeVM node)
         {
             BaseNodeView nodeView = NewNodeView(node);
@@ -456,6 +291,191 @@ namespace CZToolKit.GraphProcessor.Editors
         public void SetUndirty()
         {
             onUndirty?.Invoke();
+        }
+        #endregion
+
+        #region Callbacks
+        void OnPositionChanged(InternalVector3 position)
+        {
+            viewTransform.position = position.ToVector3();
+            SetDirty();
+        }
+
+        void OnScaleChanged(InternalVector3 scale)
+        {
+            viewTransform.scale = scale.ToVector3();
+            SetDirty();
+        }
+
+        void OnNodeAdded(BaseNodeVM node)
+        {
+            AddNodeView(node);
+            SetDirty();
+        }
+
+        void OnNodeRemoved(BaseNodeVM node)
+        {
+            RemoveNodeView(NodeViews[node.GUID]);
+            SetDirty();
+        }
+
+        void OnGroupAdded(BaseGroupVM group)
+        {
+            AddGroupView(group);
+            SetDirty();
+        }
+
+        void OnGroupRemoved(BaseGroupVM group)
+        {
+            RemoveGroupView(GroupViews[group]);
+            SetDirty();
+        }
+
+        void OnConnected(BaseConnectionVM connection)
+        {
+            var from = NodeViews[connection.FromNodeGUID];
+            var to = NodeViews[connection.ToNodeGUID];
+            ConnectView(from, to, connection);
+            SetDirty();
+        }
+
+        void OnDisconnected(BaseConnectionVM connection)
+        {
+            edges.ForEach(edge =>
+            {
+                if (edge.userData != connection) return;
+                DisconnectView(edge as BaseConnectionView);
+            });
+            SetDirty();
+        }
+
+        void KeyDownCallback(KeyDownEvent evt)
+        {
+            if (evt.commandKey || evt.ctrlKey)
+            {
+                switch (evt.keyCode)
+                {
+                    case KeyCode.Z:
+                        CommandDispacter.Undo();
+                        evt.StopPropagation();
+                        break;
+                    case KeyCode.Y:
+                        CommandDispacter.Redo();
+                        evt.StopPropagation();
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
+
+        /// <summary> GraphView发生改变时调用 </summary>
+        GraphViewChange OnGraphViewChangedCallback(GraphViewChange changes)
+        {
+            if (changes.movedElements != null)
+            {
+                CommandDispacter.BeginGroup();
+                // 当节点移动之后，与之连接的接口重新排序
+                Dictionary<BaseNodeVM, InternalVector2> newPos = new Dictionary<BaseNodeVM, InternalVector2>();
+                Dictionary<BaseGroupVM, InternalVector2> groupNewPos = new Dictionary<BaseGroupVM, InternalVector2>();
+                HashSet<BasePortVM> ports = new HashSet<BasePortVM>();
+
+                changes.movedElements.RemoveAll(element =>
+                {
+                    switch (element)
+                    {
+                        case BaseNodeView nodeView:
+                            newPos[nodeView.ViewModel] = nodeView.GetPosition().position.ToInternalVector2();
+                            // 记录需要重新排序的接口
+                            foreach (var port in nodeView.ViewModel.Ports.Values)
+                            {
+                                foreach (var connection in port.Connections)
+                                {
+                                    if (port.Direction == BasePort.Direction.Input)
+                                        ports.Add(connection.FromNode.Ports[connection.FromPortName]);
+                                    else
+                                        ports.Add(connection.ToNode.Ports[connection.ToPortName]);
+                                }
+                            }
+                            return true;
+                        case BaseGroupView groupView:
+                            groupNewPos[groupView.ViewModel] = groupView.GetPosition().position.ToInternalVector2();
+                            return true;
+                        default:
+                            break;
+                    }
+                    return false;
+                });
+                foreach (var pair in groupNewPos)
+                {
+                    foreach (var nodeGUID in pair.Key.Nodes)
+                    {
+                        var node = ViewModel.Nodes[nodeGUID];
+                        var nodeView = NodeViews[nodeGUID];
+                        newPos[node] = nodeView.GetPosition().position.ToInternalVector2();
+                    }
+                }
+                CommandDispacter.Do(new MoveNodesCommand(newPos));
+                CommandDispacter.Do(new MoveGroupsCommand(groupNewPos));
+                // 排序
+                foreach (var port in ports)
+                {
+                    port.Resort();
+                }
+                CommandDispacter.EndGroup();
+            }
+            if (changes.elementsToRemove != null)
+            {
+                changes.elementsToRemove.Sort((element1, element2) =>
+                {
+                    int GetPriority(GraphElement element)
+                    {
+                        switch (element)
+                        {
+                            case Edge edgeView:
+                                return 0;
+                            case Node nodeView:
+                                return 1;
+                        }
+                        return 4;
+                    }
+                    return GetPriority(element1).CompareTo(GetPriority(element2));
+                });
+
+                CommandDispacter.BeginGroup();
+                changes.elementsToRemove.RemoveAll(element =>
+                {
+                    switch (element)
+                    {
+                        case BaseConnectionView edgeView:
+                            if (edgeView.selected)
+                                CommandDispacter.Do(new DisconnectCommand(ViewModel, edgeView.ViewModel));
+                            return true;
+                        case BaseNodeView nodeView:
+                            if (nodeView.selected)
+                                CommandDispacter.Do(new RemoveNodeCommand(ViewModel, nodeView.ViewModel));
+                            return true;
+                        case BaseGroupView groupView:
+                            if (groupView.selected)
+                                CommandDispacter.Do(new RemoveGroupCommand(ViewModel, groupView.ViewModel));
+                            return true;
+                    }
+                    return false;
+                });
+
+                CommandDispacter.EndGroup();
+
+                UpdateInspector();
+            }
+            return changes;
+        }
+
+        /// <summary> 转换发生改变时调用 </summary>
+        void OnViewTransformChanged(GraphView view)
+        {
+            ViewModel.Pan = viewTransform.position.ToInternalVector3();
+            ViewModel.Zoom = viewTransform.scale.ToInternalVector3();
         }
         #endregion
     }

@@ -28,16 +28,35 @@ using UnityObject = UnityEngine.Object;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
-    [Serializable]
+    [CustomView(typeof(BaseGraph))]
     public class BaseGraphWindow : BasicEditorWindow
     {
         #region 字段
         [SerializeField] protected UnityObject graphOwner;
         [SerializeField] protected UnityObject graphAsset;
-        [SerializeField] protected bool locked = false;
         #endregion
 
-        #region 属性
+        #region Properties
+        private VisualElement GraphViewContainer
+        {
+            get;
+            set;
+        }
+        public Toolbar ToolbarLeft
+        {
+            get;
+            private set;
+        }
+        public Toolbar ToolbarCenter
+        {
+            get;
+            private set;
+        }
+        public Toolbar ToolbarRight
+        {
+            get;
+            private set;
+        }
         public IGraphOwner GraphOwner
         {
             get { return graphOwner as IGraphOwner; }
@@ -55,14 +74,6 @@ namespace CZToolKit.GraphProcessor.Editors
         }
         public BaseGraphView GraphView
         {
-            get; private set;
-        }
-        public ToolbarView Toolbar
-        {
-            get { return GraphViewParent?.Toolbar; }
-        }
-        public GraphViewContainer GraphViewParent
-        {
             get;
             private set;
         }
@@ -77,8 +88,8 @@ namespace CZToolKit.GraphProcessor.Editors
         protected virtual void OnEnable()
         {
             titleContent = new GUIContent("Graph Processor");
-            rootVisualElement.styleSheets.Add(GraphProcessorStyles.BasicStyle);
             EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
+            InitRootVisualElement();
             Reload();
         }
 
@@ -88,84 +99,62 @@ namespace CZToolKit.GraphProcessor.Editors
             if (Selection.activeObject is ObjectInspector objectInspector && objectInspector.Target is GraphElement)
                 Selection.activeObject = null;
         }
+        #endregion
 
-        protected virtual void OnPlayModeStateChanged(PlayModeStateChange obj)
+        #region Private Methods
+        void InitRootVisualElement()
         {
-            switch (obj)
-            {
-                case PlayModeStateChange.EnteredEditMode:
-                    Reload();
-                    break;
-            }
+            rootVisualElement.styleSheets.Add(GraphProcessorStyles.BasicStyle);
+
+            Toolbar toolBar = new Toolbar();
+            toolBar.style.height = 20;
+            toolBar.StretchToParentWidth();
+            rootVisualElement.Add(toolBar);
+
+            ToolbarLeft = new Toolbar();
+            ToolbarLeft.style.flexDirection = FlexDirection.Row;
+            toolBar.Add(ToolbarLeft);
+
+            ToolbarCenter = new Toolbar();
+            ToolbarLeft.style.flexDirection = FlexDirection.Row;
+            ToolbarCenter.style.flexGrow = 1;
+            toolBar.Add(ToolbarCenter);
+
+            ToolbarRight = new Toolbar();
+            ToolbarRight.style.flexDirection = FlexDirection.RowReverse;
+            toolBar.Add(ToolbarRight);
+
+            GraphViewContainer = new VisualElement();
+            GraphViewContainer.name = "GraphView";
+            GraphViewContainer.StretchToParentSize();
+            GraphViewContainer.style.top = toolBar.style.height;
+            rootVisualElement.Add(GraphViewContainer);
         }
         #endregion
 
-        #region 方法
-        protected virtual void BuildToolbar(ToolbarView toolbar)
+        #region Public Methods
+        protected void Load(BaseGraphVM graph, CommandDispatcher commandDispatcher)
         {
-            ToolbarButton btnOverview = new ToolbarButton()
-            {
-                text = "Overview",
-                tooltip = "查看所有节点"
-            };
-            btnOverview.clicked += () =>
-            {
-                GraphView.FrameAll();
-            };
-            toolbar.AddButtonToLeft(btnOverview);
-            btnOverview.style.width = 80;
-
-
-            IMGUIContainer drawName = new IMGUIContainer(() =>
-            {
-                GUILayout.BeginHorizontal();
-                if (GraphAsset != null && GUILayout.Button(GraphAsset.name, EditorStyles.toolbarButton))
-                {
-                    EditorGUIUtility.PingObject(GraphAsset);
-                }
-                GUILayout.EndHorizontal();
-            });
-            drawName.style.flexGrow = 1;
-            toolbar.AddToLeft(drawName);
-
-            ToolbarButton btnReload = new ToolbarButton()
-            {
-                text = "Reload",
-                tooltip = "重新加载",
-                style = { width = 70 }
-            };
-            btnReload.clicked += Reload;
-            toolbar.AddButtonToRight(btnReload);
-        }
-
-        protected virtual void KeyDownCallback(KeyDownEvent evt)
-        {
-            if (evt.commandKey || evt.ctrlKey)
-            {
-                switch (evt.keyCode)
-                {
-                    case KeyCode.Z:
-                        GraphView.CommandDispacter.Undo();
-                        evt.StopPropagation();
-                        break;
-                    case KeyCode.Y:
-                        GraphView.CommandDispacter.Redo();
-                        evt.StopPropagation();
-                        break;
-                    default:
-                        break;
-                }
-            }
+            OnGraphViewUndirty();
+            Graph = graph;
+            GraphView = NewGraphView(Graph);
+            GraphView.SetUp(Graph, this, commandDispatcher);
+            GraphView.BindingProperties();
+            GraphView.onDirty += OnGraphViewDirty;
+            GraphView.onUndirty += OnGraphViewUndirty;
+            GraphViewContainer.Add(GraphView);
+            OnGraphLoaded();
         }
 
         public virtual void Clear()
         {
-            if (GraphViewParent != null)
-                GraphViewParent.RemoveFromHierarchy();
+            ToolbarLeft.Clear();
+            ToolbarCenter.Clear();
+            ToolbarRight.Clear();
+            GraphViewContainer.Clear();
 
             Graph = null;
             GraphView = null;
-            GraphViewParent = null;
             GraphAsset = null;
             GraphOwner = null;
             CommandDispatcher = null;
@@ -176,71 +165,51 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             if (GraphOwner is IGraphAssetOwner graphAssetOwner && graphAssetOwner.GraphAsset != null)
             {
-                Load(graphAssetOwner);
+                ForceLoad(graphAssetOwner);
             }
             else if (GraphOwner is IGraphOwner graphOwner)
             {
-                Load(graphOwner);
+                ForceLoad(graphOwner);
             }
             else if (GraphAsset is IGraphAsset graphAsset)
             {
-                Load(graphAsset);
+                ForceLoad(graphAsset);
             }
             else if (Graph is BaseGraphVM graphVM)
             {
-                Load(graphVM);
+                ForceLoad(graphVM);
             }
         }
 
-        protected void InternalLoad(BaseGraphVM graph, CommandDispatcher commandDispatcher)
-        {
-            GraphView = NewGraphView(graph);
-            if (GraphView == null)
-                return;
-            OnGraphViewUndirty();
-            GraphView.SetUp(graph, this, commandDispatcher);
-            GraphView.BindingProperties();
-            GraphView.onDirty += OnGraphViewDirty;
-            GraphView.onUndirty += OnGraphViewUndirty;
-            Graph = graph;
-            GraphViewParent = new GraphViewContainer();
-            GraphViewParent.StretchToParentSize();
-            rootVisualElement.Add(GraphViewParent);
-            GraphView.RegisterCallback<KeyDownEvent>(KeyDownCallback);
-            GraphViewParent.GraphViewElement.Add(GraphView);
-
-            BuildToolbar(GraphViewParent.Toolbar);
-        }
-
         // 从GraphOwner加载
-        public void Load(IGraphOwner graphOwner)
+        public void ForceLoad(IGraphOwner graphOwner)
         {
             Clear();
             GraphOwner = graphOwner;
             GraphAsset = (UnityObject)graphOwner;
             CommandDispatcher = new CommandDispatcher();
 
-            InternalLoad(GraphOwner.Graph, CommandDispatcher);
+            Load(GraphOwner.Graph, CommandDispatcher);
         }
 
         // 从GraphAssetOwner加载
-        public void Load(IGraphAssetOwner graphAssetOwner)
+        public void ForceLoad(IGraphAssetOwner graphAssetOwner)
         {
             Clear();
             GraphOwner = graphAssetOwner;
             GraphAsset = graphAssetOwner.GraphAsset;
             CommandDispatcher = new CommandDispatcher();
 
-            InternalLoad(GraphOwner.Graph, CommandDispatcher);
+            Load(GraphOwner.Graph, CommandDispatcher);
         }
 
         // 从Graph资源加载
-        public void Load(IGraphAsset graphAsset)
+        public void ForceLoad(IGraphAsset graphAsset)
         {
             var graphAssetOwner = Selection.activeGameObject?.GetComponent<IGraphAssetOwner>();
             if (graphAssetOwner != null && graphAssetOwner.GraphAsset == (UnityObject)graphAsset)
             {
-                Load(graphAssetOwner);
+                ForceLoad(graphAssetOwner);
                 return;
             }
             Clear();
@@ -248,32 +217,44 @@ namespace CZToolKit.GraphProcessor.Editors
             GraphOwner = null;
             GraphAsset = graphAsset as UnityObject;
             CommandDispatcher = new CommandDispatcher();
-            InternalLoad(GraphProcessorUtil.CreateViewModel(graphAsset.DeserializeGraph()) as BaseGraphVM, CommandDispatcher);
+            Load(GraphProcessorUtil.CreateViewModel(graphAsset.DeserializeGraph()) as BaseGraphVM, CommandDispatcher);
         }
 
         // 直接加载Graph对象
-        public void Load(BaseGraphVM graph)
+        public void ForceLoad(BaseGraphVM graph)
         {
             Clear();
             GraphAsset = null;
             GraphOwner = null;
             CommandDispatcher = new CommandDispatcher();
 
-            InternalLoad(graph, CommandDispatcher);
+            Load(graph, CommandDispatcher);
         }
 
         // 直接加载Graph对象
-        public void Load(BaseGraph graph)
+        public void ForceLoad(BaseGraph graph)
         {
             Clear();
             GraphAsset = null;
             GraphOwner = null;
             CommandDispatcher = new CommandDispatcher();
 
-            InternalLoad(GraphProcessorUtil.CreateViewModel(GraphProcessorUtil.CreateViewModel(graph) as BaseGraphVM) as BaseGraphVM, CommandDispatcher);
+            Load(GraphProcessorUtil.CreateViewModel(GraphProcessorUtil.CreateViewModel(graph) as BaseGraphVM) as BaseGraphVM, CommandDispatcher);
+        }
+        #endregion
+
+        #region Callbacks
+        void OnPlayModeStateChanged(PlayModeStateChange obj)
+        {
+            switch (obj)
+            {
+                case PlayModeStateChange.EnteredEditMode:
+                    Reload();
+                    break;
+            }
         }
 
-        public void OnGraphViewDirty()
+        void OnGraphViewDirty()
         {
             if (!titleContent.text.EndsWith(" *"))
                 titleContent.text += " *";
@@ -283,7 +264,7 @@ namespace CZToolKit.GraphProcessor.Editors
                 EditorUtility.SetDirty(uobj);
         }
 
-        public void OnGraphViewUndirty()
+        void OnGraphViewUndirty()
         {
             if (titleContent.text.EndsWith(" *"))
                 titleContent.text = titleContent.text.Replace(" *", "");
@@ -294,6 +275,43 @@ namespace CZToolKit.GraphProcessor.Editors
         protected virtual BaseGraphView NewGraphView(BaseGraphVM graph)
         {
             return new BaseGraphView();
+        }
+
+        protected virtual void OnGraphLoaded()
+        {
+            ToolbarButton btnOverview = new ToolbarButton()
+            {
+                text = "Overview",
+                tooltip = "查看所有节点"
+            };
+            btnOverview.clicked += () =>
+            {
+                GraphView.FrameAll();
+            };
+            btnOverview.style.width = 80;
+            btnOverview.style.unityTextAlign = TextAnchor.MiddleCenter;
+            ToolbarLeft.Add(btnOverview);
+
+            IMGUIContainer drawName = new IMGUIContainer(() =>
+            {
+                GUILayout.BeginHorizontal();
+                if (GraphAsset != null && GUILayout.Button(GraphAsset.name, EditorStyles.toolbarButton))
+                    EditorGUIUtility.PingObject(GraphAsset);
+                GUILayout.EndHorizontal();
+            });
+            drawName.style.flexGrow = 1;
+            ToolbarCenter.Add(drawName);
+
+            ToolbarButton btnReload = new ToolbarButton()
+            {
+                text = "Reload",
+                tooltip = "重新加载",
+                style = { width = 70 }
+            };
+            btnReload.clicked += Reload;
+            btnReload.style.width = 80;
+            btnReload.style.unityTextAlign = TextAnchor.MiddleCenter;
+            ToolbarRight.Add(btnReload);
         }
         #endregion
 
@@ -326,7 +344,7 @@ namespace CZToolKit.GraphProcessor.Editors
             if (graphOwner == null) return null;
             if (graphOwner.Graph == null) return null;
             var window = GetGraphWindow(graphOwner.Graph.ModelType);
-            window.Load(graphOwner);
+            window.ForceLoad(graphOwner);
             return window;
         }
 
@@ -336,7 +354,7 @@ namespace CZToolKit.GraphProcessor.Editors
             if (graphAssetOwner == null) return null;
             if (graphAssetOwner.GraphAsset == null) return null;
             var window = GetGraphWindow(graphAssetOwner.Graph.ModelType);
-            window.Load(graphAssetOwner);
+            window.ForceLoad(graphAssetOwner);
             return window;
         }
 
@@ -345,7 +363,7 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             if (graphAsset == null) return null;
             var window = GetGraphWindow(graphAsset.GraphType);
-            window.Load(graphAsset);
+            window.ForceLoad(graphAsset);
             return window;
         }
 
@@ -354,7 +372,7 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             if (graph == null) return null;
             var window = GetGraphWindow(graph.GetType());
-            window.Load(graph);
+            window.ForceLoad(graph);
             return window;
         }
 
@@ -363,7 +381,7 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             if (graph == null) return null;
             var window = GetGraphWindow(graph.GetType());
-            window.Load(graph);
+            window.ForceLoad(graph);
             return window;
         }
 

@@ -20,19 +20,18 @@ using System.Linq;
 using UnityEngine;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine.UIElements;
-using CZToolKit.Core;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
-    public class CreateNodeMenuWindow : ScriptableObject, ISearchWindowProvider
+    public class NodeMenuWindow : ScriptableObject, ISearchWindowProvider
     {
         BaseGraphView graphView;
         IEnumerable<Type> nodeTypes;
         List<SearchTreeEntry> tree;
 
-        public void Initialize(BaseGraphView _graphView, IEnumerable<Type> nodeTypes)
+        public void Initialize(BaseGraphView graphView, IEnumerable<Type> nodeTypes)
         {
-            graphView = _graphView;
+            this.graphView = graphView;
             this.nodeTypes = nodeTypes;
             tree = CreateSearchTree();
         }
@@ -44,21 +43,22 @@ namespace CZToolKit.GraphProcessor.Editors
 
             foreach (Type type in nodeTypes)
             {
-                if (Util_Attribute.TryGetTypeAttribute(type, out NodeMenuItemAttribute attribute))
+                var menuAttribute = GraphProcessorEditorUtil.GetNodeMenu(type);
+                if (menuAttribute != null)
                 {
-                    if (attribute.showInList)
+                    if (menuAttribute.showInList)
                     {
-                        if (attribute.titles.Length > 1)
+                        if (menuAttribute.titles.Length > 1)
                         {
                             SearchTreeGroupEntry groupTemp = null;
-                            for (int i = 1; i < attribute.titles.Length; i++)
+                            for (int i = 1; i < menuAttribute.titles.Length; i++)
                             {
                                 SearchTreeGroupEntry group = tempTree.Find(item =>
-                                        (item.content.text == attribute.titles[i - 1] && item.level == i)) as
+                                        (item.content.text == menuAttribute.titles[i - 1] && item.level == i)) as
                                     SearchTreeGroupEntry;
                                 if (group == null)
                                 {
-                                    group = new SearchTreeGroupEntry(new GUIContent(attribute.titles[i - 1]), i);
+                                    group = new SearchTreeGroupEntry(new GUIContent(menuAttribute.titles[i - 1]), i);
                                     int index = groupTemp == null ? 0 : tempTree.IndexOf(groupTemp);
                                     tempTree.Insert(index + 1, group);
                                 }
@@ -66,19 +66,19 @@ namespace CZToolKit.GraphProcessor.Editors
                                 groupTemp = group;
                             }
                             tempTree.Insert(tempTree.IndexOf(groupTemp) + 1,
-                                new SearchTreeEntry(new GUIContent(attribute.titles.Last()))
-                                { userData = type, level = attribute.titles.Length });
+                                new SearchTreeEntry(new GUIContent(menuAttribute.titles.Last()))
+                                { userData = type, level = menuAttribute.titles.Length });
                         }
                         else
                         {
-                            tempTree.Add(new SearchTreeEntry(new GUIContent(attribute.titles.Last()))
+                            tempTree.Add(new SearchTreeEntry(new GUIContent(menuAttribute.titles.Last()))
                             { userData = type, level = 1 });
                         }
                     }
                 }
                 else
                 {
-                    GUIContent content = new GUIContent(GraphProcessorEditorUtil.GetNodeDisplayName(type));
+                    GUIContent content = new GUIContent(type.Name);
                     tempTree.Add(new SearchTreeEntry(content) { userData = type, level = 1 });
                 }
             }

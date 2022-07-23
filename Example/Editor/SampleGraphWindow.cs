@@ -29,18 +29,22 @@ public class SampleGraphWindow : BaseGraphWindow
         return new SampleGraphView();
     }
 
-    protected override void BuildToolbar(ToolbarView toolbar)
+    protected override void OnGraphLoaded()
     {
-        base.BuildToolbar(toolbar);
+        base.OnGraphLoaded();
+
         ToolbarButton btnSave = new ToolbarButton();
         btnSave.text = "Save";
         btnSave.clicked += Save;
-        toolbar.AddButtonToRight(btnSave);
+        btnSave.style.width = 80;
+        btnSave.style.unityTextAlign = TextAnchor.MiddleCenter;
+        ToolbarRight.Add(btnSave);
+
+        GraphView.RegisterCallback<KeyDownEvent>(KeyDownCallback);
     }
 
-    protected override void KeyDownCallback(KeyDownEvent evt)
+    void KeyDownCallback(KeyDownEvent evt)
     {
-        base.KeyDownCallback(evt);
         if (evt.commandKey || evt.ctrlKey)
         {
             switch (evt.keyCode)

@@ -14,7 +14,6 @@
  */
 #endregion
 #if UNITY_EDITOR
-using CZToolKit.Core;
 using System;
 using System.Collections.Generic;
 using UnityEditor;
@@ -57,19 +56,30 @@ namespace CZToolKit.GraphProcessor.Editors
         #endregion
 
         #region NodeNames
-        public static string GetNodeDisplayName(Type nodeType)
-        {
-            if (Util_Attribute.TryGetTypeAttribute(nodeType, out NodeMenuItemAttribute attri))
-            {
-                if (attri.titles != null && attri.titles.Length != 0)
-                    return attri.titles[attri.titles.Length - 1];
-            }
-            return nodeType.Name;
-        }
+        static Dictionary<Type, NodeMenuItemAttribute> NodeMenuItemsCache;
 
-        public static string GetDisplayName(string fieldName)
+        public static NodeMenuItemAttribute GetNodeMenu(Type nodeType)
         {
-            return ObjectNames.NicifyVariableName(fieldName);
+            if (NodeMenuItemsCache == null)
+            {
+                NodeMenuItemsCache = new Dictionary<Type, NodeMenuItemAttribute>();
+                foreach (var type in TypeCache.GetTypesWithAttribute<NodeMenuItemAttribute>())
+                {
+                    if (type.IsAbstract) continue;
+                    foreach (var attribute in type.GetCustomAttributes(false))
+                    {
+                        if (!(attribute is NodeMenuItemAttribute nodeMenuItemAttribute))
+                            continue;
+                        if (nodeMenuItemAttribute.titles == null || nodeMenuItemAttribute.titles.Length == 0)
+                            continue;
+                        NodeMenuItemsCache[type] = nodeMenuItemAttribute;
+                        break;
+                    }
+                }
+            }
+            if (NodeMenuItemsCache.TryGetValue(nodeType, out var menu))
+                return menu;
+            return null;
         }
         #endregion
     }

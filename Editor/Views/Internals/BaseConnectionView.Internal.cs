@@ -14,6 +14,7 @@
  */
 #endregion
 #if UNITY_EDITOR
+using System;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine.UIElements;
 
@@ -43,16 +44,17 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             ViewModel = connection;
             Owner = graphView;
+            OnInitialized();
         }
 
-        public virtual void BindingProperties()
+        public void BindingProperties()
         {
-
+            OnBindingProperties();
         }
 
-        public virtual void UnBindingProperties()
+        public void UnBindingProperties()
         {
-
+            OnUnbindingProperties();
         }
 
         private void OnMouseEnter(MouseEnterEvent evt)

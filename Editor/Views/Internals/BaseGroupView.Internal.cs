@@ -130,6 +130,8 @@ namespace CZToolKit.GraphProcessor.Editors
             base.OnElementsRemoved(elements);
             if (!Initialized)
                 return;
+            var nodes = elements.Where(element => element is BaseNodeView).Select(element => (element as BaseNodeView).ViewModel);
+            ViewModel.RemoveNodesWithoutNotify(nodes);
             Owner.SetDirty();
         }
 

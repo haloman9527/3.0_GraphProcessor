@@ -177,7 +177,7 @@ namespace CZToolKit.GraphProcessor
 
         public void AddNode(BaseNodeVM node)
         {
-            if (node.Owner != this)
+            if (string.IsNullOrEmpty(node.GUID) && node.GUID == null)
                 AllocID(node);
             nodes.Add(node.GUID, node);
             Model.nodes.Add(node.GUID, node.Model);
@@ -199,6 +199,7 @@ namespace CZToolKit.GraphProcessor
             Disconnect(node);
             nodes.Remove(node.GUID);
             Model.nodes.Remove(node.GUID);
+            node.Disable();
             OnNodeRemoved?.Invoke(node);
         }
 

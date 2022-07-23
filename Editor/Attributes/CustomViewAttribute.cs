@@ -18,7 +18,7 @@ using System;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
     public class CustomViewAttribute : Attribute
     {
         public Type targetType;
