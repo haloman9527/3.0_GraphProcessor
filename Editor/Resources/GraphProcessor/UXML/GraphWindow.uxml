@@ -1,0 +1,8 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <uie:Toolbar style="height: 20px; flex-direction: row;">
+        <uie:Toolbar name="ToolbarLeft" />
+        <uie:Toolbar name="ToolbarCenter" style="flex-grow: 1;" />
+        <uie:Toolbar name="ToolbarRight" style="flex-direction: row-reverse;" />
+    </uie:Toolbar>
+    <ui:VisualElement name="GraphViewContainer" style="flex-grow: 1;" />
+</ui:UXML>

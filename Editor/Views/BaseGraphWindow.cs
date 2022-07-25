@@ -88,9 +88,9 @@ namespace CZToolKit.GraphProcessor.Editors
         protected virtual void OnEnable()
         {
             titleContent = new GUIContent("Graph Processor");
-            EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
             InitRootVisualElement();
             Reload();
+            EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
         }
 
         protected virtual void OnDestroy()
@@ -104,31 +104,13 @@ namespace CZToolKit.GraphProcessor.Editors
         #region Private Methods
         void InitRootVisualElement()
         {
+            GraphProcessorStyles.GraphWindowTree.CloneTree(rootVisualElement);
             rootVisualElement.styleSheets.Add(GraphProcessorStyles.BasicStyle);
 
-            Toolbar toolBar = new Toolbar();
-            toolBar.style.height = 20;
-            toolBar.StretchToParentWidth();
-            rootVisualElement.Add(toolBar);
-
-            ToolbarLeft = new Toolbar();
-            ToolbarLeft.style.flexDirection = FlexDirection.Row;
-            toolBar.Add(ToolbarLeft);
-
-            ToolbarCenter = new Toolbar();
-            ToolbarLeft.style.flexDirection = FlexDirection.Row;
-            ToolbarCenter.style.flexGrow = 1;
-            toolBar.Add(ToolbarCenter);
-
-            ToolbarRight = new Toolbar();
-            ToolbarRight.style.flexDirection = FlexDirection.RowReverse;
-            toolBar.Add(ToolbarRight);
-
-            GraphViewContainer = new VisualElement();
-            GraphViewContainer.name = "GraphView";
-            GraphViewContainer.StretchToParentSize();
-            GraphViewContainer.style.top = toolBar.style.height;
-            rootVisualElement.Add(GraphViewContainer);
+            ToolbarLeft = rootVisualElement.Q<Toolbar>("ToolbarLeft", "unity-toolbar");
+            ToolbarCenter = rootVisualElement.Q<Toolbar>("ToolbarCenter", "unity-toolbar");
+            ToolbarRight = rootVisualElement.Q<Toolbar>("ToolbarRight", "unity-toolbar");
+            GraphViewContainer = rootVisualElement.Q("GraphViewContainer");
         }
         #endregion
 
@@ -138,6 +120,7 @@ namespace CZToolKit.GraphProcessor.Editors
             OnGraphViewUndirty();
             Graph = graph;
             GraphView = NewGraphView(Graph);
+
             GraphView.SetUp(Graph, this, commandDispatcher);
             GraphView.BindingProperties();
             GraphView.onDirty += OnGraphViewDirty;

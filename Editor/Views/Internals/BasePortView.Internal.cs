@@ -31,6 +31,7 @@ namespace CZToolKit.GraphProcessor.Editors
         protected BasePortView(Orientation orientation, Direction direction, Capacity capacity, Type type, IEdgeConnectorListener connectorListener) : base(orientation, direction, capacity, type)
         {
             styleSheets.Add(GraphProcessorStyles.PortViewStyle);
+            styleSheets.Add(GraphProcessorStyles.PortViewTypesStyle);
 
             Icon = new Image();
             Icon.AddToClassList("port-icon");
