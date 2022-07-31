@@ -50,6 +50,11 @@ namespace CZToolKit.GraphProcessor
             get { return GetPropertyValue<InternalVector2>(nameof(Model.position)); }
             set { SetPropertyValue(nameof(Model.position), value); }
         }
+        public InternalColor BackgroundColor
+        {
+            get { return GetPropertyValue<InternalColor>(nameof(Model.backgroundColor)); }
+            set { SetPropertyValue(nameof(Model.backgroundColor), value); }
+        }
         public IReadOnlyList<string> Nodes
         {
             get { return Model.nodes; }
@@ -63,6 +68,7 @@ namespace CZToolKit.GraphProcessor
             Model.position = Model.position == default ? InternalVector2.zero : Model.position;
             this[nameof(BaseGroup.groupName)] = new BindableProperty<string>(() => Model.groupName, v => Model.groupName = v);
             this[nameof(BaseGroup.position)] = new BindableProperty<InternalVector2>(() => Model.position, v => Model.position = v);
+            this[nameof(BaseGroup.backgroundColor)] = new BindableProperty<InternalColor>(() => Model.backgroundColor, v => Model.backgroundColor = v);
         }
 
         internal void Enable(BaseGraphVM graph)

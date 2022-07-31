@@ -19,6 +19,7 @@ using CZToolKit.Core.Editors;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -213,6 +214,7 @@ namespace CZToolKit.GraphProcessor.Editors
         public void RemoveGroupView(BaseGroupView groupView)
         {
             groupView.UnBindingProperties();
+            groupView.RemoveElementsWithoutNotification(groupView.containedElements.ToArray());
             RemoveElement(groupView);
             GroupViews.Remove(groupView.ViewModel);
         }
@@ -463,7 +465,6 @@ namespace CZToolKit.GraphProcessor.Editors
                     }
                     return false;
                 });
-
                 CommandDispacter.EndGroup();
 
                 UpdateInspector();

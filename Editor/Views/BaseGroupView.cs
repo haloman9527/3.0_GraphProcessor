@@ -14,10 +14,14 @@
  */
 #endregion
 #if UNITY_EDITOR
+using UnityEngine.UIElements;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
     [CustomView(typeof(BaseGroup))]
-    public partial class BaseGroupView { }
+    public partial class BaseGroupView
+    {
+        protected void BuildContextualMenu(ContextualMenuPopulateEvent obj) { }
+    }
 }
 #endif

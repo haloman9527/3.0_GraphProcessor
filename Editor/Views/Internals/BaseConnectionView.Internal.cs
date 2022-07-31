@@ -36,7 +36,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
         public BaseConnectionView() : base()
         {
-            styleSheets.Add(GraphProcessorStyles.EdgeViewStyle);
+            styleSheets.Add(GraphProcessorStyles.ConnectionViewStyle);
             this.RegisterCallback<MouseEnterEvent>(OnMouseEnter);
         }
 

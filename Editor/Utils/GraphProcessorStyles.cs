@@ -29,6 +29,7 @@ namespace CZToolKit.GraphProcessor.Editors
         public const string BasePortViewStyleFile = "GraphProcessor/Styles/BasePortView";
         public const string PortViewTypesStyleFile = "GraphProcessor/Styles/PortViewTypes";
         public const string BaseEdgeStyleFile = "GraphProcessor/Styles/BaseEdgeView";
+        public const string BaseGroupStyleFile = "GraphProcessor/Styles/BaseGroupView";
 
         public static VisualTreeAsset GraphWindowTree { get; } = Resources.Load<VisualTreeAsset>(GraphWindowUXMLFile);
         public static StyleSheet BasicStyle { get; } = Resources.Load<StyleSheet>(BassicStyleFile);
@@ -37,7 +38,8 @@ namespace CZToolKit.GraphProcessor.Editors
         public static StyleSheet SimpleNodeViewStyle { get; } = Resources.Load<StyleSheet>(BaseSimpleNodeViewStyleFile);
         public static StyleSheet PortViewStyle { get; } = Resources.Load<StyleSheet>(BasePortViewStyleFile);
         public static StyleSheet PortViewTypesStyle { get; } = Resources.Load<StyleSheet>(PortViewTypesStyleFile);
-        public static StyleSheet EdgeViewStyle { get; } = Resources.Load<StyleSheet>(BaseEdgeStyleFile);
+        public static StyleSheet ConnectionViewStyle { get; } = Resources.Load<StyleSheet>(BaseEdgeStyleFile);
+        public static StyleSheet BaseGroupStyle { get; } = Resources.Load<StyleSheet>(BaseGroupStyleFile);
     }
 }
 #endif
