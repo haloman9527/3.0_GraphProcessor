@@ -40,6 +40,7 @@ namespace CZToolKit.GraphProcessor.Editors
         public UnityObject GraphAsset { get { return GraphWindow.GraphAsset; } }
         public Dictionary<string, BaseNodeView> NodeViews { get; private set; } = new Dictionary<string, BaseNodeView>();
         public Dictionary<BaseGroupVM, BaseGroupView> GroupViews { get; private set; } = new Dictionary<BaseGroupVM, BaseGroupView>();
+        public Dictionary<BaseConnectionVM, BaseConnectionView> ConnectionViews { get; private set; } = new Dictionary<BaseConnectionVM, BaseConnectionView>();
 
         public BaseGraphVM ViewModel { get; set; }
 
@@ -105,7 +106,7 @@ namespace CZToolKit.GraphProcessor.Editors
                 if (node == null) continue;
                 AddNodeView(node);
                 step++;
-                if (step % 5 == 0)
+                if (step % 10 == 0)
                     yield return null;
             }
         }
@@ -122,7 +123,7 @@ namespace CZToolKit.GraphProcessor.Editors
                 if (!NodeViews.TryGetValue(connection.ToNodeGUID, out toNodeView)) throw new NullReferenceException($"找不到To节点{connection.ToNodeGUID}");
                 ConnectView(fromNodeView, toNodeView, connection);
                 step++;
-                if (step % 5 == 0)
+                if (step % 10 == 0)
                     yield return null;
             }
         }
@@ -136,7 +137,7 @@ namespace CZToolKit.GraphProcessor.Editors
                 if (group == null) continue;
                 AddGroupView(group);
                 step++;
-                if (step % 5 == 0)
+                if (step % 10 == 0)
                     yield return null;
             }
         }
@@ -221,16 +222,17 @@ namespace CZToolKit.GraphProcessor.Editors
 
         public BaseConnectionView ConnectView(BaseNodeView from, BaseNodeView to, BaseConnectionVM connection)
         {
-            var connectionoView = NewConnectionView(connection);
-            connectionoView.SetUp(connection, this);
-            connectionoView.BindingProperties();
-            connectionoView.userData = connection;
-            connectionoView.output = from.PortViews[connection.FromPortName];
-            connectionoView.input = to.PortViews[connection.ToPortName];
-            from.PortViews[connection.FromPortName].Connect(connectionoView);
-            to.PortViews[connection.ToPortName].Connect(connectionoView);
-            AddElement(connectionoView);
-            return connectionoView;
+            var connectionView = NewConnectionView(connection);
+            connectionView.SetUp(connection, this);
+            connectionView.BindingProperties();
+            connectionView.userData = connection;
+            connectionView.output = from.PortViews[connection.FromPortName];
+            connectionView.input = to.PortViews[connection.ToPortName];
+            from.PortViews[connection.FromPortName].Connect(connectionView);
+            to.PortViews[connection.ToPortName].Connect(connectionView);
+            AddElement(connectionView);
+            ConnectionViews[connection] = connectionView;
+            return connectionView;
         }
 
         public void DisconnectView(BaseConnectionView connectionView)
@@ -256,6 +258,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
             connectionView.UnBindingProperties();
             RemoveElement(connectionView);
+            ConnectionViews.Remove(connectionView.ViewModel);
         }
 
         /// <summary> 获取鼠标在GraphView中的坐标，如果鼠标不在GraphView内，则返回当前GraphView显示的中心点 </summary>

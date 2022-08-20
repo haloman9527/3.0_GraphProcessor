@@ -1,34 +1,41 @@
-#node {
-    background-color: rgba(0, 63, 63, 1);
+#node-border > #title {
+    height: 30px;
+}
+
+#title > #title-label {
+    margin-left: 2px;
+    align-self: center;
+    flex-wrap: Wrap;
+    flex-grow: 1;
+}
+#title > #title-button-container {
+    visibility: hidden;
+    display: none;
 }
 
 #divider{
     background-color:rgba(255, 128, 0, 1);
 }
 
-#node-border > .node-controls{
+.node-controls{
     background-color:rgba(50, 50, 50, 1);
-}
-
-#title 
-{
-    height: 30px;
-    padding-left: 8px;
-}
-
-#title > #title-label {
-    margin-left: 2px;
-    align-self: center;
-    flex-grow: 1;
-    height: 100
-}
-
-#title > #settings-button 
-{
-    align-self: center;
 }
 
 .highlight {
     background-color: rgba(0, 255, 255, 1);
     border-radius: 7px
+}
+
+#top-port-container{
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    background-color: rgba(66, 140, 66, 1);
+}
+
+#bottom-port-container{
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    background-color: rgba(160, 100, 60, 1);
 }

@@ -84,18 +84,10 @@ namespace CZToolKit.GraphProcessor.Editors
             mainContainer.Add(controlsContainer);
 
             topPortContainer = new VisualElement { name = "top-port-container" };
-            topPortContainer.style.justifyContent = Justify.Center;
-            topPortContainer.style.alignItems = Align.Center;
-            topPortContainer.style.flexDirection = FlexDirection.Row;
-            Insert(0, topPortContainer);
+            nodeBorder.Insert(0, topPortContainer);
 
             bottomPortContainer = new VisualElement { name = "bottom-port-container" };
-            bottomPortContainer.style.justifyContent = Justify.Center;
-            bottomPortContainer.style.alignItems = Align.Center;
-            bottomPortContainer.style.flexDirection = FlexDirection.Row;
-            Add(bottomPortContainer);
-
-            TitleLabel.style.flexWrap = Wrap.Wrap;
+            nodeBorder.Add(bottomPortContainer);
         }
 
         #region Initialize

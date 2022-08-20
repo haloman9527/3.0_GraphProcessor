@@ -19,7 +19,7 @@ using CZToolKit.GraphProcessor;
 public class SubNode : BaseNode { }
 
 [ViewModel(typeof(SubNode))]
-public class SubNodeVM : BaseNodeVM, IGetValue, IGetValue<float>
+public class SubNodeVM : BaseNodeVM, IGetValueFromPort, IGetValueFromPort<float>
 {
     public SubNodeVM(BaseNode model) : base(model)
     {
@@ -35,7 +35,7 @@ public class SubNodeVM : BaseNodeVM, IGetValue, IGetValue<float>
         return inputAValue - inputBValue;
     }
 
-    float IGetValue<float>.GetValue(string port)
+    float IGetValueFromPort<float>.GetValue(string port)
     {
         var inputAValue = Ports["InputA"].GetConnectionValue<float>();
         var inputBValue = Ports["InputB"].GetConnectionValue<float>();

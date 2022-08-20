@@ -1,0 +1,14 @@
+#titleContainer > #titleLabel{
+	padding-right: 70px;
+}
+
+#titleField{
+	padding-right: 70px;
+}
+
+#backgroundColorField{
+	position: absolute;
+	width: 50px;
+	right: 10px;
+	top: 6px;
+}

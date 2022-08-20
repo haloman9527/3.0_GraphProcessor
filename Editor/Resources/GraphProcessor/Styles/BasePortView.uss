@@ -5,6 +5,10 @@
     padding-right: 4px;
 }
 
+.port > #type {
+    flex-grow: 1;
+}
+
 .port > #connector {
     border-color: rgb(255, 255, 0);
     background-color: #212121;
@@ -36,9 +40,4 @@
 .port > #connector > #cap:hover
 {
     background-color: #f0f0f0;
-}
-
-.vertical
-{
-    height: 10px;
 }

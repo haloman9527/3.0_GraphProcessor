@@ -37,16 +37,13 @@ namespace CZToolKit.GraphProcessor.Editors
 
         public BaseGroupView()
         {
-            this.styleSheets.Add(GraphProcessorStyles.BaseGroupStyle);
+            this.styleSheets.Add(GraphProcessorStyles.BaseGroupViewStyle);
 
             TitleLabel = headerContainer.Q<Label>();
             TitleField = headerContainer.Q<TextField>();
 
             BackgroudColorField = new ColorField();
-            BackgroudColorField.style.position = Position.Absolute;
-            BackgroudColorField.style.width = 50;
-            BackgroudColorField.style.right = 10;
-            BackgroudColorField.style.top = 5;
+            BackgroudColorField.name = "backgroundColorField";
             headerContainer.Add(BackgroudColorField);
 
             TitleField.RegisterCallback<FocusInEvent>(evt => { Input.imeCompositionMode = IMECompositionMode.On; });

@@ -24,7 +24,7 @@ public class FloatNode : BaseNode
 }
 
 [ViewModel(typeof(FloatNode))]
-public class FloatNodeVM : BaseNodeVM, IGetValue, IGetValue<float>
+public class FloatNodeVM : BaseNodeVM, IGetValueFromPort, IGetValueFromPort<float>
 {
     public FloatNode T_Model
     {
@@ -43,7 +43,7 @@ public class FloatNodeVM : BaseNodeVM, IGetValue, IGetValue<float>
         return T_Model.num;
     }
 
-    float IGetValue<float>.GetValue(string port)
+    float IGetValueFromPort<float>.GetValue(string port)
     {
         return T_Model.num;
     }

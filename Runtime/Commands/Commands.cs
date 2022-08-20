@@ -23,29 +23,36 @@ namespace CZToolKit.GraphProcessor
     public class AddNodeCommand : ICommand
     {
         BaseGraphVM graph;
-        Type nodeType;
-        InternalVector2 position;
-
-        BaseNodeVM node;
+        BaseNodeVM nodeVM;
 
         public AddNodeCommand(BaseGraphVM graph, Type nodeType, InternalVector2 position)
         {
             this.graph = graph;
-            this.nodeType = nodeType;
-            this.position = position;
+            var node = Activator.CreateInstance(nodeType) as BaseNode;
+            node.position = position;
+            this.nodeVM = GraphProcessorUtil.CreateViewModel(node) as BaseNodeVM;
+        }
+
+        public AddNodeCommand(BaseGraphVM graph, BaseNode node)
+        {
+            this.graph = graph;
+            this.nodeVM = GraphProcessorUtil.CreateViewModel(node) as BaseNodeVM;
+        }
+
+        public AddNodeCommand(BaseGraphVM graph, BaseNodeVM node)
+        {
+            this.graph = graph;
+            this.nodeVM = node;
         }
 
         public void Do()
         {
-            if (node == null)
-                node = graph.AddNode(nodeType, position);
-            else
-                graph.AddNode(node);
+            graph.AddNode(nodeVM);
         }
 
         public void Undo()
         {
-            graph.RemoveNode(node);
+            graph.RemoveNode(nodeVM);
         }
     }
 
@@ -145,6 +152,12 @@ namespace CZToolKit.GraphProcessor
         {
             this.graph = graph;
             this.group = group;
+        }
+
+        public AddGroupCommand(BaseGraphVM graph, BaseGroup group)
+        {
+            this.graph = graph;
+            this.group = GraphProcessorUtil.CreateViewModel(group) as BaseGroupVM;
         }
 
         public void Do()
@@ -309,25 +322,39 @@ namespace CZToolKit.GraphProcessor
     {
         private readonly BaseGraphVM graph;
 
-        private readonly BasePortVM from;
-        private readonly BasePortVM to;
-        BaseConnectionVM connection;
-
+        BasePortVM from;
+        BasePortVM to;
+        BaseConnectionVM connectionVM;
         HashSet<BaseConnectionVM> replacedConnections = new HashSet<BaseConnectionVM>();
 
         public ConnectCommand(BaseGraphVM graph, BasePortVM from, BasePortVM to)
         {
             this.graph = graph;
+            var connection = new BaseConnection();
+            connection.fromNode = from.Owner.GUID;
+            connection.fromPort = from.Name;
+            connection.toNode = to.Owner.GUID;
+            connection.toPort = to.Name;
+            this.connectionVM = GraphProcessorUtil.CreateViewModel(connection) as BaseConnectionVM;
+
             this.from = from;
             this.to = to;
+        }
+
+        public ConnectCommand(BaseGraphVM graph, BaseConnection connection)
+        {
+            this.graph = graph;
+            this.connectionVM = GraphProcessorUtil.CreateViewModel(connection) as BaseConnectionVM;
+            this.from = graph.Nodes[connection.fromNode].Ports[connection.fromPort];
+            this.to = graph.Nodes[connection.toNode].Ports[connection.toPort];
         }
 
         public ConnectCommand(BaseGraphVM graph, BaseConnectionVM connection)
         {
             this.graph = graph;
-            this.connection = connection;
-            this.from = connection.FromPort;
-            this.to = connection.ToPort;
+            this.connectionVM = connection;
+            this.from = graph.Nodes[connection.FromNodeGUID].Ports[connection.FromPortName];
+            this.to = graph.Nodes[connection.ToNodeGUID].Ports[connection.ToPortName];
         }
 
         public void Do()
@@ -348,19 +375,12 @@ namespace CZToolKit.GraphProcessor
                 }
             }
 
-            if (connection == null)
-            {
-                connection = graph.Connect(from, to);
-            }
-            else
-            {
-                graph.Connect(connection);
-            }
+            graph.Connect(connectionVM);
         }
 
         public void Undo()
         {
-            graph.Disconnect(connection);
+            graph.Disconnect(connectionVM);
 
             // 还原
             foreach (var connection in replacedConnections)

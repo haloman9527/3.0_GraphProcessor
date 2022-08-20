@@ -167,7 +167,7 @@ namespace CZToolKit.GraphProcessor
             {
                 foreach (var connection in Connections)
                 {
-                    if (connection.FromNode is IGetValue fromPort)
+                    if (connection.FromNode is IGetValueFromPort fromPort)
                         yield return fromPort.GetValue(connection.FromPortName);
                 }
             }
@@ -175,14 +175,13 @@ namespace CZToolKit.GraphProcessor
             {
                 foreach (var connection in Connections)
                 {
-                    if (connection.ToNode is IGetValue toPort)
+                    if (connection.ToNode is IGetValueFromPort toPort)
                         yield return toPort.GetValue(connection.ToPortName);
                 }
             }
         }
 
         /// <summary> 获取连接的第一个接口的值 </summary>
-        /// <returns></returns>
         public T GetConnectionValue<T>()
         {
             return GetConnectionValues<T>().FirstOrDefault();
@@ -195,7 +194,7 @@ namespace CZToolKit.GraphProcessor
             {
                 foreach (var connection in Connections)
                 {
-                    if (connection.FromNode is IGetValue<T> fromPort)
+                    if (connection.FromNode is IGetValueFromPort<T> fromPort)
                         yield return fromPort.GetValue(connection.FromPortName);
                 }
             }
@@ -203,7 +202,7 @@ namespace CZToolKit.GraphProcessor
             {
                 foreach (var connection in Connections)
                 {
-                    if (connection.ToNode is IGetValue<T> toPort)
+                    if (connection.ToNode is IGetValueFromPort<T> toPort)
                         yield return toPort.GetValue(connection.ToPortName);
                 }
             }

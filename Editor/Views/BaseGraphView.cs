@@ -42,7 +42,7 @@ namespace CZToolKit.GraphProcessor.Editors
             {
                 var group = new BaseGroup() { groupName = "New Group" };
                 group.nodes.AddRange(selection.Where(select => select is BaseNodeView).Select(select => (select as BaseNodeView).ViewModel.GUID));
-                CommandDispacter.Do(new AddGroupCommand(ViewModel, new BaseGroupVM(group)));
+                CommandDispacter.Do(new AddGroupCommand(ViewModel, GraphProcessorUtil.CreateViewModel(group) as BaseGroupVM));
             }, (DropdownMenuAction a) => canDeleteSelection && selection.Find(s => s is BaseNodeView) != null ? DropdownMenuAction.Status.Normal : DropdownMenuAction.Status.Hidden);
 
             base.BuildContextualMenu(evt);

@@ -41,7 +41,6 @@ namespace CZToolKit.GraphProcessor.Editors
 
             var portLabel = this.Q("type");
             portLabel.pickingMode = PickingMode.Position;
-            portLabel.style.flexGrow = 1;
             bool vertical = orientation == Orientation.Vertical;
             if (vertical)
             {

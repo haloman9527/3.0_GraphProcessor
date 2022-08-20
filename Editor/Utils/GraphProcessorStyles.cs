@@ -39,7 +39,7 @@ namespace CZToolKit.GraphProcessor.Editors
         public static StyleSheet PortViewStyle { get; } = Resources.Load<StyleSheet>(BasePortViewStyleFile);
         public static StyleSheet PortViewTypesStyle { get; } = Resources.Load<StyleSheet>(PortViewTypesStyleFile);
         public static StyleSheet ConnectionViewStyle { get; } = Resources.Load<StyleSheet>(BaseEdgeStyleFile);
-        public static StyleSheet BaseGroupStyle { get; } = Resources.Load<StyleSheet>(BaseGroupStyleFile);
+        public static StyleSheet BaseGroupViewStyle { get; } = Resources.Load<StyleSheet>(BaseGroupStyleFile);
     }
 }
 #endif
