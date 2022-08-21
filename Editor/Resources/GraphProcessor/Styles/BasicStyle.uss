@@ -2,3 +2,8 @@
 {
     -unity-font-style: bold;
 }
+
+.hidden{
+    display: none;
+    visibility: hidden;
+}

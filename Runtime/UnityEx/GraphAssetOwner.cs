@@ -25,8 +25,8 @@ namespace CZToolKit.GraphProcessor
         where TGraph : BaseGraphVM
     {
         #region Fields
-        [SerializeField] TGraphAsset graphAsset;
-        [SerializeField] TGraph graph;
+        [SerializeField] TGraphAsset graphAsset = null;
+        [SerializeField] TGraph graph = null;
         #endregion
 
         #region Properties

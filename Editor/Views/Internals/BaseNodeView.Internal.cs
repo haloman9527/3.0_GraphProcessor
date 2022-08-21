@@ -126,6 +126,7 @@ namespace CZToolKit.GraphProcessor.Editors
             }
             RefreshPorts();
             RefreshContentsHorizontalDivider();
+            RefreshPortContainer();
             OnInitialized();
         }
 
@@ -164,64 +165,41 @@ namespace CZToolKit.GraphProcessor.Editors
 
             OnUnBindingProperties();
         }
-
-        void RefreshContentsHorizontalDivider()
-        {
-            if (portViews.Values.FirstOrDefault(port => port.orientation == Orientation.Horizontal) != null)
-                contentsHorizontalDivider.RemoveFromClassList("hidden");
-            else
-                contentsHorizontalDivider.AddToClassList("hidden");
-        }
         #endregion
 
         #region Callbacks
         void OnPortAdded(BasePortVM port)
         {
-            BasePortView portView = NewPortView(port);
-            portView.SetUp(port, Owner);
-            portView.BindingProperties();
-            portViews[port.Name] = portView;
-
-            if (portView.orientation == Orientation.Horizontal)
-            {
-                if (portView.direction == Direction.Input)
-                    inputContainer.Add(portView);
-                else
-                    outputContainer.Add(portView);
-            }
-            else
-            {
-                if (portView.direction == Direction.Input)
-                    topPortContainer.Add(portView);
-                else
-                    bottomPortContainer.Add(portView);
-            }
+            AddPortView(port);
             RefreshPorts();
             RefreshContentsHorizontalDivider();
+            RefreshPortContainer();
         }
 
         void OnPortRemoved(BasePortVM port)
         {
-            portViews[port.Name].RemoveFromHierarchy();
-            portViews[port.Name].UnBindingProperties();
-            portViews.Remove(port.Name);
+            RemovePortView(port);
             RefreshPorts();
             RefreshContentsHorizontalDivider();
+            RefreshPortContainer();
         }
 
         void OnTitleChanged(string title)
         {
             base.title = title;
         }
+
         void OnTooltipChanged(string tooltip)
         {
             base.tooltip = tooltip;
         }
+
         void OnPositionChanged(InternalVector2 position)
         {
             base.SetPosition(new Rect(position.ToVector2(), GetPosition().size));
             Owner.SetDirty();
         }
+
         void OnTitleColorChanged(InternalColor color)
         {
             titleContainer.style.backgroundColor = color.ToColor();
@@ -251,6 +229,57 @@ namespace CZToolKit.GraphProcessor.Editors
                 capabilities |= Capabilities.Selectable;
             else
                 capabilities &= ~Capabilities.Selectable;
+        }
+
+        void AddPortView(BasePortVM port)
+        {
+            BasePortView portView = NewPortView(port);
+            portView.SetUp(port, Owner);
+            portView.BindingProperties();
+            portViews[port.Name] = portView;
+
+            if (portView.orientation == Orientation.Horizontal)
+            {
+                if (portView.direction == Direction.Input)
+                    inputContainer.Add(portView);
+                else
+                    outputContainer.Add(portView);
+            }
+            else
+            {
+                if (portView.direction == Direction.Input)
+                    topPortContainer.Add(portView);
+                else
+                    bottomPortContainer.Add(portView);
+            }
+        }
+
+        void RemovePortView(BasePortVM port)
+        {
+            portViews[port.Name].RemoveFromHierarchy();
+            portViews[port.Name].UnBindingProperties();
+            portViews.Remove(port.Name);
+        }
+
+        void RefreshContentsHorizontalDivider()
+        {
+            if (portViews.Values.FirstOrDefault(port => port.orientation == Orientation.Horizontal) != null)
+                contentsHorizontalDivider.RemoveFromClassList("hidden");
+            else
+                contentsHorizontalDivider.AddToClassList("hidden");
+        }
+
+        void RefreshPortContainer()
+        {
+            if (topPortContainer.childCount > 0)
+                topPortContainer.RemoveFromClassList("hidden");
+            else
+                topPortContainer.AddToClassList("hidden");
+
+            if (bottomPortContainer.childCount > 0)
+                bottomPortContainer.RemoveFromClassList("hidden");
+            else
+                bottomPortContainer.AddToClassList("hidden");
         }
     }
 }

@@ -27,6 +27,9 @@
 }
 
 #top-port-container{
+    height: 15px;
+    min-height: 15px;
+    max-height: 15px;
     justify-content: center;
     align-items: center;
     flex-direction: row;
@@ -34,6 +37,9 @@
 }
 
 #bottom-port-container{
+    height: 15px;
+    min-height: 15px;
+    max-height: 15px;
     justify-content: center;
     align-items: center;
     flex-direction: row;
