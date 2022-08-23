@@ -330,12 +330,7 @@ namespace CZToolKit.GraphProcessor
         public ConnectCommand(BaseGraphVM graph, BasePortVM from, BasePortVM to)
         {
             this.graph = graph;
-            var connection = new BaseConnection();
-            connection.fromNode = from.Owner.GUID;
-            connection.fromPort = from.Name;
-            connection.toNode = to.Owner.GUID;
-            connection.toPort = to.Name;
-            this.connectionVM = GraphProcessorUtil.CreateViewModel(connection) as BaseConnectionVM;
+            this.connectionVM = graph.NewConnection(from, to);
 
             this.from = from;
             this.to = to;

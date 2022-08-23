@@ -11,7 +11,7 @@
 
 .port > #connector {
     border-color: rgb(255, 255, 0);
-    background-color: #212121;
+    background-color: #212121
     width: 8px;
     height: 8px;
     border-radius: 8px;

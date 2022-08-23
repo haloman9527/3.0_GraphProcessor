@@ -38,7 +38,6 @@ namespace CZToolKit.GraphProcessor.Editors
                         if (!(attribute is CustomViewAttribute customViewAttribute))
                             continue;
                         ViewTypesCache[customViewAttribute.targetType] = type;
-                        break;
                     }
                 }
             }

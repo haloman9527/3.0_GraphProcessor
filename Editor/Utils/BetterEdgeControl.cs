@@ -50,35 +50,86 @@ namespace CZToolKit.GraphProcessor.Editors
 
             curveInfo.points.Clear();
             curveInfo.points.Add(vector0);
-            curveInfo.points.Add(vector1);
-            curveInfo.points.Add(vector2);
-            curveInfo.points.Add(vector3);
+
             if (inputOrientation == outputOrientation && outputOrientation == PortViewOrientation.Horizontal)
             {
                 var y = Mathf.Max(vector1.y, vector2.y);
                 var c1 = new Vector2(vector1.x, y + 10);
                 var c2 = new Vector2(vector2.x, c1.y);
-                curveInfo.points.Insert(2, c1);
-                curveInfo.points.Insert(3, c2);
+
+                curveInfo.points.Add(vector1 + new Vector2(-1, 0));
+                curveInfo.points.Add(vector1 + new Vector2(-0.7f, 0.3f));
+                curveInfo.points.Add(vector1 + new Vector2(-0.5f, 0.5f));
+                curveInfo.points.Add(vector1 + new Vector2(-0.3f, 0.7f));
+                curveInfo.points.Add(vector1 + new Vector2(0, 1));
+
+                curveInfo.points.Add(c1 + new Vector2(0, -1));
+                curveInfo.points.Add(c1 + new Vector2(-0.3f, -0.7f));
+                curveInfo.points.Add(c1 + new Vector2(-0.5f, -0.5f));
+                curveInfo.points.Add(c1 + new Vector2(-0.7f, -0.3f));
+                curveInfo.points.Add(c1 + new Vector2(-1, 0));
+
+                curveInfo.points.Add(c2 + new Vector2(1, 0));
+                curveInfo.points.Add(c2 + new Vector2(0.7f, -0.3f));
+                curveInfo.points.Add(c2 + new Vector2(0.5f, -0.5f));
+                curveInfo.points.Add(c2 + new Vector2(0.3f, -0.7f));
+                curveInfo.points.Add(c2 + new Vector2(0, -1));
+
+                curveInfo.points.Add(vector2 + new Vector2(0, 1));
+                curveInfo.points.Add(vector2 + new Vector2(0.3f, 0.7f));
+                curveInfo.points.Add(vector2 + new Vector2(0.5f, 0.5f));
+                curveInfo.points.Add(vector2 + new Vector2(0.7f, 0.3f));
+                curveInfo.points.Add(vector2 + new Vector2(1, 0));
+
             }
             else if (inputOrientation == outputOrientation && outputOrientation == PortViewOrientation.Vertical)
             {
                 var x = Mathf.Max(vector1.x, vector2.x);
                 var c1 = new Vector2(x + 10, vector1.y);
                 var c2 = new Vector2(c1.x, vector2.y);
-                curveInfo.points.Insert(2, c1);
-                curveInfo.points.Insert(3, c2);
+
+                curveInfo.points.Add(vector1 + new Vector2(0, -1));
+                curveInfo.points.Add(vector1 + new Vector2(0.3f, -0.7f));
+                curveInfo.points.Add(vector1 + new Vector2(0.5f, -0.5f));
+                curveInfo.points.Add(vector1 + new Vector2(0.5f, -0.3f));
+                curveInfo.points.Add(vector1 + new Vector2(1, 0));
+
+                curveInfo.points.Add(c1 + new Vector2(-1, 0));
+                curveInfo.points.Add(c1 + new Vector2(-0.7f, -0.3f));
+                curveInfo.points.Add(c1 + new Vector2(-0.5f, -0.5f));
+                curveInfo.points.Add(c1 + new Vector2(-0.3f, -0.7f));
+                curveInfo.points.Add(c1 + new Vector2(0, -1));
+
+                curveInfo.points.Add(c2 + new Vector2(0, 1));
+                curveInfo.points.Add(c2 + new Vector2(-0.3f, 0.7f));
+                curveInfo.points.Add(c2 + new Vector2(-0.5f, 0.5f));
+                curveInfo.points.Add(c2 + new Vector2(-0.7f, 0.3f));
+                curveInfo.points.Add(c2 + new Vector2(-1, 0));
+
+                curveInfo.points.Add(vector2 + new Vector2(1, 0));
+                curveInfo.points.Add(vector2 + new Vector2(0.7f, 0.3f));
+                curveInfo.points.Add(vector2 + new Vector2(0.5f, 0.5f));
+                curveInfo.points.Add(vector2 + new Vector2(0.3f, 0.7f));
+                curveInfo.points.Add(vector2 + new Vector2(0, 1));
             }
             else if (inputOrientation != outputOrientation && outputOrientation == PortViewOrientation.Horizontal)
             {
                 var c = new Vector2(vector1.x, vector2.y);
-                curveInfo.points.Insert(2, c);
+                curveInfo.points.Add(vector1);
+                curveInfo.points.Add(c);
+                curveInfo.points.Add(vector2);
+                curveInfo.points.Add(vector3);
             }
             else if (inputOrientation != outputOrientation && outputOrientation == PortViewOrientation.Vertical)
             {
                 var c = new Vector2(vector2.x, vector1.y);
-                curveInfo.points.Insert(2, c);
+                curveInfo.points.Add(vector1);
+                curveInfo.points.Add(c);
+                curveInfo.points.Add(vector2);
+                curveInfo.points.Add(vector3);
             }
+
+            curveInfo.points.Add(vector3);
             curveInfo.SetDirty();
         }
 

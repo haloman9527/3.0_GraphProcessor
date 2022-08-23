@@ -38,10 +38,6 @@
 	--port-color: #2050FF;
 }
 
-.port.Port_Object {
-	--port-color: #80FF00;
-}
-
 .port.Port_Color {
 	--port-color: #FF00FF;
 }
