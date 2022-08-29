@@ -107,7 +107,7 @@ public class SampleGraphWindow : BaseGraphWindow
         foreach (var pair in nodes)
         {
             pair.Value.position += new InternalVector2(50, 50);
-            var vm = GraphProcessorUtil.CreateViewModel(pair.Value) as BaseNodeVM;
+            var vm = ViewModelFactory.CreateViewModel(pair.Value) as BaseNodeVM;
             GraphView.CommandDispacter.Do(new AddNodeCommand(graph, vm));
             nodeMaps[pair.Key] = vm;
             GraphView.AddToSelection(GraphView.NodeViews[vm.GUID]);
@@ -121,7 +121,7 @@ public class SampleGraphWindow : BaseGraphWindow
             if (nodeMaps.TryGetValue(connection.toNode, out var to))
                 connection.toNode = to.GUID;
 
-            var vm = GraphProcessorUtil.CreateViewModel(connection) as BaseConnectionVM;
+            var vm = ViewModelFactory.CreateViewModel(connection) as BaseConnectionVM;
             GraphView.CommandDispacter.Do(new ConnectCommand(graph, vm));
             GraphView.AddToSelection(GraphView.ConnectionViews[vm]);
         }
@@ -135,7 +135,7 @@ public class SampleGraphWindow : BaseGraphWindow
                 else
                     group.nodes.RemoveAt(i);
             }
-            var vm = GraphProcessorUtil.CreateViewModel(group) as BaseGroupVM;
+            var vm = ViewModelFactory.CreateViewModel(group) as BaseGroupVM;
             GraphView.CommandDispacter.Do(new AddGroupCommand(graph, vm));
             GraphView.AddToSelection(GraphView.GroupViews[vm]);
         }

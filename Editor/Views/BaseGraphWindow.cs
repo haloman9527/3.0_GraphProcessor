@@ -200,7 +200,7 @@ namespace CZToolKit.GraphProcessor.Editors
             GraphOwner = null;
             GraphAsset = graphAsset as UnityObject;
             CommandDispatcher = new CommandDispatcher();
-            Load(GraphProcessorUtil.CreateViewModel(graphAsset.DeserializeGraph()) as BaseGraphVM, CommandDispatcher);
+            Load(ViewModelFactory.CreateViewModel(graphAsset.DeserializeGraph()) as BaseGraphVM, CommandDispatcher);
         }
 
         // 直接加载Graph对象
@@ -222,7 +222,7 @@ namespace CZToolKit.GraphProcessor.Editors
             GraphOwner = null;
             CommandDispatcher = new CommandDispatcher();
 
-            Load(GraphProcessorUtil.CreateViewModel(GraphProcessorUtil.CreateViewModel(graph) as BaseGraphVM) as BaseGraphVM, CommandDispatcher);
+            Load(ViewModelFactory.CreateViewModel(ViewModelFactory.CreateViewModel(graph) as BaseGraphVM) as BaseGraphVM, CommandDispatcher);
         }
         #endregion
 

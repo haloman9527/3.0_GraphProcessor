@@ -42,7 +42,7 @@ namespace CZToolKit.GraphProcessor.Editors
             {
                 var group = new BaseGroup() { groupName = "New Group" };
                 group.nodes.AddRange(selection.Where(select => select is BaseNodeView).Select(select => (select as BaseNodeView).ViewModel.GUID));
-                CommandDispacter.Do(new AddGroupCommand(ViewModel, GraphProcessorUtil.CreateViewModel(group) as BaseGroupVM));
+                CommandDispacter.Do(new AddGroupCommand(ViewModel, ViewModelFactory.CreateViewModel(group) as BaseGroupVM));
             }, (DropdownMenuAction a) => canDeleteSelection && selection.Find(s => s is BaseNodeView) != null ? DropdownMenuAction.Status.Normal : DropdownMenuAction.Status.Hidden);
 
             base.BuildContextualMenu(evt);
@@ -137,17 +137,10 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             foreach (var element in selection)
             {
-                switch (element)
-                {
-                    case BaseNodeView nodeView:
-                        ObjectEditor.DrawObjectInNewInspector(nodeView.ViewModel.Title, nodeView, GraphAsset);
-                        return;
-                    case BaseConnectionView connectionView:
-                        ObjectEditor.DrawObjectInNewInspector("Connection", connectionView, GraphAsset);
-                        return;
-                    default:
-                        break;
-                }
+                if (!ObjectEditor.HasEditor(element))
+                    continue;
+                ObjectEditor.DrawObjectInNewInspector((element as GraphElement).title, element, GraphAsset);
+                return;
             }
             if (Selection.activeGameObject != null && Selection.activeGameObject.GetComponent<IGraphAssetOwner>() != null)
                 return;

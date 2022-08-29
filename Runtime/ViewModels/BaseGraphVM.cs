@@ -45,14 +45,14 @@ namespace CZToolKit.GraphProcessor
         {
             get;
         }
-        public InternalVector3 Pan
+        public InternalVector2 Pan
         {
-            get { return GetPropertyValue<InternalVector3>(nameof(BaseGraph.pan)); }
+            get { return GetPropertyValue<InternalVector2>(nameof(BaseGraph.pan)); }
             set { SetPropertyValue(nameof(BaseGraph.pan), value); }
         }
-        public InternalVector3 Zoom
+        public float Zoom
         {
-            get { return GetPropertyValue<InternalVector3>(nameof(BaseGraph.zoom)); }
+            get { return GetPropertyValue<float>(nameof(BaseGraph.zoom)); }
             set { SetPropertyValue(nameof(BaseGraph.zoom), value); }
         }
         public IReadOnlyDictionary<string, BaseNodeVM> Nodes
@@ -73,8 +73,8 @@ namespace CZToolKit.GraphProcessor
         {
             Model = model;
             ModelType = model.GetType();
-            Model.pan = Model.pan == default ? InternalVector3.zero : Model.pan;
-            Model.zoom = Model.zoom == default ? InternalVector3.one : Model.zoom;
+            Model.pan = Model.pan == default ? InternalVector2.zero : Model.pan;
+            Model.zoom = Model.zoom == default ? 1 : Model.zoom;
 
             this.nodes = new Dictionary<string, BaseNodeVM>();
             this.groups = new List<BaseGroupVM>();
@@ -82,23 +82,23 @@ namespace CZToolKit.GraphProcessor
 
             foreach (var pair in Model.nodes)
             {
-                var nodeVM = GraphProcessorUtil.CreateViewModel(pair.Value) as BaseNodeVM;
+                var nodeVM = ViewModelFactory.CreateViewModel(pair.Value) as BaseNodeVM;
                 nodeVM.GUID = pair.Key;
                 nodes.Add(pair.Key, nodeVM);
             }
 
             foreach (var connection in Model.connections)
             {
-                connections.Add(GraphProcessorUtil.CreateViewModel(connection) as BaseConnectionVM);
+                connections.Add(ViewModelFactory.CreateViewModel(connection) as BaseConnectionVM);
             }
 
             foreach (var group in Model.groups)
             {
-                groups.Add(GraphProcessorUtil.CreateViewModel(group) as BaseGroupVM);
+                groups.Add(ViewModelFactory.CreateViewModel(group) as BaseGroupVM);
             }
 
-            this[nameof(BaseGraph.pan)] = new BindableProperty<InternalVector3>(() => Model.pan, v => Model.pan = v);
-            this[nameof(BaseGraph.zoom)] = new BindableProperty<InternalVector3>(() => Model.zoom, v => Model.zoom = v);
+            this[nameof(BaseGraph.pan)] = new BindableProperty<InternalVector2>(() => Model.pan, v => Model.pan = v);
+            this[nameof(BaseGraph.zoom)] = new BindableProperty<float>(() => Model.zoom, v => Model.zoom = v);
 
             foreach (var pair in nodes)
             {
@@ -161,7 +161,7 @@ namespace CZToolKit.GraphProcessor
         {
             var node = new T();
             node.position = position;
-            var nodeVM = GraphProcessorUtil.CreateViewModel(node) as BaseNodeVM;
+            var nodeVM = ViewModelFactory.CreateViewModel(node) as BaseNodeVM;
             AddNode(nodeVM);
             return nodeVM;
         }
@@ -170,14 +170,14 @@ namespace CZToolKit.GraphProcessor
         {
             var node = Activator.CreateInstance(nodeType) as BaseNode;
             node.position = position;
-            var nodeVM = GraphProcessorUtil.CreateViewModel(node) as BaseNodeVM;
+            var nodeVM = ViewModelFactory.CreateViewModel(node) as BaseNodeVM;
             AddNode(nodeVM);
             return nodeVM;
         }
 
         public BaseNodeVM AddNode(BaseNode node)
         {
-            var nodeVM = GraphProcessorUtil.CreateViewModel(node) as BaseNodeVM;
+            var nodeVM = ViewModelFactory.CreateViewModel(node) as BaseNodeVM;
             AddNode(nodeVM);
             return nodeVM;
         }
@@ -243,7 +243,7 @@ namespace CZToolKit.GraphProcessor
 
         public BaseConnectionVM Connect(BaseConnection connection)
         {
-            var vm = GraphProcessorUtil.CreateViewModel(connection) as BaseConnectionVM;
+            var vm = ViewModelFactory.CreateViewModel(connection) as BaseConnectionVM;
             Connect(vm);
             return vm;
         }
@@ -306,7 +306,7 @@ namespace CZToolKit.GraphProcessor
 
         public BaseGroupVM AddGroup(BaseGroup group)
         {
-            var vm = GraphProcessorUtil.CreateViewModel(group) as BaseGroupVM;
+            var vm = ViewModelFactory.CreateViewModel(group) as BaseGroupVM;
             AddGroup(vm);
             return vm;
         }
@@ -328,7 +328,7 @@ namespace CZToolKit.GraphProcessor
                 toNode = to.Owner.GUID,
                 toPort = to.Name
             };
-            return GraphProcessorUtil.CreateViewModel(connection) as BaseConnectionVM;
+            return ViewModelFactory.CreateViewModel(connection) as BaseConnectionVM;
         }
 
         public string GenerateNodeGUID()

@@ -80,8 +80,8 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             UpdateInspector();
 
-            viewTransform.position = ViewModel.Pan.ToVector3();
-            viewTransform.scale = ViewModel.Zoom.ToVector3();
+            viewTransform.position = ViewModel.Pan.ToVector2();
+            viewTransform.scale = new Vector3(ViewModel.Zoom, ViewModel.Zoom, 1);
             yield return GraphWindow.StartCoroutine(GenerateNodeViews());
             yield return GraphWindow.StartCoroutine(LinkNodeViews());
             yield return GraphWindow.StartCoroutine(GenerateGroupViews());
@@ -148,8 +148,8 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             RegisterCallback<DetachFromPanelEvent>(evt => { UnBindingProperties(); });
 
-            ViewModel.BindingProperty<InternalVector3>(nameof(BaseGraph.pan), OnPositionChanged);
-            ViewModel.BindingProperty<InternalVector3>(nameof(BaseGraph.zoom), OnScaleChanged);
+            ViewModel.BindingProperty<InternalVector2>(nameof(BaseGraph.pan), OnPositionChanged);
+            ViewModel.BindingProperty<float>(nameof(BaseGraph.zoom), OnZoomChanged);
 
             ViewModel.OnNodeAdded += OnNodeAdded;
             ViewModel.OnNodeRemoved += OnNodeRemoved;
@@ -173,8 +173,8 @@ namespace CZToolKit.GraphProcessor.Editors
                 }
             });
 
-            ViewModel.UnBindingProperty<InternalVector3>(nameof(BaseGraph.pan), OnPositionChanged);
-            ViewModel.UnBindingProperty<InternalVector3>(nameof(BaseGraph.zoom), OnScaleChanged);
+            ViewModel.UnBindingProperty<InternalVector2>(nameof(BaseGraph.pan), OnPositionChanged);
+            ViewModel.UnBindingProperty<float>(nameof(BaseGraph.zoom), OnZoomChanged);
 
             ViewModel.OnNodeAdded -= OnNodeAdded;
             ViewModel.OnNodeRemoved -= OnNodeRemoved;
@@ -300,15 +300,15 @@ namespace CZToolKit.GraphProcessor.Editors
         #endregion
 
         #region Callbacks
-        void OnPositionChanged(InternalVector3 position)
+        void OnPositionChanged(InternalVector2 position)
         {
-            viewTransform.position = position.ToVector3();
+            viewTransform.position = position.ToVector2();
             SetDirty();
         }
 
-        void OnScaleChanged(InternalVector3 scale)
+        void OnZoomChanged(float zoom)
         {
-            viewTransform.scale = scale.ToVector3();
+            viewTransform.scale = new Vector3(zoom, zoom, 1);
             SetDirty();
         }
 
@@ -478,8 +478,8 @@ namespace CZToolKit.GraphProcessor.Editors
         /// <summary> 转换发生改变时调用 </summary>
         void OnViewTransformChanged(GraphView view)
         {
+            ViewModel.Zoom = viewTransform.scale.x;
             ViewModel.Pan = viewTransform.position.ToInternalVector3();
-            ViewModel.Zoom = viewTransform.scale.ToInternalVector3();
         }
         #endregion
     }

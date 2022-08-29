@@ -19,28 +19,28 @@ using System.Collections.Generic;
 
 namespace CZToolKit.GraphProcessor
 {
-    public static partial class GraphProcessorUtil
+    public static partial class ViewModelFactory
     {
         static Dictionary<Type, Type> ViewModelTypeCache;
 
-        public static Type GetViewModelType(Type modelType)
+        static ViewModelFactory()
         {
-            if (ViewModelTypeCache == null)
+            ViewModelTypeCache = new Dictionary<Type, Type>();
+            foreach (var type in Util_TypeCache.GetTypesWithAttribute<ViewModelAttribute>())
             {
-                ViewModelTypeCache = new Dictionary<Type, Type>();
-                foreach (var type in Util_TypeCache.GetTypesWithAttribute<ViewModelAttribute>())
+                if (type.IsAbstract) continue;
+                foreach (var attribute in type.GetCustomAttributes(false))
                 {
-                    if (type.IsAbstract) continue;
-                    foreach (var attribute in type.GetCustomAttributes(false))
-                    {
-                        if (!(attribute is ViewModelAttribute viewModelAttribute))
-                            continue;
-                        ViewModelTypeCache[viewModelAttribute.targetType] = type;
-                        break;
-                    }
+                    if (!(attribute is ViewModelAttribute viewModelAttribute))
+                        continue;
+                    ViewModelTypeCache[viewModelAttribute.targetType] = type;
+                    break;
                 }
             }
+        }
 
+        public static Type GetViewModelType(Type modelType)
+        {
             var viewModelType = (Type)null;
             while (viewModelType == null)
             {

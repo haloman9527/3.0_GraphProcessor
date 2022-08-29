@@ -54,7 +54,7 @@ namespace CZToolKit.GraphProcessor
                     var graphData = DeserializeGraph();
                     if (graphData != null)
                     {
-                        graph = GraphProcessorUtil.CreateViewModel(graphData) as TGraph;
+                        graph = ViewModelFactory.CreateViewModel(graphData) as TGraph;
                     }
                 }
                 return graph;

@@ -30,13 +30,13 @@ namespace CZToolKit.GraphProcessor
             this.graph = graph;
             var node = Activator.CreateInstance(nodeType) as BaseNode;
             node.position = position;
-            this.nodeVM = GraphProcessorUtil.CreateViewModel(node) as BaseNodeVM;
+            this.nodeVM = ViewModelFactory.CreateViewModel(node) as BaseNodeVM;
         }
 
         public AddNodeCommand(BaseGraphVM graph, BaseNode node)
         {
             this.graph = graph;
-            this.nodeVM = GraphProcessorUtil.CreateViewModel(node) as BaseNodeVM;
+            this.nodeVM = ViewModelFactory.CreateViewModel(node) as BaseNodeVM;
         }
 
         public AddNodeCommand(BaseGraphVM graph, BaseNodeVM node)
@@ -157,7 +157,7 @@ namespace CZToolKit.GraphProcessor
         public AddGroupCommand(BaseGraphVM graph, BaseGroup group)
         {
             this.graph = graph;
-            this.group = GraphProcessorUtil.CreateViewModel(group) as BaseGroupVM;
+            this.group = ViewModelFactory.CreateViewModel(group) as BaseGroupVM;
         }
 
         public void Do()
@@ -339,7 +339,7 @@ namespace CZToolKit.GraphProcessor
         public ConnectCommand(BaseGraphVM graph, BaseConnection connection)
         {
             this.graph = graph;
-            this.connectionVM = GraphProcessorUtil.CreateViewModel(connection) as BaseConnectionVM;
+            this.connectionVM = ViewModelFactory.CreateViewModel(connection) as BaseConnectionVM;
             this.from = graph.Nodes[connection.fromNode].Ports[connection.fromPort];
             this.to = graph.Nodes[connection.toNode].Ports[connection.toPort];
         }
