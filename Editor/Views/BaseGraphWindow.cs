@@ -354,7 +354,7 @@ namespace CZToolKit.GraphProcessor.Editors
         public static BaseGraphWindow Open(BaseGraphVM graph)
         {
             if (graph == null) return null;
-            var window = GetGraphWindow(graph.GetType());
+            var window = GetGraphWindow(graph.ModelType);
             window.ForceLoad(graph);
             return window;
         }
