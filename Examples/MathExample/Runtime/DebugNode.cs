@@ -13,6 +13,7 @@
  *
  */
 #endregion
+using CZToolKit.Core.ViewModel;
 using CZToolKit.GraphProcessor;
 using UnityEngine;
 

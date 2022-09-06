@@ -15,6 +15,7 @@
 #endregion
 #if UNITY_EDITOR
 using CZToolKit.Core;
+using CZToolKit.Core.ViewModel;
 using CZToolKit.Core.Editors;
 using System;
 using UnityEngine;

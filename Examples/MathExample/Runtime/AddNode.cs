@@ -13,6 +13,7 @@
  *
  */
 #endregion
+using CZToolKit.Core.ViewModel;
 using CZToolKit.GraphProcessor;
 
 [NodeTooltip("加法节点")]

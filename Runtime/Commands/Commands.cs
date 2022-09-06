@@ -17,6 +17,7 @@ using CZToolKit.Core;
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using CZToolKit.Core.ViewModel;
 
 namespace CZToolKit.GraphProcessor
 {

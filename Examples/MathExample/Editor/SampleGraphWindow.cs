@@ -14,13 +14,12 @@
  */
 #endregion
 #if UNITY_EDITOR
+using CZToolKit.Core.ViewModel;
 using CZToolKit.GraphProcessor;
 using CZToolKit.GraphProcessor.Editors;
 using OdinSerializer;
-using System;
 using System.Collections.Generic;
 using UnityEditor;
-using UnityEditor.Experimental.GraphView;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
