@@ -268,11 +268,11 @@ namespace CZToolKit.GraphProcessor
         {
             if (!connections.Contains(connection)) return;
 
-            connection.FromNode.Ports.TryGetValue(connection.FromPortName, out BasePortVM fromPort);
-            fromPort.DisconnectTo(connection);
+            if(connection.FromNode.Ports.TryGetValue(connection.FromPortName, out BasePortVM fromPort))
+                fromPort.DisconnectTo(connection);
 
-            connection.ToNode.Ports.TryGetValue(connection.ToPortName, out BasePortVM toPort);
-            toPort.DisconnectTo(connection);
+            if(connection.ToNode.Ports.TryGetValue(connection.ToPortName, out BasePortVM toPort))
+                toPort.DisconnectTo(connection);
 
             connections.Remove(connection);
             Model.connections.Remove(connection.Model);

@@ -130,7 +130,7 @@ namespace CZToolKit.GraphProcessor
         }
 
         #region Overrides
-        public virtual void OnEnabled() { }
+        protected virtual void OnEnabled() { }
 
         #endregion
     }
