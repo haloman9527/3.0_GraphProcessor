@@ -58,6 +58,7 @@ namespace CZToolKit.GraphProcessor.Editors
             styleSheets.Add(GraphProcessorStyles.GraphViewStyle);
 
             Insert(0, new GridBackground());
+            // Insert(0, new BetterGridBackground());
 
             this.AddManipulator(new ContentZoomer() { minScale = 0.05f, maxScale = 2f });
             this.AddManipulator(new ContentDragger());

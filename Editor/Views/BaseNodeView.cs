@@ -91,7 +91,7 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             Add(badge);
             badges.Add(badge);
-            badge.AttachTo(topContainer, SpriteAlignment.RightCenter);
+            badge.AttachTo(topContainer, SpriteAlignment.TopRight);
         }
 
         public void RemoveBadge(Func<IconBadge, bool> callback)
