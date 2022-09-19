@@ -39,7 +39,7 @@ namespace CZToolKit.GraphProcessor
             get;
         }
         /// <summary> 唯一标识 </summary>
-        public string GUID
+        public int ID
         {
             get;
             set;

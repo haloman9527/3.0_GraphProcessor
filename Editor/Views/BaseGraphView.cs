@@ -42,8 +42,8 @@ namespace CZToolKit.GraphProcessor.Editors
             evt.menu.AppendAction("Create Group", delegate
             {
                 var group = new BaseGroup() { groupName = "New Group" };
-                group.nodes.AddRange(selection.Where(select => select is BaseNodeView).Select(select => (select as BaseNodeView).ViewModel.GUID));
-                CommandDispacter.Do(new AddGroupCommand(ViewModel, ViewModelFactory.CreateViewModel(group) as BaseGroupVM));
+                group.nodes.AddRange(selection.Where(select => select is BaseNodeView).Select(select => (select as BaseNodeView).ViewModel.ID));
+                CommandDispatcher.Do(new AddGroupCommand(ViewModel, ViewModelFactory.CreateViewModel(group) as BaseGroupVM));
             }, (DropdownMenuAction a) => canDeleteSelection && selection.Find(s => s is BaseNodeView) != null ? DropdownMenuAction.Status.Normal : DropdownMenuAction.Status.Hidden);
 
             base.BuildContextualMenu(evt);

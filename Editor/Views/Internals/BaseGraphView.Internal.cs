@@ -1,4 +1,5 @@
 #region 注 释
+
 /***
  *
  *  Title:
@@ -12,7 +13,9 @@
  *  Blog: https://www.crosshair.top/
  *
  */
+
 #endregion
+
 #if UNITY_EDITOR
 using CZToolKit.Core;
 using CZToolKit.Core.Editors;
@@ -23,7 +26,6 @@ using System.Linq;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UIElements;
-
 using UnityObject = UnityEngine.Object;
 
 namespace CZToolKit.GraphProcessor.Editors
@@ -31,24 +33,32 @@ namespace CZToolKit.GraphProcessor.Editors
     public partial class BaseGraphView : GraphView, IBindableView<BaseGraphVM>
     {
         #region 属性
+
         public event Action onDirty;
         public event Action onUndirty;
 
         public NodeMenuWindow CreateNodeMenu { get; private set; }
         public BaseGraphWindow GraphWindow { get; private set; }
-        public CommandDispatcher CommandDispacter { get; private set; }
-        public UnityObject GraphAsset { get { return GraphWindow.GraphAsset; } }
-        public Dictionary<string, BaseNodeView> NodeViews { get; private set; } = new Dictionary<string, BaseNodeView>();
+        public CommandDispatcher CommandDispatcher { get; private set; }
+
+        public UnityObject GraphAsset
+        {
+            get { return GraphWindow.GraphAsset; }
+        }
+
+        public Dictionary<int, BaseNodeView> NodeViews { get; private set; } = new Dictionary<int, BaseNodeView>();
         public Dictionary<BaseGroupVM, BaseGroupView> GroupViews { get; private set; } = new Dictionary<BaseGroupVM, BaseGroupView>();
         public Dictionary<BaseConnectionVM, BaseConnectionView> ConnectionViews { get; private set; } = new Dictionary<BaseConnectionVM, BaseConnectionView>();
 
         public BaseGraphVM ViewModel { get; set; }
 
         #region 不建议使用自带复制粘贴功能，建议自己实现
+
         protected sealed override bool canCopySelection => false;
         protected sealed override bool canCutSelection => false;
         protected sealed override bool canDuplicateSelection => false;
         protected sealed override bool canPaste => false;
+
         #endregion
 
         #endregion
@@ -58,7 +68,6 @@ namespace CZToolKit.GraphProcessor.Editors
             styleSheets.Add(GraphProcessorStyles.GraphViewStyle);
 
             Insert(0, new GridBackground());
-            // Insert(0, new BetterGridBackground());
 
             this.AddManipulator(new ContentZoomer() { minScale = 0.05f, maxScale = 2f });
             this.AddManipulator(new ContentDragger());
@@ -67,16 +76,17 @@ namespace CZToolKit.GraphProcessor.Editors
             this.StretchToParentSize();
         }
 
-        public void SetUp(BaseGraphVM graph, BaseGraphWindow window, CommandDispatcher commandDispacter)
+        public void SetUp(BaseGraphVM graph, BaseGraphWindow window, CommandDispatcher commandDispatcher)
         {
-            ViewModel = graph as BaseGraphVM;
+            ViewModel = graph;
             GraphWindow = window;
-            CommandDispacter = commandDispacter;
+            CommandDispatcher = commandDispatcher;
             EditorCoroutine coroutine = GraphWindow.StartCoroutine(Initialize());
             RegisterCallback<DetachFromPanelEvent>(evt => { GraphWindow.StopCoroutine(coroutine); });
         }
 
         #region Initialize
+
         IEnumerator Initialize()
         {
             UpdateInspector();
@@ -119,9 +129,8 @@ namespace CZToolKit.GraphProcessor.Editors
             foreach (var connection in ViewModel.Connections)
             {
                 if (connection == null) continue;
-                BaseNodeView fromNodeView, toNodeView;
-                if (!NodeViews.TryGetValue(connection.FromNodeGUID, out fromNodeView)) throw new NullReferenceException($"找不到From节点{connection.FromNodeGUID}");
-                if (!NodeViews.TryGetValue(connection.ToNodeGUID, out toNodeView)) throw new NullReferenceException($"找不到To节点{connection.ToNodeGUID}");
+                if (!NodeViews.TryGetValue(connection.FromNodeID, out var fromNodeView)) throw new NullReferenceException($"找不到From节点{connection.FromNodeID}");
+                if (!NodeViews.TryGetValue(connection.ToNodeID, out var toNodeView)) throw new NullReferenceException($"找不到To节点{connection.ToNodeID}");
                 ConnectView(fromNodeView, toNodeView, connection);
                 step++;
                 if (step % 10 == 0)
@@ -142,9 +151,11 @@ namespace CZToolKit.GraphProcessor.Editors
                     yield return null;
             }
         }
+
         #endregion
 
         #region API
+
         public void BindingProperties()
         {
             RegisterCallback<DetachFromPanelEvent>(evt => { UnBindingProperties(); });
@@ -191,7 +202,7 @@ namespace CZToolKit.GraphProcessor.Editors
             BaseNodeView nodeView = NewNodeView(node);
             nodeView.SetUp(node, this);
             nodeView.BindingProperties();
-            NodeViews[node.GUID] = nodeView;
+            NodeViews[node.ID] = nodeView;
             AddElement(nodeView);
             return nodeView;
         }
@@ -200,7 +211,7 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             nodeView.UnBindingProperties();
             RemoveElement(nodeView);
-            NodeViews.Remove(nodeView.ViewModel.GUID);
+            NodeViews.Remove(nodeView.ViewModel.ID);
         }
 
         public BaseGroupView AddGroupView(BaseGroupVM group)
@@ -240,18 +251,10 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             BasePortView inputPortView = connectionView.input as BasePortView;
             BaseNodeView inputNodeView = inputPortView.node as BaseNodeView;
-            if (inputPortView != null)
-            {
-                inputPortView.Disconnect(connectionView);
-            }
             inputPortView.Disconnect(connectionView);
 
             BasePortView outputPortView = connectionView.output as BasePortView;
             BaseNodeView outputNodeView = outputPortView.node as BaseNodeView;
-            if (outputPortView != null)
-            {
-                outputPortView.Disconnect(connectionView);
-            }
             outputPortView.Disconnect(connectionView);
 
             inputNodeView.RefreshPorts();
@@ -298,9 +301,11 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             onUndirty?.Invoke();
         }
+
         #endregion
 
         #region Callbacks
+
         void OnPositionChanged(InternalVector2 position)
         {
             viewTransform.position = position.ToVector2();
@@ -321,7 +326,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
         void OnNodeRemoved(BaseNodeVM node)
         {
-            RemoveNodeView(NodeViews[node.GUID]);
+            RemoveNodeView(NodeViews[node.ID]);
             SetDirty();
         }
 
@@ -339,8 +344,8 @@ namespace CZToolKit.GraphProcessor.Editors
 
         void OnConnected(BaseConnectionVM connection)
         {
-            var from = NodeViews[connection.FromNodeGUID];
-            var to = NodeViews[connection.ToNodeGUID];
+            var from = NodeViews[connection.FromNodeID];
+            var to = NodeViews[connection.ToNodeID];
             ConnectView(from, to, connection);
             SetDirty();
         }
@@ -362,11 +367,11 @@ namespace CZToolKit.GraphProcessor.Editors
                 switch (evt.keyCode)
                 {
                     case KeyCode.Z:
-                        CommandDispacter.Undo();
+                        CommandDispatcher.Undo();
                         evt.StopPropagation();
                         break;
                     case KeyCode.Y:
-                        CommandDispacter.Redo();
+                        CommandDispatcher.Redo();
                         evt.StopPropagation();
                         break;
                     default:
@@ -381,11 +386,11 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             if (changes.movedElements != null)
             {
-                CommandDispacter.BeginGroup();
+                CommandDispatcher.BeginGroup();
                 // 当节点移动之后，与之连接的接口重新排序
                 Dictionary<BaseNodeVM, InternalVector2> newPos = new Dictionary<BaseNodeVM, InternalVector2>();
                 Dictionary<BaseGroupVM, InternalVector2> groupNewPos = new Dictionary<BaseGroupVM, InternalVector2>();
-                HashSet<BasePortVM> ports = new HashSet<BasePortVM>();
+                HashSet<BasePortVM> portsHashset = new HashSet<BasePortVM>();
 
                 changes.movedElements.RemoveAll(element =>
                 {
@@ -399,11 +404,12 @@ namespace CZToolKit.GraphProcessor.Editors
                                 foreach (var connection in port.Connections)
                                 {
                                     if (port.Direction == BasePort.Direction.Input)
-                                        ports.Add(connection.FromNode.Ports[connection.FromPortName]);
+                                        portsHashset.Add(connection.FromNode.Ports[connection.FromPortName]);
                                     else
-                                        ports.Add(connection.ToNode.Ports[connection.ToPortName]);
+                                        portsHashset.Add(connection.ToNode.Ports[connection.ToPortName]);
                                 }
                             }
+
                             return true;
                         case BaseGroupView groupView:
                             groupNewPos[groupView.ViewModel] = groupView.GetPosition().position.ToInternalVector2();
@@ -411,6 +417,7 @@ namespace CZToolKit.GraphProcessor.Editors
                         default:
                             break;
                     }
+
                     return false;
                 });
                 foreach (var pair in groupNewPos)
@@ -422,57 +429,63 @@ namespace CZToolKit.GraphProcessor.Editors
                         newPos[node] = nodeView.GetPosition().position.ToInternalVector2();
                     }
                 }
-                CommandDispacter.Do(new MoveNodesCommand(newPos));
-                CommandDispacter.Do(new MoveGroupsCommand(groupNewPos));
+
+                CommandDispatcher.Do(new MoveNodesCommand(newPos));
+                CommandDispatcher.Do(new MoveGroupsCommand(groupNewPos));
                 // 排序
-                foreach (var port in ports)
+                foreach (var port in portsHashset)
                 {
                     port.Resort();
                 }
-                CommandDispacter.EndGroup();
-            }
-            if (changes.elementsToRemove != null)
-            {
-                changes.elementsToRemove.Sort((element1, element2) =>
-                {
-                    int GetPriority(GraphElement element)
-                    {
-                        switch (element)
-                        {
-                            case Edge edgeView:
-                                return 0;
-                            case Node nodeView:
-                                return 1;
-                        }
-                        return 4;
-                    }
-                    return GetPriority(element1).CompareTo(GetPriority(element2));
-                });
 
-                CommandDispacter.BeginGroup();
-                changes.elementsToRemove.RemoveAll(element =>
+                CommandDispatcher.EndGroup();
+            }
+
+            if (changes.elementsToRemove == null) 
+                return changes;
+
+            changes.elementsToRemove.Sort((element1, element2) =>
+            {
+                int GetPriority(GraphElement element)
                 {
                     switch (element)
                     {
-                        case BaseConnectionView edgeView:
-                            if (edgeView.selected)
-                                CommandDispacter.Do(new DisconnectCommand(ViewModel, edgeView.ViewModel));
-                            return true;
-                        case BaseNodeView nodeView:
-                            if (nodeView.selected)
-                                CommandDispacter.Do(new RemoveNodeCommand(ViewModel, nodeView.ViewModel));
-                            return true;
-                        case BaseGroupView groupView:
-                            if (groupView.selected)
-                                CommandDispacter.Do(new RemoveGroupCommand(ViewModel, groupView.ViewModel));
-                            return true;
+                        case Edge edgeView:
+                            return 0;
+                        case Node nodeView:
+                            return 1;
                     }
-                    return false;
-                });
-                CommandDispacter.EndGroup();
 
-                UpdateInspector();
-            }
+                    return 4;
+                }
+
+                return GetPriority(element1).CompareTo(GetPriority(element2));
+            });
+
+            CommandDispatcher.BeginGroup();
+            changes.elementsToRemove.RemoveAll(element =>
+            {
+                switch (element)
+                {
+                    case BaseConnectionView edgeView:
+                        if (edgeView.selected)
+                            CommandDispatcher.Do(new DisconnectCommand(ViewModel, edgeView.ViewModel));
+                        return true;
+                    case BaseNodeView nodeView:
+                        if (nodeView.selected)
+                            CommandDispatcher.Do(new RemoveNodeCommand(ViewModel, nodeView.ViewModel));
+                        return true;
+                    case BaseGroupView groupView:
+                        if (groupView.selected)
+                            CommandDispatcher.Do(new RemoveGroupCommand(ViewModel, groupView.ViewModel));
+                        return true;
+                }
+
+                return false;
+            });
+            CommandDispatcher.EndGroup();
+
+            UpdateInspector();
             return changes;
         }
 
@@ -482,6 +495,7 @@ namespace CZToolKit.GraphProcessor.Editors
             ViewModel.Zoom = viewTransform.scale.x;
             ViewModel.Pan = viewTransform.position.ToInternalVector3();
         }
+
         #endregion
     }
 }

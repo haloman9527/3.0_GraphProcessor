@@ -24,7 +24,7 @@ namespace CZToolKit.GraphProcessor
     {
         [UnityEngine.HideInInspector] public float zoom = 1;
         [UnityEngine.HideInInspector] public InternalVector2 pan = new InternalVector2(0, 0);
-        [UnityEngine.HideInInspector] public Dictionary<string, BaseNode> nodes = new Dictionary<string, BaseNode>();
+        [UnityEngine.HideInInspector] public Dictionary<int, BaseNode> nodes = new Dictionary<int, BaseNode>();
         [UnityEngine.HideInInspector] public List<BaseConnection> connections = new List<BaseConnection>();
         [UnityEngine.HideInInspector] public List<BaseGroup> groups = new List<BaseGroup>();
     }
@@ -34,7 +34,7 @@ namespace CZToolKit.GraphProcessor
     {
         public float zoom = 1;
         public InternalVector2 pan = new InternalVector2(0, 0);
-        public Dictionary<string, BaseNode> nodes = new Dictionary<string, BaseNode>();
+        public Dictionary<int, BaseNode> nodes = new Dictionary<int, BaseNode>();
         public List<BaseConnection> connections = new List<BaseConnection>();
         public List<Group> groups = new List<Group>();
     }

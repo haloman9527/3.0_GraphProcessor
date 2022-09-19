@@ -23,7 +23,7 @@ namespace CZToolKit.GraphProcessor
         [UnityEngine.HideInInspector] public string groupName;
         [UnityEngine.HideInInspector] public InternalVector2 position;
         [UnityEngine.HideInInspector] public InternalColor backgroundColor = new InternalColor(0.3f, 0.3f, 0.3f, 0.3f);
-        [UnityEngine.HideInInspector] public List<string> nodes = new List<string>();
+        [UnityEngine.HideInInspector] public List<int> nodes = new List<int>();
     }
 #else
     public class BaseGroup
@@ -31,7 +31,7 @@ namespace CZToolKit.GraphProcessor
         public string groupName;
         public InternalVector2 position;
         public InternalColor backgroundColor = new InternalColor(0.3f, 0.3f, 0.3f, 0.3f);
-        public List<string> nodes = new List<string>();
+        public List<int> nodes = new List<int>();
     }
 #endif
 }

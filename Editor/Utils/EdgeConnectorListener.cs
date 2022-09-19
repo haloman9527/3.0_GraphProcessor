@@ -31,10 +31,10 @@ namespace CZToolKit.GraphProcessor.Editors
             // 如果连线不是一个新建的连线就重定向
             if (edge.userData is BaseConnectionVM connection)
             {
-                tempGraphView.CommandDispacter.Do(new ConnectCommand(tempGraphView.ViewModel, from, to));
+                tempGraphView.CommandDispatcher.Do(new ConnectCommand(tempGraphView.ViewModel, from, to));
             }
             else
-                tempGraphView.CommandDispacter.Do(new ConnectCommand(tempGraphView.ViewModel, from, to));
+                tempGraphView.CommandDispatcher.Do(new ConnectCommand(tempGraphView.ViewModel, from, to));
         }
 
         /// <summary> 拖到空白松开时触发 </summary>

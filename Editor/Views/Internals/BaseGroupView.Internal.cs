@@ -59,7 +59,7 @@ namespace CZToolKit.GraphProcessor.Editors
             this.BackgroudColorField.SetValueWithoutNotify(ViewModel.BackgroundColor.ToColor());
             base.SetPosition(new Rect(ViewModel.Position.ToVector2(), GetPosition().size));
             WithoutNotify = true;
-            base.AddElements(ViewModel.Nodes.Select(nodeGUID => Owner.NodeViews[nodeGUID]).ToArray());
+            base.AddElements(ViewModel.Nodes.Select(nodeID => Owner.NodeViews[nodeID]).ToArray());
             WithoutNotify = false;
             this.AddManipulator(new ContextualMenuManipulator(BuildContextualMenu));
             BackgroudColorField.RegisterValueChangedCallback(OnGroupColorChanged);
@@ -107,14 +107,14 @@ namespace CZToolKit.GraphProcessor.Editors
         private void OnNodesAdded(IEnumerable<BaseNodeVM> nodes)
         {
             WithoutNotify = true;
-            base.AddElements(nodes.Select(node => Owner.NodeViews[node.GUID]));
+            base.AddElements(nodes.Select(node => Owner.NodeViews[node.ID]));
             WithoutNotify = false;
         }
 
         private void OnNodesRemoved(IEnumerable<BaseNodeVM> nodes)
         {
             WithoutNotify = true;
-            base.RemoveElements(nodes.Select(node => Owner.NodeViews[node.GUID]));
+            base.RemoveElements(nodes.Select(node => Owner.NodeViews[node.ID]));
             WithoutNotify = false;
         }
         #endregion
@@ -123,7 +123,7 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             if (string.IsNullOrEmpty(newName))
                 return;
-            Owner.CommandDispacter.Do(new RenameGroupCommand(ViewModel, newName));
+            Owner.CommandDispatcher.Do(new RenameGroupCommand(ViewModel, newName));
         }
 
         private void OnGroupColorChanged(ChangeEvent<Color> evt)

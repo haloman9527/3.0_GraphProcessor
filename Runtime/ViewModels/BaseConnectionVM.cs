@@ -40,11 +40,11 @@ namespace CZToolKit.GraphProcessor
             get;
             internal set;
         }
-        public string FromNodeGUID
+        public int FromNodeID
         {
             get { return Model.fromNode; }
         }
-        public string ToNodeGUID
+        public int ToNodeID
         {
             get { return Model.toNode; }
         }
@@ -91,9 +91,9 @@ namespace CZToolKit.GraphProcessor
         /// <summary> 重定向 </summary>
         public void Redirect(BasePortVM from, BasePortVM to)
         {
-            Model.fromNode = from.Owner.GUID;
+            Model.fromNode = from.Owner.ID;
             Model.fromPort = from.Name;
-            Model.toNode = to.Owner.GUID;
+            Model.toNode = to.Owner.ID;
             Model.toPort = to.Name;
             Enable(Owner);
         }

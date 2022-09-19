@@ -21,18 +21,18 @@ namespace CZToolKit.GraphProcessor
     [Serializable]
     public class BaseConnection
     {
-        [UnityEngine.HideInInspector] public string fromNode;
+        [UnityEngine.HideInInspector] public int fromNode;
         [UnityEngine.HideInInspector] public string fromPort;
-        [UnityEngine.HideInInspector] public string toNode;
+        [UnityEngine.HideInInspector] public int toNode;
         [UnityEngine.HideInInspector] public string toPort;
     }
 #else
     [Serializable]
     public class BaseConnection
     {
-        public string fromNode;
+        public int fromNode;
         public string fromPort;
-        public string toNode;
+        public int toNode;
         public string toPort;
     }
 #endif

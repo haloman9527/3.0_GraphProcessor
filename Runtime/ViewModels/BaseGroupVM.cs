@@ -55,7 +55,7 @@ namespace CZToolKit.GraphProcessor
             get { return GetPropertyValue<InternalColor>(nameof(Model.backgroundColor)); }
             set { SetPropertyValue(nameof(Model.backgroundColor), value); }
         }
-        public IReadOnlyList<string> Nodes
+        public IReadOnlyList<int> Nodes
         {
             get { return Model.nodes; }
         }
@@ -79,24 +79,24 @@ namespace CZToolKit.GraphProcessor
 
         public void AddNodes(IEnumerable<BaseNodeVM> nodes)
         {
-            var tempNodes = nodes.Where(element => !Model.nodes.Contains(element.GUID) && element.Owner == this.Owner).ToArray();
+            var tempNodes = nodes.Where(element => !Model.nodes.Contains(element.ID) && element.Owner == this.Owner).ToArray();
             foreach (var element in tempNodes)
             {
                 foreach (var group in Owner.Groups)
                 {
-                    group.Model.nodes.Remove(element.GUID);
+                    group.Model.nodes.Remove(element.ID);
                 }
-                Model.nodes.Add(element.GUID);
+                Model.nodes.Add(element.ID);
             }
             onNodesAdded?.Invoke(tempNodes);
         }
 
         public void RemoveNodes(IEnumerable<BaseNodeVM> nodes)
         {
-            var tempNodes = nodes.Where(element => Model.nodes.Contains(element.GUID) && element.Owner == Owner).ToArray();
+            var tempNodes = nodes.Where(element => Model.nodes.Contains(element.ID) && element.Owner == Owner).ToArray();
             foreach (var node in tempNodes)
             {
-                Model.nodes.Remove(node.GUID);
+                Model.nodes.Remove(node.ID);
             }
             onNodesRemoved?.Invoke(nodes);
         }
@@ -113,19 +113,19 @@ namespace CZToolKit.GraphProcessor
 
         public void AddNodesWithoutNotify(IEnumerable<BaseNodeVM> elements)
         {
-            elements = elements.Where(element => !Model.nodes.Contains(element.GUID) && element.Owner == this.Owner);
+            elements = elements.Where(element => !Model.nodes.Contains(element.ID) && element.Owner == this.Owner);
             foreach (var element in elements)
             {
-                Model.nodes.Add(element.GUID);
+                Model.nodes.Add(element.ID);
             }
         }
 
         public void RemoveNodesWithoutNotify(IEnumerable<BaseNodeVM> elements)
         {
-            elements = elements.Where(element => Model.nodes.Contains(element.GUID) && element.Owner == this.Owner);
+            elements = elements.Where(element => Model.nodes.Contains(element.ID) && element.Owner == this.Owner);
             foreach (var element in elements)
             {
-                Model.nodes.Remove(element.GUID);
+                Model.nodes.Remove(element.ID);
             }
         }
 

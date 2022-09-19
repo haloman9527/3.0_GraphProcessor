@@ -349,8 +349,8 @@ namespace CZToolKit.GraphProcessor
         {
             this.graph = graph;
             this.connectionVM = connection;
-            this.from = graph.Nodes[connection.FromNodeGUID].Ports[connection.FromPortName];
-            this.to = graph.Nodes[connection.ToNodeGUID].Ports[connection.ToPortName];
+            this.from = graph.Nodes[connection.FromNodeID].Ports[connection.FromPortName];
+            this.to = graph.Nodes[connection.ToNodeID].Ports[connection.ToPortName];
         }
 
         public void Do()

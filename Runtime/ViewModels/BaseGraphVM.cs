@@ -1,4 +1,5 @@
 #region 注 释
+
 /***
  *
  *  Title:
@@ -12,7 +13,9 @@
  *  Blog: https://www.crosshair.top/
  *
  */
+
 #endregion
+
 using CZToolKit.Core.ViewModel;
 using System;
 using System.Linq;
@@ -24,7 +27,8 @@ namespace CZToolKit.GraphProcessor
     public class BaseGraphVM : ViewModel
     {
         #region Fields
-        Dictionary<string, BaseNodeVM> nodes;
+
+        Dictionary<int, BaseNodeVM> nodes;
         List<BaseConnectionVM> connections;
         List<BaseGroupVM> groups;
 
@@ -34,39 +38,41 @@ namespace CZToolKit.GraphProcessor
         public event Action<BaseConnectionVM> OnDisconnected;
         public event Action<BaseGroupVM> OnGroupAdded;
         public event Action<BaseGroupVM> OnGroupRemoved;
+
         #endregion
 
         #region Properties
-        public BaseGraph Model
-        {
-            get;
-        }
-        public Type ModelType
-        {
-            get;
-        }
+
+        public BaseGraph Model { get; }
+        public Type ModelType { get; }
+
         public InternalVector2 Pan
         {
             get { return GetPropertyValue<InternalVector2>(nameof(BaseGraph.pan)); }
             set { SetPropertyValue(nameof(BaseGraph.pan), value); }
         }
+
         public float Zoom
         {
             get { return GetPropertyValue<float>(nameof(BaseGraph.zoom)); }
             set { SetPropertyValue(nameof(BaseGraph.zoom), value); }
         }
-        public IReadOnlyDictionary<string, BaseNodeVM> Nodes
+
+        public IReadOnlyDictionary<int, BaseNodeVM> Nodes
         {
             get { return nodes; }
         }
+
         public IReadOnlyList<BaseGroupVM> Groups
         {
             get { return groups; }
         }
+
         public IReadOnlyList<BaseConnectionVM> Connections
         {
             get { return connections; }
         }
+
         #endregion
 
         public BaseGraphVM(BaseGraph model)
@@ -76,14 +82,14 @@ namespace CZToolKit.GraphProcessor
             Model.pan = Model.pan == default ? InternalVector2.zero : Model.pan;
             Model.zoom = Model.zoom == default ? 1 : Model.zoom;
 
-            this.nodes = new Dictionary<string, BaseNodeVM>();
+            this.nodes = new Dictionary<int, BaseNodeVM>();
             this.groups = new List<BaseGroupVM>();
             this.connections = new List<BaseConnectionVM>();
 
             foreach (var pair in Model.nodes)
             {
                 var nodeVM = ViewModelFactory.CreateViewModel(pair.Value) as BaseNodeVM;
-                nodeVM.GUID = pair.Key;
+                nodeVM.ID = pair.Key;
                 nodes.Add(pair.Key, nodeVM);
             }
 
@@ -113,43 +119,51 @@ namespace CZToolKit.GraphProcessor
                     connections.RemoveAt(i--);
                     continue;
                 }
-                if (!nodes.TryGetValue(connection.FromNodeGUID, out var fromNode))
+
+                if (!nodes.TryGetValue(connection.FromNodeID, out var fromNode))
                 {
                     connections.RemoveAt(i--);
                     continue;
                 }
+
                 if (fromNode == null)
                 {
                     connections.RemoveAt(i--);
-                    nodes.Remove(connection.FromNodeGUID);
+                    nodes.Remove(connection.FromNodeID);
                     continue;
                 }
-                if (!nodes.TryGetValue(connection.ToNodeGUID, out var toNode))
+
+                if (!nodes.TryGetValue(connection.ToNodeID, out var toNode))
                 {
                     connections.RemoveAt(i--);
                     continue;
                 }
+
                 if (toNode == null)
                 {
                     connections.RemoveAt(i--);
-                    nodes.Remove(connection.ToNodeGUID);
+                    nodes.Remove(connection.ToNodeID);
                     continue;
                 }
+
                 if (!fromNode.Ports.TryGetValue(connection.FromPortName, out var fromPort))
                 {
                     connections.RemoveAt(i--);
                     continue;
                 }
+
                 if (!toNode.Ports.TryGetValue(connection.ToPortName, out var toPort))
                 {
                     connections.RemoveAt(i--);
                     continue;
                 }
+
                 connection.Enable(this);
 
                 fromPort.ConnectTo(connection);
                 toPort.ConnectTo(connection);
             }
+
             foreach (var group in Groups)
             {
                 group.Enable(this);
@@ -157,6 +171,7 @@ namespace CZToolKit.GraphProcessor
         }
 
         #region API
+
         public BaseNodeVM AddNode<T>(InternalVector2 position) where T : BaseNode, new()
         {
             var node = new T();
@@ -184,17 +199,17 @@ namespace CZToolKit.GraphProcessor
 
         public void AddNode(BaseNodeVM node)
         {
-            if (string.IsNullOrEmpty(node.GUID) && node.GUID == null)
+            if (node.ID == 0)
                 AllocID(node);
-            nodes.Add(node.GUID, node);
-            Model.nodes.Add(node.GUID, node.Model);
+            nodes.Add(node.ID, node);
+            Model.nodes.Add(node.ID, node.Model);
             node.Enable(this);
             OnNodeAdded?.Invoke(node);
         }
 
-        public void RemoveNode(string guid)
+        public void RemoveNode(int id)
         {
-            RemoveNode(Nodes[guid]);
+            RemoveNode(Nodes[id]);
         }
 
         public void RemoveNode(BaseNodeVM node)
@@ -204,25 +219,25 @@ namespace CZToolKit.GraphProcessor
             if (node.Owner != this)
                 throw new NullReferenceException("节点不是此Graph中");
             Disconnect(node);
-            nodes.Remove(node.GUID);
-            Model.nodes.Remove(node.GUID);
+            nodes.Remove(node.ID);
+            Model.nodes.Remove(node.ID);
             node.Disable();
             OnNodeRemoved?.Invoke(node);
         }
 
         public void Connect(BaseConnectionVM connection)
         {
-            if (!Nodes.TryGetValue(connection.FromNodeGUID, out var fromNode))
-                throw new Exception($"Graph中不存在From节点:{connection.FromNodeGUID}");
+            if (!Nodes.TryGetValue(connection.FromNodeID, out var fromNode))
+                throw new Exception($"Graph中不存在From节点:{connection.FromNodeID}");
             if (!fromNode.Ports.TryGetValue(connection.FromPortName, out var fromPort))
                 throw new Exception($"From节点中不存在接口:{connection.FromPortName}");
 
-            if (!Nodes.TryGetValue(connection.ToNodeGUID, out var toNode))
-                throw new Exception($"Graph中不存在To节点:{connection.ToNodeGUID}");
+            if (!Nodes.TryGetValue(connection.ToNodeID, out var toNode))
+                throw new Exception($"Graph中不存在To节点:{connection.ToNodeID}");
             if (!toNode.Ports.TryGetValue(connection.ToPortName, out var toPort))
                 throw new Exception($"To节点中不存在接口:{connection.ToPortName}");
 
-            var tmpConnection = fromPort.Connections.FirstOrDefault(tmp => tmp.ToNodeGUID == connection.ToNodeGUID && tmp.ToPortName == connection.ToPortName);
+            var tmpConnection = fromPort.Connections.FirstOrDefault(tmp => tmp.ToNodeID == connection.ToNodeID && tmp.ToPortName == connection.ToPortName);
             if (tmpConnection != null)
                 return;
 
@@ -259,7 +274,7 @@ namespace CZToolKit.GraphProcessor
         {
             foreach (var connection in Connections.ToArray())
             {
-                if (connection.FromNodeGUID == node.GUID || connection.ToNodeGUID == node.GUID)
+                if (connection.FromNodeID == node.ID || connection.ToNodeID == node.ID)
                     Disconnect(connection);
             }
         }
@@ -268,10 +283,10 @@ namespace CZToolKit.GraphProcessor
         {
             if (!connections.Contains(connection)) return;
 
-            if(connection.FromNode.Ports.TryGetValue(connection.FromPortName, out BasePortVM fromPort))
+            if (connection.FromNode.Ports.TryGetValue(connection.FromPortName, out BasePortVM fromPort))
                 fromPort.DisconnectTo(connection);
 
-            if(connection.ToNode.Ports.TryGetValue(connection.ToPortName, out BasePortVM toPort))
+            if (connection.ToNode.Ports.TryGetValue(connection.ToPortName, out BasePortVM toPort))
                 toPort.DisconnectTo(connection);
 
             connections.Remove(connection);
@@ -281,7 +296,7 @@ namespace CZToolKit.GraphProcessor
 
         public void Disconnect(BasePortVM port)
         {
-            if (port.Owner == null || !nodes.ContainsKey(port.Owner.GUID))
+            if (port.Owner == null || !nodes.ContainsKey(port.Owner.ID))
                 return;
             foreach (var connection in port.Connections.ToArray())
             {
@@ -323,28 +338,29 @@ namespace CZToolKit.GraphProcessor
         {
             var connection = new BaseConnection()
             {
-                fromNode = from.Owner.GUID,
+                fromNode = from.Owner.ID,
                 fromPort = from.Name,
-                toNode = to.Owner.GUID,
+                toNode = to.Owner.ID,
                 toPort = to.Name
             };
             return ViewModelFactory.CreateViewModel(connection) as BaseConnectionVM;
         }
 
-        public string GenerateNodeGUID()
+        public int GenerateNodeGUID()
         {
             while (true)
             {
-                string guid = Guid.NewGuid().ToString();
-                if (!Nodes.ContainsKey(guid)) return guid;
+                int id = GraphProcessorUtil.Random.Next();
+                if (id != 0 && !Nodes.ContainsKey(id)) return id;
             }
         }
 
         /// <summary> 给节点分配一个GUID，这将会覆盖已有GUID </summary>
         public void AllocID(BaseNodeVM node)
         {
-            node.GUID = GenerateNodeGUID();
+            node.ID = GenerateNodeGUID();
         }
+
         #endregion
     }
 }
