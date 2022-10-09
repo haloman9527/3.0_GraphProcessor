@@ -5,7 +5,7 @@ MVVM架构
 
 依赖[0.0_Core](https://github.com/HalfLobsterMan/0.0_Core.git)
 
-依赖[Odin](https://odininspector.com)
+依赖[Odin Inspector](https://odininspector.com)
 
 
 
