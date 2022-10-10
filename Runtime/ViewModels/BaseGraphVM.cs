@@ -86,8 +86,13 @@ namespace CZToolKit.GraphProcessor
             this.groups = new List<BaseGroupVM>();
             this.connections = new List<BaseConnectionVM>();
 
+            this[nameof(BaseGraph.pan)] = new BindableProperty<InternalVector2>(() => Model.pan, v => Model.pan = v);
+            this[nameof(BaseGraph.zoom)] = new BindableProperty<float>(() => Model.zoom, v => Model.zoom = v);
+
             foreach (var pair in Model.nodes)
             {
+                if (pair.Value == null)
+                    continue;
                 var nodeVM = ViewModelFactory.CreateViewModel(pair.Value) as BaseNodeVM;
                 nodeVM.ID = pair.Key;
                 nodes.Add(pair.Key, nodeVM);
@@ -95,73 +100,40 @@ namespace CZToolKit.GraphProcessor
 
             foreach (var connection in Model.connections)
             {
-                connections.Add(ViewModelFactory.CreateViewModel(connection) as BaseConnectionVM);
+                if (connection == null)
+                    continue;
+                if (!nodes.TryGetValue(connection.fromNode, out var fromNode))
+                    continue;
+                if (!fromNode.Ports.TryGetValue(connection.fromPort, out var fromPort))
+                    continue;
+
+                if (!nodes.TryGetValue(connection.toNode, out var toNode))
+                    continue;
+                if (!toNode.Ports.TryGetValue(connection.toPort, out var toPort))
+                    continue;
+                
+                var connectionVM = ViewModelFactory.CreateViewModel(connection) as BaseConnectionVM;
+                fromPort.connections.Add(connectionVM);
+                toPort.connections.Add(connectionVM);
+                connections.Add(connectionVM);
             }
 
             foreach (var group in Model.groups)
             {
-                groups.Add(ViewModelFactory.CreateViewModel(group) as BaseGroupVM);
+                if (group == null)
+                    continue;
+                var groupVM = ViewModelFactory.CreateViewModel(group) as BaseGroupVM;
+                groups.Add(groupVM);
             }
 
-            this[nameof(BaseGraph.pan)] = new BindableProperty<InternalVector2>(() => Model.pan, v => Model.pan = v);
-            this[nameof(BaseGraph.zoom)] = new BindableProperty<float>(() => Model.zoom, v => Model.zoom = v);
+            foreach (var connection in connections)
+            {
+                connection.Enable(this);
+            }
 
             foreach (var pair in nodes)
             {
                 pair.Value.Enable(this);
-            }
-
-            for (int i = 0; i < connections.Count; i++)
-            {
-                var connection = connections[i];
-                if (connection == null)
-                {
-                    connections.RemoveAt(i--);
-                    continue;
-                }
-
-                if (!nodes.TryGetValue(connection.FromNodeID, out var fromNode))
-                {
-                    connections.RemoveAt(i--);
-                    continue;
-                }
-
-                if (fromNode == null)
-                {
-                    connections.RemoveAt(i--);
-                    nodes.Remove(connection.FromNodeID);
-                    continue;
-                }
-
-                if (!nodes.TryGetValue(connection.ToNodeID, out var toNode))
-                {
-                    connections.RemoveAt(i--);
-                    continue;
-                }
-
-                if (toNode == null)
-                {
-                    connections.RemoveAt(i--);
-                    nodes.Remove(connection.ToNodeID);
-                    continue;
-                }
-
-                if (!fromNode.Ports.TryGetValue(connection.FromPortName, out var fromPort))
-                {
-                    connections.RemoveAt(i--);
-                    continue;
-                }
-
-                if (!toNode.Ports.TryGetValue(connection.ToPortName, out var toPort))
-                {
-                    connections.RemoveAt(i--);
-                    continue;
-                }
-
-                connection.Enable(this);
-
-                fromPort.ConnectTo(connection);
-                toPort.ConnectTo(connection);
             }
 
             foreach (var group in Groups)

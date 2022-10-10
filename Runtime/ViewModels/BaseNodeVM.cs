@@ -42,7 +42,7 @@ namespace CZToolKit.GraphProcessor
         public int ID
         {
             get;
-            set;
+            internal set;
         }
         public virtual InternalVector2 Position
         {

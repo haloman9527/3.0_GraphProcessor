@@ -52,8 +52,8 @@ namespace CZToolKit.GraphProcessor
     {
         #region Fields
 
-        [NonSerialized] List<BaseConnectionVM> connections;
-        [NonSerialized] Func<BaseConnectionVM, BaseConnectionVM, int> comparer;
+        [NonSerialized] internal List<BaseConnectionVM> connections;
+        [NonSerialized] internal Func<BaseConnectionVM, BaseConnectionVM, int> comparer;
 
         public event Action<BaseConnectionVM> onConnected;
         public event Action<BaseConnectionVM> onDisconnected;
