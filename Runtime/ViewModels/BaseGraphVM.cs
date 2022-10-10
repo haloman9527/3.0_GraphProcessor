@@ -98,19 +98,21 @@ namespace CZToolKit.GraphProcessor
                 nodes.Add(pair.Key, nodeVM);
             }
 
-            foreach (var connection in Model.connections)
+            for (int i = 0; i < Model.connections.Count; i++)
             {
-                if (connection == null)
+                var connection = Model.connections[i];
+                
+                if (!nodes.TryGetValue(connection.fromNode, out var fromNode) || !fromNode.Ports.TryGetValue(connection.fromPort, out var fromPort))
+                {
+                    Model.connections.RemoveAt(i--);
                     continue;
-                if (!nodes.TryGetValue(connection.fromNode, out var fromNode))
-                    continue;
-                if (!fromNode.Ports.TryGetValue(connection.fromPort, out var fromPort))
-                    continue;
+                }
 
-                if (!nodes.TryGetValue(connection.toNode, out var toNode))
+                if (!nodes.TryGetValue(connection.toNode, out var toNode) || !toNode.Ports.TryGetValue(connection.toPort, out var toPort))
+                {
+                    Model.connections.RemoveAt(i--);
                     continue;
-                if (!toNode.Ports.TryGetValue(connection.toPort, out var toPort))
-                    continue;
+                }
                 
                 var connectionVM = ViewModelFactory.CreateViewModel(connection) as BaseConnectionVM;
                 fromPort.connections.Add(connectionVM);
@@ -118,10 +120,14 @@ namespace CZToolKit.GraphProcessor
                 connections.Add(connectionVM);
             }
 
-            foreach (var group in Model.groups)
+            for (int i = 0; i < Model.groups.Count; i++)
             {
+                var group = model.groups[i];
                 if (group == null)
+                {
+                    model.groups.RemoveAt(i--);
                     continue;
+                }
                 var groupVM = ViewModelFactory.CreateViewModel(group) as BaseGroupVM;
                 groups.Add(groupVM);
             }
