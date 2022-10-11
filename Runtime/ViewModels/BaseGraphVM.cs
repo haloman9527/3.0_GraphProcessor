@@ -28,9 +28,9 @@ namespace CZToolKit.GraphProcessor
     {
         #region Fields
 
-        Dictionary<int, BaseNodeVM> nodes;
-        List<BaseConnectionVM> connections;
-        List<BaseGroupVM> groups;
+        private Dictionary<int, BaseNodeVM> nodes;
+        private List<BaseConnectionVM> connections;
+        private List<BaseGroupVM> groups;
 
         public event Action<BaseNodeVM> OnNodeAdded;
         public event Action<BaseNodeVM> OnNodeRemoved;
@@ -136,10 +136,10 @@ namespace CZToolKit.GraphProcessor
             {
                 connection.Enable(this);
             }
-
-            foreach (var pair in nodes)
+            
+            foreach (var node in nodes.Values)
             {
-                pair.Value.Enable(this);
+                node.Enable(this);
             }
 
             foreach (var group in Groups)

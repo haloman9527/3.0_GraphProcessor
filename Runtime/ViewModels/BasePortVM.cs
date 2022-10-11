@@ -51,12 +51,13 @@ namespace CZToolKit.GraphProcessor
     public class BasePortVM : ViewModel
     {
         #region Fields
+        internal List<BaseConnectionVM> connections;
+        internal Func<BaseConnectionVM, BaseConnectionVM, int> comparer;
 
-        [NonSerialized] internal List<BaseConnectionVM> connections;
-        [NonSerialized] internal Func<BaseConnectionVM, BaseConnectionVM, int> comparer;
-
-        public event Action<BaseConnectionVM> onConnected;
-        public event Action<BaseConnectionVM> onDisconnected;
+        public event Action<BaseConnectionVM> onBeforeConnected;
+        public event Action<BaseConnectionVM> onAfterConnected;
+        public event Action<BaseConnectionVM> onBeforeDisconnected;
+        public event Action<BaseConnectionVM> onAfterDisconnected;
         public event Action onSorted;
         #endregion
 
@@ -134,16 +135,18 @@ namespace CZToolKit.GraphProcessor
         #region API
         public void ConnectTo(BaseConnectionVM connection)
         {
+            onBeforeConnected?.Invoke(connection);
             connections.Add(connection);
             Resort();
-            onConnected?.Invoke(connection);
+            onAfterConnected?.Invoke(connection);
         }
 
         public void DisconnectTo(BaseConnectionVM connection)
         {
+            onBeforeDisconnected?.Invoke(connection);
             connections.Remove(connection);
             Resort();
-            onDisconnected?.Invoke(connection);
+            onAfterDisconnected?.Invoke(connection);
         }
 
         /// <summary> 强制重新排序 </summary>
@@ -153,8 +156,13 @@ namespace CZToolKit.GraphProcessor
             onSorted?.Invoke();
         }
 
+        /// <summary> 强制重新排序，但不触发排序事件 </summary>
+        public void ResortWithoutNotify()
+        {
+            connections.QuickSort(comparer);
+        }
+
         /// <summary> 获取连接的第一个接口的值 </summary>
-        /// <returns></returns>
         public object GetConnectionValue()
         {
             return GetConnectionValues().FirstOrDefault();

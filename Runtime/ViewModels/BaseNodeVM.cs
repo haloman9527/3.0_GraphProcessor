@@ -1,4 +1,5 @@
 #region 注 释
+
 /***
  *
  *  Title:
@@ -12,7 +13,9 @@
  *  Blog: https://www.crosshair.top/
  *
  */
+
 #endregion
+
 using CZToolKit.Core;
 using CZToolKit.Core.ViewModel;
 using System;
@@ -24,55 +27,56 @@ namespace CZToolKit.GraphProcessor
     public class BaseNodeVM : ViewModel
     {
         #region Fields
-        Dictionary<string, BasePortVM> ports;
+
+        internal Dictionary<string, BasePortVM> ports;
         public event Action<BasePortVM> onPortAdded;
         public event Action<BasePortVM> onPortRemoved;
+
         #endregion
 
         #region Properties
-        public BaseNode Model
-        {
-            get;
-        }
-        public Type ModelType
-        {
-            get;
-        }
+
+        public BaseNode Model { get; }
+        public Type ModelType { get; }
+
         /// <summary> 唯一标识 </summary>
-        public int ID
-        {
-            get;
-            internal set;
-        }
+        public int ID { get; internal set; }
+
         public virtual InternalVector2 Position
         {
             get { return GetPropertyValue<InternalVector2>(nameof(BaseNode.position)); }
             set { SetPropertyValue(nameof(BaseNode.position), value); }
         }
+
         public virtual string Title
         {
             get { return GetPropertyValue<string>(TITLE_NAME); }
             set { SetPropertyValue(TITLE_NAME, value); }
         }
+
         public virtual InternalColor TitleColor
         {
             get { return GetPropertyValue<InternalColor>(TITLE_COLOR_NAME); }
             set { SetPropertyValue(TITLE_COLOR_NAME, value); }
         }
+
         public virtual string Tooltip
         {
             get { return GetPropertyValue<string>(TOOLTIP_NAME); }
             set { SetPropertyValue(TOOLTIP_NAME, value); }
         }
+
         public IReadOnlyDictionary<string, BasePortVM> Ports
         {
             get { return ports; }
         }
+
         public BaseGraphVM Owner
         {
-            get;
-            private set;
+            get; 
+            internal set;
         }
+
         #endregion
 
         public BaseNodeVM(BaseNode model)
@@ -82,31 +86,34 @@ namespace CZToolKit.GraphProcessor
             Model.position = Model.position == default ? InternalVector2.zero : Model.position;
             ports = new Dictionary<string, BasePortVM>();
 
-            {
-                this[nameof(BaseNode.position)] = new BindableProperty<InternalVector2>(() => Model.position, v => Model.position = v);
+            this[nameof(BaseNode.position)] = new BindableProperty<InternalVector2>(() => Model.position, v => Model.position = v);
 
-                string title = string.Empty;
-                if (Util_Attribute.TryGetTypeAttribute(ModelType, out NodeMenuItemAttribute displayName) && displayName.titles != null && displayName.titles.Length != 0)
-                    title = displayName.titles[displayName.titles.Length - 1];
-                else
-                    title = ModelType.Name;
-                this[TITLE_NAME] = new BindableProperty<string>(() => title, v => title = v);
+            string title = string.Empty;
+            if (Util_Attribute.TryGetTypeAttribute(ModelType, out NodeMenuItemAttribute displayName) && displayName.titles != null && displayName.titles.Length != 0)
+                title = displayName.titles[displayName.titles.Length - 1];
+            else
+                title = ModelType.Name;
+            this[TITLE_NAME] = new BindableProperty<string>(() => title, v => title = v);
 
-                var titleColor = DefaultTitleColor;
-                if (Util_Attribute.TryGetTypeAttribute(ModelType, out NodeTitleColorAttribute nodeTitleColorAttribute))
-                    titleColor = nodeTitleColorAttribute.color;
-                this[TITLE_COLOR_NAME] = new BindableProperty<InternalColor>(() => titleColor, v => titleColor = v);
+            var titleColor = DefaultTitleColor;
+            if (Util_Attribute.TryGetTypeAttribute(ModelType, out NodeTitleColorAttribute nodeTitleColorAttribute))
+                titleColor = nodeTitleColorAttribute.color;
+            this[TITLE_COLOR_NAME] = new BindableProperty<InternalColor>(() => titleColor, v => titleColor = v);
 
-                var tooltip = string.Empty;
-                if (Util_Attribute.TryGetTypeAttribute(ModelType, out NodeTooltipAttribute tooltipAttribute))
-                    tooltip = tooltipAttribute.Tooltip;
-                this[TOOLTIP_NAME] = new BindableProperty<string>(() => tooltip, v => tooltip = v);
-            }
+            var tooltip = string.Empty;
+            if (Util_Attribute.TryGetTypeAttribute(ModelType, out NodeTooltipAttribute tooltipAttribute))
+                tooltip = tooltipAttribute.Tooltip;
+            this[TOOLTIP_NAME] = new BindableProperty<string>(() => tooltip, v => tooltip = v);
         }
 
         internal void Enable(BaseGraphVM graph)
         {
             Owner = graph;
+            foreach (var port in ports.Values)
+            {
+                if (port.connections.Count > 1)
+                    port.ResortWithoutNotify();
+            }
             OnEnabled();
         }
 
@@ -116,6 +123,7 @@ namespace CZToolKit.GraphProcessor
         }
 
         #region API
+
         public IEnumerable<BaseNodeVM> GetConnections(string portName)
         {
             if (!Ports.TryGetValue(portName, out var port))
@@ -156,17 +164,27 @@ namespace CZToolKit.GraphProcessor
         {
             RemovePort(ports[portName]);
         }
+
         #endregion
 
         #region Overrides
-        protected virtual void OnEnabled() { }
 
-        protected virtual void OnDisabled() { }
+        protected virtual void OnEnabled()
+        {
+        }
+
+        protected virtual void OnDisabled()
+        {
+        }
+
         #endregion
 
         #region Helper
 
-        public virtual void DrawGizmos(IGraphOwner graphOwner) { }
+        public virtual void DrawGizmos(IGraphOwner graphOwner)
+        {
+        }
+
         #endregion
 
         public const string TITLE_NAME = "title";
@@ -177,10 +195,7 @@ namespace CZToolKit.GraphProcessor
 
     public class BaseNodeVM<T> : BaseNodeVM where T : BaseNode
     {
-        public T T_Model
-        {
-            get;
-        }
+        public T T_Model { get; }
 
         public BaseNodeVM(BaseNode model) : base(model)
         {

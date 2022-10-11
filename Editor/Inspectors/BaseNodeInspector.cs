@@ -1,4 +1,5 @@
 #region 注 释
+
 /***
  *
  *  Title:
@@ -12,7 +13,9 @@
  *  Blog: https://www.crosshair.top/
  *
  */
+
 #endregion
+
 #if UNITY_EDITOR && ODIN_INSPECTOR
 using CZToolKit.Core.Editors;
 using Sirenix.OdinInspector.Editor;
@@ -32,11 +35,25 @@ namespace CZToolKit.GraphProcessor.Editors
                 base.OnEnable();
                 return;
             }
+
             var view = Target as BaseNodeView;
-            if (view != null && view.ViewModel != null)
-                propertyTree = PropertyTree.Create(view.ViewModel.Model);
+            if (view == null || view.ViewModel == null)
+                return;
+
+            propertyTree = PropertyTree.Create(view.ViewModel.Model);
+            propertyTree.DrawMonoScriptObjectField = true;
+            foreach (var property in propertyTree.EnumerateTree(false, true))
+            {
+                if (property.ValueEntry == null)
+                    continue;
+                property.ValueEntry.OnValueChanged += (i) =>
+                {
+                    if (view.ViewModel.TryGetValue(property.Name, out var bindableProperty))
+                        bindableProperty.SetValueWithNotify(property.ValueEntry.WeakSmartValue);
+                };
+            }
         }
-        
+
         public override void OnInspectorGUI()
         {
             var view = Target as BaseNodeView;
@@ -44,16 +61,16 @@ namespace CZToolKit.GraphProcessor.Editors
                 return;
             if (propertyTree == null)
                 return;
-            propertyTree.BeginDraw(false);
-            foreach (var property in propertyTree.EnumerateTree(false, true))
-            {
-                EditorGUI.BeginChangeCheck();
-                property.Draw();
-                if (EditorGUI.EndChangeCheck() && view.ViewModel.TryGetValue(property.Name, out var bindableProperty))
-                    bindableProperty.SetValueWithNotify(property.ValueEntry.WeakSmartValue);
-            }
-            propertyTree.EndDraw();
+            propertyTree.Draw(false);
             Editor.Repaint();
+        }
+
+        public override void OnDisable()
+        {
+            base.OnDisable();
+            if (propertyTree == null)
+                return;
+            propertyTree.Dispose();
         }
     }
 }
