@@ -4,6 +4,7 @@
     padding-left: 0px;
     padding-right: 0px;
     height: 25px;
+    --port-color: #ffc400;
 }
 
 /*.port > #type {*/
@@ -35,13 +36,20 @@
     border-bottom-width:1px;
 }
 
+.port:hover > #connector > #cap{
+    background-color: #ffc400;
+}
+
 .port > #connector > #cap-icon{
     left: 2px;
     right: 2px;
     top: 2px;
     bottom: 2px;
-    
     position: absolute;
+}
+
+.port:hover > #connector > #cap-icon{
+    -unity-background-image-tint-color: #313131;
 }
 
 .port.input.Capacity_Single > #connector > #cap-icon{
