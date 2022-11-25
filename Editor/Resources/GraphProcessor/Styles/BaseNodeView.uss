@@ -1,29 +1,54 @@
-#node-border > #title {
-    height: 30px;
+#node-border{
+    background-color: rgba(29, 29, 29, 0.7);
 }
 
-#title > #title-label {
+#node-border > #title {
+    background-color: rgba(0,0,0,0.19);
+    height: 20px;
+}
+
+#node-border > #title > #title-label {
+    padding-left: 5px;
     margin-left: 2px;
     align-self: center;
     flex-wrap: Wrap;
     flex-grow: 1;
 }
-#title > #title-button-container {
+
+#node-border > #title > #title-button-container {
     visibility: hidden;
     display: none;
 }
 
-#divider{
-    background-color:rgba(255, 128, 0, 1);
+#input{
+    background-color: rgba(0, 0, 0, 0);
+    border-color: rgba(0, 0, 0, 0.6);
+    margin-right: 10px;
+    border-width: 1px;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+    border-top-left-radius: 0px;
+    border-bottom-left-radius: 0px;
+    border-left-width: 0px;
+    align-self: flex-start;
 }
 
-.node-controls{
-    background-color:rgba(50, 50, 50, 1);
+#output{
+    background-color: rgba(0, 0, 0, 0);
+    border-color: rgba(0, 0, 0, 0.6);
+    margin-left: 10px;
+    border-width: 1px;
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+    border-top-right-radius: 0px;
+    border-bottom-right-radius: 0px;
+    border-right-width: 0px;
+    align-self: flex-start;
 }
 
-.highlight {
-    background-color: rgba(0, 255, 255, 1);
-    border-radius: 7px
+#top{
+    margin-top: 4px;
+    margin-bottom: 4px;
 }
 
 #top-port-container{
@@ -44,4 +69,13 @@
     align-items: center;
     flex-direction: row;
     background-color: rgba(160, 100, 60, 1);
+}
+
+#divider{
+    background-color:rgba(255, 128, 0, 1);
+}
+
+.highlight {
+    background-color: rgba(0, 255, 255, 1);
+    border-radius: 7px
 }

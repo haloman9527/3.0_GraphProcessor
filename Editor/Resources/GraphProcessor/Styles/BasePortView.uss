@@ -1,43 +1,65 @@
 .port {
     flex-direction: row;
     align-items: center;
-    padding-left: 4px;
-    padding-right: 4px;
+    padding-left: 0px;
+    padding-right: 0px;
+    height: 25px;
 }
 
-.port > #type {
-    flex-grow: 1;
-}
+/*.port > #type {*/
+/*    flex-grow: 1;*/
+/*}*/
 
 .port > #connector {
-    border-color: rgb(255, 255, 0);
-    background-color: #212121
-    width: 8px;
-    height: 8px;
-    border-radius: 8px;
+    width: 15px;
+    height: 15px;
+    border-radius: 5px;
     align-items: center;
     justify-content: center;
 
-    margin-left: 4px;
-    margin-right: 4px;
     border-left-width:1px;
     border-top-width:1px;
     border-right-width:1px;
     border-bottom-width:1px;
 }
 
-.port > #connector:hover {
-    border-color:  #f0f0f0
+.port > #connector > #cap{
+    width: 11px;
+    height: 11px;
+    border-radius: 3px;
+    position: relative;
+
+    border-left-width:1px;
+    border-top-width:1px;
+    border-right-width:1px;
+    border-bottom-width:1px;
 }
 
-.port > #connector > #cap
-{
-    width: 4px;
-    height: 4px;
-    border-radius: 4px;
+.port > #connector > #cap-icon{
+    left: 2px;
+    right: 2px;
+    top: 2px;
+    bottom: 2px;
+    
+    position: absolute;
 }
 
-.port > #connector > #cap:hover
-{
-    background-color: #f0f0f0;
+.port.input.Capacity_Single > #connector > #cap-icon{
+    background-image: resource("GraphProcessor/Textures/One");
+    left: 1px;
+    right: 2px;
+}
+
+.port.input.Capacity_Multi > #connector > #cap-icon{
+    background-image: resource("GraphProcessor/Textures/Infinity");
+}
+
+.port.output.Capacity_Single > #connector > #cap-icon{
+    background-image: resource("GraphProcessor/Textures/One");
+    left: 1px;
+    right: 2px;
+}
+
+.port.output.Capacity_Multi > #connector > #cap-icon{
+    background-image: resource("GraphProcessor/Textures/Infinity");
 }

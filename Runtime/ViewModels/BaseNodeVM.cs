@@ -97,8 +97,10 @@ namespace CZToolKit.GraphProcessor
 
             var titleColor = DefaultTitleColor;
             if (Util_Attribute.TryGetTypeAttribute(ModelType, out NodeTitleColorAttribute nodeTitleColorAttribute))
+            {
                 titleColor = nodeTitleColorAttribute.color;
-            this[TITLE_COLOR_NAME] = new BindableProperty<InternalColor>(() => titleColor, v => titleColor = v);
+                this[TITLE_COLOR_NAME] = new BindableProperty<InternalColor>(() => titleColor, v => titleColor = v);
+            }
 
             var tooltip = string.Empty;
             if (Util_Attribute.TryGetTypeAttribute(ModelType, out NodeTooltipAttribute tooltipAttribute))

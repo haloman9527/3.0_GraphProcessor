@@ -69,7 +69,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
             Insert(0, new GridBackground());
 
-            this.AddManipulator(new ContentZoomer() { minScale = 0.05f, maxScale = 2f });
+            this.AddManipulator(new ContentZoomer() { minScale = 0.05f, maxScale = 4f });
             this.AddManipulator(new ContentDragger());
             this.AddManipulator(new SelectionDragger());
             this.AddManipulator(new RectangleSelector());

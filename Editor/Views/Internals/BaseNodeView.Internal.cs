@@ -100,9 +100,12 @@ namespace CZToolKit.GraphProcessor.Editors
             base.SetPosition(new Rect(ViewModel.Position.ToVector2(), GetPosition().size));
             title = ViewModel.Title;
             tooltip = ViewModel.Tooltip;
-            titleContainer.style.backgroundColor = ViewModel.TitleColor.ToColor();
-            TitleLabel.style.color = ViewModel.TitleColor.ToColor().GetLuminance() > 0.5f && ViewModel.TitleColor.a > 0.5f ? Color.black : Color.white * 0.9f;
-
+            if (ViewModel.ContainsKey(BaseNodeVM.TITLE_COLOR_NAME))
+            {
+                titleContainer.style.backgroundColor = ViewModel.TitleColor.ToColor();
+                TitleLabel.style.color = ViewModel.TitleColor.ToColor().GetLuminance() > 0.5f && ViewModel.TitleColor.a > 0.5f ? Color.black : Color.white * 0.9f;
+            }
+            
             foreach (var port in ViewModel.Ports.Values)
             {
                 BasePortView portView = NewPortView(port);
@@ -134,7 +137,8 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             ViewModel.BindingProperty<InternalVector2>(nameof(BaseNode.position), OnPositionChanged);
             ViewModel.BindingProperty<string>(BaseNodeVM.TITLE_NAME, OnTitleChanged);
-            ViewModel.BindingProperty<InternalColor>(BaseNodeVM.TITLE_COLOR_NAME, OnTitleColorChanged);
+            if (ViewModel.ContainsKey(BaseNodeVM.TITLE_COLOR_NAME))
+                ViewModel.BindingProperty<InternalColor>(BaseNodeVM.TITLE_COLOR_NAME, OnTitleColorChanged);
             ViewModel.BindingProperty<string>(BaseNodeVM.TOOLTIP_NAME, OnTooltipChanged);
 
             ViewModel.onPortAdded += OnPortAdded;
@@ -151,7 +155,8 @@ namespace CZToolKit.GraphProcessor.Editors
         public void UnBindingProperties()
         {
             ViewModel.UnBindingProperty<string>(BaseNodeVM.TITLE_NAME, OnTitleChanged);
-            ViewModel.UnBindingProperty<InternalColor>(BaseNodeVM.TITLE_COLOR_NAME, OnTitleColorChanged);
+            if (ViewModel.ContainsKey(BaseNodeVM.TITLE_COLOR_NAME))
+                ViewModel.UnBindingProperty<InternalColor>(BaseNodeVM.TITLE_COLOR_NAME, OnTitleColorChanged);
             ViewModel.UnBindingProperty<string>(BaseNodeVM.TOOLTIP_NAME, OnTooltipChanged);
             ViewModel.UnBindingProperty<InternalVector2>(nameof(BaseNode.position), OnPositionChanged);
 

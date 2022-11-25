@@ -8,7 +8,6 @@
 }
 
 .edge:selected {
-    --edge-color: #00FFDE;
     --edge-width: 5;
 }
 

@@ -3,7 +3,8 @@
     -unity-font-style: bold;
 }
 
-.hidden{
+.hidden
+{
     display: none;
     visibility: hidden;
 }
