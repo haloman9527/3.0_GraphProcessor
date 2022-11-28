@@ -74,6 +74,9 @@ namespace CZToolKit.GraphProcessor.Editors
             portName = ViewModel.Name;
             tooltip = ViewModel.Name;
 
+            if (ViewModel.HideLabel)
+                PortLabel.AddToClassList("hidden");
+
             OnInitialized();
         }
 

@@ -67,6 +67,15 @@ namespace CZToolKit.GraphProcessor.Editors
             }
             propertyTree.EndDraw();
         }
+
+        public override void OnDisable()
+        {
+            base.OnDisable();
+            if (propertyTree != null)
+            {
+                propertyTree.Dispose();
+            }
+        }
     }
 }
 #endif

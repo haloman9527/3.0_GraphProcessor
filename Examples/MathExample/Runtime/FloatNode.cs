@@ -35,7 +35,10 @@ public class FloatNodeVM : BaseNodeVM, IGetValueFromPort, IGetValueFromPort<floa
     {
         T_Model = model;
         this[nameof(FloatNode.num)] = new BindableProperty<float>(() => T_Model.num, v => T_Model.num = v);
-        AddPort(new BasePortVM("Output", BasePort.Orientation.Horizontal, BasePort.Direction.Output, BasePort.Capacity.Multi, typeof(float)));
+        AddPort(new BasePortVM("Output", BasePort.Orientation.Horizontal, BasePort.Direction.Output, BasePort.Capacity.Multi, typeof(float))
+        {
+            HideLabel = true
+        });
     }
 
     public object GetValue(string port)

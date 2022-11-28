@@ -149,6 +149,7 @@ namespace CZToolKit.GraphProcessor
         public void AddPort(BasePortVM port)
         {
             ports.Add(port.Name, port);
+            
             port.Enable(this);
             onPortAdded?.Invoke(port);
         }

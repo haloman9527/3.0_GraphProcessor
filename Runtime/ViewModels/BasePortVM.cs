@@ -51,6 +51,7 @@ namespace CZToolKit.GraphProcessor
     public class BasePortVM : ViewModel
     {
         #region Fields
+        private bool hideLabel;
         internal List<BaseConnectionVM> connections;
         internal Func<BaseConnectionVM, BaseConnectionVM, int> comparer;
 
@@ -96,6 +97,11 @@ namespace CZToolKit.GraphProcessor
             get { return GetPropertyValue<Type>(nameof(BasePort.type)); }
             set { SetPropertyValue(nameof(BasePort.type), value); }
         }
+        public bool HideLabel
+        {
+            get { return GetPropertyValue<bool>(nameof(hideLabel)); }
+            set { SetPropertyValue(nameof(hideLabel), value); }
+        }
         public IReadOnlyCollection<BaseConnectionVM> Connections
         {
             get { return connections; }
@@ -125,6 +131,7 @@ namespace CZToolKit.GraphProcessor
                     comparer = VerticalComparer;
                     break;
             }
+            this[nameof(hideLabel)] = new BindableProperty<bool>(() => hideLabel, v => hideLabel = v);
         }
 
         internal void Enable(BaseNodeVM node)

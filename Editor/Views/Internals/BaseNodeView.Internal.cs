@@ -67,7 +67,7 @@ namespace CZToolKit.GraphProcessor.Editors
         }
         #endregion
 
-        public BaseNodeView()
+        public BaseNodeView() : base()
         {
             styleSheets.Add(GraphProcessorStyles.BaseNodeViewStyle);
 
@@ -83,10 +83,10 @@ namespace CZToolKit.GraphProcessor.Editors
             controlsContainer.AddToClassList("node-controls");
             mainContainer.Add(controlsContainer);
 
-            topPortContainer = new VisualElement { name = "top-port-container" };
+            topPortContainer = new VisualElement { name = "top-input" };
             nodeBorder.Insert(0, topPortContainer);
 
-            bottomPortContainer = new VisualElement { name = "bottom-port-container" };
+            bottomPortContainer = new VisualElement { name = "bottom-input" };
             nodeBorder.Add(bottomPortContainer);
         }
 

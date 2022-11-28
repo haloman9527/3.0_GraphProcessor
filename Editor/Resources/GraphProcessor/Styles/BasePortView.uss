@@ -7,9 +7,17 @@
     --port-color: #ffc400;
 }
 
-/*.port > #type {*/
-/*    flex-grow: 1;*/
-/*}*/
+.port > #type{
+    color: aliceblue;
+}
+
+.port.input > #type{
+    margin-left: 0px;
+}
+
+.port.output > #type{
+    margin-right: 0px;
+}
 
 .port > #connector {
     width: 15px;
@@ -54,7 +62,7 @@
 
 .port.input.Capacity_Single > #connector > #cap-icon{
     background-image: resource("GraphProcessor/Textures/One");
-    left: 1px;
+    left: 0px;
     right: 2px;
 }
 
@@ -64,7 +72,7 @@
 
 .port.output.Capacity_Single > #connector > #cap-icon{
     background-image: resource("GraphProcessor/Textures/One");
-    left: 1px;
+    left: 0px;
     right: 2px;
 }
 

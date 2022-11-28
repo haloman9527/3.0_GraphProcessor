@@ -24,15 +24,16 @@ public class DebugNodeView : BaseNodeView
 
     public DebugNodeView()
     {
-        btnDebug = new Button();
-        btnDebug.text = "Debug";
-        controlsContainer.Add(btnDebug);
     }
 
     protected override void OnInitialized()
     {
         base.OnInitialized();
+        btnDebug = new Button();
+        btnDebug.text = "Log";
         btnDebug.clicked += OnClick;
+        PortViews["Input"].Add(btnDebug);
+        PortViews["Input"].PortLabel.AddToClassList("hidden");
     }
 
     private void OnClick()
