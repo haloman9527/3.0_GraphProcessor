@@ -22,7 +22,7 @@
     display: none;
 }
 
-#input{
+#top > #input{
     background-color: rgba(0, 0, 0, 0);
     border-color: rgba(0, 0, 0, 0.6);
     margin-right: 5px;
@@ -35,7 +35,7 @@
     align-self: flex-start;
 }
 
-#output{
+#top > #output{
     background-color: rgba(0, 0, 0, 0);
     border-color: rgba(0, 0, 0, 0.6);
     margin-left: 5px;
@@ -68,8 +68,9 @@
     background-color:rgba(255, 128, 0, 1);
 }
 
-.ports-vertical-divider{
+#divider.vertical{
     display: none;
+    border-width: 0px;
 }
 
 .highlight {

@@ -24,6 +24,8 @@ namespace CZToolKit.GraphProcessor.Editors
     public partial class BasePortView : Port, IBindableView<BasePortVM>
     {
         public Image Icon { get; }
+        public VisualElement CapIconBG { get; }
+        public VisualElement CapIcon { get; }
         public Label PortLabel { get; }
         public VisualElement Connector { get; }
         public VisualElement ConnectorCap { get; }
@@ -36,8 +38,8 @@ namespace CZToolKit.GraphProcessor.Editors
             styleSheets.Add(GraphProcessorStyles.PortViewStyle);
             styleSheets.Add(GraphProcessorStyles.PortViewTypesStyle);
             
-            visualClass = "Port_" + portType.Name;
-            this.AddToClassList("Capacity_" + capacity.ToString());
+            visualClass = "port_" + portType.Name;
+            this.AddToClassList("capacity_" + capacity.ToString());
             
             PortLabel = this.Q("type") as Label;
             Connector = this.Q("connector");
@@ -47,17 +49,22 @@ namespace CZToolKit.GraphProcessor.Editors
             Icon.AddToClassList("port-icon");
             Insert(1, Icon);
 
-            var img = new Image();
-            img.name = "cap-icon";
-            Connector.Add(img);
+            CapIconBG = new VisualElement();
+            CapIconBG.name = "cap-icon-bg";
+            Connector.Add(CapIconBG);
+            
+            CapIcon = new VisualElement();
+            CapIcon.name = "cap-icon";
+            CapIcon.pickingMode = PickingMode.Ignore;
+            Connector.Add(CapIcon);
 
 
             PortLabel.pickingMode = PickingMode.Position;
+            Connector.pickingMode = PickingMode.Position;
             bool vertical = orientation == Orientation.Vertical;
             if (vertical)
             {
                 PortLabel.style.display = DisplayStyle.None;
-                Connector.pickingMode = PickingMode.Position;
                 AddToClassList("vertical");
             }
 

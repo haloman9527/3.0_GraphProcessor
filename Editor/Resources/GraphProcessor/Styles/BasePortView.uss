@@ -13,10 +13,14 @@
 
 .port.input > #type{
     margin-left: 0px;
+    margin-right: 0px;
+    padding-right: 4px;
 }
 
 .port.output > #type{
+    margin-left: 0px;
     margin-right: 0px;
+    padding-left: 4px;
 }
 
 .port > #connector {
@@ -33,6 +37,9 @@
 }
 
 .port > #connector > #cap{
+    flex: none;
+    display: none;
+    
     width: 11px;
     height: 11px;
     border-radius: 3px;
@@ -44,7 +51,17 @@
     border-bottom-width:1px;
 }
 
-.port:hover > #connector > #cap{
+.port > #connector > #cap-icon-bg{
+    width: 11px;
+    height: 11px;
+    border-radius: 3px;
+    position: relative;
+    border-left-width:1px;
+    border-top-width:1px;
+    border-right-width:1px;
+    border-bottom-width:1px;
+    display: none;
+    
     background-color: #ffc400;
 }
 
@@ -54,28 +71,28 @@
     top: 2px;
     bottom: 2px;
     position: absolute;
+    
+    -unity-background-image-tint-color: #ffffff;
+}
+
+.port:hover > #connector > #cap-icon-bg{
+    display: flex;
+    background-color: #ffc400;
 }
 
 .port:hover > #connector > #cap-icon{
     -unity-background-image-tint-color: #313131;
 }
 
-.port.input.Capacity_Single > #connector > #cap-icon{
-    background-image: resource("GraphProcessor/Textures/One");
+.port.capacity_Single > #connector > #cap-icon{
     left: 0px;
     right: 2px;
 }
 
-.port.input.Capacity_Multi > #connector > #cap-icon{
-    background-image: resource("GraphProcessor/Textures/Infinity");
-}
-
-.port.output.Capacity_Single > #connector > #cap-icon{
+.port.capacity_Single > #connector > #cap-icon{
     background-image: resource("GraphProcessor/Textures/One");
-    left: 0px;
-    right: 2px;
 }
 
-.port.output.Capacity_Multi > #connector > #cap-icon{
+.port.capacity_Multi > #connector > #cap-icon{
     background-image: resource("GraphProcessor/Textures/Infinity");
 }

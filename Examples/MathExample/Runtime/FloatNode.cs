@@ -31,6 +31,12 @@ public class FloatNodeVM : BaseNodeVM, IGetValueFromPort, IGetValueFromPort<floa
         get;
     }
 
+    public float Value
+    {
+        get { return GetPropertyValue<float>(nameof(FloatNode.num)); }
+        set { SetPropertyValue(nameof(FloatNode.num), value); }
+    }
+
     public FloatNodeVM(FloatNode model) : base(model)
     {
         T_Model = model;

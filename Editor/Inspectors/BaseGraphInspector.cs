@@ -1,4 +1,5 @@
 #region 注 释
+
 /***
  *
  *  Title:
@@ -12,7 +13,9 @@
  *  Blog: https://www.crosshair.top/
  *
  */
+
 #endregion
+
 #if UNITY_EDITOR && ODIN_INSPECTOR
 using CZToolKit.Core.Editors;
 using UnityEditor;
@@ -65,16 +68,14 @@ namespace CZToolKit.GraphProcessor.Editors
                 if (EditorGUI.EndChangeCheck() && view.ViewModel.TryGetValue(property.Name, out var bindableProperty))
                     bindableProperty.SetValueWithNotify(property.ValueEntry.WeakSmartValue);
             }
+
             propertyTree.EndDraw();
         }
 
         public override void OnDisable()
         {
             base.OnDisable();
-            if (propertyTree != null)
-            {
-                propertyTree.Dispose();
-            }
+            propertyTree?.Dispose();
         }
     }
 }

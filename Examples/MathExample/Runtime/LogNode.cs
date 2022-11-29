@@ -17,13 +17,13 @@ using CZToolKit.Core.ViewModel;
 using CZToolKit.GraphProcessor;
 using UnityEngine;
 
-[NodeMenuItem("Debug")]
-public class DebugNode : BaseNode { }
+[NodeMenuItem("Log")]
+public class LogNode : BaseNode { }
 
-[ViewModel(typeof(DebugNode))]
-public class DebugNodeVM : BaseNodeVM
+[ViewModel(typeof(LogNode))]
+public class LogNodeVM : BaseNodeVM
 {
-    public DebugNodeVM(BaseNode model) : base(model)
+    public LogNodeVM(BaseNode model) : base(model)
     {
         AddPort(new BasePortVM("Input", BasePort.Orientation.Horizontal, BasePort.Direction.Input, BasePort.Capacity.Single));
     }

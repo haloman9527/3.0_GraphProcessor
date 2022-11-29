@@ -26,7 +26,7 @@ public class SampleGraphView : BaseGraphView
         yield return typeof(FloatNode);
         yield return typeof(AddNode);
         yield return typeof(SubNode);
-        yield return typeof(DebugNode);
+        yield return typeof(LogNode);
     }
 
     protected override BaseConnectionView NewConnectionView(BaseConnectionVM connection)

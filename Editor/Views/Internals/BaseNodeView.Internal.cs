@@ -28,7 +28,9 @@ namespace CZToolKit.GraphProcessor.Editors
     public partial class BaseNodeView : NodeView, IBindableView<BaseNodeVM>
     {
         #region 字段
-        Label titleLabel;
+        
+        public readonly Label titleLabel;
+        public readonly VisualElement contents;
         public readonly VisualElement nodeBorder;
         public readonly VisualElement topPortContainer;
         public readonly VisualElement bottomPortContainer;
@@ -42,12 +44,11 @@ namespace CZToolKit.GraphProcessor.Editors
         #endregion
 
         #region 属性
+        
         public Label TitleLabel
         {
             get
             {
-                if (titleLabel == null)
-                    titleLabel = titleContainer.Q<Label>("title-label");
                 return titleLabel;
             }
         }
@@ -69,25 +70,23 @@ namespace CZToolKit.GraphProcessor.Editors
 
         public BaseNodeView() : base()
         {
-            styleSheets.Add(GraphProcessorStyles.BaseNodeViewStyle);
-
+            contents = mainContainer.Q("contents");
+            
             nodeBorder = this.Q(name: "node-border");
-
+            titleLabel = titleContainer.Q<Label>("title-label");
             contentsHorizontalDivider = contentContainer.Q(name: "divider", className: "horizontal");
-            contentsHorizontalDivider.AddToClassList("contents-horizontal-divider");
-
             portsVerticalDivider = topContainer.Q(name: "divider", className: "vertical");
-            portsVerticalDivider.AddToClassList("ports-vertical-divider");
 
             controlsContainer = new VisualElement { name = "controls" };
-            controlsContainer.AddToClassList("node-controls");
-            mainContainer.Add(controlsContainer);
+            contents.Add(controlsContainer);
 
             topPortContainer = new VisualElement { name = "top-input" };
             nodeBorder.Insert(0, topPortContainer);
 
             bottomPortContainer = new VisualElement { name = "bottom-input" };
             nodeBorder.Add(bottomPortContainer);
+            
+            styleSheets.Add(GraphProcessorStyles.BaseNodeViewStyle);
         }
 
         #region Initialize

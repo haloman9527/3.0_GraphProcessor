@@ -17,12 +17,12 @@
 using CZToolKit.GraphProcessor.Editors;
 using UnityEngine.UIElements;
 
-[CustomView(typeof(DebugNode))]
-public class DebugNodeView : BaseNodeView
+[CustomView(typeof(LogNode))]
+public class LogNodeView : BaseNodeView
 {
     Button btnDebug;
 
-    public DebugNodeView()
+    public LogNodeView()
     {
     }
 
@@ -38,7 +38,7 @@ public class DebugNodeView : BaseNodeView
 
     private void OnClick()
     {
-        (ViewModel as DebugNodeVM).DebugInput();
+        (ViewModel as LogNodeVM).DebugInput();
     }
 }
 #endif

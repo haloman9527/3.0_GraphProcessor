@@ -35,7 +35,7 @@ public class SampleGraphTest : GraphAssetOwner<SampleGraphAsset, SampleGraphVM>
     {
         foreach (var node in T_Graph.Nodes.Values)
         {
-            if (node is DebugNodeVM debugNode)
+            if (node is LogNodeVM debugNode)
             {
                 debugNode.DebugInput();
             }

@@ -7,7 +7,7 @@
     --edge-width: 7;
 }
 
-.edge:selected {
+.edge:checked {
     --edge-width: 5;
 }
 

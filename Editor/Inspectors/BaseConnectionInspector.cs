@@ -50,6 +50,12 @@ namespace CZToolKit.GraphProcessor.Editors
             propertyTree.EndDraw();
             Editor.Repaint();
         }
+
+        public override void OnDisable()
+        {
+            base.OnDisable();
+            propertyTree?.Dispose();
+        }
     }
 }
 #endif
