@@ -265,6 +265,7 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             ToolbarButton btnOverview = new ToolbarButton()
             {
+                name = "btnOverview",
                 text = "Overview",
                 tooltip = "查看所有节点"
             };
@@ -272,8 +273,6 @@ namespace CZToolKit.GraphProcessor.Editors
             {
                 GraphView.FrameAll();
             };
-            btnOverview.style.width = 80;
-            btnOverview.style.unityTextAlign = TextAnchor.MiddleCenter;
             ToolbarLeft.Add(btnOverview);
 
             IMGUIContainer drawName = new IMGUIContainer(() =>
@@ -288,13 +287,11 @@ namespace CZToolKit.GraphProcessor.Editors
 
             ToolbarButton btnReload = new ToolbarButton()
             {
+                name = "btnReload",
                 text = "Reload",
                 tooltip = "重新加载",
-                style = { width = 70 }
             };
             btnReload.clicked += Reload;
-            btnReload.style.width = 80;
-            btnReload.style.unityTextAlign = TextAnchor.MiddleCenter;
             ToolbarRight.Add(btnReload);
         }
         #endregion

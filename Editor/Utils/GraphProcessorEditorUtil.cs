@@ -55,19 +55,19 @@ namespace CZToolKit.GraphProcessor.Editors
         #endregion
 
         #region NodeNames
-        static Dictionary<Type, NodeMenuItemAttribute> NodeMenuItemsCache;
+        static Dictionary<Type, NodeMenuAttribute> NodeMenuItemsCache;
 
-        public static NodeMenuItemAttribute GetNodeMenu(Type nodeType)
+        public static NodeMenuAttribute GetNodeMenu(Type nodeType)
         {
             if (NodeMenuItemsCache == null)
             {
-                NodeMenuItemsCache = new Dictionary<Type, NodeMenuItemAttribute>();
-                foreach (var type in TypeCache.GetTypesWithAttribute<NodeMenuItemAttribute>())
+                NodeMenuItemsCache = new Dictionary<Type, NodeMenuAttribute>();
+                foreach (var type in TypeCache.GetTypesWithAttribute<NodeMenuAttribute>())
                 {
                     if (type.IsAbstract) continue;
                     foreach (var attribute in type.GetCustomAttributes(false))
                     {
-                        if (!(attribute is NodeMenuItemAttribute nodeMenuItemAttribute))
+                        if (!(attribute is NodeMenuAttribute nodeMenuItemAttribute))
                             continue;
                         if (nodeMenuItemAttribute.titles == null || nodeMenuItemAttribute.titles.Length == 0)
                             continue;

@@ -89,10 +89,13 @@ namespace CZToolKit.GraphProcessor
             this[nameof(BaseNode.position)] = new BindableProperty<InternalVector2>(() => Model.position, v => Model.position = v);
 
             string title = string.Empty;
-            if (Util_Attribute.TryGetTypeAttribute(ModelType, out NodeMenuItemAttribute displayName) && displayName.titles != null && displayName.titles.Length != 0)
+            if (Util_Attribute.TryGetTypeAttribute(ModelType, out NodeMenuAttribute displayName) && displayName.titles != null && displayName.titles.Length != 0)
                 title = displayName.titles[displayName.titles.Length - 1];
             else
                 title = ModelType.Name;
+
+            if (Util_Attribute.TryGetTypeAttribute(ModelType, out NodeTitleAttribute titleAttr) && !string.IsNullOrEmpty(titleAttr.title))
+                title = titleAttr.title;
             this[TITLE_NAME] = new BindableProperty<string>(() => title, v => title = v);
 
             var titleColor = DefaultTitleColor;

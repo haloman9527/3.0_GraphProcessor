@@ -17,7 +17,7 @@ using CZToolKit.Core.ViewModel;
 using CZToolKit.GraphProcessor;
 using UnityEngine;
 
-[NodeMenuItem("Log")]
+[NodeMenu("Log")]
 public class LogNode : BaseNode { }
 
 [ViewModel(typeof(LogNode))]

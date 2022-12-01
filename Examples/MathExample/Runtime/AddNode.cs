@@ -17,7 +17,7 @@ using CZToolKit.Core.ViewModel;
 using CZToolKit.GraphProcessor;
 
 [NodeTooltip("加法节点")]
-[NodeMenuItem("Add")]
+[NodeMenu("Add")]
 public class AddNode : BaseNode { }
 
 [ViewModel(typeof(AddNode))]

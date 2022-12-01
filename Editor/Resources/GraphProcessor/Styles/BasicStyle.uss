@@ -8,3 +8,30 @@
     display: none;
     visibility: hidden;
 }
+
+#rootVisualContainer > .unity-toolbar{
+    border-left-width: 0px;
+    border-right-width: 0px;
+    border-top-width: 0px;
+    border-bottom-width: 1px;
+}
+.unity-toolbar > .unity-toolbar{
+    border-width: 0px;
+}
+
+.unity-toolbar > #ToolbarCenter{
+    flex-grow: 1;
+}
+
+.unity-toolbar > ToolbarButton{
+    width: 80px;
+    -unity-text-align: middle-center;
+}
+
+.unity-toolbar#ToolbarLeft > ToolbarButton{
+    border-left-width: 0;
+}
+
+.unity-toolbar#ToolbarRight > ToolbarButton{
+    border-right-width: 0;
+}

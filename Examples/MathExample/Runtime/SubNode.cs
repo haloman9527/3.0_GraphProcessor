@@ -18,7 +18,7 @@ using System.Collections.Generic;
 using CZToolKit.Core.ViewModel;
 using CZToolKit.GraphProcessor;
 
-[NodeMenuItem("Sub")]
+[NodeMenu("Sub")]
 public class SubNode : BaseNode
 {
     public List<string> ports = new List<string>();
