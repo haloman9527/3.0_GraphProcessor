@@ -29,7 +29,8 @@ namespace CZToolKit.GraphProcessor.Editors
     {
         #region 字段
         
-        public readonly Label titleLabel;
+        public readonly Label nodeLabel;
+        public readonly Image nodeIcon;
         public readonly VisualElement contents;
         public readonly VisualElement nodeBorder;
         public readonly VisualElement topPortContainer;
@@ -45,11 +46,19 @@ namespace CZToolKit.GraphProcessor.Editors
 
         #region 属性
         
-        public Label TitleLabel
+        public Label NodeLabel
         {
             get
             {
-                return titleLabel;
+                return nodeLabel;
+            }
+        }
+        
+        public Image NodeIcon
+        {
+            get
+            {
+                return nodeIcon;
             }
         }
         public BaseGraphView Owner
@@ -73,9 +82,12 @@ namespace CZToolKit.GraphProcessor.Editors
             contents = mainContainer.Q("contents");
             
             nodeBorder = this.Q(name: "node-border");
-            titleLabel = titleContainer.Q<Label>("title-label");
+            nodeLabel = titleContainer.Q<Label>("title-label");
             contentsHorizontalDivider = contentContainer.Q(name: "divider", className: "horizontal");
             portsVerticalDivider = topContainer.Q(name: "divider", className: "vertical");
+
+            nodeIcon = new Image() { name = "title-icon" };
+            titleContainer.Insert(0, nodeIcon);
 
             controlsContainer = new VisualElement { name = "controls" };
             contents.Add(controlsContainer);
@@ -102,7 +114,7 @@ namespace CZToolKit.GraphProcessor.Editors
             if (ViewModel.ContainsKey(BaseNodeVM.TITLE_COLOR_NAME))
             {
                 titleContainer.style.backgroundColor = ViewModel.TitleColor.ToColor();
-                TitleLabel.style.color = ViewModel.TitleColor.ToColor().GetLuminance() > 0.5f && ViewModel.TitleColor.a > 0.5f ? Color.black : Color.white * 0.9f;
+                NodeLabel.style.color = ViewModel.TitleColor.ToColor().GetLuminance() > 0.5f && ViewModel.TitleColor.a > 0.5f ? Color.black : Color.white * 0.9f;
             }
             
             foreach (var port in ViewModel.Ports.Values)
@@ -207,7 +219,7 @@ namespace CZToolKit.GraphProcessor.Editors
         void OnTitleColorChanged(InternalColor color)
         {
             titleContainer.style.backgroundColor = color.ToColor();
-            TitleLabel.style.color = color.ToColor().GetLuminance() > 0.5f && color.a > 0.5f ? Color.black : Color.white * 0.9f;
+            NodeLabel.style.color = color.ToColor().GetLuminance() > 0.5f && color.a > 0.5f ? Color.black : Color.white * 0.9f;
         }
         #endregion
 
