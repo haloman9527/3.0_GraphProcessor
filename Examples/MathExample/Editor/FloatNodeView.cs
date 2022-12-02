@@ -35,6 +35,7 @@ public class FloatNodeView : BaseNodeView
         valueField = new FloatField();
         valueField.style.marginLeft = 3;
         valueField.style.marginRight = 3;
+        valueField.style.minWidth = 50;
         valueField.SetValueWithoutNotify(vm.Value);
         valueField.RegisterValueChangedCallback(OnEditedValue);
         PortViews["Output"].Add(valueField);
@@ -50,7 +51,6 @@ public class FloatNodeView : BaseNodeView
     protected override void OnBindingProperties()
     {
         base.OnBindingProperties();
-        
         ViewModel[nameof(FloatNode.num)].AsBindableProperty<float>().RegisterValueChangedEvent(OnFloatNumChanged);
     }
 
