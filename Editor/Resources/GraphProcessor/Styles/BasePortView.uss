@@ -3,7 +3,7 @@
     align-items: center;
     padding-left: 0px;
     padding-right: 0px;
-    height: 30px;
+    height: 25px;
     --port-color: #ffc400;
 }
 
