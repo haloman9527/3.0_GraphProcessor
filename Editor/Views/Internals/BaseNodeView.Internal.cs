@@ -146,7 +146,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
         public void BindingProperties()
         {
-            ViewModel.BindingProperty<InternalVector2>(nameof(BaseNode.position), OnPositionChanged);
+            ViewModel.BindingProperty<InternalVector2Int>(nameof(BaseNode.position), OnPositionChanged);
             ViewModel.BindingProperty<string>(BaseNodeVM.TITLE_NAME, OnTitleChanged);
             if (ViewModel.ContainsKey(BaseNodeVM.TITLE_COLOR_NAME))
                 ViewModel.BindingProperty<InternalColor>(BaseNodeVM.TITLE_COLOR_NAME, OnTitleColorChanged);
@@ -169,7 +169,7 @@ namespace CZToolKit.GraphProcessor.Editors
             if (ViewModel.ContainsKey(BaseNodeVM.TITLE_COLOR_NAME))
                 ViewModel.UnBindingProperty<InternalColor>(BaseNodeVM.TITLE_COLOR_NAME, OnTitleColorChanged);
             ViewModel.UnBindingProperty<string>(BaseNodeVM.TOOLTIP_NAME, OnTooltipChanged);
-            ViewModel.UnBindingProperty<InternalVector2>(nameof(BaseNode.position), OnPositionChanged);
+            ViewModel.UnBindingProperty<InternalVector2Int>(nameof(BaseNode.position), OnPositionChanged);
 
             ViewModel.onPortAdded -= OnPortAdded;
             ViewModel.onPortRemoved -= OnPortRemoved;
@@ -210,7 +210,7 @@ namespace CZToolKit.GraphProcessor.Editors
             base.tooltip = tooltip;
         }
 
-        void OnPositionChanged(InternalVector2 position)
+        void OnPositionChanged(InternalVector2Int position)
         {
             base.SetPosition(new Rect(position.ToVector2(), GetPosition().size));
             Owner.SetDirty();

@@ -20,6 +20,7 @@
 using CZToolKit.Core.Editors;
 using Sirenix.OdinInspector.Editor;
 using UnityEditor;
+using UnityEngine;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
@@ -61,6 +62,9 @@ namespace CZToolKit.GraphProcessor.Editors
                 return;
             if (propertyTree == null)
                 return;
+            GUI.enabled = false;
+            EditorGUILayout.Vector2IntField(string.Empty, view.ViewModel.Position.ToVector2Int());
+            GUI.enabled = true;
             propertyTree.Draw(false);
             Editor.Repaint();
         }

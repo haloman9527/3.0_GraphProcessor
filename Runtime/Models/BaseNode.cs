@@ -21,13 +21,13 @@ namespace CZToolKit.GraphProcessor
     [Serializable]
     public abstract class BaseNode
     {
-        [UnityEngine.HideInInspector] public InternalVector2 position;
+        [UnityEngine.HideInInspector] public InternalVector2Int position;
     }
 #else
     [Serializable]
     public abstract class BaseNode
     {
-        public InternalVector2 position;
+        public InternalVector2Int position;
     }
 #endif
 }

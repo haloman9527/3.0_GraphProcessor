@@ -42,9 +42,9 @@ namespace CZToolKit.GraphProcessor
         /// <summary> 唯一标识 </summary>
         public int ID { get; internal set; }
 
-        public virtual InternalVector2 Position
+        public virtual InternalVector2Int Position
         {
-            get { return GetPropertyValue<InternalVector2>(nameof(BaseNode.position)); }
+            get { return GetPropertyValue<InternalVector2Int>(nameof(BaseNode.position)); }
             set { SetPropertyValue(nameof(BaseNode.position), value); }
         }
 
@@ -83,10 +83,10 @@ namespace CZToolKit.GraphProcessor
         {
             Model = model;
             ModelType = model.GetType();
-            Model.position = Model.position == default ? InternalVector2.zero : Model.position;
+            Model.position = Model.position == default ? InternalVector2Int.zero : Model.position;
             ports = new Dictionary<string, BasePortVM>();
 
-            this[nameof(BaseNode.position)] = new BindableProperty<InternalVector2>(() => Model.position, v => Model.position = v);
+            this[nameof(BaseNode.position)] = new BindableProperty<InternalVector2Int>(() => Model.position, v => Model.position = v);
 
             string title = string.Empty;
             if (Util_Attribute.TryGetTypeAttribute(ModelType, out NodeMenuAttribute displayName) && displayName.titles != null && displayName.titles.Length != 0)

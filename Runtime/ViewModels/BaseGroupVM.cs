@@ -45,9 +45,9 @@ namespace CZToolKit.GraphProcessor
             get { return GetPropertyValue<string>(nameof(Model.groupName)); }
             set { SetPropertyValue(nameof(Model.groupName), value); }
         }
-        public InternalVector2 Position
+        public InternalVector2Int Position
         {
-            get { return GetPropertyValue<InternalVector2>(nameof(Model.position)); }
+            get { return GetPropertyValue<InternalVector2Int>(nameof(Model.position)); }
             set { SetPropertyValue(nameof(Model.position), value); }
         }
         public InternalColor BackgroundColor
@@ -65,9 +65,9 @@ namespace CZToolKit.GraphProcessor
         {
             Model = model;
             ModelType = model.GetType();
-            Model.position = Model.position == default ? InternalVector2.zero : Model.position;
+            Model.position = Model.position == default ? InternalVector2Int.zero : Model.position;
             this[nameof(BaseGroup.groupName)] = new BindableProperty<string>(() => Model.groupName, v => Model.groupName = v);
-            this[nameof(BaseGroup.position)] = new BindableProperty<InternalVector2>(() => Model.position, v => Model.position = v);
+            this[nameof(BaseGroup.position)] = new BindableProperty<InternalVector2Int>(() => Model.position, v => Model.position = v);
             this[nameof(BaseGroup.backgroundColor)] = new BindableProperty<InternalColor>(() => Model.backgroundColor, v => Model.backgroundColor = v);
         }
 

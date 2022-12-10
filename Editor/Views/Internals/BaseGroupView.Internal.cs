@@ -68,7 +68,7 @@ namespace CZToolKit.GraphProcessor.Editors
         public void BindingProperties()
         {
             ViewModel[nameof(BaseGroup.groupName)].RegisterValueChangedEvent<string>(OnTitleChanged);
-            ViewModel[nameof(BaseGroup.position)].RegisterValueChangedEvent<InternalVector2>(OnPositionChanged);
+            ViewModel[nameof(BaseGroup.position)].RegisterValueChangedEvent<InternalVector2Int>(OnPositionChanged);
             ViewModel[nameof(BaseGroup.backgroundColor)].RegisterValueChangedEvent<InternalColor>(OnBackgroundColorChanged);
             ViewModel.onNodesAdded += OnNodesAdded;
             ViewModel.onNodesRemoved += OnNodesRemoved;
@@ -77,7 +77,7 @@ namespace CZToolKit.GraphProcessor.Editors
         public void UnBindingProperties()
         {
             ViewModel[nameof(BaseGroup.groupName)].UnregisterValueChangedEvent<string>(OnTitleChanged);
-            ViewModel[nameof(BaseGroup.position)].UnregisterValueChangedEvent<InternalVector2>(OnPositionChanged);
+            ViewModel[nameof(BaseGroup.position)].UnregisterValueChangedEvent<InternalVector2Int>(OnPositionChanged);
             ViewModel[nameof(BaseGroup.backgroundColor)].UnregisterValueChangedEvent<InternalColor>(OnBackgroundColorChanged);
             ViewModel.onNodesAdded -= OnNodesAdded;
             ViewModel.onNodesRemoved -= OnNodesRemoved;
@@ -92,7 +92,7 @@ namespace CZToolKit.GraphProcessor.Editors
             Owner.SetDirty();
         }
 
-        private void OnPositionChanged(InternalVector2 newPos)
+        private void OnPositionChanged(InternalVector2Int newPos)
         {
             base.SetPosition(new Rect(newPos.ToVector2(), GetPosition().size));
         }

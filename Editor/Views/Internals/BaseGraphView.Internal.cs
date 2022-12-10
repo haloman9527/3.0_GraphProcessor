@@ -160,7 +160,7 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             RegisterCallback<DetachFromPanelEvent>(evt => { UnBindingProperties(); });
 
-            ViewModel.BindingProperty<InternalVector2>(nameof(BaseGraph.pan), OnPositionChanged);
+            ViewModel.BindingProperty<InternalVector2Int>(nameof(BaseGraph.pan), OnPositionChanged);
             ViewModel.BindingProperty<float>(nameof(BaseGraph.zoom), OnZoomChanged);
 
             ViewModel.OnNodeAdded += OnNodeAdded;
@@ -185,7 +185,7 @@ namespace CZToolKit.GraphProcessor.Editors
                 }
             });
 
-            ViewModel.UnBindingProperty<InternalVector2>(nameof(BaseGraph.pan), OnPositionChanged);
+            ViewModel.UnBindingProperty<InternalVector2Int>(nameof(BaseGraph.pan), OnPositionChanged);
             ViewModel.UnBindingProperty<float>(nameof(BaseGraph.zoom), OnZoomChanged);
 
             ViewModel.OnNodeAdded -= OnNodeAdded;
@@ -306,7 +306,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
         #region Callbacks
 
-        void OnPositionChanged(InternalVector2 position)
+        void OnPositionChanged(InternalVector2Int position)
         {
             viewTransform.position = position.ToVector2();
             SetDirty();
@@ -388,8 +388,8 @@ namespace CZToolKit.GraphProcessor.Editors
             {
                 CommandDispatcher.BeginGroup();
                 // 当节点移动之后，与之连接的接口重新排序
-                Dictionary<BaseNodeVM, InternalVector2> newPos = new Dictionary<BaseNodeVM, InternalVector2>();
-                Dictionary<BaseGroupVM, InternalVector2> groupNewPos = new Dictionary<BaseGroupVM, InternalVector2>();
+                Dictionary<BaseNodeVM, InternalVector2Int> newPos = new Dictionary<BaseNodeVM, InternalVector2Int>();
+                Dictionary<BaseGroupVM, InternalVector2Int> groupNewPos = new Dictionary<BaseGroupVM, InternalVector2Int>();
                 HashSet<BasePortVM> portsHashset = new HashSet<BasePortVM>();
 
                 changes.movedElements.RemoveAll(element =>

@@ -46,9 +46,9 @@ namespace CZToolKit.GraphProcessor
         public BaseGraph Model { get; }
         public Type ModelType { get; }
 
-        public InternalVector2 Pan
+        public InternalVector2Int Pan
         {
-            get { return GetPropertyValue<InternalVector2>(nameof(BaseGraph.pan)); }
+            get { return GetPropertyValue<InternalVector2Int>(nameof(BaseGraph.pan)); }
             set { SetPropertyValue(nameof(BaseGraph.pan), value); }
         }
 
@@ -79,14 +79,14 @@ namespace CZToolKit.GraphProcessor
         {
             Model = model;
             ModelType = model.GetType();
-            Model.pan = Model.pan == default ? InternalVector2.zero : Model.pan;
+            Model.pan = Model.pan == default ? InternalVector2Int.zero : Model.pan;
             Model.zoom = Model.zoom == default ? 1 : Model.zoom;
 
             this.nodes = new Dictionary<int, BaseNodeVM>();
             this.groups = new List<BaseGroupVM>();
             this.connections = new List<BaseConnectionVM>();
 
-            this[nameof(BaseGraph.pan)] = new BindableProperty<InternalVector2>(() => Model.pan, v => Model.pan = v);
+            this[nameof(BaseGraph.pan)] = new BindableProperty<InternalVector2Int>(() => Model.pan, v => Model.pan = v);
             this[nameof(BaseGraph.zoom)] = new BindableProperty<float>(() => Model.zoom, v => Model.zoom = v);
 
             foreach (var pair in Model.nodes)
@@ -97,7 +97,7 @@ namespace CZToolKit.GraphProcessor
                 nodeVM.ID = pair.Key;
                 nodes.Add(pair.Key, nodeVM);
             }
-
+            
             for (int i = 0; i < Model.connections.Count; i++)
             {
                 var connection = Model.connections[i];
@@ -150,7 +150,7 @@ namespace CZToolKit.GraphProcessor
 
         #region API
 
-        public BaseNodeVM AddNode<T>(InternalVector2 position) where T : BaseNode, new()
+        public BaseNodeVM AddNode<T>(InternalVector2Int position) where T : BaseNode, new()
         {
             var node = new T();
             node.position = position;
@@ -159,7 +159,7 @@ namespace CZToolKit.GraphProcessor
             return nodeVM;
         }
 
-        public BaseNodeVM AddNode(Type nodeType, InternalVector2 position)
+        public BaseNodeVM AddNode(Type nodeType, InternalVector2Int position)
         {
             var node = Activator.CreateInstance(nodeType) as BaseNode;
             node.position = position;

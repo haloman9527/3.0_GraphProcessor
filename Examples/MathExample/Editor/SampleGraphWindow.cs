@@ -105,7 +105,7 @@ public class SampleGraphWindow : BaseGraphWindow
 
         foreach (var pair in nodes)
         {
-            pair.Value.position += new InternalVector2(50, 50);
+            pair.Value.position += new InternalVector2Int(50, 50);
             var vm = ViewModelFactory.CreateViewModel(pair.Value) as BaseNodeVM;
             GraphView.CommandDispatcher.Do(new AddNodeCommand(graph, vm));
             nodeMaps[pair.Key] = vm;

@@ -26,7 +26,7 @@ namespace CZToolKit.GraphProcessor
         BaseGraphVM graph;
         BaseNodeVM nodeVM;
 
-        public AddNodeCommand(BaseGraphVM graph, Type nodeType, InternalVector2 position)
+        public AddNodeCommand(BaseGraphVM graph, Type nodeType, InternalVector2Int position)
         {
             this.graph = graph;
             var node = Activator.CreateInstance(nodeType) as BaseNode;
@@ -95,10 +95,10 @@ namespace CZToolKit.GraphProcessor
     public class MoveNodeCommand : ICommand
     {
         BaseNodeVM node;
-        InternalVector2 currentPosition;
-        InternalVector2 targetPosition;
+        InternalVector2Int currentPosition;
+        InternalVector2Int targetPosition;
 
-        public MoveNodeCommand(BaseNodeVM node, InternalVector2 position)
+        public MoveNodeCommand(BaseNodeVM node, InternalVector2Int position)
         {
             this.node = node;
             currentPosition = node.Position;
@@ -118,10 +118,10 @@ namespace CZToolKit.GraphProcessor
 
     public class MoveNodesCommand : ICommand
     {
-        Dictionary<BaseNodeVM, InternalVector2> oldPos = new Dictionary<BaseNodeVM, InternalVector2>();
-        Dictionary<BaseNodeVM, InternalVector2> newPos = new Dictionary<BaseNodeVM, InternalVector2>();
+        Dictionary<BaseNodeVM, InternalVector2Int> oldPos = new Dictionary<BaseNodeVM, InternalVector2Int>();
+        Dictionary<BaseNodeVM, InternalVector2Int> newPos = new Dictionary<BaseNodeVM, InternalVector2Int>();
 
-        public MoveNodesCommand(Dictionary<BaseNodeVM, InternalVector2> newPos)
+        public MoveNodesCommand(Dictionary<BaseNodeVM, InternalVector2Int> newPos)
         {
             this.newPos = newPos;
         }
@@ -196,10 +196,10 @@ namespace CZToolKit.GraphProcessor
 
     public class MoveGroupsCommand : ICommand
     {
-        Dictionary<BaseGroupVM, InternalVector2> oldPos = new Dictionary<BaseGroupVM, InternalVector2>();
-        Dictionary<BaseGroupVM, InternalVector2> newPos = new Dictionary<BaseGroupVM, InternalVector2>();
+        Dictionary<BaseGroupVM, InternalVector2Int> oldPos = new Dictionary<BaseGroupVM, InternalVector2Int>();
+        Dictionary<BaseGroupVM, InternalVector2Int> newPos = new Dictionary<BaseGroupVM, InternalVector2Int>();
 
-        public MoveGroupsCommand(Dictionary<BaseGroupVM, InternalVector2> groups)
+        public MoveGroupsCommand(Dictionary<BaseGroupVM, InternalVector2Int> groups)
         {
             this.newPos = groups;
             foreach (var pair in groups)
