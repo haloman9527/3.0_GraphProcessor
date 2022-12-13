@@ -205,16 +205,12 @@ namespace CZToolKit.GraphProcessor
 
         public void Connect(BaseConnectionVM connection)
         {
-            if (!Nodes.TryGetValue(connection.FromNodeID, out var fromNode))
-                throw new Exception($"Graph中不存在From节点:{connection.FromNodeID}");
-            if (!fromNode.Ports.TryGetValue(connection.FromPortName, out var fromPort))
-                throw new Exception($"From节点中不存在接口:{connection.FromPortName}");
-
-            if (!Nodes.TryGetValue(connection.ToNodeID, out var toNode))
-                throw new Exception($"Graph中不存在To节点:{connection.ToNodeID}");
-            if (!toNode.Ports.TryGetValue(connection.ToPortName, out var toPort))
-                throw new Exception($"To节点中不存在接口:{connection.ToPortName}");
-
+            var fromNode = nodes[connection.FromNodeID];
+            var fromPort = fromNode.ports[connection.FromPortName];
+            
+            var toNode = nodes[connection.ToNodeID];
+            var toPort = fromNode.ports[connection.ToPortName];
+            
             var tmpConnection = fromPort.Connections.FirstOrDefault(tmp => tmp.ToNodeID == connection.ToNodeID && tmp.ToPortName == connection.ToPortName);
             if (tmpConnection != null)
                 return;
@@ -236,15 +232,35 @@ namespace CZToolKit.GraphProcessor
 
         public BaseConnectionVM Connect(BaseConnection connection)
         {
-            var vm = ViewModelFactory.CreateViewModel(connection) as BaseConnectionVM;
-            Connect(vm);
-            return vm;
+            var fromNode = nodes[connection.fromNode];
+            var fromPort = fromNode.ports[connection.fromPort];
+            
+            var toNode = nodes[connection.toNode];
+            var toPort = fromNode.ports[connection.toPort];
+            
+            return Connect(fromPort, toPort);
         }
 
-        public BaseConnectionVM Connect(BasePortVM from, BasePortVM to)
+        public BaseConnectionVM Connect(BasePortVM fromPort, BasePortVM toPort)
         {
-            var connection = NewConnection(from, to);
-            Connect(connection);
+            var tmpConnection = fromPort.Connections.FirstOrDefault(tmp => tmp.FromNode == fromPort.Owner && tmp.ToPortName == toPort.Name);
+            if (tmpConnection != null)
+                return tmpConnection;
+
+            if (fromPort.Capacity == BasePort.Capacity.Single)
+                Disconnect(fromPort);
+            if (toPort.Capacity == BasePort.Capacity.Single)
+                Disconnect(toPort);
+            var connection = NewConnection(fromPort, toPort);
+            
+            connection.Enable(this);
+            connections.Add(connection);
+            Model.connections.Add(connection.Model);
+
+            fromPort.ConnectTo(connection);
+            toPort.ConnectTo(connection);
+
+            OnConnected?.Invoke(connection);
             return connection;
         }
 
@@ -280,11 +296,6 @@ namespace CZToolKit.GraphProcessor
             {
                 Disconnect(connection);
             }
-        }
-
-        public void Disconnect(BaseNodeVM node, string portName)
-        {
-            Disconnect(node.Ports[portName]);
         }
 
         public void AddGroup(BaseGroupVM group)

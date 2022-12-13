@@ -84,6 +84,7 @@ namespace CZToolKit.GraphProcessor
         public void Undo()
         {
             graph.AddNode(node);
+            // 还原
             foreach (var edge in connections)
             {
                 graph.Connect(edge);
