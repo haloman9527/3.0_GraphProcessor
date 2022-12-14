@@ -102,7 +102,7 @@ namespace CZToolKit.GraphProcessor
             get { return GetPropertyValue<bool>(nameof(hideLabel)); }
             set { SetPropertyValue(nameof(hideLabel), value); }
         }
-        public IReadOnlyCollection<BaseConnectionVM> Connections
+        public IReadOnlyList<BaseConnectionVM> Connections
         {
             get { return connections; }
         }

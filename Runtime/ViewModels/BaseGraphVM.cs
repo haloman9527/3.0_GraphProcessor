@@ -82,9 +82,9 @@ namespace CZToolKit.GraphProcessor
             Model.pan = Model.pan == default ? InternalVector2Int.zero : Model.pan;
             Model.zoom = Model.zoom == default ? 1 : Model.zoom;
 
-            this.nodes = new Dictionary<int, BaseNodeVM>();
-            this.groups = new List<BaseGroupVM>();
-            this.connections = new List<BaseConnectionVM>();
+            this.nodes = new Dictionary<int, BaseNodeVM>(model.nodes.Count);
+            this.groups = new List<BaseGroupVM>(model.groups.Count);
+            this.connections = new List<BaseConnectionVM>(model.connections.Count);
 
             this[nameof(BaseGraph.pan)] = new BindableProperty<InternalVector2Int>(() => Model.pan, v => Model.pan = v);
             this[nameof(BaseGraph.zoom)] = new BindableProperty<float>(() => Model.zoom, v => Model.zoom = v);
@@ -203,13 +203,13 @@ namespace CZToolKit.GraphProcessor
             OnNodeRemoved?.Invoke(node);
         }
 
-        public void Connect(BaseConnectionVM connection)
+        public void ReConnect(BaseConnectionVM connection)
         {
             var fromNode = nodes[connection.FromNodeID];
             var fromPort = fromNode.ports[connection.FromPortName];
             
             var toNode = nodes[connection.ToNodeID];
-            var toPort = fromNode.ports[connection.ToPortName];
+            var toPort = toNode.ports[connection.ToPortName];
             
             var tmpConnection = fromPort.Connections.FirstOrDefault(tmp => tmp.ToNodeID == connection.ToNodeID && tmp.ToPortName == connection.ToPortName);
             if (tmpConnection != null)
@@ -228,17 +228,6 @@ namespace CZToolKit.GraphProcessor
             toPort.ConnectTo(connection);
 
             OnConnected?.Invoke(connection);
-        }
-
-        public BaseConnectionVM Connect(BaseConnection connection)
-        {
-            var fromNode = nodes[connection.fromNode];
-            var fromPort = fromNode.ports[connection.fromPort];
-            
-            var toNode = nodes[connection.toNode];
-            var toPort = fromNode.ports[connection.toPort];
-            
-            return Connect(fromPort, toPort);
         }
 
         public BaseConnectionVM Connect(BasePortVM fromPort, BasePortVM toPort)

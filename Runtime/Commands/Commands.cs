@@ -87,7 +87,7 @@ namespace CZToolKit.GraphProcessor
             // 还原
             foreach (var edge in connections)
             {
-                graph.Connect(edge);
+                graph.ReConnect(edge);
             }
             connections.Clear();
         }
@@ -372,7 +372,7 @@ namespace CZToolKit.GraphProcessor
                 }
             }
 
-            graph.Connect(connectionVM);
+            graph.ReConnect(connectionVM);
         }
 
         public void Undo()
@@ -382,7 +382,7 @@ namespace CZToolKit.GraphProcessor
             // 还原
             foreach (var connection in replacedConnections)
             {
-                graph.Connect(connection);
+                graph.ReConnect(connection);
             }
         }
     }
@@ -424,19 +424,19 @@ namespace CZToolKit.GraphProcessor
             }
 
             connection.Redirect(newFromPort, newToPort);
-            graph.Connect(connection);
+            graph.ReConnect(connection);
         }
 
         public void Undo()
         {
             graph.Disconnect(connection);
             connection.Redirect(oldFromPort, oldToPort);
-            graph.Connect(connection);
+            graph.ReConnect(connection);
 
             // 还原
             foreach (var connection in replacedConnections)
             {
-                graph.Connect(connection);
+                graph.ReConnect(connection);
             }
         }
     }
@@ -459,7 +459,7 @@ namespace CZToolKit.GraphProcessor
 
         public void Undo()
         {
-            graph.Connect(connection);
+            graph.ReConnect(connection);
         }
     }
 }
