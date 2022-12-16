@@ -21,7 +21,7 @@ using System.Linq;
 namespace CZToolKit.GraphProcessor
 {
     [ViewModel(typeof(BaseGroup))]
-    public class BaseGroupVM : ViewModel
+    public class BaseGroupVM : ViewModel, IGraphElement
     {
         public event Action<IEnumerable<BaseNodeVM>> onNodesAdded;
         public event Action<IEnumerable<BaseNodeVM>> onNodesRemoved;
@@ -74,6 +74,7 @@ namespace CZToolKit.GraphProcessor
         internal void Enable(BaseGraphVM graph)
         {
             Owner = graph;
+            Model.nodes.RemoveAll(nodeID => !graph.Nodes.ContainsKey(nodeID));
             OnEnabled();
         }
 

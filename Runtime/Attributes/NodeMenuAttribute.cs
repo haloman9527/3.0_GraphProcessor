@@ -21,14 +21,17 @@ namespace CZToolKit.GraphProcessor
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
     public class NodeMenuAttribute : Attribute
     {
-        /// <summary> 节点菜单路径 </summary>
-        public string[] titles;
+        /// <summary> 节点路径 </summary>
+        public string path;
+        /// <summary> 切割菜单 </summary>
+        public string[] menu;
         /// <summary> 是否要显示在节点菜单中 </summary>
-        public bool showInList = true;
+        public bool hidden;
 
-        public NodeMenuAttribute(params string[] titles)
+        public NodeMenuAttribute(string path)
         {
-            this.titles = titles;
+            this.path = path;
+            this.menu = path.Split('/');
         }
     }
 }

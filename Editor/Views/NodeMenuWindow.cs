@@ -1,4 +1,5 @@
 #region 注 释
+
 /***
  *
  *  Title:
@@ -12,7 +13,9 @@
  *  Blog: https://www.crosshair.top/
  *
  */
+
 #endregion
+
 #if UNITY_EDITOR
 using System;
 using System.Collections.Generic;
@@ -26,64 +29,94 @@ namespace CZToolKit.GraphProcessor.Editors
 {
     public class NodeMenuWindow : ScriptableObject, ISearchWindowProvider
     {
-        BaseGraphView graphView;
-        IEnumerable<Type> nodeTypes;
-        List<SearchTreeEntry> tree;
+        private string treeName;
+        private BaseGraphView graphView;
+        private List<BaseGraphView.NodeEntry> nodeEntries;
+        private List<SearchTreeEntry> tree;
 
-        public void Initialize(BaseGraphView graphView, IEnumerable<Type> nodeTypes)
+        public void Initialize(string treeName, BaseGraphView graphView)
         {
+            this.treeName = treeName;
             this.graphView = graphView;
-            this.nodeTypes = nodeTypes;
-            tree = CreateSearchTree();
+            this.nodeEntries = graphView.GetNodeEntries().OrderBy(entry => entry.path).ToList();
+            this.tree = new List<SearchTreeEntry>() { new SearchTreeGroupEntry(new GUIContent(treeName)) };
+            CreateSearchTree(tree);
         }
 
-        private List<SearchTreeEntry> CreateSearchTree()
+        private void CreateSearchTree(List<SearchTreeEntry> tree)
         {
-            List<SearchTreeEntry> tempTree = new List<SearchTreeEntry>()
-                {new SearchTreeGroupEntry(new GUIContent("Create Elements"))};
-
-            foreach (Type type in nodeTypes)
+            HashSet<string> groups = new HashSet<string>();
+            foreach (BaseGraphView.NodeEntry entry in nodeEntries)
             {
-                var menuAttribute = GraphProcessorEditorUtil.GetNodeMenu(type);
-                if (menuAttribute != null)
-                {
-                    if (menuAttribute.showInList)
-                    {
-                        if (menuAttribute.titles.Length > 1)
-                        {
-                            SearchTreeGroupEntry groupTemp = null;
-                            for (int i = 1; i < menuAttribute.titles.Length; i++)
-                            {
-                                SearchTreeGroupEntry group = tempTree.Find(item =>
-                                        (item.content.text == menuAttribute.titles[i - 1] && item.level == i)) as
-                                    SearchTreeGroupEntry;
-                                if (group == null)
-                                {
-                                    group = new SearchTreeGroupEntry(new GUIContent(menuAttribute.titles[i - 1]), i);
-                                    int index = groupTemp == null ? 0 : tempTree.IndexOf(groupTemp);
-                                    tempTree.Insert(index + 1, group);
-                                }
+                if (entry.hidden)
+                    continue;
 
-                                groupTemp = group;
-                            }
-                            tempTree.Insert(tempTree.IndexOf(groupTemp) + 1,
-                                new SearchTreeEntry(new GUIContent(menuAttribute.titles.Last()))
-                                { userData = type, level = menuAttribute.titles.Length });
-                        }
-                        else
+                var nodePath = entry.path;
+                var nodeName = entry.menu[entry.menu.Length - 1];
+                var level = 0;
+
+                if (entry.menu.Length > 1)
+                {
+                    level++;
+                    var groupPath = "";
+                    for (int i = 0; i < entry.menu.Length - 1; i++)
+                    {
+                        var title = entry.menu[i];
+                        groupPath += title;
+                        if (!groups.Contains(groupPath))
                         {
-                            tempTree.Add(new SearchTreeEntry(new GUIContent(menuAttribute.titles.Last()))
-                            { userData = type, level = 1 });
+                            tree.Add(new SearchTreeGroupEntry(new GUIContent(title))
+                            {
+                                level = level
+                            });
+                            groups.Add(groupPath);
                         }
                     }
                 }
-                else
+
+                tree.Add(new SearchTreeEntry(new GUIContent(nodeName))
                 {
-                    GUIContent content = new GUIContent(type.Name);
-                    tempTree.Add(new SearchTreeEntry(content) { userData = type, level = 1 });
-                }
+                    level = level + 1,
+                    userData = entry.nodeType
+                });
+
+                // var menuAttribute = GraphProcessorEditorUtil.GetNodeMenu(type);
+                // if (menuAttribute != null)
+                // {
+                //     if (entry.titles.Length > 1)
+                //     {
+                //         SearchTreeGroupEntry groupTemp = null;
+                //         for (int i = 1; i < entry.menu.Length; i++)
+                //         {
+                //             SearchTreeGroupEntry group = tempTree.Find(item =>
+                //                     (item.content.text == menuAttribute.titles[i - 1] && item.level == i)) as
+                //                 SearchTreeGroupEntry;
+                //             if (group == null)
+                //             {
+                //                 group = new SearchTreeGroupEntry(new GUIContent(menuAttribute.titles[i - 1]), i);
+                //                 int index = groupTemp == null ? 0 : tempTree.IndexOf(groupTemp);
+                //                 tempTree.Insert(index + 1, group);
+                //             }
+                //
+                //             groupTemp = group;
+                //         }
+                //
+                //         tempTree.Insert(tempTree.IndexOf(groupTemp) + 1,
+                //             new SearchTreeEntry(new GUIContent(menuAttribute.titles.Last()))
+                //                 { userData = type, level = menuAttribute.titles.Length });
+                //     }
+                //     else
+                //     {
+                //         tempTree.Add(new SearchTreeEntry(new GUIContent(menuAttribute.titles.Last()))
+                //             { userData = type, level = 1 });
+                //     }
+                // }
+                // else
+                // {
+                //     GUIContent content = new GUIContent(type.Name);
+                //     tempTree.Add(new SearchTreeEntry(content) { userData = type, level = 1 });
+                // }
             }
-            return tempTree;
         }
 
         public bool OnSelectEntry(SearchTreeEntry searchTreeEntry, SearchWindowContext context)

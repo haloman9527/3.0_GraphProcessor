@@ -59,7 +59,7 @@ namespace CZToolKit.GraphProcessor.Editors
             this.BackgroudColorField.SetValueWithoutNotify(ViewModel.BackgroundColor.ToColor());
             base.SetPosition(new Rect(ViewModel.Position.ToVector2(), GetPosition().size));
             WithoutNotify = true;
-            base.AddElements(ViewModel.Nodes.Select(nodeID => Owner.NodeViews[nodeID]).ToArray());
+            base.AddElements(ViewModel.Nodes.Where(nodeID=>Owner.NodeViews.ContainsKey(nodeID)).Select(nodeID => Owner.NodeViews[nodeID]).ToArray());
             WithoutNotify = false;
             this.AddManipulator(new ContextualMenuManipulator(BuildContextualMenu));
             BackgroudColorField.RegisterValueChangedCallback(OnGroupColorChanged);

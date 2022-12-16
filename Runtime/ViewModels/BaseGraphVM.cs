@@ -24,7 +24,7 @@ using System.Collections.Generic;
 namespace CZToolKit.GraphProcessor
 {
     [ViewModel(typeof(BaseGraph))]
-    public class BaseGraphVM : ViewModel
+    public class BaseGraphVM : ViewModel, IGraphElement
     {
         #region Fields
 

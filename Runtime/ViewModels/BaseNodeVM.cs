@@ -24,7 +24,7 @@ using System.Collections.Generic;
 namespace CZToolKit.GraphProcessor
 {
     [ViewModel(typeof(BaseNode))]
-    public class BaseNodeVM : ViewModel
+    public class BaseNodeVM : ViewModel, IGraphElement
     {
         #region Fields
 
@@ -89,8 +89,8 @@ namespace CZToolKit.GraphProcessor
             this[nameof(BaseNode.position)] = new BindableProperty<InternalVector2Int>(() => Model.position, v => Model.position = v);
 
             string title = string.Empty;
-            if (Util_Attribute.TryGetTypeAttribute(ModelType, out NodeMenuAttribute displayName) && displayName.titles != null && displayName.titles.Length != 0)
-                title = displayName.titles[displayName.titles.Length - 1];
+            if (Util_Attribute.TryGetTypeAttribute(ModelType, out NodeMenuAttribute displayName) && displayName.menu != null && displayName.menu.Length != 0)
+                title = displayName.menu[displayName.menu.Length - 1];
             else
                 title = ModelType.Name;
 

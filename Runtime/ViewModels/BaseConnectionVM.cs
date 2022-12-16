@@ -19,7 +19,7 @@ using System;
 namespace CZToolKit.GraphProcessor
 {
     [ViewModel(typeof(BaseConnection))]
-    public class BaseConnectionVM : ViewModel
+    public class BaseConnectionVM : ViewModel, IGraphElement
     {
         #region Fields
         [NonSerialized] BasePortVM from;

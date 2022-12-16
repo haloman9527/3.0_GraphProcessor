@@ -32,7 +32,23 @@ namespace CZToolKit.GraphProcessor.Editors
 {
     public partial class BaseGraphView : GraphView, IBindableView<BaseGraphVM>
     {
-        #region 属性
+        public class NodeEntry
+        {
+            public readonly string path;
+            public readonly string[] menu;
+            public readonly bool hidden;
+            public readonly Type nodeType;
+
+            public NodeEntry(Type nodeType, string path, string[] menu, bool hidden)
+            {
+                this.nodeType = nodeType;
+                this.path = path;
+                this.menu = menu;
+                this.hidden = hidden;
+            }
+        }
+
+        #region Properties
 
         public event Action onDirty;
         public event Action onUndirty;
@@ -46,6 +62,7 @@ namespace CZToolKit.GraphProcessor.Editors
             get { return GraphWindow.GraphAsset; }
         }
 
+        public List<NodeEntry> NodeEntries { get; private set; } = new List<NodeEntry>();
         public Dictionary<int, BaseNodeView> NodeViews { get; private set; } = new Dictionary<int, BaseNodeView>();
         public Dictionary<BaseGroupVM, BaseGroupView> GroupViews { get; private set; } = new Dictionary<BaseGroupVM, BaseGroupView>();
         public Dictionary<BaseConnectionVM, BaseConnectionView> ConnectionViews { get; private set; } = new Dictionary<BaseConnectionVM, BaseConnectionView>();
@@ -96,9 +113,10 @@ namespace CZToolKit.GraphProcessor.Editors
             yield return GraphWindow.StartCoroutine(GenerateNodeViews());
             yield return GraphWindow.StartCoroutine(LinkNodeViews());
             yield return GraphWindow.StartCoroutine(GenerateGroupViews());
+            yield return GraphWindow.StartCoroutine(InitNodeEntries());
 
             CreateNodeMenu = ScriptableObject.CreateInstance<NodeMenuWindow>();
-            CreateNodeMenu.Initialize(this, GetNodeTypes());
+            CreateNodeMenu.Initialize("Nodes", this);
             nodeCreationRequest = c => SearchWindow.Open(new SearchWindowContext(c.screenMousePosition), CreateNodeMenu);
             graphViewChanged = OnGraphViewChangedCallback;
             viewTransformChanged = OnViewTransformChanged;
@@ -150,6 +168,28 @@ namespace CZToolKit.GraphProcessor.Editors
                 if (step % 10 == 0)
                     yield return null;
             }
+        }
+
+        IEnumerator InitNodeEntries()
+        {
+            foreach (var nodeType in GetNodeTypes())
+            {
+                var path = nodeType.Name;
+                var menu = (string[])null;
+                var hidden = true;
+                var menuAttribute = GraphProcessorEditorUtil.GetNodeMenu(nodeType);
+                if (menuAttribute != null)
+                {
+                    path = menuAttribute.path;
+                    menu = menuAttribute.menu;
+                    hidden = menuAttribute.hidden;
+                }
+
+                var entry = new NodeEntry(nodeType, path, menu, hidden);
+                NodeEntries.Add(entry);
+            }
+
+            yield return null;
         }
 
         #endregion
@@ -265,6 +305,11 @@ namespace CZToolKit.GraphProcessor.Editors
             ConnectionViews.Remove(connectionView.ViewModel);
         }
 
+        public IEnumerable<NodeEntry> GetNodeEntries()
+        {
+            return NodeEntries;
+        }
+
         /// <summary> 获取鼠标在GraphView中的坐标，如果鼠标不在GraphView内，则返回当前GraphView显示的中心点 </summary>
         public Vector2 GetMousePosition()
         {
@@ -297,7 +342,7 @@ namespace CZToolKit.GraphProcessor.Editors
             onDirty?.Invoke();
         }
 
-        public void SetUndirty()
+        public void SetUnDirty()
         {
             onUndirty?.Invoke();
         }
@@ -441,7 +486,7 @@ namespace CZToolKit.GraphProcessor.Editors
                 CommandDispatcher.EndGroup();
             }
 
-            if (changes.elementsToRemove == null) 
+            if (changes.elementsToRemove == null)
                 return changes;
 
             changes.elementsToRemove.Sort((element1, element2) =>

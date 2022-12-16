@@ -3,11 +3,6 @@
     min-height: 30px;
     padding-left: 1px;
     padding-right: 1px;
-    align-items: stretch;
-    justify-content: center;
-}
-#title > #top{
-    flex-direction: row;
 }
 
 #title > #title-button-container {

@@ -69,7 +69,7 @@ namespace CZToolKit.GraphProcessor.Editors
                     {
                         if (!(attribute is NodeMenuAttribute nodeMenuItemAttribute))
                             continue;
-                        if (nodeMenuItemAttribute.titles == null || nodeMenuItemAttribute.titles.Length == 0)
+                        if (string.IsNullOrEmpty(nodeMenuItemAttribute.path))
                             continue;
                         NodeMenuItemsCache[type] = nodeMenuItemAttribute;
                         break;
