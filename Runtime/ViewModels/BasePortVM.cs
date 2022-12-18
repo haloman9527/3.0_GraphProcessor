@@ -144,7 +144,6 @@ namespace CZToolKit.GraphProcessor
         {
             onBeforeConnected?.Invoke(connection);
             connections.Add(connection);
-            Resort();
             onAfterConnected?.Invoke(connection);
         }
 
@@ -152,7 +151,6 @@ namespace CZToolKit.GraphProcessor
         {
             onBeforeDisconnected?.Invoke(connection);
             connections.Remove(connection);
-            Resort();
             onAfterDisconnected?.Invoke(connection);
         }
 

@@ -227,6 +227,8 @@ namespace CZToolKit.GraphProcessor
             fromPort.ConnectTo(connection);
             toPort.ConnectTo(connection);
 
+            fromPort.Resort();
+            toPort.Resort();
             OnConnected?.Invoke(connection);
         }
 
@@ -248,6 +250,9 @@ namespace CZToolKit.GraphProcessor
 
             fromPort.ConnectTo(connection);
             toPort.ConnectTo(connection);
+            
+            fromPort.Resort();
+            toPort.Resort();
 
             OnConnected?.Invoke(connection);
             return connection;
@@ -267,10 +272,16 @@ namespace CZToolKit.GraphProcessor
             if (!connections.Contains(connection)) return;
 
             if (connection.FromNode.Ports.TryGetValue(connection.FromPortName, out BasePortVM fromPort))
+            {
                 fromPort.DisconnectTo(connection);
+                fromPort.Resort();
+            }
 
             if (connection.ToNode.Ports.TryGetValue(connection.ToPortName, out BasePortVM toPort))
+            {
                 toPort.DisconnectTo(connection);
+                toPort.Resort();
+            }
 
             connections.Remove(connection);
             Model.connections.Remove(connection.Model);
