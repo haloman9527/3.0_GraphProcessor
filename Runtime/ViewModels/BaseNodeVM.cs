@@ -111,9 +111,8 @@ namespace CZToolKit.GraphProcessor
             this[TOOLTIP_NAME] = new BindableProperty<string>(() => tooltip, v => tooltip = v);
         }
 
-        internal void Enable(BaseGraphVM graph)
+        internal void Enable()
         {
-            Owner = graph;
             foreach (var port in ports.Values)
             {
                 if (port.connections.Count > 1)
@@ -152,8 +151,7 @@ namespace CZToolKit.GraphProcessor
         public void AddPort(BasePortVM port)
         {
             ports.Add(port.Name, port);
-            
-            port.Enable(this);
+            port.Owner = this;
             onPortAdded?.Invoke(port);
         }
 

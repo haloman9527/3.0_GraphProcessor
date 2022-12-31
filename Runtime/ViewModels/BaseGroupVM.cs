@@ -38,7 +38,7 @@ namespace CZToolKit.GraphProcessor
         public BaseGraphVM Owner
         {
             get;
-            private set;
+            internal set;
         }
         public string GroupName
         {
@@ -71,10 +71,9 @@ namespace CZToolKit.GraphProcessor
             this[nameof(BaseGroup.backgroundColor)] = new BindableProperty<InternalColor>(() => Model.backgroundColor, v => Model.backgroundColor = v);
         }
 
-        internal void Enable(BaseGraphVM graph)
+        internal void Enable()
         {
-            Owner = graph;
-            Model.nodes.RemoveAll(nodeID => !graph.Nodes.ContainsKey(nodeID));
+            Model.nodes.RemoveAll(nodeID => !Owner.Nodes.ContainsKey(nodeID));
             OnEnabled();
         }
 

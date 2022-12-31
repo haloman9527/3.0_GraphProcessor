@@ -59,7 +59,7 @@ namespace CZToolKit.GraphProcessor
         public event Action<BaseConnectionVM> onAfterConnected;
         public event Action<BaseConnectionVM> onBeforeDisconnected;
         public event Action<BaseConnectionVM> onAfterDisconnected;
-        public event Action onSorted;
+        public event Action onConnectionChanged;
         #endregion
 
         #region Properties
@@ -74,7 +74,7 @@ namespace CZToolKit.GraphProcessor
         public BaseNodeVM Owner
         {
             get;
-            private set;
+            internal set;
         }
         public string Name
         {
@@ -134,17 +134,13 @@ namespace CZToolKit.GraphProcessor
             this[nameof(hideLabel)] = new BindableProperty<bool>(() => hideLabel, v => hideLabel = v);
         }
 
-        internal void Enable(BaseNodeVM node)
-        {
-            Owner = node;
-        }
-
         #region API
         public void ConnectTo(BaseConnectionVM connection)
         {
             onBeforeConnected?.Invoke(connection);
             connections.Add(connection);
             onAfterConnected?.Invoke(connection);
+            onConnectionChanged?.Invoke();
         }
 
         public void DisconnectTo(BaseConnectionVM connection)
@@ -152,13 +148,15 @@ namespace CZToolKit.GraphProcessor
             onBeforeDisconnected?.Invoke(connection);
             connections.Remove(connection);
             onAfterDisconnected?.Invoke(connection);
+            onConnectionChanged?.Invoke();
         }
 
         /// <summary> 强制重新排序 </summary>
         public void Resort()
         {
-            connections.QuickSort(comparer);
-            onSorted?.Invoke();
+            var changed = connections.QuickSort(comparer);
+            if (changed)
+                onConnectionChanged?.Invoke();
         }
 
         /// <summary> 强制重新排序，但不触发排序事件 </summary>

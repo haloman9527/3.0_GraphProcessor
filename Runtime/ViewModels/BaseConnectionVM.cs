@@ -80,9 +80,8 @@ namespace CZToolKit.GraphProcessor
             ModelType = model.GetType();
         }
 
-        internal void Enable(BaseGraphVM graph)
+        internal void Enable()
         {
-            Owner = graph;
             this.from = Owner.Nodes[Model.fromNode].Ports[Model.fromPort];
             this.to = Owner.Nodes[Model.toNode].Ports[Model.toPort];
             OnEnabled();
@@ -95,7 +94,7 @@ namespace CZToolKit.GraphProcessor
             Model.fromPort = from.Name;
             Model.toNode = to.Owner.ID;
             Model.toPort = to.Name;
-            Enable(Owner);
+            Enable();
         }
 
         #region Overrides

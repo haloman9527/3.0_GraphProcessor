@@ -134,17 +134,20 @@ namespace CZToolKit.GraphProcessor
 
             foreach (var connection in connections)
             {
-                connection.Enable(this);
+                connection.Owner = this;
+                connection.Enable();
             }
             
             foreach (var node in nodes.Values)
             {
-                node.Enable(this);
+                node.Owner = this;
+                node.Enable();
             }
 
             foreach (var group in Groups)
             {
-                group.Enable(this);
+                group.Owner = this;
+                group.Enable();
             }
         }
 
@@ -181,7 +184,8 @@ namespace CZToolKit.GraphProcessor
                 AllocID(node);
             nodes.Add(node.ID, node);
             Model.nodes.Add(node.ID, node.Model);
-            node.Enable(this);
+            node.Owner = this;
+            node.Enable();
             OnNodeAdded?.Invoke(node);
         }
 
@@ -220,7 +224,8 @@ namespace CZToolKit.GraphProcessor
             if (toPort.Capacity == BasePort.Capacity.Single)
                 Disconnect(toPort);
 
-            connection.Enable(this);
+            connection.Owner = this;
+            connection.Enable();
             connections.Add(connection);
             Model.connections.Add(connection.Model);
 
@@ -244,7 +249,8 @@ namespace CZToolKit.GraphProcessor
                 Disconnect(toPort);
             var connection = NewConnection(fromPort, toPort);
             
-            connection.Enable(this);
+            connection.Owner = this;
+            connection.Enable();
             connections.Add(connection);
             Model.connections.Add(connection.Model);
 
@@ -304,7 +310,8 @@ namespace CZToolKit.GraphProcessor
                 return;
             groups.Add(group);
             Model.groups.Add(group.Model);
-            group.Enable(this);
+            group.Owner = this;
+            group.Enable();
             OnGroupAdded?.Invoke(group);
         }
 
