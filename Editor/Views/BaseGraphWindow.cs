@@ -33,6 +33,8 @@ namespace CZToolKit.GraphProcessor.Editors
     public class BaseGraphWindow : BasicEditorWindow
     {
         #region 字段
+        private IGraphOwner _graphOwner;
+        
         [SerializeField] protected UnityObject graphOwner;
         [SerializeField] protected UnityObject graphAsset;
         #endregion
@@ -60,7 +62,12 @@ namespace CZToolKit.GraphProcessor.Editors
         }
         public IGraphOwner GraphOwner
         {
-            get { return graphOwner as IGraphOwner; }
+            get
+            {
+                if (_graphOwner == null)
+                    _graphOwner = graphOwner as IGraphOwner;
+                return _graphOwner;
+            }
             protected set { graphOwner = value as UnityObject; }
         }
         public UnityObject GraphAsset
