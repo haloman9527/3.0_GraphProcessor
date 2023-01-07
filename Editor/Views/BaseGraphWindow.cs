@@ -68,7 +68,11 @@ namespace CZToolKit.GraphProcessor.Editors
                     _graphOwner = graphOwner as IGraphOwner;
                 return _graphOwner;
             }
-            protected set { graphOwner = value as UnityObject; }
+            protected set
+            {
+                _graphOwner = value;
+                graphOwner = value as UnityObject;
+            }
         }
         public UnityObject GraphAsset
         {

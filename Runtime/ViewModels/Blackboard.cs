@@ -86,9 +86,17 @@ namespace CZToolKit.GraphProcessor
             }
         }
 
+        public enum NotifyType
+        {
+            Added,
+            Changed,
+            Remove
+        }
+
         private DataContainer<object> objectDataContainer = new DataContainer<object>();
         private Dictionary<string, IDataContainer> keyContainerMap = new Dictionary<string, IDataContainer>();
         private Dictionary<Type, IDataContainer> structDataContainers = new Dictionary<Type, IDataContainer>();
+        private Dictionary<string, List<Action<object, NotifyType>>> observersMap = new Dictionary<string, List<Action<object, NotifyType>>>();
 
         public T Get<T>(string key)
         {
@@ -145,12 +153,27 @@ namespace CZToolKit.GraphProcessor
                 ((DataContainer<T>)dataContainer).Set(key, value);
             else
                 ((DataContainer<object>)dataContainer).Set(key, value);
+            if (observersMap.TryGetValue(key, out var observers))
+            {
+                var notifyType = exists ? NotifyType.Changed : NotifyType.Added;
+                foreach (var observer in observers)
+                {
+                    observer?.Invoke(value, notifyType);
+                }
+            }
         }
 
         public void Remove(string key)
         {
             if (!keyContainerMap.TryGetValue(key, out var dataContainer))
                 return;
+            if (observersMap.TryGetValue(key, out var observers))
+            {
+                foreach (var observer in observers)
+                {
+                    observer?.Invoke(dataContainer.Get(key), NotifyType.Remove);
+                }
+            }
 
             keyContainerMap.Remove(key);
             dataContainer.Remove(key);
@@ -161,6 +184,23 @@ namespace CZToolKit.GraphProcessor
             objectDataContainer.Clear();
             structDataContainers.Clear();
             keyContainerMap.Clear();
+            observersMap.Clear();
+        }
+
+        public void RegisterObserver(string key, Action<object, NotifyType> observer)
+        {
+            if (observersMap.TryGetValue(key, out var observers))
+                observersMap[key] = observers = new List<Action<object, NotifyType>>();
+            if (observers.Contains(observer))
+                return;
+            observers.Add(observer);
+        }
+
+        public void RemoveObserver(string key, Action<object, NotifyType> observer)
+        {
+            if (!observersMap.TryGetValue(key, out var observers))
+                return;
+            observers.Remove(observer);
         }
     }
 }

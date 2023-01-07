@@ -31,6 +31,7 @@ namespace CZToolKit.GraphProcessor
         private Dictionary<int, BaseNodeVM> nodes;
         private List<BaseConnectionVM> connections;
         private List<BaseGroupVM> groups;
+        private Blackboard blackboard = new Blackboard();
 
         public event Action<BaseNodeVM> OnNodeAdded;
         public event Action<BaseNodeVM> OnNodeRemoved;
@@ -71,6 +72,11 @@ namespace CZToolKit.GraphProcessor
         public IReadOnlyList<BaseConnectionVM> Connections
         {
             get { return connections; }
+        }
+
+        public Blackboard Blackboard
+        {
+            get { return blackboard; }
         }
 
         #endregion
