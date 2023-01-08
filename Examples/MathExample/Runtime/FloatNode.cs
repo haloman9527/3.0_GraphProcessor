@@ -13,7 +13,7 @@
  *
  */
 #endregion
-using CZToolKit.Core.ViewModel;
+using CZToolKit.Common.ViewModel;
 using CZToolKit.GraphProcessor;
 
 [NodeTooltip("浮点数节点")]

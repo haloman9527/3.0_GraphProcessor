@@ -14,9 +14,9 @@
  */
 #endregion
 #if UNITY_EDITOR
-using CZToolKit.Core;
-using CZToolKit.Core.ViewModel;
-using CZToolKit.Core.Editors;
+using CZToolKit.Common;
+using CZToolKit.Common.ViewModel;
+using CZToolKit.Common.Editors;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -15,7 +15,7 @@
 #endregion
 
 using System.Collections.Generic;
-using CZToolKit.Core.ViewModel;
+using CZToolKit.Common.ViewModel;
 using CZToolKit.GraphProcessor;
 
 [NodeMenu("Sub")]

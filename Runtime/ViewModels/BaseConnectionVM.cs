@@ -13,7 +13,7 @@
  *
  */
 #endregion
-using CZToolKit.Core.ViewModel;
+using CZToolKit.Common.ViewModel;
 using System;
 
 namespace CZToolKit.GraphProcessor
