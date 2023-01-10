@@ -1,4 +1,5 @@
 #region 注 释
+
 /***
  *
  *  Title:
@@ -12,7 +13,9 @@
  *  Blog: https://www.crosshair.top/
  *
  */
+
 #endregion
+
 #if UNITY_EDITOR
 using CZToolKit.Common;
 using CZToolKit.Common.ViewModel;
@@ -24,7 +27,6 @@ using UnityEditor;
 using UnityEditor.Callbacks;
 using UnityEditor.UIElements;
 using UnityEditor.Experimental.GraphView;
-
 using UnityObject = UnityEngine.Object;
 
 namespace CZToolKit.GraphProcessor.Editors
@@ -33,38 +35,26 @@ namespace CZToolKit.GraphProcessor.Editors
     public class BaseGraphWindow : BasicEditorWindow
     {
         #region 字段
+
         private IGraphOwner _graphOwner;
-        
+
         [SerializeField] protected UnityObject graphOwner;
         [SerializeField] protected UnityObject graphAsset;
+
         #endregion
 
         #region Properties
-        private VisualElement GraphViewContainer
-        {
-            get;
-            set;
-        }
-        public Toolbar ToolbarLeft
-        {
-            get;
-            private set;
-        }
-        public Toolbar ToolbarCenter
-        {
-            get;
-            private set;
-        }
-        public Toolbar ToolbarRight
-        {
-            get;
-            private set;
-        }
+
+        private VisualElement GraphViewContainer { get; set; }
+        public Toolbar ToolbarLeft { get; private set; }
+        public Toolbar ToolbarCenter { get; private set; }
+        public Toolbar ToolbarRight { get; private set; }
+
         public IGraphOwner GraphOwner
         {
             get
             {
-                if (_graphOwner == null)
+                if (_graphOwner == null && graphOwner != null)
                     _graphOwner = graphOwner as IGraphOwner;
                 return _graphOwner;
             }
@@ -74,29 +64,21 @@ namespace CZToolKit.GraphProcessor.Editors
                 graphOwner = value as UnityObject;
             }
         }
+
         public UnityObject GraphAsset
         {
             get { return graphAsset; }
             protected set { graphAsset = value; }
         }
-        public BaseGraphVM Graph
-        {
-            get;
-            private set;
-        }
-        public BaseGraphView GraphView
-        {
-            get;
-            private set;
-        }
-        public CommandDispatcher CommandDispatcher
-        {
-            get;
-            protected set;
-        }
+
+        public BaseGraphVM Graph { get; private set; }
+        public BaseGraphView GraphView { get; private set; }
+        public CommandDispatcher CommandDispatcher { get; protected set; }
+
         #endregion
 
         #region Unity
+
         protected virtual void OnEnable()
         {
             titleContent = new GUIContent("Graph Processor");
@@ -111,9 +93,11 @@ namespace CZToolKit.GraphProcessor.Editors
             if (Selection.activeObject is ObjectInspector objectInspector && objectInspector.Target is GraphElement)
                 Selection.activeObject = null;
         }
+
         #endregion
 
         #region Private Methods
+
         void InitRootVisualElement()
         {
             GraphProcessorStyles.GraphWindowTree.CloneTree(rootVisualElement);
@@ -124,9 +108,11 @@ namespace CZToolKit.GraphProcessor.Editors
             ToolbarRight = rootVisualElement.Q<Toolbar>("ToolbarRight", "unity-toolbar");
             GraphViewContainer = rootVisualElement.Q("GraphViewContainer");
         }
+
         #endregion
 
         #region Public Methods
+
         protected void Load(BaseGraphVM graph, CommandDispatcher commandDispatcher)
         {
             OnGraphViewUndirty();
@@ -207,6 +193,7 @@ namespace CZToolKit.GraphProcessor.Editors
                 ForceLoad(graphAssetOwner);
                 return;
             }
+
             Clear();
 
             GraphOwner = null;
@@ -236,9 +223,11 @@ namespace CZToolKit.GraphProcessor.Editors
 
             Load(ViewModelFactory.CreateViewModel(ViewModelFactory.CreateViewModel(graph) as BaseGraphVM) as BaseGraphVM, CommandDispatcher);
         }
+
         #endregion
 
         #region Callbacks
+
         void OnPlayModeStateChanged(PlayModeStateChange obj)
         {
             switch (obj)
@@ -264,9 +253,11 @@ namespace CZToolKit.GraphProcessor.Editors
             if (titleContent.text.EndsWith(" *"))
                 titleContent.text = titleContent.text.Replace(" *", "");
         }
+
         #endregion
 
         #region Overrides
+
         protected virtual BaseGraphView NewGraphView(BaseGraphVM graph)
         {
             return new BaseGraphView();
@@ -280,10 +271,7 @@ namespace CZToolKit.GraphProcessor.Editors
                 text = "Overview",
                 tooltip = "查看所有节点"
             };
-            btnOverview.clicked += () =>
-            {
-                GraphView.FrameAll();
-            };
+            btnOverview.clicked += () => { GraphView.FrameAll(); };
             ToolbarLeft.Add(btnOverview);
 
             IMGUIContainer drawName = new IMGUIContainer(() =>
@@ -305,9 +293,11 @@ namespace CZToolKit.GraphProcessor.Editors
             btnReload.clicked += Reload;
             ToolbarRight.Add(btnReload);
         }
+
         #endregion
 
         #region Static
+
         /// <summary> 从Graph类型获取对应的GraphWindow </summary>
         public static BaseGraphWindow GetGraphWindow(Type graphType)
         {
@@ -322,10 +312,12 @@ namespace CZToolKit.GraphProcessor.Editors
                     break;
                 }
             }
+
             if (window == null)
             {
                 window = GetWindow(windowType) as BaseGraphWindow;
             }
+
             window.Focus();
             return window;
         }
@@ -389,6 +381,7 @@ namespace CZToolKit.GraphProcessor.Editors
             Open(graphAsset);
             return true;
         }
+
         #endregion
     }
 }
