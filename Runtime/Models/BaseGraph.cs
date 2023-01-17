@@ -36,7 +36,7 @@ namespace CZToolKit.GraphProcessor
         public InternalVector2Int pan = new InternalVector2Int(0, 0);
         public Dictionary<int, BaseNode> nodes = new Dictionary<int, BaseNode>();
         public List<BaseConnection> connections = new List<BaseConnection>();
-        public List<Group> groups = new List<Group>();
+        public List<BaseGroup> groups = new List<BaseGroup>();
     }
 #endif
 }

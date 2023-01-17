@@ -88,7 +88,7 @@ namespace CZToolKit.GraphProcessor
         }
 
         /// <summary> 重定向 </summary>
-        public void Redirect(BasePortVM from, BasePortVM to)
+        internal void Redirect(BasePortVM from, BasePortVM to)
         {
             Model.fromNode = from.Owner.ID;
             Model.fromPort = from.Name;
@@ -97,10 +97,8 @@ namespace CZToolKit.GraphProcessor
             Enable();
         }
 
-        #region Overrides
+        #region Virtual
         protected virtual void OnEnabled() { }
-
-        protected virtual void OnRedirection() { }
         #endregion
     }
 }

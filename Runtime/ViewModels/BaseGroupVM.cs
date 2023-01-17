@@ -23,8 +23,10 @@ namespace CZToolKit.GraphProcessor
     [ViewModel(typeof(BaseGroup))]
     public class BaseGroupVM : ViewModel, IGraphElement
     {
+        #region Fileds
         public event Action<IEnumerable<BaseNodeVM>> onNodesAdded;
         public event Action<IEnumerable<BaseNodeVM>> onNodesRemoved;
+        #endregion
 
         #region Property
         public BaseGroup Model
@@ -71,12 +73,7 @@ namespace CZToolKit.GraphProcessor
             this[nameof(BaseGroup.backgroundColor)] = new BindableProperty<InternalColor>(() => Model.backgroundColor, v => Model.backgroundColor = v);
         }
 
-        internal void Enable()
-        {
-            Model.nodes.RemoveAll(nodeID => !Owner.Nodes.ContainsKey(nodeID));
-            OnEnabled();
-        }
-
+        #region API
         public void AddNodes(IEnumerable<BaseNodeVM> nodes)
         {
             var tempNodes = nodes.Where(element => !Model.nodes.Contains(element.ID) && element.Owner == this.Owner).ToArray();
@@ -128,10 +125,6 @@ namespace CZToolKit.GraphProcessor
                 Model.nodes.Remove(element.ID);
             }
         }
-
-        #region Overrides
-        protected virtual void OnEnabled() { }
-
         #endregion
     }
 }

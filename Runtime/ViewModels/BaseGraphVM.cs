@@ -102,6 +102,7 @@ namespace CZToolKit.GraphProcessor
                     continue;
                 var nodeVM = ViewModelFactory.CreateViewModel(pair.Value) as BaseNodeVM;
                 nodeVM.ID = pair.Key;
+                nodeVM.Owner = this;
                 nodes.Add(pair.Key, nodeVM);
             }
             
@@ -122,6 +123,7 @@ namespace CZToolKit.GraphProcessor
                 }
                 
                 var connectionVM = ViewModelFactory.CreateViewModel(connection) as BaseConnectionVM;
+                connectionVM.Owner = this;
                 fromPort.connections.Add(connectionVM);
                 toPort.connections.Add(connectionVM);
                 connections.Add(connectionVM);
@@ -135,26 +137,20 @@ namespace CZToolKit.GraphProcessor
                     model.groups.RemoveAt(i--);
                     continue;
                 }
+                group.nodes.RemoveAll(nodeID => !nodes.ContainsKey(nodeID));
                 var groupVM = ViewModelFactory.CreateViewModel(group) as BaseGroupVM;
+                groupVM.Owner = this;
                 groups.Add(groupVM);
             }
 
             foreach (var connection in connections)
             {
-                connection.Owner = this;
                 connection.Enable();
             }
             
             foreach (var node in nodes.Values)
             {
-                node.Owner = this;
                 node.Enable();
-            }
-
-            foreach (var group in Groups)
-            {
-                group.Owner = this;
-                group.Enable();
             }
         }
 
@@ -203,8 +199,6 @@ namespace CZToolKit.GraphProcessor
 
         public void RemoveNode(BaseNodeVM node)
         {
-            if (node == null)
-                throw new NullReferenceException("节点不能为空");
             if (node.Owner != this)
                 throw new NullReferenceException("节点不是此Graph中");
             Disconnect(node);
@@ -271,19 +265,8 @@ namespace CZToolKit.GraphProcessor
             return connection;
         }
 
-        public void Disconnect(BaseNodeVM node)
-        {
-            foreach (var connection in Connections.ToArray())
-            {
-                if (connection.FromNodeID == node.ID || connection.ToNodeID == node.ID)
-                    Disconnect(connection);
-            }
-        }
-
         public void Disconnect(BaseConnectionVM connection)
         {
-            if (!connections.Contains(connection)) return;
-
             if (connection.FromNode.Ports.TryGetValue(connection.FromPortName, out BasePortVM fromPort))
             {
                 fromPort.DisconnectTo(connection);
@@ -298,35 +281,44 @@ namespace CZToolKit.GraphProcessor
 
             connections.Remove(connection);
             Model.connections.Remove(connection.Model);
+            connection.Owner = null;
             OnDisconnected?.Invoke(connection);
+        }
+
+        public void Disconnect(BaseNodeVM node)
+        {
+            for (int i = 0; i < connections.Count; i++)
+            {
+                var connection = connections[i];
+                if (connection.FromNodeID == node.ID || connection.ToNodeID == node.ID)
+                {
+                    Disconnect(connection);
+                    i--;
+                }
+            }
         }
 
         public void Disconnect(BasePortVM port)
         {
-            if (port.Owner == null || !nodes.ContainsKey(port.Owner.ID))
-                return;
-            foreach (var connection in port.Connections.ToArray())
+            for (int i = 0; i < port.connections.Count; i++)
             {
-                Disconnect(connection);
+                Disconnect(connections[i--]);
             }
         }
 
-        public void AddGroup(BaseGroupVM group)
+        public void AddGroup(BaseGroupVM groupVM)
         {
-            if (groups.Contains(group))
-                return;
-            groups.Add(group);
-            Model.groups.Add(group.Model);
-            group.Owner = this;
-            group.Enable();
-            OnGroupAdded?.Invoke(group);
+            groups.Add(groupVM);
+            Model.groups.Add(groupVM.Model);
+            groupVM.Owner = this;
+            OnGroupAdded?.Invoke(groupVM);
         }
 
         public BaseGroupVM AddGroup(BaseGroup group)
         {
-            var vm = ViewModelFactory.CreateViewModel(group) as BaseGroupVM;
-            AddGroup(vm);
-            return vm;
+            var groupVM = ViewModelFactory.CreateViewModel(group) as BaseGroupVM;
+            AddGroup(groupVM);
+            return groupVM;
         }
 
         public void RemoveGroup(BaseGroupVM group)
