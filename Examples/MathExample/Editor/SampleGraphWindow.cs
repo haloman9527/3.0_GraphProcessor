@@ -19,6 +19,7 @@ using CZToolKit.GraphProcessor;
 using CZToolKit.GraphProcessor.Editors;
 using OdinSerializer;
 using System.Collections.Generic;
+using CZToolKit.Common;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
@@ -27,9 +28,9 @@ using UnityEngine.UIElements;
 [CustomView(typeof(SampleGraph))]
 public class SampleGraphWindow : BaseGraphWindow
 {
-    protected override BaseGraphView NewGraphView(BaseGraphVM graph)
+    protected override BaseGraphView NewGraphView(CommandDispatcher commandDispatcher)
     {
-        return new SampleGraphView();
+        return new SampleGraphView(Graph, this, commandDispatcher);
     }
 
     protected override void OnGraphLoaded()

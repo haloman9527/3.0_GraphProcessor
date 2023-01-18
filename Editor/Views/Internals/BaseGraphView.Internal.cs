@@ -80,7 +80,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
         #endregion
 
-        public BaseGraphView()
+        public BaseGraphView(BaseGraphVM graph, BaseGraphWindow window, CommandDispatcher commandDispatcher)
         {
             styleSheets.Add(GraphProcessorStyles.GraphViewStyle);
 
@@ -91,15 +91,13 @@ namespace CZToolKit.GraphProcessor.Editors
             this.AddManipulator(new SelectionDragger());
             this.AddManipulator(new RectangleSelector());
             this.StretchToParentSize();
-        }
-
-        public void SetUp(BaseGraphVM graph, BaseGraphWindow window, CommandDispatcher commandDispatcher)
-        {
+            
             ViewModel = graph;
             GraphWindow = window;
             CommandDispatcher = commandDispatcher;
             EditorCoroutine coroutine = GraphWindow.StartCoroutine(Initialize());
             RegisterCallback<DetachFromPanelEvent>(evt => { GraphWindow.StopCoroutine(coroutine); });
+            BindingProperties();
         }
 
         #region Initialize

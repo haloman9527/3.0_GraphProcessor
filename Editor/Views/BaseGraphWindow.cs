@@ -34,12 +34,12 @@ namespace CZToolKit.GraphProcessor.Editors
     [CustomView(typeof(BaseGraph))]
     public class BaseGraphWindow : BasicEditorWindow
     {
-        #region 字段
+        #region Fields
 
         private IGraphOwner _graphOwner;
 
-        [SerializeField] protected UnityObject graphOwner;
-        [SerializeField] protected UnityObject graphAsset;
+        [SerializeField] private UnityObject graphOwner;
+        [SerializeField] private UnityObject graphAsset;
 
         #endregion
 
@@ -71,7 +71,7 @@ namespace CZToolKit.GraphProcessor.Editors
             protected set { graphAsset = value; }
         }
 
-        public BaseGraphVM Graph { get; private set; }
+        public BaseGraphVM Graph { get; protected set; }
         public BaseGraphView GraphView { get; private set; }
         public CommandDispatcher CommandDispatcher { get; protected set; }
 
@@ -109,26 +109,31 @@ namespace CZToolKit.GraphProcessor.Editors
             GraphViewContainer = rootVisualElement.Q("GraphViewContainer");
         }
 
-        #endregion
-
-        #region Public Methods
-
-        protected void Load(BaseGraphVM graph, CommandDispatcher commandDispatcher)
+        protected void Load(BaseGraphVM graph, IGraphOwner graphOwner, UnityObject graphAsset, CommandDispatcher commandDispatcher)
         {
-            OnGraphViewUndirty();
+            Clear();
+            
             Graph = graph;
-            GraphView = NewGraphView(Graph);
+            GraphOwner = graphOwner;
+            GraphAsset = graphAsset;
+            GraphView = NewGraphView(commandDispatcher);
 
-            GraphView.SetUp(Graph, this, commandDispatcher);
             GraphView.BindingProperties();
             GraphView.onDirty += OnGraphViewDirty;
             GraphView.onUndirty += OnGraphViewUndirty;
             GraphViewContainer.Add(GraphView);
+
             OnGraphLoaded();
         }
 
+        #endregion
+
+        #region Public Methods
+
         public virtual void Clear()
         {
+            OnGraphViewUndirty();
+            
             ToolbarLeft.Clear();
             ToolbarCenter.Clear();
             ToolbarRight.Clear();
@@ -166,62 +171,35 @@ namespace CZToolKit.GraphProcessor.Editors
         public void ForceLoad(IGraphOwner graphOwner)
         {
             Clear();
-            GraphOwner = graphOwner;
-            GraphAsset = (UnityObject)graphOwner;
-            CommandDispatcher = new CommandDispatcher();
-
-            Load(GraphOwner.Graph, CommandDispatcher);
+            Load(graphOwner.Graph, graphOwner, (UnityObject)graphOwner, new CommandDispatcher());
         }
 
         // 从GraphAssetOwner加载
         public void ForceLoad(IGraphAssetOwner graphAssetOwner)
         {
             Clear();
-            GraphOwner = graphAssetOwner;
-            GraphAsset = graphAssetOwner.GraphAsset;
-            CommandDispatcher = new CommandDispatcher();
-
-            Load(GraphOwner.Graph, CommandDispatcher);
+            Load(graphAssetOwner.Graph, graphAssetOwner, graphAssetOwner.GraphAsset, new CommandDispatcher());
         }
 
         // 从Graph资源加载
         public void ForceLoad(IGraphAsset graphAsset)
         {
-            var graphAssetOwner = Selection.activeGameObject?.GetComponent<IGraphAssetOwner>();
-            if (graphAssetOwner != null && graphAssetOwner.GraphAsset == (UnityObject)graphAsset)
-            {
-                ForceLoad(graphAssetOwner);
-                return;
-            }
-
             Clear();
-
-            GraphOwner = null;
-            GraphAsset = graphAsset as UnityObject;
-            CommandDispatcher = new CommandDispatcher();
-            Load(ViewModelFactory.CreateViewModel(graphAsset.DeserializeGraph()) as BaseGraphVM, CommandDispatcher);
+            Load(ViewModelFactory.CreateViewModel(graphAsset.DeserializeGraph()) as BaseGraphVM, null, graphAsset as UnityObject, new CommandDispatcher());
         }
 
-        // 直接加载Graph对象
+        // 直接加载GraphVM对象
         public void ForceLoad(BaseGraphVM graph)
         {
             Clear();
-            GraphAsset = null;
-            GraphOwner = null;
-            CommandDispatcher = new CommandDispatcher();
-
-            Load(graph, CommandDispatcher);
+            Load(graph, null, null, new CommandDispatcher());
         }
 
         // 直接加载Graph对象
         public void ForceLoad(BaseGraph graph)
         {
             Clear();
-            GraphAsset = null;
-            GraphOwner = null;
-            CommandDispatcher = new CommandDispatcher();
-
-            Load(ViewModelFactory.CreateViewModel(ViewModelFactory.CreateViewModel(graph) as BaseGraphVM) as BaseGraphVM, CommandDispatcher);
+            Load(ViewModelFactory.CreateViewModel(ViewModelFactory.CreateViewModel(graph) as BaseGraphVM) as BaseGraphVM, null, null, new CommandDispatcher());
         }
 
         #endregion
@@ -258,9 +236,9 @@ namespace CZToolKit.GraphProcessor.Editors
 
         #region Overrides
 
-        protected virtual BaseGraphView NewGraphView(BaseGraphVM graph)
+        protected virtual BaseGraphView NewGraphView(CommandDispatcher commandDispatcher)
         {
-            return new BaseGraphView();
+            return new BaseGraphView(Graph, this, commandDispatcher);
         }
 
         protected virtual void OnGraphLoaded()
@@ -325,8 +303,6 @@ namespace CZToolKit.GraphProcessor.Editors
         /// <summary> 从GraphOwner打开Graph </summary>
         public static BaseGraphWindow Open(IGraphOwner graphOwner)
         {
-            if (graphOwner == null) return null;
-            if (graphOwner.Graph == null) return null;
             var window = GetGraphWindow(graphOwner.Graph.ModelType);
             window.ForceLoad(graphOwner);
             return window;
@@ -335,8 +311,6 @@ namespace CZToolKit.GraphProcessor.Editors
         /// <summary> 从GraphAssetOwner打开Graph </summary>
         public static BaseGraphWindow Open(IGraphAssetOwner graphAssetOwner)
         {
-            if (graphAssetOwner == null) return null;
-            if (graphAssetOwner.GraphAsset == null) return null;
             var window = GetGraphWindow(graphAssetOwner.Graph.ModelType);
             window.ForceLoad(graphAssetOwner);
             return window;
@@ -345,7 +319,6 @@ namespace CZToolKit.GraphProcessor.Editors
         /// <summary> 从GraphAsset打开Graph </summary>
         public static BaseGraphWindow Open(IGraphAsset graphAsset)
         {
-            if (graphAsset == null) return null;
             var window = GetGraphWindow(graphAsset.GraphType);
             window.ForceLoad(graphAsset);
             return window;
@@ -354,7 +327,6 @@ namespace CZToolKit.GraphProcessor.Editors
         /// <summary> 打开Graph </summary>
         public static BaseGraphWindow Open(BaseGraphVM graph)
         {
-            if (graph == null) return null;
             var window = GetGraphWindow(graph.ModelType);
             window.ForceLoad(graph);
             return window;
@@ -363,7 +335,6 @@ namespace CZToolKit.GraphProcessor.Editors
         /// <summary> 打开Graph </summary>
         public static BaseGraphWindow Open(BaseGraph graph)
         {
-            if (graph == null) return null;
             var window = GetGraphWindow(graph.GetType());
             window.ForceLoad(graph);
             return window;

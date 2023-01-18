@@ -18,9 +18,14 @@ using CZToolKit.GraphProcessor;
 using CZToolKit.GraphProcessor.Editors;
 using System;
 using System.Collections.Generic;
+using CZToolKit.Common;
 
 public class SampleGraphView : BaseGraphView
 {
+    public SampleGraphView(BaseGraphVM graph, BaseGraphWindow window, CommandDispatcher commandDispatcher) : base(graph, window, commandDispatcher)
+    {
+    }
+    
     protected override IEnumerable<Type> GetNodeTypes()
     {
         yield return typeof(FloatNode);
