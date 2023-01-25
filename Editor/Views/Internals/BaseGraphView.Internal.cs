@@ -53,7 +53,6 @@ namespace CZToolKit.GraphProcessor.Editors
         public event Action onDirty;
         public event Action onUndirty;
 
-        public NodeMenuWindow CreateNodeMenu { get; private set; }
         public BaseGraphWindow GraphWindow { get; private set; }
         public CommandDispatcher CommandDispatcher { get; private set; }
 
@@ -62,7 +61,6 @@ namespace CZToolKit.GraphProcessor.Editors
             get { return GraphWindow.GraphAsset; }
         }
 
-        public List<NodeEntry> NodeEntries { get; private set; } = new List<NodeEntry>();
         public Dictionary<int, BaseNodeView> NodeViews { get; private set; } = new Dictionary<int, BaseNodeView>();
         public Dictionary<BaseGroupVM, BaseGroupView> GroupViews { get; private set; } = new Dictionary<BaseGroupVM, BaseGroupView>();
         public Dictionary<BaseConnectionVM, BaseConnectionView> ConnectionViews { get; private set; } = new Dictionary<BaseConnectionVM, BaseConnectionView>();
@@ -91,7 +89,7 @@ namespace CZToolKit.GraphProcessor.Editors
             this.AddManipulator(new SelectionDragger());
             this.AddManipulator(new RectangleSelector());
             this.StretchToParentSize();
-            
+
             ViewModel = graph;
             GraphWindow = window;
             CommandDispatcher = commandDispatcher;
@@ -111,11 +109,13 @@ namespace CZToolKit.GraphProcessor.Editors
             yield return GraphWindow.StartCoroutine(GenerateNodeViews());
             yield return GraphWindow.StartCoroutine(LinkNodeViews());
             yield return GraphWindow.StartCoroutine(GenerateGroupViews());
-            yield return GraphWindow.StartCoroutine(InitNodeEntries());
 
-            CreateNodeMenu = ScriptableObject.CreateInstance<NodeMenuWindow>();
-            CreateNodeMenu.Initialize("Nodes", this);
-            nodeCreationRequest = c => SearchWindow.Open(new SearchWindowContext(c.screenMousePosition), CreateNodeMenu);
+            nodeCreationRequest = c =>
+            {
+                var nodeMenu = ScriptableObject.CreateInstance<NodeMenuWindow>();
+                nodeMenu.Initialize("Nodes", this, GetNodeEntries());
+                SearchWindow.Open(new SearchWindowContext(c.screenMousePosition), nodeMenu);
+            };
             graphViewChanged = OnGraphViewChangedCallback;
             viewTransformChanged = OnViewTransformChanged;
 
@@ -166,28 +166,6 @@ namespace CZToolKit.GraphProcessor.Editors
                 if (step % 10 == 0)
                     yield return null;
             }
-        }
-
-        IEnumerator InitNodeEntries()
-        {
-            foreach (var nodeType in GetNodeTypes())
-            {
-                var path = nodeType.Name;
-                var menu = (string[])null;
-                var hidden = true;
-                var menuAttribute = GraphProcessorEditorUtil.GetNodeMenu(nodeType);
-                if (menuAttribute != null)
-                {
-                    path = menuAttribute.path;
-                    menu = menuAttribute.menu;
-                    hidden = menuAttribute.hidden;
-                }
-
-                var entry = new NodeEntry(nodeType, path, menu, hidden);
-                NodeEntries.Add(entry);
-            }
-
-            yield return null;
         }
 
         #endregion
@@ -301,11 +279,6 @@ namespace CZToolKit.GraphProcessor.Editors
             connectionView.UnBindingProperties();
             RemoveElement(connectionView);
             ConnectionViews.Remove(connectionView.ViewModel);
-        }
-
-        public IEnumerable<NodeEntry> GetNodeEntries()
-        {
-            return NodeEntries;
         }
 
         /// <summary> 获取鼠标在GraphView中的坐标，如果鼠标不在GraphView内，则返回当前GraphView显示的中心点 </summary>

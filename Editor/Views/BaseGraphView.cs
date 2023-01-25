@@ -1,4 +1,5 @@
 #region 注 释
+
 /***
  *
  *  Title:
@@ -12,7 +13,9 @@
  *  Blog: https://www.crosshair.top/
  *
  */
+
 #endregion
+
 #if UNITY_EDITOR
 using CZToolKit.Common;
 using CZToolKit.Common.ViewModel;
@@ -31,11 +34,17 @@ namespace CZToolKit.GraphProcessor.Editors
     {
         List<Port> compatiblePorts = new List<Port>();
 
-        protected virtual void OnInitialized() { }
+        protected virtual void OnInitialized()
+        {
+        }
 
-        protected virtual void OnBindingProperties() { }
+        protected virtual void OnBindingProperties()
+        {
+        }
 
-        protected virtual void OnUnbindingProperties() { }
+        protected virtual void OnUnbindingProperties()
+        {
+        }
 
         public override void BuildContextualMenu(ContextualMenuPopulateEvent evt)
         {
@@ -54,10 +63,12 @@ namespace CZToolKit.GraphProcessor.Editors
                 {
                     return true;
                 }
+
                 if (!(item is DropdownMenuAction actionItem))
                 {
                     return false;
                 }
+
                 switch (actionItem.name)
                 {
                     case "Cut":
@@ -72,10 +83,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
             if (evt.target is GraphView || evt.target is Node || evt.target is Group || evt.target is Edge)
             {
-                evt.menu.AppendAction("Delete", delegate
-                {
-                    DeleteSelectionCallback(AskUser.DontAskUser);
-                }, (DropdownMenuAction a) => canDeleteSelection ? DropdownMenuAction.Status.Normal : DropdownMenuAction.Status.Hidden);
+                evt.menu.AppendAction("Delete", delegate { DeleteSelectionCallback(AskUser.DontAskUser); }, (DropdownMenuAction a) => canDeleteSelection ? DropdownMenuAction.Status.Normal : DropdownMenuAction.Status.Hidden);
             }
         }
 
@@ -87,27 +95,71 @@ namespace CZToolKit.GraphProcessor.Editors
             switch (portView.ViewModel.Direction)
             {
                 case BasePort.Direction.Input:
+                {
+                    ports.ForEach(_portView =>
                     {
-                        ports.ForEach(_portView =>
-                        {
-                            var fromPortView = _portView as BasePortView;
-                            if (IsCompatible(fromPortView, portView, nodeAdapter))
-                                compatiblePorts.Add(_portView);
-                        });
-                    }
+                        var fromPortView = _portView as BasePortView;
+                        if (IsCompatible(fromPortView, portView, nodeAdapter))
+                            compatiblePorts.Add(_portView);
+                    });
+                }
                     break;
                 case BasePort.Direction.Output:
+                {
+                    ports.ForEach(_portView =>
                     {
-                        ports.ForEach(_portView =>
-                        {
-                            var toPortView = _portView as BasePortView;
-                            if (IsCompatible(portView, toPortView, nodeAdapter))
-                                compatiblePorts.Add(_portView);
-                        });
-                    }
+                        var toPortView = _portView as BasePortView;
+                        if (IsCompatible(portView, toPortView, nodeAdapter))
+                            compatiblePorts.Add(_portView);
+                    });
+                }
                     break;
             }
+
             return compatiblePorts;
+        }
+
+        public virtual List<NodeEntry> GetNodeEntries()
+        {
+            var entries = new List<NodeEntry>(16);
+            foreach (var nodeType in GetNodeTypes())
+            {
+                var path = nodeType.Name;
+                var menu = (string[])null;
+                var hidden = false;
+                var menuAttribute = GraphProcessorEditorUtil.GetNodeMenu(nodeType);
+                if (menuAttribute != null)
+                {
+                    path = menuAttribute.path;
+                    menu = menuAttribute.menu;
+                    hidden = menuAttribute.hidden;
+                }
+                else
+                {
+                    menu = new string[] { nodeType.Name };
+                }
+
+                entries.Add(new NodeEntry(nodeType, path, menu, hidden));
+            }
+
+            int left = 0;
+            int depth = -1;
+            for (int i = 0; i < entries.Count; i++)
+            {
+                if (depth == -1)
+                {
+                    depth = entries[i].menu.Length;
+                    left = i;
+                }
+                else if (entries[i].menu.Length != depth)
+                {
+                    entries.QuickSort(left, i - 1, (a, b) => String.Compare(a.path, b.path, StringComparison.Ordinal));
+                    depth = entries[i].menu.Length;
+                    left = i;
+                }
+            }
+
+            return entries;
         }
 
         protected virtual IEnumerable<Type> GetNodeTypes()
@@ -140,9 +192,10 @@ namespace CZToolKit.GraphProcessor.Editors
             {
                 if (!ObjectEditor.HasEditor(element))
                     continue;
-                ObjectEditor.DrawObjectInInspector((element as GraphElement).title, element, GraphAsset);
+                ObjectEditor.DrawObjectInInspector((element as GraphElement)?.title, element, GraphAsset);
                 return;
             }
+
             if (Selection.activeGameObject != null && Selection.activeGameObject.GetComponent<IGraphAssetOwner>() != null)
                 return;
             ObjectEditor.DrawObjectInInspector("Graph", this, GraphAsset);
