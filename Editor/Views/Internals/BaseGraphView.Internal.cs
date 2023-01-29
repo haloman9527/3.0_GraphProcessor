@@ -110,12 +110,7 @@ namespace CZToolKit.GraphProcessor.Editors
             yield return GraphWindow.StartCoroutine(LinkNodeViews());
             yield return GraphWindow.StartCoroutine(GenerateGroupViews());
 
-            nodeCreationRequest = c =>
-            {
-                var nodeMenu = ScriptableObject.CreateInstance<NodeMenuWindow>();
-                nodeMenu.Initialize("Nodes", this, GetNodeEntries());
-                SearchWindow.Open(new SearchWindowContext(c.screenMousePosition), nodeMenu);
-            };
+            nodeCreationRequest = NodeCreationRequest;
             graphViewChanged = OnGraphViewChangedCallback;
             viewTransformChanged = OnViewTransformChanged;
 

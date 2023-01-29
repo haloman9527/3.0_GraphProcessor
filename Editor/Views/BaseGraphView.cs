@@ -25,6 +25,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
+using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace CZToolKit.GraphProcessor.Editors
@@ -119,12 +120,13 @@ namespace CZToolKit.GraphProcessor.Editors
             return compatiblePorts;
         }
 
-        public virtual List<NodeEntry> GetNodeEntries()
+        protected virtual void NodeCreationRequest(NodeCreationContext c)
         {
             var multiLayereEntryCount = 0;
             var entries = new List<NodeEntry>(16);
-            foreach (var nodeType in GetNodeTypes())
+            foreach (var nodeType in TypeCache.GetTypesDerivedFrom<BaseNode>())
             {
+                if (nodeType.IsAbstract) continue;
                 var path = nodeType.Name;
                 var menu = (string[])null;
                 var hidden = false;
@@ -145,36 +147,12 @@ namespace CZToolKit.GraphProcessor.Editors
                 entries.Add(new NodeEntry(nodeType, path, menu, hidden));
             }
 
-            entries.QuickSort((a, b) => a.menu.Length - 2);
-            entries.QuickSort(0, multiLayereEntryCount - 1, (a, b) => -(a.menu.Length - 1));
+            entries.QuickSort((a, b) => -(a.menu.Length.CompareTo(b.menu.Length)));
+            entries.QuickSort(0, multiLayereEntryCount - 1, (a, b) => String.Compare(a.path, b.path, StringComparison.Ordinal));
 
-            // int left = 0;
-            // int depth = -1;
-            // for (int i = 0; i < entries.Count; i++)
-            // {
-            //     if (depth == -1)
-            //     {
-            //         depth = entries[i].menu.Length;
-            //         left = i;
-            //     }
-            //     else if (entries[i].menu.Length != depth)
-            //     {
-            //         entries.QuickSort(left, i - 1, (a, b) => String.Compare(a.path, b.path, StringComparison.Ordinal));
-            //         depth = entries[i].menu.Length;
-            //         left = i;
-            //     }
-            // }
-
-            return entries;
-        }
-
-        protected virtual IEnumerable<Type> GetNodeTypes()
-        {
-            foreach (var type in TypeCache.GetTypesDerivedFrom<BaseNode>())
-            {
-                if (type.IsAbstract) continue;
-                yield return type;
-            }
+            var nodeMenu = ScriptableObject.CreateInstance<NodeMenuWindow>();
+            nodeMenu.Initialize("Nodes", this, entries);
+            SearchWindow.Open(new SearchWindowContext(c.screenMousePosition), nodeMenu);
         }
 
         protected virtual BaseNodeView NewNodeView(BaseNodeVM nodeVM)
