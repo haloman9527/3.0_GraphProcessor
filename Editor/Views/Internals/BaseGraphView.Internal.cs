@@ -38,6 +38,7 @@ namespace CZToolKit.GraphProcessor.Editors
             public readonly string[] menu;
             public readonly bool hidden;
             public readonly Type nodeType;
+            public string port;
 
             public NodeEntry(Type nodeType, string path, string[] menu, bool hidden)
             {
