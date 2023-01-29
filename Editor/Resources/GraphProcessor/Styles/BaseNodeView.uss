@@ -60,9 +60,7 @@
 }
 
 #top-input{
-    height: 20px;
-    max-height: 20px;
-    min-height: 20px;
+    height: 21px;
     justify-content: center;
     align-items: center;
     flex-direction: row;
@@ -70,9 +68,7 @@
 }
 
 #bottom-input{
-    height: 20px;
-    max-height: 20px;
-    min-height: 20px;
+    height: 21px;
     justify-content: center;
     align-items: center;
     flex-direction: row;

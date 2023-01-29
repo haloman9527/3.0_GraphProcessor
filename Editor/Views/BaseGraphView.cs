@@ -121,6 +121,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
         public virtual List<NodeEntry> GetNodeEntries()
         {
+            var multiLayereEntryCount = 0;
             var entries = new List<NodeEntry>(16);
             foreach (var nodeType in GetNodeTypes())
             {
@@ -139,25 +140,30 @@ namespace CZToolKit.GraphProcessor.Editors
                     menu = new string[] { nodeType.Name };
                 }
 
+                if (menu.Length > 1)
+                    multiLayereEntryCount++;
                 entries.Add(new NodeEntry(nodeType, path, menu, hidden));
             }
 
-            int left = 0;
-            int depth = -1;
-            for (int i = 0; i < entries.Count; i++)
-            {
-                if (depth == -1)
-                {
-                    depth = entries[i].menu.Length;
-                    left = i;
-                }
-                else if (entries[i].menu.Length != depth)
-                {
-                    entries.QuickSort(left, i - 1, (a, b) => String.Compare(a.path, b.path, StringComparison.Ordinal));
-                    depth = entries[i].menu.Length;
-                    left = i;
-                }
-            }
+            entries.QuickSort((a, b) => a.menu.Length - 2);
+            entries.QuickSort(0, multiLayereEntryCount - 1, (a, b) => -(a.menu.Length - 1));
+
+            // int left = 0;
+            // int depth = -1;
+            // for (int i = 0; i < entries.Count; i++)
+            // {
+            //     if (depth == -1)
+            //     {
+            //         depth = entries[i].menu.Length;
+            //         left = i;
+            //     }
+            //     else if (entries[i].menu.Length != depth)
+            //     {
+            //         entries.QuickSort(left, i - 1, (a, b) => String.Compare(a.path, b.path, StringComparison.Ordinal));
+            //         depth = entries[i].menu.Length;
+            //         left = i;
+            //     }
+            // }
 
             return entries;
         }
