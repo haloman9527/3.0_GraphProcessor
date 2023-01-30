@@ -118,7 +118,6 @@ namespace CZToolKit.GraphProcessor.Editors
             GraphAsset = graphAsset;
             GraphView = NewGraphView(commandDispatcher);
 
-            GraphView.BindingProperties();
             GraphView.onDirty += OnGraphViewDirty;
             GraphView.onUndirty += OnGraphViewUndirty;
             GraphViewContainer.Add(GraphView);

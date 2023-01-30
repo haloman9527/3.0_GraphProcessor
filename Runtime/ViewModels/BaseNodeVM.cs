@@ -173,6 +173,10 @@ namespace CZToolKit.GraphProcessor
 
         #region Overrides
 
+        public virtual void OnCreated()
+        {
+        }
+
         protected virtual void OnEnabled()
         {
         }

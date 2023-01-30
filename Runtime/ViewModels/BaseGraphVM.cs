@@ -105,11 +105,11 @@ namespace CZToolKit.GraphProcessor
                 nodeVM.Owner = this;
                 nodes.Add(pair.Key, nodeVM);
             }
-            
+
             for (int i = 0; i < Model.connections.Count; i++)
             {
                 var connection = Model.connections[i];
-                
+
                 if (!nodes.TryGetValue(connection.fromNode, out var fromNode) || !fromNode.Ports.TryGetValue(connection.fromPort, out var fromPort))
                 {
                     Model.connections.RemoveAt(i--);
@@ -121,7 +121,7 @@ namespace CZToolKit.GraphProcessor
                     Model.connections.RemoveAt(i--);
                     continue;
                 }
-                
+
                 var connectionVM = ViewModelFactory.CreateViewModel(connection) as BaseConnectionVM;
                 connectionVM.Owner = this;
                 fromPort.connections.Add(connectionVM);
@@ -137,6 +137,7 @@ namespace CZToolKit.GraphProcessor
                     model.groups.RemoveAt(i--);
                     continue;
                 }
+
                 group.nodes.RemoveAll(nodeID => !nodes.ContainsKey(nodeID));
                 var groupVM = ViewModelFactory.CreateViewModel(group) as BaseGroupVM;
                 groupVM.Owner = this;
@@ -147,7 +148,7 @@ namespace CZToolKit.GraphProcessor
             {
                 connection.Enable();
             }
-            
+
             foreach (var node in nodes.Values)
             {
                 node.Enable();
@@ -158,18 +159,14 @@ namespace CZToolKit.GraphProcessor
 
         public BaseNodeVM AddNode<T>(InternalVector2Int position) where T : BaseNode, new()
         {
-            var node = new T();
-            node.position = position;
-            var nodeVM = ViewModelFactory.CreateViewModel(node) as BaseNodeVM;
+            var nodeVM = AddNode(typeof(T), position);
             AddNode(nodeVM);
             return nodeVM;
         }
 
         public BaseNodeVM AddNode(Type nodeType, InternalVector2Int position)
         {
-            var node = Activator.CreateInstance(nodeType) as BaseNode;
-            node.position = position;
-            var nodeVM = ViewModelFactory.CreateViewModel(node) as BaseNodeVM;
+            var nodeVM = NewNode(nodeType, position);
             AddNode(nodeVM);
             return nodeVM;
         }
@@ -208,36 +205,6 @@ namespace CZToolKit.GraphProcessor
             OnNodeRemoved?.Invoke(node);
         }
 
-        public void ReConnect(BaseConnectionVM connection)
-        {
-            var fromNode = nodes[connection.FromNodeID];
-            var fromPort = fromNode.ports[connection.FromPortName];
-            
-            var toNode = nodes[connection.ToNodeID];
-            var toPort = toNode.ports[connection.ToPortName];
-            
-            var tmpConnection = fromPort.Connections.FirstOrDefault(tmp => tmp.ToNodeID == connection.ToNodeID && tmp.ToPortName == connection.ToPortName);
-            if (tmpConnection != null)
-                return;
-
-            if (fromPort.Capacity == BasePort.Capacity.Single)
-                Disconnect(fromPort);
-            if (toPort.Capacity == BasePort.Capacity.Single)
-                Disconnect(toPort);
-
-            connection.Owner = this;
-            connection.Enable();
-            connections.Add(connection);
-            Model.connections.Add(connection.Model);
-
-            fromPort.ConnectTo(connection);
-            toPort.ConnectTo(connection);
-
-            fromPort.Resort();
-            toPort.Resort();
-            OnConnected?.Invoke(connection);
-        }
-
         public BaseConnectionVM Connect(BasePortVM fromPort, BasePortVM toPort)
         {
             var tmpConnection = fromPort.Connections.FirstOrDefault(tmp => tmp.FromNode == fromPort.Owner && tmp.ToPortName == toPort.Name);
@@ -249,7 +216,7 @@ namespace CZToolKit.GraphProcessor
             if (toPort.Capacity == BasePort.Capacity.Single)
                 Disconnect(toPort);
             var connection = NewConnection(fromPort, toPort);
-            
+
             connection.Owner = this;
             connection.Enable();
             connections.Add(connection);
@@ -257,7 +224,7 @@ namespace CZToolKit.GraphProcessor
 
             fromPort.ConnectTo(connection);
             toPort.ConnectTo(connection);
-            
+
             fromPort.Resort();
             toPort.Resort();
 
@@ -306,6 +273,36 @@ namespace CZToolKit.GraphProcessor
             }
         }
 
+        public void RevertDisconnect(BaseConnectionVM connection)
+        {
+            var fromNode = nodes[connection.FromNodeID];
+            var fromPort = fromNode.ports[connection.FromPortName];
+
+            var toNode = nodes[connection.ToNodeID];
+            var toPort = toNode.ports[connection.ToPortName];
+
+            var tmpConnection = fromPort.Connections.FirstOrDefault(tmp => tmp.ToNodeID == connection.ToNodeID && tmp.ToPortName == connection.ToPortName);
+            if (tmpConnection != null)
+                return;
+
+            if (fromPort.Capacity == BasePort.Capacity.Single)
+                Disconnect(fromPort);
+            if (toPort.Capacity == BasePort.Capacity.Single)
+                Disconnect(toPort);
+
+            connection.Owner = this;
+            connection.Enable();
+            connections.Add(connection);
+            Model.connections.Add(connection.Model);
+
+            fromPort.ConnectTo(connection);
+            toPort.ConnectTo(connection);
+
+            fromPort.Resort();
+            toPort.Resort();
+            OnConnected?.Invoke(connection);
+        }
+
         public void AddGroup(BaseGroupVM groupVM)
         {
             groups.Add(groupVM);
@@ -327,6 +324,15 @@ namespace CZToolKit.GraphProcessor
             Model.groups.Remove(group.Model);
             if (removed)
                 OnGroupRemoved?.Invoke(group);
+        }
+
+        public virtual BaseNodeVM NewNode(Type nodeType, InternalVector2Int position)
+        {
+            var node = Activator.CreateInstance(nodeType) as BaseNode;
+            node.position = position;
+            var nodeVM = ViewModelFactory.CreateViewModel(node) as BaseNodeVM;
+            nodeVM.OnCreated();
+            return nodeVM;
         }
 
         public virtual BaseConnectionVM NewConnection(BasePortVM from, BasePortVM to)
