@@ -1,6 +1,7 @@
 #node-border{
     background-color: rgba(30, 30, 30, 1);
     border-color: black;
+    min-width: 60px;
 }
 
 #node-border > #title {

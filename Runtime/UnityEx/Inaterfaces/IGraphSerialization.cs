@@ -19,6 +19,7 @@ namespace CZToolKit.GraphProcessor
     public interface IGraphSerialization
     {
         void SaveGraph(BaseGraph graph);
+        
         BaseGraph DeserializeGraph();
     }
 

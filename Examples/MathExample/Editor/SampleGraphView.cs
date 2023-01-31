@@ -59,6 +59,7 @@ public class SampleGraphView : BaseGraphView
 
         entries.QuickSort((a, b) => -(a.menu.Length.CompareTo(b.menu.Length)));
         entries.QuickSort(0, multiLayereEntryCount - 1, (a, b) => String.Compare(a.path, b.path, StringComparison.Ordinal));
+        entries.QuickSort(multiLayereEntryCount, entries.Count - 1, (a, b) => String.Compare(a.path, b.path, StringComparison.Ordinal));
 
         var nodeMenu = ScriptableObject.CreateInstance<NodeMenuWindow>();
         nodeMenu.Initialize("Nodes", this, entries);
