@@ -51,6 +51,11 @@ namespace CZToolKit.GraphProcessor
             graph.AddNode(nodeVM);
         }
 
+        public void Redo()
+        {
+            Do();
+        }
+
         public void Undo()
         {
             graph.RemoveNode(nodeVM);
@@ -79,6 +84,11 @@ namespace CZToolKit.GraphProcessor
                 }
             }
             graph.RemoveNode(node);
+        }
+
+        public void Redo()
+        {
+            Do();
         }
 
         public void Undo()
@@ -111,6 +121,11 @@ namespace CZToolKit.GraphProcessor
             node.Position = targetPosition;
         }
 
+        public void Redo()
+        {
+            Do();
+        }
+
         public void Undo()
         {
             node.Position = currentPosition;
@@ -134,6 +149,11 @@ namespace CZToolKit.GraphProcessor
                 oldPos[pair.Key] = pair.Key.Position;
                 pair.Key.Position = pair.Value;
             }
+        }
+
+        public void Redo()
+        {
+            Do();
         }
 
         public void Undo()
@@ -167,6 +187,11 @@ namespace CZToolKit.GraphProcessor
             graph.AddGroup(group);
         }
 
+        public void Redo()
+        {
+            Do();
+        }
+
         public void Undo()
         {
             graph.RemoveGroup(group);
@@ -187,6 +212,11 @@ namespace CZToolKit.GraphProcessor
         public void Do()
         {
             graph.RemoveGroup(group);
+        }
+
+        public void Redo()
+        {
+            Do();
         }
 
         public void Undo()
@@ -217,6 +247,11 @@ namespace CZToolKit.GraphProcessor
             }
         }
 
+        public void Redo()
+        {
+            Do();
+        }
+
         public void Undo()
         {
             foreach (var pair in oldPos)
@@ -242,6 +277,11 @@ namespace CZToolKit.GraphProcessor
         public void Do()
         {
             group.GroupName = newName;
+        }
+
+        public void Redo()
+        {
+            Do();
         }
 
         public void Undo()
@@ -270,6 +310,11 @@ namespace CZToolKit.GraphProcessor
                 node.AddPort(port);
                 successed = true;
             }
+        }
+
+        public void Redo()
+        {
+            Do();
         }
 
         public void Undo()
@@ -308,6 +353,11 @@ namespace CZToolKit.GraphProcessor
                 node.AddPort(port);
                 successed = true;
             }
+        }
+
+        public void Redo()
+        {
+            Do();
         }
 
         public void Undo()
@@ -372,7 +422,12 @@ namespace CZToolKit.GraphProcessor
                 }
             }
 
-            graph.RevertDisconnect(connectionVM);
+            graph.Connect(connectionVM);
+        }
+
+        public void Redo()
+        {
+            Do();
         }
 
         public void Undo()
@@ -427,6 +482,11 @@ namespace CZToolKit.GraphProcessor
             graph.RevertDisconnect(connection);
         }
 
+        public void Redo()
+        {
+            Do();
+        }
+
         public void Undo()
         {
             graph.Disconnect(connection);
@@ -455,6 +515,11 @@ namespace CZToolKit.GraphProcessor
         public void Do()
         {
             graph.Disconnect(connection);
+        }
+
+        public void Redo()
+        {
+            Do();
         }
 
         public void Undo()

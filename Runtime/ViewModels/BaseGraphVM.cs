@@ -189,7 +189,7 @@ namespace CZToolKit.GraphProcessor
             OnNodeAdded?.Invoke(node);
         }
 
-        public void RemoveNode(int id)
+        public void RemoveNodeByID(int id)
         {
             RemoveNode(Nodes[id]);
         }
@@ -232,6 +232,35 @@ namespace CZToolKit.GraphProcessor
             return connection;
         }
 
+        public void Connect(BaseConnectionVM connection)
+        {
+            var fromNode = Nodes[connection.FromNodeID];
+            var fromPort = fromNode.Ports[connection.FromPortName];
+            var toNode = Nodes[connection.ToNodeID];
+            var toPort = toNode.Ports[connection.ToPortName];
+            var tmpConnection = fromPort.Connections.FirstOrDefault(tmp => fromNode == fromPort.Owner && tmp.ToPortName == toPort.Name);
+            if (tmpConnection != null)
+                return;
+
+            if (fromPort.Capacity == BasePort.Capacity.Single)
+                Disconnect(fromPort);
+            if (toPort.Capacity == BasePort.Capacity.Single)
+                Disconnect(toPort);
+
+            connection.Owner = this;
+            connection.Enable();
+            connections.Add(connection);
+            Model.connections.Add(connection.Model);
+
+            fromPort.ConnectTo(connection);
+            toPort.ConnectTo(connection);
+
+            fromPort.Resort();
+            toPort.Resort();
+
+            OnConnected?.Invoke(connection);
+        }
+
         public void Disconnect(BaseConnectionVM connection)
         {
             if (connection.FromNode.Ports.TryGetValue(connection.FromPortName, out BasePortVM fromPort))
@@ -269,7 +298,7 @@ namespace CZToolKit.GraphProcessor
         {
             for (int i = 0; i < port.connections.Count; i++)
             {
-                Disconnect(connections[i--]);
+                Disconnect(port.connections[i--]);
             }
         }
 
