@@ -19,7 +19,7 @@
 #if UNITY_EDITOR
 using CZToolKit.Common;
 using CZToolKit.Common.ViewModel;
-using CZToolKit.Common.Editors;
+using CZToolKit.Common.IMGUI;
 using System;
 using UnityEngine;
 using UnityEngine.UIElements;

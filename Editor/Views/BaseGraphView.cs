@@ -17,9 +17,9 @@
 #endregion
 
 #if UNITY_EDITOR
-using CZToolKit.Common;
+using CZToolKit.Common.Collection;
 using CZToolKit.Common.ViewModel;
-using CZToolKit.Common.Editors;
+using CZToolKit.Common.IMGUI;
 using System;
 using System.Collections.Generic;
 using System.Linq;

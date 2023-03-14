@@ -17,7 +17,7 @@
 #endregion
 
 #if UNITY_EDITOR && ODIN_INSPECTOR
-using CZToolKit.Common.Editors;
+using CZToolKit.Common.IMGUI;
 using UnityEditor;
 using UnityEngine;
 using Sirenix.OdinInspector.Editor;

@@ -14,7 +14,7 @@
  */
 #endregion
 #if UNITY_EDITOR
-using CZToolKit.Common.Editors;
+using CZToolKit.Common.IMGUI;
 using System;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
