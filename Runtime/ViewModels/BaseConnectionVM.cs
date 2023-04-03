@@ -27,51 +27,63 @@ namespace CZToolKit.GraphProcessor
         #endregion
 
         #region Properties
+        
         public BaseConnection Model
         {
             get;
         }
+        
         public Type ModelType
         {
             get;
         }
+        
         public BaseGraphVM Owner
         {
             get;
             internal set;
         }
+        
         public int FromNodeID
         {
             get { return Model.fromNode; }
         }
+        
         public int ToNodeID
         {
             get { return Model.toNode; }
         }
+        
         public string FromPortName
         {
             get { return Model.fromPort; }
         }
+        
         public string ToPortName
         {
             get { return Model.toPort; }
         }
+        
         public BaseNodeVM FromNode
         {
             get { return from.Owner; }
         }
+        
         public BasePortVM FromPort
         {
             get { return from; }
         }
+        
         public BaseNodeVM ToNode
         {
             get { return to.Owner; }
         }
+        
         public BasePortVM ToPort
         {
             get { return to; }
         }
+        
         #endregion
 
         public BaseConnectionVM(BaseConnection model)

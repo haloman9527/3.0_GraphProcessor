@@ -388,14 +388,6 @@ namespace CZToolKit.GraphProcessor
             this.to = to;
         }
 
-        public ConnectCommand(BaseGraphVM graph, BaseConnection connection)
-        {
-            this.graph = graph;
-            this.connectionVM = ViewModelFactory.CreateViewModel(connection) as BaseConnectionVM;
-            this.from = graph.Nodes[connection.fromNode].Ports[connection.fromPort];
-            this.to = graph.Nodes[connection.toNode].Ports[connection.toPort];
-        }
-
         public ConnectCommand(BaseGraphVM graph, BaseConnectionVM connection)
         {
             this.graph = graph;
@@ -422,6 +414,10 @@ namespace CZToolKit.GraphProcessor
                 }
             }
 
+            foreach (var connection in replacedConnections)
+            {
+                graph.Disconnect(connection);
+            }
             graph.Connect(connectionVM);
         }
 

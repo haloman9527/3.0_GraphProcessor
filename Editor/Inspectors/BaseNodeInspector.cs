@@ -63,7 +63,7 @@ namespace CZToolKit.GraphProcessor.Editors
             if (propertyTree == null)
                 return;
             GUI.enabled = false;
-            EditorGUILayout.Vector2IntField(string.Empty, view.ViewModel.Position.ToVector2Int());
+            EditorGUILayout.Vector2IntField(EditorGUIUtility.TrTextContent("Position"), view.ViewModel.Position.ToVector2Int());
             GUI.enabled = true;
             propertyTree.Draw(false);
             Editor.Repaint();

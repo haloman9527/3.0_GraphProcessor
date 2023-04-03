@@ -238,7 +238,7 @@ namespace CZToolKit.GraphProcessor
             var fromPort = fromNode.Ports[connection.FromPortName];
             var toNode = Nodes[connection.ToNodeID];
             var toPort = toNode.Ports[connection.ToPortName];
-            var tmpConnection = fromPort.Connections.FirstOrDefault(tmp => fromNode == fromPort.Owner && tmp.ToPortName == toPort.Name);
+            var tmpConnection = fromPort.Connections.FirstOrDefault(tmp => tmp.ToPort == toPort);
             if (tmpConnection != null)
                 return;
 
