@@ -17,9 +17,9 @@
 using CZToolKit.Common.ViewModel;
 using CZToolKit.GraphProcessor;
 using CZToolKit.GraphProcessor.Editors;
-using OdinSerializer;
 using System.Collections.Generic;
 using CZToolKit.Common;
+using Sirenix.Serialization;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
