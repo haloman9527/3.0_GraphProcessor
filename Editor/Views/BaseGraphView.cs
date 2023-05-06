@@ -126,21 +126,12 @@ namespace CZToolKit.GraphProcessor.Editors
             var entries = new List<NodeEntry>(16);
             foreach (var nodeType in TypeCache.GetTypesDerivedFrom<BaseNode>())
             {
-                if (nodeType.IsAbstract) continue;
-                var path = nodeType.Name;
-                var menu = (string[])null;
-                var hidden = false;
-                var menuAttribute = GraphProcessorEditorUtil.GetNodeMenu(nodeType);
-                if (menuAttribute != null)
-                {
-                    path = menuAttribute.path;
-                    menu = menuAttribute.menu;
-                    hidden = menuAttribute.hidden;
-                }
-                else
-                {
-                    menu = new string[] { nodeType.Name };
-                }
+                if (nodeType.IsAbstract) 
+                    continue;
+                var nodeStaticInfo = GraphProcessorUtil.NodeStaticInfos[nodeType];
+                var path = nodeStaticInfo.path;
+                var menu = nodeStaticInfo.menu;
+                var hidden = nodeStaticInfo.hidden;
 
                 if (menu.Length > 1)
                     multiLayereEntryCount++;

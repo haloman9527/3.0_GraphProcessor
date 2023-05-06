@@ -16,7 +16,6 @@
 
 #endregion
 
-using CZToolKit.Common;
 using CZToolKit.Common.ViewModel;
 using System;
 using System.Collections.Generic;
@@ -86,29 +85,21 @@ namespace CZToolKit.GraphProcessor
             Model.position = Model.position == default ? InternalVector2Int.zero : Model.position;
             ports = new Dictionary<string, BasePortVM>();
 
-            this[nameof(BaseNode.position)] = new BindableProperty<InternalVector2Int>(() => Model.position, v => Model.position = v);
+            var nodeStaticInfo = GraphProcessorUtil.NodeStaticInfos[ModelType];
 
-            string title = string.Empty;
-            if (Util_Attribute.TryGetTypeAttribute(ModelType, out NodeMenuAttribute displayName) && displayName.menu != null && displayName.menu.Length != 0)
-                title = displayName.menu[displayName.menu.Length - 1];
-            else
-                title = ModelType.Name;
-
-            if (Util_Attribute.TryGetTypeAttribute(ModelType, out NodeTitleAttribute titleAttr) && !string.IsNullOrEmpty(titleAttr.title))
-                title = titleAttr.title;
+            string title = nodeStaticInfo.title;
             this[TITLE_NAME] = new BindableProperty<string>(() => title, v => title = v);
 
-            var titleColor = DefaultTitleColor;
-            if (Util_Attribute.TryGetTypeAttribute(ModelType, out NodeTitleColorAttribute nodeTitleColorAttribute))
+            string tooltip = nodeStaticInfo.tooltip;
+            this[TOOLTIP_NAME] = new BindableProperty<string>(() => tooltip, v => tooltip = v);
+
+            if (nodeStaticInfo.customTitleColor)
             {
-                titleColor = nodeTitleColorAttribute.color;
+                var titleColor = nodeStaticInfo.titleColor;
                 this[TITLE_COLOR_NAME] = new BindableProperty<InternalColor>(() => titleColor, v => titleColor = v);
             }
-
-            var tooltip = string.Empty;
-            if (Util_Attribute.TryGetTypeAttribute(ModelType, out NodeTooltipAttribute tooltipAttribute))
-                tooltip = tooltipAttribute.Tooltip;
-            this[TOOLTIP_NAME] = new BindableProperty<string>(() => tooltip, v => tooltip = v);
+            
+            this[nameof(BaseNode.position)] = new BindableProperty<InternalVector2Int>(() => Model.position, v => Model.position = v);
         }
 
         internal void Enable()
@@ -198,7 +189,6 @@ namespace CZToolKit.GraphProcessor
         public const string TITLE_NAME = "title";
         public const string TITLE_COLOR_NAME = "titleColor";
         public const string TOOLTIP_NAME = "tooltip";
-        public static readonly InternalColor DefaultTitleColor = new InternalColor(0.2f, 0.2f, 0.2f, 0.8f);
     }
 
     public class BaseNodeVM<T> : BaseNodeVM where T : BaseNode

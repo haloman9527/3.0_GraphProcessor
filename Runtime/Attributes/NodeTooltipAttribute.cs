@@ -21,6 +21,7 @@ namespace CZToolKit.GraphProcessor
     public class NodeTooltipAttribute : Attribute
     {
         public readonly string Tooltip;
+        
         public NodeTooltipAttribute(string tooltip)
         {
             Tooltip = tooltip;

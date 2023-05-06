@@ -16,6 +16,7 @@
 
 #endregion
 
+using CZToolKit.Common;
 using CZToolKit.Common.Blackboard;
 using CZToolKit.Common.ViewModel;
 using System;
@@ -349,10 +350,9 @@ namespace CZToolKit.GraphProcessor
 
         public void RemoveGroup(BaseGroupVM group)
         {
-            bool removed = groups.Remove(group);
+            groups.Remove(group);
             Model.groups.Remove(group.Model);
-            if (removed)
-                OnGroupRemoved?.Invoke(group);
+            OnGroupRemoved?.Invoke(group);
         }
 
         public virtual BaseNodeVM NewNode(Type nodeType, InternalVector2Int position)
@@ -378,11 +378,7 @@ namespace CZToolKit.GraphProcessor
 
         public int GenerateNodeGUID()
         {
-            while (true)
-            {
-                int id = GraphProcessorUtil.Random.Next();
-                if (id != 0 && !Nodes.ContainsKey(id)) return id;
-            }
+            return (int)(Util.GenerateIDBySnowflake() >> 32);
         }
 
         /// <summary> 给节点分配一个GUID，这将会覆盖已有GUID </summary>

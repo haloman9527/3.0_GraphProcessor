@@ -14,7 +14,6 @@
  */
 #endregion
 #if UNITY_EDITOR
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor.Experimental.GraphView;
@@ -32,13 +31,12 @@ namespace CZToolKit.GraphProcessor.Editors
         public readonly Label nodeLabel;
         public readonly Image nodeIcon;
         public readonly VisualElement contents;
+        public readonly VisualElement controls;
         public readonly VisualElement nodeBorder;
         public readonly VisualElement topPortContainer;
         public readonly VisualElement bottomPortContainer;
-        public readonly VisualElement controlsContainer;
-        public readonly VisualElement contentsHorizontalDivider;
-        public readonly VisualElement portsVerticalDivider;
-        public readonly VisualElement controlsHorizontalDivider;
+        public readonly VisualElement horizontalDivider;
+        public readonly VisualElement verticalDivider;
 
         List<IconBadge> badges = new List<IconBadge>();
         Dictionary<string, BasePortView> portViews = new Dictionary<string, BasePortView>();
@@ -61,6 +59,7 @@ namespace CZToolKit.GraphProcessor.Editors
                 return nodeIcon;
             }
         }
+
         public BaseGraphView Owner
         {
             get;
@@ -77,20 +76,20 @@ namespace CZToolKit.GraphProcessor.Editors
         }
         #endregion
 
-        public BaseNodeView() : base()
+        public BaseNodeView()
         {
             contents = mainContainer.Q("contents");
             
             nodeBorder = this.Q(name: "node-border");
             nodeLabel = titleContainer.Q<Label>("title-label");
-            contentsHorizontalDivider = contentContainer.Q(name: "divider", className: "horizontal");
-            portsVerticalDivider = topContainer.Q(name: "divider", className: "vertical");
+            horizontalDivider = this.Q(name: "divider", className: "horizontal");
+            verticalDivider = topContainer.Q(name: "divider", className: "vertical");
 
             nodeIcon = new Image() { name = "title-icon" };
             titleContainer.Insert(0, nodeIcon);
 
-            controlsContainer = new VisualElement { name = "controls" };
-            contents.Add(controlsContainer);
+            controls = new VisualElement { name = "controls" };
+            contents.Add(controls);
 
             topPortContainer = new VisualElement { name = "top-input" };
             nodeBorder.Insert(0, topPortContainer);
@@ -200,19 +199,19 @@ namespace CZToolKit.GraphProcessor.Editors
             RefreshPortContainer();
         }
 
-        void OnTitleChanged(string title)
+        void OnTitleChanged(string newTitle)
         {
-            base.title = title;
+            base.title = newTitle;
         }
 
-        void OnTooltipChanged(string tooltip)
+        void OnTooltipChanged(string newTooltip)
         {
-            base.tooltip = tooltip;
+            this.tooltip = newTooltip;
         }
 
-        void OnPositionChanged(InternalVector2Int position)
+        void OnPositionChanged(InternalVector2Int newPosition)
         {
-            base.SetPosition(new Rect(position.ToVector2(), GetPosition().size));
+            base.SetPosition(new Rect(newPosition.ToVector2(), GetPosition().size));
             Owner.SetDirty();
         }
 
@@ -280,9 +279,9 @@ namespace CZToolKit.GraphProcessor.Editors
         void RefreshContentsHorizontalDivider()
         {
             if (portViews.Values.FirstOrDefault(port => port.orientation == Orientation.Horizontal) != null)
-                contentsHorizontalDivider.RemoveFromClassList("hidden");
+                horizontalDivider.RemoveFromClassList("hidden");
             else
-                contentsHorizontalDivider.AddToClassList("hidden");
+                horizontalDivider.AddToClassList("hidden");
         }
 
         void RefreshPortContainer()

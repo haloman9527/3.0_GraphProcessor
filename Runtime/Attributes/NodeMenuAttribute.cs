@@ -23,15 +23,12 @@ namespace CZToolKit.GraphProcessor
     {
         /// <summary> 节点路径 </summary>
         public string path;
-        /// <summary> 切割菜单 </summary>
-        public string[] menu;
         /// <summary> 是否要显示在节点菜单中 </summary>
         public bool hidden;
 
         public NodeMenuAttribute(string path)
         {
             this.path = path;
-            this.menu = path.Split('/');
         }
     }
 }

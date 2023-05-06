@@ -31,7 +31,7 @@ using UnityObject = UnityEngine.Object;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
-    public abstract class BaseGraphWindow : BasicEditorWindow
+    public abstract class BaseGraphWindow : BaseEditorWindow
     {
         #region Fields
 

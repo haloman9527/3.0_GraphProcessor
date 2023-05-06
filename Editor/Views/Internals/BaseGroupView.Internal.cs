@@ -59,7 +59,7 @@ namespace CZToolKit.GraphProcessor.Editors
             this.BackgroudColorField.SetValueWithoutNotify(ViewModel.BackgroundColor.ToColor());
             base.SetPosition(new Rect(ViewModel.Position.ToVector2(), GetPosition().size));
             WithoutNotify = true;
-            base.AddElements(ViewModel.Nodes.Where(nodeID=>Owner.NodeViews.ContainsKey(nodeID)).Select(nodeID => Owner.NodeViews[nodeID]).ToArray());
+            this.AddElements(ViewModel.Nodes.Where(nodeID=>Owner.NodeViews.ContainsKey(nodeID)).Select(nodeID => Owner.NodeViews[nodeID]).ToArray());
             WithoutNotify = false;
             this.AddManipulator(new ContextualMenuManipulator(BuildContextualMenu));
             BackgroudColorField.RegisterValueChangedCallback(OnGroupColorChanged);
@@ -84,17 +84,17 @@ namespace CZToolKit.GraphProcessor.Editors
         }
 
         #region Callbacks
-        private void OnTitleChanged(string title)
+        private void OnTitleChanged(string newTitle)
         {
-            if (string.IsNullOrEmpty(title))
+            if (string.IsNullOrEmpty(newTitle))
                 return;
             this.title = ViewModel.GroupName;
             Owner.SetDirty();
         }
 
-        private void OnPositionChanged(InternalVector2Int newPos)
+        private void OnPositionChanged(InternalVector2Int newPosition)
         {
-            base.SetPosition(new Rect(newPos.ToVector2(), GetPosition().size));
+            base.SetPosition(new Rect(newPosition.ToVector2(), GetPosition().size));
         }
 
         private void OnBackgroundColorChanged(InternalColor newColor)
@@ -107,14 +107,14 @@ namespace CZToolKit.GraphProcessor.Editors
         private void OnNodesAdded(IEnumerable<BaseNodeVM> nodes)
         {
             WithoutNotify = true;
-            base.AddElements(nodes.Select(node => Owner.NodeViews[node.ID]));
+            this.AddElements(nodes.Select(node => Owner.NodeViews[node.ID]));
             WithoutNotify = false;
         }
 
         private void OnNodesRemoved(IEnumerable<BaseNodeVM> nodes)
         {
             WithoutNotify = true;
-            base.RemoveElements(nodes.Select(node => Owner.NodeViews[node.ID]));
+            this.RemoveElements(nodes.Select(node => Owner.NodeViews[node.ID]));
             WithoutNotify = false;
         }
         #endregion
