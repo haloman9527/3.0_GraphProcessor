@@ -21,7 +21,7 @@ using System.Linq;
 namespace CZToolKit.GraphProcessor
 {
     [ViewModel(typeof(BaseGroup))]
-    public class BaseGroupVM : ViewModel, IGraphElement
+    public class BaseGroupVM : ViewModel, IGraphElementViewModel
     {
         #region Fileds
         public event Action<IEnumerable<BaseNodeVM>> onNodesAdded;

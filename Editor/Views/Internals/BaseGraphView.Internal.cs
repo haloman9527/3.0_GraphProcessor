@@ -29,7 +29,7 @@ using UnityObject = UnityEngine.Object;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
-    public partial class BaseGraphView : GraphView, IBindableView<BaseGraphVM>
+    public partial class BaseGraphView : GraphView, IGraphElementView<BaseGraphVM>
     {
         public class NodeEntry
         {
@@ -93,9 +93,8 @@ namespace CZToolKit.GraphProcessor.Editors
             ViewModel = graph;
             GraphWindow = window;
             CommandDispatcher = commandDispatcher;
-            EditorCoroutine coroutine = GraphWindow.StartCoroutine(Initialize());
-            RegisterCallback<DetachFromPanelEvent>(evt => { GraphWindow.StopCoroutine(coroutine); });
-            BindingProperties();
+                
+            OnCreate();
         }
 
         #region Initialize
@@ -167,9 +166,12 @@ namespace CZToolKit.GraphProcessor.Editors
 
         #region API
 
-        public void BindingProperties()
+        public virtual void OnCreate()
         {
-            RegisterCallback<DetachFromPanelEvent>(evt => { UnBindingProperties(); });
+            EditorCoroutine coroutine = GraphWindow.StartCoroutine(Initialize());
+            
+            RegisterCallback<DetachFromPanelEvent>(evt => { GraphWindow.StopCoroutine(coroutine); });
+            RegisterCallback<DetachFromPanelEvent>(evt => { OnDestroy(); });
 
             ViewModel.BindingProperty<InternalVector2Int>(nameof(BaseGraph.pan), OnPositionChanged);
             ViewModel.BindingProperty<float>(nameof(BaseGraph.zoom), OnZoomChanged);
@@ -186,13 +188,13 @@ namespace CZToolKit.GraphProcessor.Editors
             OnBindingProperties();
         }
 
-        public void UnBindingProperties()
+        public void OnDestroy()
         {
             this.Query<GraphElement>().ForEach(element =>
             {
-                if (element is IBindableView bindableView)
+                if (element is IGraphElementView bindableView)
                 {
-                    bindableView.UnBindingProperties();
+                    bindableView.OnDestroy();
                 }
             });
 
@@ -212,7 +214,7 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             BaseNodeView nodeView = NewNodeView(node);
             nodeView.SetUp(node, this);
-            nodeView.BindingProperties();
+            nodeView.OnCreate();
             NodeViews[node.ID] = nodeView;
             AddElement(nodeView);
             return nodeView;
@@ -220,7 +222,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
         public void RemoveNodeView(BaseNodeView nodeView)
         {
-            nodeView.UnBindingProperties();
+            nodeView.OnDestroy();
             RemoveElement(nodeView);
             NodeViews.Remove(nodeView.ViewModel.ID);
         }
@@ -229,7 +231,7 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             BaseGroupView groupView = NewGroupView(group);
             groupView.SetUp(group, this);
-            groupView.BindingProperties();
+            groupView.OnCreate();
             GroupViews[group] = groupView;
             AddElement(groupView);
             return groupView;
@@ -237,7 +239,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
         public void RemoveGroupView(BaseGroupView groupView)
         {
-            groupView.UnBindingProperties();
+            groupView.OnDestroy();
             groupView.RemoveElementsWithoutNotification(groupView.containedElements.ToArray());
             RemoveElement(groupView);
             GroupViews.Remove(groupView.ViewModel);
@@ -247,7 +249,7 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             var connectionView = NewConnectionView(connection);
             connectionView.SetUp(connection, this);
-            connectionView.BindingProperties();
+            connectionView.OnCreate();
             connectionView.userData = connection;
             connectionView.output = from.PortViews[connection.FromPortName];
             connectionView.input = to.PortViews[connection.ToPortName];
@@ -271,7 +273,7 @@ namespace CZToolKit.GraphProcessor.Editors
             inputNodeView.RefreshPorts();
             outputNodeView.RefreshPorts();
 
-            connectionView.UnBindingProperties();
+            connectionView.OnDestroy();
             RemoveElement(connectionView);
             ConnectionViews.Remove(connectionView.ViewModel);
         }
@@ -290,10 +292,28 @@ namespace CZToolKit.GraphProcessor.Editors
             UpdateInspector();
         }
 
+        public void AddToSelection(IEnumerable<ISelectable> selectables)
+        {
+            foreach (var selectable in selectables)
+            {
+                base.AddToSelection(selectable);
+            }    
+            UpdateInspector();           
+        }
+
         public sealed override void RemoveFromSelection(ISelectable selectable)
         {
             base.RemoveFromSelection(selectable);
             UpdateInspector();
+        }
+
+        public void RemoveFromSelection(IEnumerable<ISelectable> selectables)
+        {
+            foreach (var selectable in selectables)
+            {
+                base.RemoveFromSelection(selectable);
+            }    
+            UpdateInspector();           
         }
 
         public sealed override void ClearSelection()

@@ -25,7 +25,7 @@ using GroupView = UnityEditor.Experimental.GraphView.Group;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
-    public partial class BaseGroupView : GroupView, IBindableView<BaseGroupVM>
+    public partial class BaseGroupView : GroupView, IGraphElementView<BaseGroupVM>
     {
         bool WithoutNotify { get; set; }
         public TextField TitleField { get; private set; }
@@ -65,7 +65,7 @@ namespace CZToolKit.GraphProcessor.Editors
             BackgroudColorField.RegisterValueChangedCallback(OnGroupColorChanged);
         }
 
-        public void BindingProperties()
+        public void OnCreate()
         {
             ViewModel[nameof(BaseGroup.groupName)].RegisterValueChangedEvent<string>(OnTitleChanged);
             ViewModel[nameof(BaseGroup.position)].RegisterValueChangedEvent<InternalVector2Int>(OnPositionChanged);
@@ -74,7 +74,7 @@ namespace CZToolKit.GraphProcessor.Editors
             ViewModel.onNodesRemoved += OnNodesRemoved;
         }
 
-        public void UnBindingProperties()
+        public void OnDestroy()
         {
             ViewModel[nameof(BaseGroup.groupName)].UnregisterValueChangedEvent<string>(OnTitleChanged);
             ViewModel[nameof(BaseGroup.position)].UnregisterValueChangedEvent<InternalVector2Int>(OnPositionChanged);

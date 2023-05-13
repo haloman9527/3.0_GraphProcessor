@@ -49,7 +49,7 @@ namespace CZToolKit.GraphProcessor
                 nodeStaticInfo.titleColor = default;
                 NodeStaticInfos.Add(t, nodeStaticInfo);
                 
-                if (Util_Attribute.TryGetTypeAttribute(t, true, out NodeMenuAttribute nodeMenu))
+                if (Util_Reflection.TryGetTypeAttribute(t, true, out NodeMenuAttribute nodeMenu))
                 {
                     if (!string.IsNullOrEmpty(nodeMenu.path))
                     {
@@ -66,18 +66,18 @@ namespace CZToolKit.GraphProcessor
                     nodeStaticInfo.hidden = nodeMenu.hidden;
                 }
                 
-                if (Util_Attribute.TryGetTypeAttribute(t, true, out NodeTitleAttribute titleAttr))
+                if (Util_Reflection.TryGetTypeAttribute(t, true, out NodeTitleAttribute titleAttr))
                 {
                     if (!string.IsNullOrEmpty(titleAttr.title))
                         nodeStaticInfo.title = titleAttr.title;
                 }
                 
-                if (Util_Attribute.TryGetTypeAttribute(t, true, out NodeTooltipAttribute tooltipAttr))
+                if (Util_Reflection.TryGetTypeAttribute(t, true, out NodeTooltipAttribute tooltipAttr))
                 {
                     nodeStaticInfo.tooltip = tooltipAttr.Tooltip;
                 }
                 
-                if (Util_Attribute.TryGetTypeAttribute(t, true, out NodeTitleColorAttribute titleColorAttr))
+                if (Util_Reflection.TryGetTypeAttribute(t, true, out NodeTitleColorAttribute titleColorAttr))
                 {
                     nodeStaticInfo.customTitleColor = true;
                     nodeStaticInfo.titleColor = titleColorAttr.color;

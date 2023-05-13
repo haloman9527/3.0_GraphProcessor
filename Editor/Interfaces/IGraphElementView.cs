@@ -13,17 +13,16 @@
  *
  */
 #endregion
-using CZToolKit.Common.ViewModel;
 
-namespace CZToolKit.GraphProcessor
+namespace CZToolKit.GraphProcessor.Editors
 {
-    public interface IBindableView
+    public interface IGraphElementView
     {
-        void BindingProperties();
-        void UnBindingProperties();
+        void OnCreate();
+        void OnDestroy();
     }
 
-    public interface IBindableView<VM> : IBindableView where VM : ViewModel
+    public interface IGraphElementView<VM> : IGraphElementView where VM : IGraphElementViewModel
     {
         VM ViewModel { get; }
     }

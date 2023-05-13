@@ -23,7 +23,7 @@ using System.Collections.Generic;
 namespace CZToolKit.GraphProcessor
 {
     [ViewModel(typeof(BaseNode))]
-    public class BaseNodeVM : ViewModel, IGraphElement
+    public class BaseNodeVM : ViewModel, IGraphElementViewModel
     {
         #region Fields
 
@@ -39,7 +39,10 @@ namespace CZToolKit.GraphProcessor
         public Type ModelType { get; }
 
         /// <summary> 唯一标识 </summary>
-        public int ID { get; internal set; }
+        public int ID
+        {
+            get { return Model.id; }
+        }
 
         public virtual InternalVector2Int Position
         {
@@ -163,10 +166,6 @@ namespace CZToolKit.GraphProcessor
         #endregion
 
         #region Overrides
-
-        public virtual void OnCreated()
-        {
-        }
 
         protected virtual void OnEnabled()
         {

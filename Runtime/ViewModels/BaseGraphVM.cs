@@ -26,14 +26,15 @@ using System.Collections.Generic;
 namespace CZToolKit.GraphProcessor
 {
     [ViewModel(typeof(BaseGraph))]
-    public class BaseGraphVM : ViewModel, IGraphElement
+    public class BaseGraphVM : ViewModel, IGraphElementViewModel
     {
         #region Fields
 
-        private Dictionary<int, BaseNodeVM> nodes;
-        private List<BaseConnectionVM> connections;
-        private List<BaseGroupVM> groups;
+        private Dictionary<int, BaseNodeVM> nodes = new Dictionary<int, BaseNodeVM>();
+        private List<BaseConnectionVM> connections = new List<BaseConnectionVM>();
+        private List<BaseGroupVM> groups = new List<BaseGroupVM>();
         private Blackboard<string> blackboard = new Blackboard<string>();
+        // private CommandDispatcher commandDispatcher = new CommandDispatcher();
 
         public event Action<BaseNodeVM> OnNodeAdded;
         public event Action<BaseNodeVM> OnNodeRemoved;
@@ -88,11 +89,7 @@ namespace CZToolKit.GraphProcessor
             Model = model;
             ModelType = model.GetType();
             Model.pan = Model.pan == default ? InternalVector2Int.zero : Model.pan;
-            Model.zoom = Model.zoom == default ? 1 : Model.zoom;
-
-            this.nodes = new Dictionary<int, BaseNodeVM>(model.nodes.Count);
-            this.groups = new List<BaseGroupVM>(model.groups.Count);
-            this.connections = new List<BaseConnectionVM>(model.connections.Count);
+            Model.zoom = Model.zoom == 0 ? 1 : Model.zoom;
 
             this[nameof(BaseGraph.pan)] = new BindableProperty<InternalVector2Int>(() => Model.pan, v => Model.pan = v);
             this[nameof(BaseGraph.zoom)] = new BindableProperty<float>(() => Model.zoom, v => Model.zoom = v);
@@ -102,7 +99,6 @@ namespace CZToolKit.GraphProcessor
                 if (pair.Value == null)
                     continue;
                 var nodeVM = ViewModelFactory.CreateViewModel(pair.Value) as BaseNodeVM;
-                nodeVM.ID = pair.Key;
                 nodeVM.Owner = this;
                 nodes.Add(pair.Key, nodeVM);
             }
@@ -160,9 +156,7 @@ namespace CZToolKit.GraphProcessor
 
         public BaseNodeVM AddNode<T>(InternalVector2Int position) where T : BaseNode, new()
         {
-            var nodeVM = AddNode(typeof(T), position);
-            AddNode(nodeVM);
-            return nodeVM;
+            return AddNode(typeof(T), position);
         }
 
         public BaseNodeVM AddNode(Type nodeType, InternalVector2Int position)
@@ -181,8 +175,6 @@ namespace CZToolKit.GraphProcessor
 
         public void AddNode(BaseNodeVM node)
         {
-            if (node.ID == 0)
-                AllocID(node);
             nodes.Add(node.ID, node);
             Model.nodes.Add(node.ID, node.Model);
             node.Owner = this;
@@ -358,10 +350,17 @@ namespace CZToolKit.GraphProcessor
         public virtual BaseNodeVM NewNode(Type nodeType, InternalVector2Int position)
         {
             var node = Activator.CreateInstance(nodeType) as BaseNode;
+            node.id = NextID();
             node.position = position;
-            var nodeVM = ViewModelFactory.CreateViewModel(node) as BaseNodeVM;
-            nodeVM.OnCreated();
-            return nodeVM;
+            return ViewModelFactory.CreateViewModel(node) as BaseNodeVM;
+        }
+
+        public virtual BaseNodeVM NewNode<TNode>(InternalVector2Int position) where TNode : BaseNode, new()
+        {
+            var node = new TNode();
+            node.id = NextID();
+            node.position = position;
+            return ViewModelFactory.CreateViewModel(node) as BaseNodeVM;
         }
 
         public virtual BaseConnectionVM NewConnection(BasePortVM from, BasePortVM to)
@@ -376,15 +375,15 @@ namespace CZToolKit.GraphProcessor
             return ViewModelFactory.CreateViewModel(connection) as BaseConnectionVM;
         }
 
-        public int GenerateNodeGUID()
+        public int NextID()
         {
-            return (int)(Util.GenerateIDBySnowflake() >> 32);
-        }
+            var id = 0;
+            do
+            {
+                id = Util_Snowflake.GenerateIDBySnowflake32();
+            } while (nodes.ContainsKey(id));
 
-        /// <summary> 给节点分配一个GUID，这将会覆盖已有GUID </summary>
-        public void AllocID(BaseNodeVM node)
-        {
-            node.ID = GenerateNodeGUID();
+            return id;
         }
 
         #endregion

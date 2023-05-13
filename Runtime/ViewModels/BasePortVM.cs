@@ -49,7 +49,7 @@ namespace CZToolKit.GraphProcessor
     }
 
     [ViewModel(typeof(BasePort))]
-    public class BasePortVM : ViewModel, IGraphElement
+    public class BasePortVM : ViewModel, IGraphElementViewModel
     {
         #region Fields
         private bool hideLabel;

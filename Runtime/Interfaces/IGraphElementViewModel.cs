@@ -16,7 +16,7 @@
 
 namespace CZToolKit.GraphProcessor
 {
-    public interface IGraphElement
+    public interface IGraphElementViewModel
     {
         
     }

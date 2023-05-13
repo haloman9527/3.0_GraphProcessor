@@ -21,7 +21,7 @@ using UnityEngine.UIElements;
 namespace CZToolKit.GraphProcessor.Editors
 {
     [CustomView(typeof(BaseConnection))]
-    public partial class BaseConnectionView : Edge, IBindableView<BaseConnectionVM>
+    public partial class BaseConnectionView : Edge, IGraphElementView<BaseConnectionVM>
     {
         public BaseConnectionVM ViewModel
         {
@@ -47,12 +47,12 @@ namespace CZToolKit.GraphProcessor.Editors
             OnInitialized();
         }
 
-        public void BindingProperties()
+        public void OnCreate()
         {
             OnBindingProperties();
         }
 
-        public void UnBindingProperties()
+        public void OnDestroy()
         {
             OnUnbindingProperties();
         }

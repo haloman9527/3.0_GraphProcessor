@@ -29,9 +29,7 @@ namespace CZToolKit.GraphProcessor
         public AddNodeCommand(BaseGraphVM graph, Type nodeType, InternalVector2Int position)
         {
             this.graph = graph;
-            var node = Activator.CreateInstance(nodeType) as BaseNode;
-            node.position = position;
-            this.nodeVM = ViewModelFactory.CreateViewModel(node) as BaseNodeVM;
+            this.nodeVM = graph.NewNode(nodeType, position);
         }
 
         public AddNodeCommand(BaseGraphVM graph, BaseNode node)

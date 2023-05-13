@@ -21,7 +21,7 @@ using UnityEngine.UIElements;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
-    public partial class BasePortView : Port, IBindableView<BasePortVM>
+    public partial class BasePortView : Port, IGraphElementView<BasePortVM>
     {
         public Image Icon { get; }
         public VisualElement CapIconBG { get; }
@@ -87,14 +87,14 @@ namespace CZToolKit.GraphProcessor.Editors
             OnInitialized();
         }
 
-        public void BindingProperties()
+        public void OnCreate()
         {
             ViewModel[nameof(BasePort.type)].RegisterValueChangedEvent<Type>(OnPortTypeChanged);
 
             OnBindingProperties();
         }
 
-        public void UnBindingProperties()
+        public void OnDestroy()
         {
             ViewModel[nameof(BasePort.type)].UnregisterValueChangedEvent<Type>(OnPortTypeChanged);
 

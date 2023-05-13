@@ -24,7 +24,7 @@ using NodeView = UnityEditor.Experimental.GraphView.Node;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
-    public partial class BaseNodeView : NodeView, IBindableView<BaseNodeVM>
+    public partial class BaseNodeView : NodeView, IGraphElementView<BaseNodeVM>
     {
         #region 字段
         
@@ -143,7 +143,7 @@ namespace CZToolKit.GraphProcessor.Editors
             OnInitialized();
         }
 
-        public void BindingProperties()
+        public void OnCreate()
         {
             ViewModel.BindingProperty<InternalVector2Int>(nameof(BaseNode.position), OnPositionChanged);
             ViewModel.BindingProperty<string>(BaseNodeVM.TITLE_NAME, OnTitleChanged);
@@ -156,13 +156,13 @@ namespace CZToolKit.GraphProcessor.Editors
 
             foreach (var portView in portViews.Values)
             {
-                portView.BindingProperties();
+                portView.OnCreate();
             }
 
             OnBindingProperties();
         }
 
-        public void UnBindingProperties()
+        public void OnDestroy()
         {
             ViewModel.UnBindingProperty<string>(BaseNodeVM.TITLE_NAME, OnTitleChanged);
             if (ViewModel.ContainsKey(BaseNodeVM.TITLE_COLOR_NAME))
@@ -175,7 +175,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
             foreach (var portView in portViews.Values)
             {
-                portView.UnBindingProperties();
+                portView.OnDestroy();
             }
 
             OnUnBindingProperties();
@@ -250,7 +250,7 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             BasePortView portView = NewPortView(port);
             portView.SetUp(port, Owner);
-            portView.BindingProperties();
+            portView.OnCreate();
             portViews[port.Name] = portView;
 
             if (portView.orientation == Orientation.Horizontal)
@@ -272,7 +272,7 @@ namespace CZToolKit.GraphProcessor.Editors
         void RemovePortView(BasePortVM port)
         {
             portViews[port.Name].RemoveFromHierarchy();
-            portViews[port.Name].UnBindingProperties();
+            portViews[port.Name].OnDestroy();
             portViews.Remove(port.Name);
         }
 
