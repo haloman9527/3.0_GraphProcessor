@@ -22,7 +22,7 @@ namespace CZToolKit.GraphProcessor.Editors
         void OnDestroy();
     }
 
-    public interface IGraphElementView<VM> : IGraphElementView where VM : IGraphElementViewModel
+    public interface IGraphElementView<VM> : IGraphElementView where VM: IGraphElementViewModel
     {
         VM ViewModel { get; }
     }

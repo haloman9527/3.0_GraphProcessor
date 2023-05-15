@@ -14,10 +14,10 @@
  */
 #endregion
 using CZToolKit.Common;
+using CZToolKit.Common.ViewModel;
 using System;
 using System.Linq;
 using System.Collections.Generic;
-using CZToolKit.Common.ViewModel;
 
 namespace CZToolKit.GraphProcessor
 {

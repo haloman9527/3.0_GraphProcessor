@@ -63,6 +63,15 @@ namespace CZToolKit.GraphProcessor.Editors
             propertyTree.BeginDraw(false);
             foreach (var property in propertyTree.EnumerateTree(false, true))
             {
+                switch (property.Name)
+                {
+                    case nameof(BaseGraph.zoom):
+                    case nameof(BaseGraph.pan):
+                    case nameof(BaseGraph.nodes):
+                    case nameof(BaseGraph.connections):
+                    case nameof(BaseGraph.groups):
+                        continue;
+                }
                 EditorGUI.BeginChangeCheck();
                 property.Draw();
                 if (EditorGUI.EndChangeCheck() && view.ViewModel.TryGetValue(property.Name, out var bindableProperty))

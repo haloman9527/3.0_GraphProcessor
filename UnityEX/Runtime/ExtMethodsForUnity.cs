@@ -16,7 +16,7 @@
 
 namespace CZToolKit.GraphProcessor
 {
-    public static class ExtMethodsForUnity
+    public static class UnityExtMethods
     {
         public static UnityEngine.Color ToColor(this InternalColor self)
         {

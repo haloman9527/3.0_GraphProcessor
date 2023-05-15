@@ -14,14 +14,13 @@
  */
 #endregion
 using CZToolKit.Common.ViewModel;
-using CZToolKit.GraphProcessor.Internal;
 using UnityEngine;
 
 using UnityObject = UnityEngine.Object;
 
 namespace CZToolKit.GraphProcessor
 {
-    public abstract class GraphAssetOwner<TGraphAsset, TGraph> : InternalGraphAssetOwner, IGraphSerialization
+    public abstract class GraphAssetOwner<TGraphAsset, TGraph> : MonoBehaviour, IGraphAssetOwner, IGraphSerialization
         where TGraphAsset : UnityObject, IGraphAsset
         where TGraph : BaseGraphVM
     {
@@ -31,12 +30,12 @@ namespace CZToolKit.GraphProcessor
         #endregion
 
         #region Properties
-        public override UnityObject GraphAsset
+        public UnityObject GraphAsset
         {
             get { return graphAsset; }
         }
 
-        public override BaseGraphVM Graph
+        public BaseGraphVM Graph
         {
             get { return T_Graph; }
         }

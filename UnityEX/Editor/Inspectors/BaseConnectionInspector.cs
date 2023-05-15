@@ -42,6 +42,14 @@ namespace CZToolKit.GraphProcessor.Editors
             propertyTree.BeginDraw(false);
             foreach (var property in propertyTree.EnumerateTree(false, true))
             {
+                switch (property.Name)
+                {
+                    case nameof(BaseConnection.fromNode):
+                    case nameof(BaseConnection.fromPort):
+                    case nameof(BaseConnection.toNode):
+                    case nameof(BaseConnection.toPort):
+                        continue;
+                }
                 EditorGUI.BeginChangeCheck();
                 property.Draw();
                 if (EditorGUI.EndChangeCheck() && view.ViewModel.TryGetValue(property.Name, out var bindableProperty))

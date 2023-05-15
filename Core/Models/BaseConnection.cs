@@ -17,16 +17,6 @@ using System;
 
 namespace CZToolKit.GraphProcessor
 {
-#if UNITY_5_3_OR_NEWER
-    [Serializable]
-    public class BaseConnection
-    {
-        [UnityEngine.HideInInspector] public int fromNode;
-        [UnityEngine.HideInInspector] public string fromPort;
-        [UnityEngine.HideInInspector] public int toNode;
-        [UnityEngine.HideInInspector] public string toPort;
-    }
-#else
     [Serializable]
     public class BaseConnection
     {
@@ -35,5 +25,4 @@ namespace CZToolKit.GraphProcessor
         public int toNode;
         public string toPort;
     }
-#endif
 }

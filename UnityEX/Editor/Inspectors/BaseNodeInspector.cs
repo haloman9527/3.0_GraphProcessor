@@ -20,7 +20,6 @@
 using CZToolKit.Common.IMGUI;
 using Sirenix.OdinInspector.Editor;
 using UnityEditor;
-using UnityEngine;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
@@ -62,10 +61,27 @@ namespace CZToolKit.GraphProcessor.Editors
                 return;
             if (propertyTree == null)
                 return;
-            GUI.enabled = false;
+            EditorGUI.BeginDisabledGroup(true);
+            EditorGUILayout.IntField(EditorGUIUtility.TrTextContent("ID"), view.ViewModel.ID);
             EditorGUILayout.Vector2IntField(EditorGUIUtility.TrTextContent("Position"), view.ViewModel.Position.ToVector2Int());
-            GUI.enabled = true;
-            propertyTree.Draw(false);
+            EditorGUI.EndDisabledGroup();
+            
+            propertyTree.BeginDraw(false);
+            foreach (var property in propertyTree.EnumerateTree(false, true))
+            {
+                switch (property.Name)
+                {
+                    case nameof(BaseNode.id):
+                    case nameof(BaseNode.position):
+                        continue;
+                }
+                EditorGUI.BeginChangeCheck();
+                property.Draw();
+                if (EditorGUI.EndChangeCheck() && view.ViewModel.TryGetValue(property.Name, out var bindableProperty))
+                    bindableProperty.SetValueWithNotify(property.ValueEntry.WeakSmartValue);
+            }
+
+            propertyTree.EndDraw();
             Editor.Repaint();
         }
 

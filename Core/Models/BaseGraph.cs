@@ -18,17 +18,6 @@ using System.Collections.Generic;
 
 namespace CZToolKit.GraphProcessor
 {
-#if UNITY_5_3_OR_NEWER
-    [Serializable]
-    public class BaseGraph
-    {
-        [UnityEngine.HideInInspector] public float zoom = 1;
-        [UnityEngine.HideInInspector] public InternalVector2Int pan = new InternalVector2Int(0, 0);
-        [UnityEngine.HideInInspector] public Dictionary<int, BaseNode> nodes = new Dictionary<int, BaseNode>();
-        [UnityEngine.HideInInspector] public List<BaseConnection> connections = new List<BaseConnection>();
-        [UnityEngine.HideInInspector] public List<BaseGroup> groups = new List<BaseGroup>();
-    }
-#else
     [Serializable]
     public class BaseGraph
     {
@@ -38,5 +27,4 @@ namespace CZToolKit.GraphProcessor
         public List<BaseConnection> connections = new List<BaseConnection>();
         public List<BaseGroup> groups = new List<BaseGroup>();
     }
-#endif
 }

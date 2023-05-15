@@ -91,7 +91,7 @@ namespace CZToolKit.GraphProcessor
             Model.pan = Model.pan == default ? InternalVector2Int.zero : Model.pan;
             Model.zoom = Model.zoom == 0 ? 1 : Model.zoom;
 
-            this[nameof(BaseGraph.pan)] = new BindableProperty<InternalVector2Int>(() => Model.pan, v => Model.pan = v);
+            this[nameof(BaseGraph.pan)] = new BindableProperty<InternalVector2Int>(() => ref Model.pan, v => Model.pan = v);
             this[nameof(BaseGraph.zoom)] = new BindableProperty<float>(() => Model.zoom, v => Model.zoom = v);
 
             foreach (var pair in Model.nodes)
@@ -350,7 +350,7 @@ namespace CZToolKit.GraphProcessor
         public virtual BaseNodeVM NewNode(Type nodeType, InternalVector2Int position)
         {
             var node = Activator.CreateInstance(nodeType) as BaseNode;
-            node.id = NextID();
+            node.id = NewID();
             node.position = position;
             return ViewModelFactory.CreateViewModel(node) as BaseNodeVM;
         }
@@ -358,7 +358,7 @@ namespace CZToolKit.GraphProcessor
         public virtual BaseNodeVM NewNode<TNode>(InternalVector2Int position) where TNode : BaseNode, new()
         {
             var node = new TNode();
-            node.id = NextID();
+            node.id = NewID();
             node.position = position;
             return ViewModelFactory.CreateViewModel(node) as BaseNodeVM;
         }
@@ -375,7 +375,7 @@ namespace CZToolKit.GraphProcessor
             return ViewModelFactory.CreateViewModel(connection) as BaseConnectionVM;
         }
 
-        public int NextID()
+        public int NewID()
         {
             var id = 0;
             do
