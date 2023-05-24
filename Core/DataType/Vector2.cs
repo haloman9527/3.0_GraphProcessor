@@ -29,23 +29,6 @@ namespace CZToolKit.GraphProcessor
             this.y = y;
         }
 
-        public override bool Equals(object other)
-        {
-            if (!(other is InternalVector2Int))
-                return false;
-            return Equals((InternalVector2Int)other);
-        }
-
-        public bool Equals(InternalVector2Int other)
-        {
-            return x == other.x && y == other.y;
-        }
-
-        public override int GetHashCode()
-        {
-            return x.GetHashCode() ^ (y.GetHashCode() << 2);
-        }
-
         private static readonly InternalVector2Int zeroVector = new InternalVector2Int(0, 0);
 
         private static readonly InternalVector2Int oneVector = new InternalVector2Int(1, 1);
@@ -93,6 +76,23 @@ namespace CZToolKit.GraphProcessor
         public static bool operator !=(InternalVector2Int lhs, InternalVector2Int rhs)
         {
             return !(lhs == rhs);
+        }
+
+        public override bool Equals(object other)
+        {
+            if (!(other is InternalVector2Int))
+                return false;
+            return Equals((InternalVector2Int)other);
+        }
+
+        public bool Equals(InternalVector2Int other)
+        {
+            return x == other.x && y == other.y;
+        }
+
+        public override int GetHashCode()
+        {
+            return x.GetHashCode() ^ (y.GetHashCode() << 2);
         }
     }
 }

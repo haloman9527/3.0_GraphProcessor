@@ -115,13 +115,15 @@ namespace CZToolKit.GraphProcessor.Editors
             Graph = graph;
             GraphOwner = graphOwner;
             GraphAsset = graphAsset;
-            GraphView = NewGraphView(commandDispatcher);
 
+            BuildToolBar();
+
+            GraphView = NewGraphView(commandDispatcher);
             GraphView.onDirty += OnGraphViewDirty;
             GraphView.onUndirty += OnGraphViewUndirty;
+            var coroutine = StartCoroutine(GraphView.Initialize());
+            GraphView.RegisterCallback<DetachFromPanelEvent>(evt => { StopCoroutine(coroutine); });
             GraphViewContainer.Add(GraphView);
-
-            OnGraphLoaded();
         }
 
         #endregion
@@ -239,7 +241,7 @@ namespace CZToolKit.GraphProcessor.Editors
             return new BaseGraphView(Graph, this, commandDispatcher);
         }
 
-        protected virtual void OnGraphLoaded()
+        protected virtual void BuildToolBar()
         {
             ToolbarButton btnOverview = new ToolbarButton()
             {
@@ -343,7 +345,8 @@ namespace CZToolKit.GraphProcessor.Editors
         public static bool OnOpen(int instanceID, int line)
         {
             UnityObject go = EditorUtility.InstanceIDToObject(instanceID);
-            if (go == null) return false;
+            if (go == null) 
+                return false;
             IGraphAsset graphAsset = go as IGraphAsset;
             if (graphAsset == null)
                 return false;

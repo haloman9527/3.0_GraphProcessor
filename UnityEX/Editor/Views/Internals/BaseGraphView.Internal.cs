@@ -93,13 +93,11 @@ namespace CZToolKit.GraphProcessor.Editors
             ViewModel = graph;
             GraphWindow = window;
             CommandDispatcher = commandDispatcher;
-                
-            OnCreate();
         }
 
         #region Initialize
 
-        IEnumerator Initialize()
+        public IEnumerator Initialize()
         {
             UpdateInspector();
 
@@ -115,7 +113,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
             RegisterCallback<KeyDownEvent>(KeyDownCallback);
 
-            OnInitialized();
+            OnCreate();
         }
 
         /// <summary> 生成所有NodeView </summary>
@@ -166,11 +164,8 @@ namespace CZToolKit.GraphProcessor.Editors
 
         #region API
 
-        public virtual void OnCreate()
+        public void OnCreate()
         {
-            EditorCoroutine coroutine = GraphWindow.StartCoroutine(Initialize());
-            
-            RegisterCallback<DetachFromPanelEvent>(evt => { GraphWindow.StopCoroutine(coroutine); });
             RegisterCallback<DetachFromPanelEvent>(evt => { OnDestroy(); });
 
             ViewModel.BindingProperty<InternalVector2Int>(nameof(BaseGraph.pan), OnPositionChanged);
@@ -184,11 +179,11 @@ namespace CZToolKit.GraphProcessor.Editors
 
             ViewModel.OnConnected += OnConnected;
             ViewModel.OnDisconnected += OnDisconnected;
-
-            OnBindingProperties();
+            
+            OnCreated();
         }
 
-        public void OnDestroy()
+        public virtual void OnDestroy()
         {
             this.Query<GraphElement>().ForEach(element =>
             {
@@ -207,7 +202,7 @@ namespace CZToolKit.GraphProcessor.Editors
             ViewModel.OnConnected -= OnConnected;
             ViewModel.OnDisconnected -= OnDisconnected;
 
-            OnUnbindingProperties();
+            OnDestroyed();
         }
 
         public BaseNodeView AddNodeView(BaseNodeVM node)

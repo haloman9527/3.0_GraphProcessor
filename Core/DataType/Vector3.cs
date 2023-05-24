@@ -1,4 +1,5 @@
 #region 注 释
+
 /***
  *
  *  Title:
@@ -12,7 +13,9 @@
  *  Blog: https://www.crosshair.top/
  *
  */
+
 #endregion
+
 using System;
 
 namespace CZToolKit.GraphProcessor
@@ -67,12 +70,12 @@ namespace CZToolKit.GraphProcessor
         {
             return new InternalVector2Int(other.x, other.y);
         }
-        
+
         public static InternalVector3Int operator +(InternalVector3Int lhs, InternalVector3Int rhs)
         {
             return new InternalVector3Int(lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z);
         }
-        
+
         public static InternalVector3Int operator -(InternalVector3Int lhs, InternalVector3Int rhs)
         {
             return new InternalVector3Int(lhs.x - rhs.x, lhs.y - rhs.y, lhs.z - rhs.z);
@@ -86,6 +89,23 @@ namespace CZToolKit.GraphProcessor
         public static bool operator !=(InternalVector3Int lhs, InternalVector3Int rhs)
         {
             return !(lhs == rhs);
+        }
+
+        public override bool Equals(object other)
+        {
+            if (!(other is InternalVector3Int))
+                return false;
+            return Equals((InternalVector3Int)other);
+        }
+
+        public bool Equals(InternalVector3Int other)
+        {
+            return x == other.x && y == other.y && z == other.z;
+        }
+
+        public override int GetHashCode()
+        {
+            return x.GetHashCode() ^ y.GetHashCode() << 2 ^ z.GetHashCode() >> 2;
         }
     }
 }

@@ -1,4 +1,5 @@
 #region 注 释
+
 /***
  *
  *  Title:
@@ -12,7 +13,9 @@
  *  Blog: https://www.crosshair.top/
  *
  */
+
 #endregion
+
 #if UNITY_EDITOR
 using CZToolKit.Common.ViewModel;
 using CZToolKit.GraphProcessor;
@@ -30,12 +33,14 @@ public class SampleGraphWindow : BaseGraphWindow
 {
     protected override BaseGraphView NewGraphView(CommandDispatcher commandDispatcher)
     {
-        return new SampleGraphView(Graph, this, commandDispatcher);
+        var graphView = new SampleGraphView(Graph, this, commandDispatcher);
+        graphView.RegisterCallback<KeyDownEvent>(KeyDownCallback);
+        return graphView;
     }
 
-    protected override void OnGraphLoaded()
+    protected override void BuildToolBar()
     {
-        base.OnGraphLoaded();
+        base.BuildToolBar();
 
         ToolbarButton btnSave = new ToolbarButton();
         btnSave.text = "Save";
@@ -43,8 +48,6 @@ public class SampleGraphWindow : BaseGraphWindow
         btnSave.style.width = 80;
         btnSave.style.unityTextAlign = TextAnchor.MiddleCenter;
         ToolbarRight.Add(btnSave);
-
-        GraphView.RegisterCallback<KeyDownEvent>(KeyDownCallback);
     }
 
     void KeyDownCallback(KeyDownEvent evt)
@@ -106,6 +109,7 @@ public class SampleGraphWindow : BaseGraphWindow
 
         foreach (var pair in nodes)
         {
+            pair.Value.id = graph.NewID();
             pair.Value.position += new InternalVector2Int(50, 50);
             var vm = ViewModelFactory.CreateViewModel(pair.Value) as BaseNodeVM;
             GraphView.CommandDispatcher.Do(new AddNodeCommand(graph, vm));
@@ -135,6 +139,7 @@ public class SampleGraphWindow : BaseGraphWindow
                 else
                     group.nodes.RemoveAt(i);
             }
+
             var vm = ViewModelFactory.CreateViewModel(group) as BaseGroupVM;
             GraphView.CommandDispatcher.Do(new AddGroupCommand(graph, vm));
             GraphView.AddToSelection(GraphView.GroupViews[vm]);

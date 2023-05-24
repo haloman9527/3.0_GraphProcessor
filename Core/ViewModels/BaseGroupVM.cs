@@ -1,4 +1,5 @@
 ﻿#region 注 释
+
 /***
  *
  *  Title:
@@ -12,7 +13,9 @@
  *  Blog: https://www.crosshair.top/
  *
  */
+
 #endregion
+
 using CZToolKit.Common.ViewModel;
 using System;
 using System.Collections.Generic;
@@ -24,43 +27,41 @@ namespace CZToolKit.GraphProcessor
     public class BaseGroupVM : ViewModel, IGraphElementViewModel
     {
         #region Fileds
+
         public event Action<IEnumerable<BaseNodeVM>> onNodesAdded;
         public event Action<IEnumerable<BaseNodeVM>> onNodesRemoved;
+
         #endregion
 
         #region Property
-        public BaseGroup Model
-        {
-            get;
-        }
-        public Type ModelType
-        {
-            get;
-        }
-        public BaseGraphVM Owner
-        {
-            get;
-            internal set;
-        }
+
+        public BaseGroup Model { get; }
+        public Type ModelType { get; }
+        public BaseGraphVM Owner { get; internal set; }
+
         public string GroupName
         {
             get { return GetPropertyValue<string>(nameof(Model.groupName)); }
             set { SetPropertyValue(nameof(Model.groupName), value); }
         }
+
         public InternalVector2Int Position
         {
             get { return GetPropertyValue<InternalVector2Int>(nameof(Model.position)); }
             set { SetPropertyValue(nameof(Model.position), value); }
         }
+
         public InternalColor BackgroundColor
         {
             get { return GetPropertyValue<InternalColor>(nameof(Model.backgroundColor)); }
             set { SetPropertyValue(nameof(Model.backgroundColor), value); }
         }
+
         public IReadOnlyList<int> Nodes
         {
             get { return Model.nodes; }
         }
+
         #endregion
 
         public BaseGroupVM(BaseGroup model)
@@ -73,58 +74,83 @@ namespace CZToolKit.GraphProcessor
             this[nameof(BaseGroup.backgroundColor)] = new BindableProperty<InternalColor>(() => Model.backgroundColor, v => Model.backgroundColor = v);
         }
 
-        #region API
-        public void AddNodes(IEnumerable<BaseNodeVM> nodes)
+        #region Private
+        
+        private void InternalAddNodes(BaseNodeVM[] nodes, bool withoutNotify)
         {
             var tempNodes = nodes.Where(element => !Model.nodes.Contains(element.ID) && element.Owner == this.Owner).ToArray();
-            foreach (var element in tempNodes)
+            foreach (var node in tempNodes)
             {
+                if (Model.nodes.Contains(node.ID))
+                    continue;
+                if (node.Owner != Owner)
+                    continue;
                 foreach (var group in Owner.Groups)
                 {
-                    group.Model.nodes.Remove(element.ID);
+                    group.Model.nodes.Remove(node.ID);
                 }
-                Model.nodes.Add(element.ID);
+
+                Model.nodes.Add(node.ID);
             }
+
+            if (withoutNotify)
+                return;
+
             onNodesAdded?.Invoke(tempNodes);
         }
 
-        public void RemoveNodes(IEnumerable<BaseNodeVM> nodes)
+        private void InternalRemoveNodes(BaseNodeVM[] nodes, bool withoutNotify)
         {
-            var tempNodes = nodes.Where(element => Model.nodes.Contains(element.ID) && element.Owner == Owner).ToArray();
+            var tempNodes = nodes.Where(element => Model.nodes.Contains(element.ID) && element.Owner == this.Owner).ToArray();
             foreach (var node in tempNodes)
             {
+                if (!Model.nodes.Contains(node.ID))
+                    continue;
+                if (node.Owner != Owner)
+                    continue;
                 Model.nodes.Remove(node.ID);
             }
-            onNodesRemoved?.Invoke(nodes);
+
+            if (withoutNotify)
+                return;
+
+            onNodesRemoved?.Invoke(tempNodes);
+        }
+        
+        #endregion
+        
+        #region API
+
+        public void AddNodes(BaseNodeVM[] nodes)
+        {
+            InternalAddNodes(nodes, true);
+        }
+
+        public void RemoveNodes(BaseNodeVM[] nodes)
+        {
+            InternalAddNodes(nodes, true);
         }
 
         public void AddNode(BaseNodeVM element)
         {
-            AddNodes(new BaseNodeVM[] { element });
+            InternalAddNodes(new BaseNodeVM[] { element }, true);
         }
 
         public void RemoveNode(BaseNodeVM element)
         {
-            RemoveNodes(new BaseNodeVM[] { element });
+            InternalRemoveNodes(new BaseNodeVM[] { element }, true);
         }
 
-        public void AddNodesWithoutNotify(IEnumerable<BaseNodeVM> elements)
+        public void AddNodesWithoutNotify(BaseNodeVM[] elements)
         {
-            elements = elements.Where(element => !Model.nodes.Contains(element.ID) && element.Owner == this.Owner);
-            foreach (var element in elements)
-            {
-                Model.nodes.Add(element.ID);
-            }
+            InternalAddNodes(elements, false);
         }
 
-        public void RemoveNodesWithoutNotify(IEnumerable<BaseNodeVM> elements)
+        public void RemoveNodesWithoutNotify(BaseNodeVM[] elements)
         {
-            elements = elements.Where(element => Model.nodes.Contains(element.ID) && element.Owner == this.Owner);
-            foreach (var element in elements)
-            {
-                Model.nodes.Remove(element.ID);
-            }
+            InternalAddNodes(elements, false);
         }
+
         #endregion
     }
 }

@@ -59,7 +59,7 @@ namespace CZToolKit.GraphProcessor.Editors
             this.BackgroudColorField.SetValueWithoutNotify(ViewModel.BackgroundColor.ToColor());
             base.SetPosition(new Rect(ViewModel.Position.ToVector2(), GetPosition().size));
             WithoutNotify = true;
-            this.AddElements(ViewModel.Nodes.Where(nodeID=>Owner.NodeViews.ContainsKey(nodeID)).Select(nodeID => Owner.NodeViews[nodeID]).ToArray());
+            base.AddElements(ViewModel.Nodes.Where(nodeID=>Owner.NodeViews.ContainsKey(nodeID)).Select(nodeID => Owner.NodeViews[nodeID]).ToArray());
             WithoutNotify = false;
             this.AddManipulator(new ContextualMenuManipulator(BuildContextualMenu));
             BackgroudColorField.RegisterValueChangedCallback(OnGroupColorChanged);
@@ -67,18 +67,18 @@ namespace CZToolKit.GraphProcessor.Editors
 
         public void OnCreate()
         {
-            ViewModel[nameof(BaseGroup.groupName)].RegisterValueChangedEvent<string>(OnTitleChanged);
-            ViewModel[nameof(BaseGroup.position)].RegisterValueChangedEvent<InternalVector2Int>(OnPositionChanged);
-            ViewModel[nameof(BaseGroup.backgroundColor)].RegisterValueChangedEvent<InternalColor>(OnBackgroundColorChanged);
+            ViewModel[nameof(BaseGroup.groupName)].AsBindableProperty<string>().RegisterValueChangedEvent(OnTitleChanged);
+            ViewModel[nameof(BaseGroup.position)].AsBindableProperty<InternalVector2Int>().RegisterValueChangedEvent(OnPositionChanged);
+            ViewModel[nameof(BaseGroup.backgroundColor)].AsBindableProperty<InternalColor>().RegisterValueChangedEvent(OnBackgroundColorChanged);
             ViewModel.onNodesAdded += OnNodesAdded;
             ViewModel.onNodesRemoved += OnNodesRemoved;
         }
 
         public void OnDestroy()
         {
-            ViewModel[nameof(BaseGroup.groupName)].UnregisterValueChangedEvent<string>(OnTitleChanged);
-            ViewModel[nameof(BaseGroup.position)].UnregisterValueChangedEvent<InternalVector2Int>(OnPositionChanged);
-            ViewModel[nameof(BaseGroup.backgroundColor)].UnregisterValueChangedEvent<InternalColor>(OnBackgroundColorChanged);
+            ViewModel[nameof(BaseGroup.groupName)].AsBindableProperty<string>().UnregisterValueChangedEvent(OnTitleChanged);
+            ViewModel[nameof(BaseGroup.position)].AsBindableProperty<InternalVector2Int>().UnregisterValueChangedEvent(OnPositionChanged);
+            ViewModel[nameof(BaseGroup.backgroundColor)].AsBindableProperty<InternalColor>().UnregisterValueChangedEvent(OnBackgroundColorChanged);
             ViewModel.onNodesAdded -= OnNodesAdded;
             ViewModel.onNodesRemoved -= OnNodesRemoved;
         }
@@ -106,16 +106,12 @@ namespace CZToolKit.GraphProcessor.Editors
 
         private void OnNodesAdded(IEnumerable<BaseNodeVM> nodes)
         {
-            WithoutNotify = true;
-            this.AddElements(nodes.Select(node => Owner.NodeViews[node.ID]));
-            WithoutNotify = false;
+            base.AddElements(nodes.Select(node => Owner.NodeViews[node.ID]));
         }
 
         private void OnNodesRemoved(IEnumerable<BaseNodeVM> nodes)
         {
-            WithoutNotify = true;
-            this.RemoveElements(nodes.Select(node => Owner.NodeViews[node.ID]));
-            WithoutNotify = false;
+            base.RemoveElements(nodes.Select(node => Owner.NodeViews[node.ID]));
         }
         #endregion
 
@@ -144,21 +140,15 @@ namespace CZToolKit.GraphProcessor.Editors
 
         protected override void OnElementsAdded(IEnumerable<GraphElement> elements)
         {
-            base.OnElementsAdded(elements);
-            if (WithoutNotify)
-                return;
-            var nodes = elements.Where(element => element is BaseNodeView).Select(element => (element as BaseNodeView).ViewModel);
-            ViewModel.AddNodesWithoutNotify(nodes);
+            var nodes = elements.Where(element => element is BaseNodeView).Select(element => (element as BaseNodeView).ViewModel).ToArray();
+            ViewModel.AddNodes(nodes);
             Owner.SetDirty();
         }
 
         protected override void OnElementsRemoved(IEnumerable<GraphElement> elements)
         {
-            base.OnElementsRemoved(elements);
-            if (WithoutNotify)
-                return;
             var nodes = elements.Where(element => element is BaseNodeView).Select(element => (element as BaseNodeView).ViewModel).ToArray();
-            ViewModel.RemoveNodesWithoutNotify(nodes);
+            ViewModel.RemoveNodes(nodes);
             Owner.SetDirty();
         }
 

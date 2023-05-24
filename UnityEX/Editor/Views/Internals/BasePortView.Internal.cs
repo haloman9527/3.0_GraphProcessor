@@ -89,14 +89,14 @@ namespace CZToolKit.GraphProcessor.Editors
 
         public void OnCreate()
         {
-            ViewModel[nameof(BasePort.type)].RegisterValueChangedEvent<Type>(OnPortTypeChanged);
+            ViewModel[nameof(BasePort.type)].AsBindableProperty<Type>().RegisterValueChangedEvent(OnPortTypeChanged);
 
             OnBindingProperties();
         }
 
         public void OnDestroy()
         {
-            ViewModel[nameof(BasePort.type)].UnregisterValueChangedEvent<Type>(OnPortTypeChanged);
+            ViewModel[nameof(BasePort.type)].AsBindableProperty<Type>().UnregisterValueChangedEvent(OnPortTypeChanged);
 
             OnUnBindingProperties();
         }

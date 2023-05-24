@@ -35,18 +35,16 @@ namespace CZToolKit.GraphProcessor.Editors
     {
         List<Port> compatiblePorts = new List<Port>();
 
-        protected virtual void OnInitialized()
+        protected virtual void OnCreated()
         {
+            
         }
 
-        protected virtual void OnBindingProperties()
+        protected virtual void OnDestroyed()
         {
+            
         }
-
-        protected virtual void OnUnbindingProperties()
-        {
-        }
-
+        
         public override void BuildContextualMenu(ContextualMenuPopulateEvent evt)
         {
             evt.menu.AppendAction("Create Group", delegate

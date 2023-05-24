@@ -25,11 +25,9 @@ using UnityObject = UnityEngine.Object;
 public class SampleGraphAsset : ScriptableObject, IGraphAsset, IGraphAsset<SampleGraph>
 {
     [HideInInspector]
-    [SerializeField]
-    byte[] serializedGraph;
+    public byte[] serializedGraph;
     [HideInInspector]
-    [SerializeField]
-    List<UnityObject> graphUnityReferences = new List<UnityObject>();
+    public List<UnityObject> graphUnityReferences = new List<UnityObject>();
 
     public Type GraphType => typeof(SampleGraph);
 

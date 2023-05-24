@@ -288,6 +288,42 @@ namespace CZToolKit.GraphProcessor
         }
     }
 
+    public class GroupAddNodesCommand : ICommand
+    {
+        private BaseNodeVM[] nodes;
+        private Dictionary<BaseGroupVM, List<int>> cache = new Dictionary<BaseGroupVM, List<int>>();
+
+        public GroupAddNodesCommand(BaseGroupVM group, BaseNodeVM[] nodes)
+        {
+            this.nodes.Where(item => item.Owner == group.Owner && !group.Nodes.Contains(item.ID));
+        }
+
+        public void Do()
+        {
+            // 记录从其他Group移动过来的节点，以便撤销时还原
+            // 
+            // foreach (var node in nodes)
+            // {
+            //     if (node.Owner != group.Owner)
+            //         continue;
+            //     if (group.Model.nodes.Contains(node.ID))
+            //         continue;
+            //     
+            //     
+            // }
+        }
+
+        public void Redo()
+        {
+            Do();
+        }
+
+        public void Undo()
+        {
+            // 还原从其他Group移动过来的节点
+        }
+    }
+
     public class AddPortCommand : ICommand
     {
         BaseNodeVM node;

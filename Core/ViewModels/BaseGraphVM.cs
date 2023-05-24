@@ -48,6 +48,7 @@ namespace CZToolKit.GraphProcessor
         #region Properties
 
         public BaseGraph Model { get; }
+        
         public Type ModelType { get; }
 
         public InternalVector2Int Pan
@@ -91,8 +92,8 @@ namespace CZToolKit.GraphProcessor
             Model.pan = Model.pan == default ? InternalVector2Int.zero : Model.pan;
             Model.zoom = Model.zoom == 0 ? 1 : Model.zoom;
 
-            this[nameof(BaseGraph.pan)] = new BindableProperty<InternalVector2Int>(() => ref Model.pan, v => Model.pan = v);
-            this[nameof(BaseGraph.zoom)] = new BindableProperty<float>(() => Model.zoom, v => Model.zoom = v);
+            this.RegisterProperty(nameof(BaseGraph.pan), new BindableProperty<InternalVector2Int>(() => Model.pan, v => Model.pan = v));
+            this.RegisterProperty(nameof(BaseGraph.zoom), new BindableProperty<float>(() => Model.zoom, v => Model.zoom = v));
 
             foreach (var pair in Model.nodes)
             {
