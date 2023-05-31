@@ -38,7 +38,7 @@ namespace CZToolKit.GraphProcessor
             return new UnityEngine.Vector2Int(self.x, self.y);
         }
 
-        public static InternalVector2Int ToInternalVector2(this UnityEngine.Vector2 self)
+        public static InternalVector2Int ToInternalVector2Int(this UnityEngine.Vector2 self)
         {
             return new InternalVector2Int((int)self.x, (int)self.y);
         }
@@ -53,7 +53,7 @@ namespace CZToolKit.GraphProcessor
             return new UnityEngine.Vector3Int(self.x, self.y, self.z);
         }
 
-        public static InternalVector3Int ToInternalVector3(this UnityEngine.Vector3 self)
+        public static InternalVector3Int ToInternalVector3Int(this UnityEngine.Vector3 self)
         {
             return new InternalVector3Int((int)self.x, (int)self.y, (int)self.z);
         }

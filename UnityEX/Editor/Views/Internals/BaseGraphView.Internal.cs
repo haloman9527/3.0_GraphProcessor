@@ -22,6 +22,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using CZToolKit.Common.Collection;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -406,6 +407,25 @@ namespace CZToolKit.GraphProcessor.Editors
             }
         }
 
+        void NodeCreationRequest(NodeCreationContext c)
+        {
+            var nodeMenu = ScriptableObject.CreateInstance<NodeMenuWindow>();
+            nodeMenu.Initialize("Nodes", this);
+            
+            BuildNodeMenu(nodeMenu);
+            
+            var multiLayereEntryCount = 0;
+            for (int i = 0; i < nodeMenu.entries.Count; i++)
+            {
+                if (nodeMenu.entries[i].Menu.Length > 1)
+                    multiLayereEntryCount++;
+            }
+            nodeMenu.entries.QuickSort((a, b) => -(a.Menu.Length.CompareTo(b.Menu.Length)));
+            nodeMenu.entries.QuickSort(0, multiLayereEntryCount - 1, (a, b) => String.Compare(a.Path, b.Path, StringComparison.Ordinal));
+            nodeMenu.entries.QuickSort(multiLayereEntryCount, nodeMenu.entries.Count - 1, (a, b) => String.Compare(a.Path, b.Path, StringComparison.Ordinal));
+
+            SearchWindow.Open(new SearchWindowContext(c.screenMousePosition), nodeMenu);
+        }
 
         /// <summary> GraphView发生改变时调用 </summary>
         GraphViewChange OnGraphViewChangedCallback(GraphViewChange changes)
@@ -423,7 +443,7 @@ namespace CZToolKit.GraphProcessor.Editors
                     switch (element)
                     {
                         case BaseNodeView nodeView:
-                            newPos[nodeView.ViewModel] = nodeView.GetPosition().position.ToInternalVector2();
+                            newPos[nodeView.ViewModel] = nodeView.GetPosition().position.ToInternalVector2Int();
                             // 记录需要重新排序的接口
                             foreach (var port in nodeView.ViewModel.Ports.Values)
                             {
@@ -438,7 +458,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
                             return true;
                         case BaseGroupView groupView:
-                            groupNewPos[groupView.ViewModel] = groupView.GetPosition().position.ToInternalVector2();
+                            groupNewPos[groupView.ViewModel] = groupView.GetPosition().position.ToInternalVector2Int();
                             return true;
                         default:
                             break;
@@ -452,7 +472,7 @@ namespace CZToolKit.GraphProcessor.Editors
                     {
                         var node = ViewModel.Nodes[nodeGUID];
                         var nodeView = NodeViews[nodeGUID];
-                        newPos[node] = nodeView.GetPosition().position.ToInternalVector2();
+                        newPos[node] = nodeView.GetPosition().position.ToInternalVector2Int();
                     }
                 }
 
@@ -519,7 +539,7 @@ namespace CZToolKit.GraphProcessor.Editors
         void OnViewTransformChanged(GraphView view)
         {
             ViewModel.Zoom = viewTransform.scale.x;
-            ViewModel.Pan = viewTransform.position.ToInternalVector3();
+            ViewModel.Pan = viewTransform.position.ToInternalVector3Int();
         }
 
         #endregion

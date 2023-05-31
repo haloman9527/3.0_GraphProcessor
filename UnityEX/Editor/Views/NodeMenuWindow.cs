@@ -17,6 +17,7 @@
 #endregion
 
 #if UNITY_EDITOR
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor.Experimental.GraphView;
@@ -26,33 +27,86 @@ namespace CZToolKit.GraphProcessor.Editors
 {
     public class NodeMenuWindow : ScriptableObject, ISearchWindowProvider
     {
+        #region Define
+        
+        public interface INodeEntry
+        {
+            string Path { get; }
+
+            string[] Menu { get; }
+
+            void CreateNode(BaseGraphView graphView, InternalVector2Int position);
+        }
+
+        public class NodeEntry : INodeEntry
+        {
+            private readonly string path;
+            private readonly string[] menu;
+            public readonly Type nodeType;
+
+            public string Path
+            {
+                get { return path; }
+            }
+
+            public string[] Menu
+            {
+                get { return menu; }
+            }
+
+            public NodeEntry(string path, string[] menu, Type nodeType)
+            {
+                this.path = path;
+                this.menu = menu;
+                this.nodeType = nodeType;
+            }
+
+            public void CreateNode(BaseGraphView graphView, InternalVector2Int position)
+            {
+                graphView.CommandDispatcher.Do(new AddNodeCommand(graphView.ViewModel, nodeType, position));
+            }
+        }
+        #endregion
+        
         private string treeName;
         private BaseGraphView graphView;
-        private List<BaseGraphView.NodeEntry> nodeEntries;
+        public List<INodeEntry> entries = new List<INodeEntry>(256);
 
-        public void Initialize(string treeName, BaseGraphView graphView, List<BaseGraphView.NodeEntry> nodeEntries)
+        public void Initialize(string treeName, BaseGraphView graphView)
         {
             this.treeName = treeName;
             this.graphView = graphView;
-            this.nodeEntries = nodeEntries;
         }
 
-        private void CreateSearchTree(List<SearchTreeEntry> tree)
+        public bool OnSelectEntry(SearchTreeEntry searchTreeEntry, SearchWindowContext context)
         {
+            var windowRoot = graphView.GraphWindow.rootVisualElement;
+            var windowMousePosition = windowRoot.ChangeCoordinatesTo(windowRoot.parent, context.screenMousePosition - graphView.GraphWindow.position.position);
+            var graphMousePosition = graphView.contentViewContainer.WorldToLocal(windowMousePosition);
+
+            var nodeEntry = searchTreeEntry.userData as INodeEntry;
+            nodeEntry.CreateNode(graphView, graphMousePosition.ToInternalVector2Int());
+            
+            graphView.GraphWindow.Focus();
+            return true;
+        }
+
+        public List<SearchTreeEntry> CreateSearchTree(SearchWindowContext context)
+        {
+            var tree = new List<SearchTreeEntry>(entries.Count + 1);
+            tree.Add(new SearchTreeGroupEntry(new GUIContent(treeName)));
+            
             HashSet<string> groups = new HashSet<string>();
-            foreach (var nodeEntry in nodeEntries)
+            foreach (var nodeEntry in entries)
             {
-                if (nodeEntry.hidden)
-                    continue;
+                var nodeName = nodeEntry.Menu[nodeEntry.Menu.Length - 1];
 
-                var nodeName = nodeEntry.menu[nodeEntry.menu.Length - 1];
-
-                if (nodeEntry.menu.Length > 1)
+                if (nodeEntry.Menu.Length > 1)
                 {
                     var groupPath = "";
-                    for (int i = 0; i < nodeEntry.menu.Length - 1; i++)
+                    for (int i = 0; i < nodeEntry.Menu.Length - 1; i++)
                     {
-                        var title = nodeEntry.menu[i];
+                        var title = nodeEntry.Menu[i];
                         groupPath += title;
                         if (!groups.Contains(groupPath))
                         {
@@ -67,29 +121,11 @@ namespace CZToolKit.GraphProcessor.Editors
 
                 tree.Add(new SearchTreeEntry(new GUIContent(nodeName))
                 {
-                    level = nodeEntry.menu.Length,
+                    level = nodeEntry.Menu.Length,
                     userData = nodeEntry
                 });
             }
-        }
-
-        public bool OnSelectEntry(SearchTreeEntry searchTreeEntry, SearchWindowContext context)
-        {
-            var windowRoot = graphView.GraphWindow.rootVisualElement;
-            var windowMousePosition = windowRoot.ChangeCoordinatesTo(windowRoot.parent, context.screenMousePosition - graphView.GraphWindow.position.position);
-            var graphMousePosition = graphView.contentViewContainer.WorldToLocal(windowMousePosition);
-
-            var nodeEntry = searchTreeEntry.userData as BaseGraphView.NodeEntry;
-            graphView.CommandDispatcher.Do(new AddNodeCommand(graphView.ViewModel, nodeEntry.nodeType, graphMousePosition.ToInternalVector2()));
-            graphView.GraphWindow.Focus();
-            return true;
-        }
-
-        public List<SearchTreeEntry> CreateSearchTree(SearchWindowContext context)
-        {
-            var tree = new List<SearchTreeEntry>(nodeEntries.Count + 1);
-            tree.Add(new SearchTreeGroupEntry(new GUIContent(treeName)));
-            CreateSearchTree(tree);
+            
             return tree;
         }
     }

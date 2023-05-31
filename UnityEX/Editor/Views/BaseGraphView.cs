@@ -108,31 +108,20 @@ namespace CZToolKit.GraphProcessor.Editors
             return compatiblePorts;
         }
 
-        protected virtual void NodeCreationRequest(NodeCreationContext c)
+        protected virtual void BuildNodeMenu(NodeMenuWindow nodeMenu)
         {
-            var multiLayereEntryCount = 0;
-            var entries = new List<NodeEntry>(16);
             foreach (var nodeType in TypeCache.GetTypesDerivedFrom<BaseNode>())
             {
                 if (nodeType.IsAbstract) 
                     continue;
                 var nodeStaticInfo = GraphProcessorUtil.NodeStaticInfos[nodeType];
+                if (nodeStaticInfo.hidden)
+                    continue;
+                
                 var path = nodeStaticInfo.path;
                 var menu = nodeStaticInfo.menu;
-                var hidden = nodeStaticInfo.hidden;
-
-                if (menu.Length > 1)
-                    multiLayereEntryCount++;
-                entries.Add(new NodeEntry(nodeType, path, menu, hidden));
+                nodeMenu.entries.Add(new NodeMenuWindow.NodeEntry(path, menu, nodeType));
             }
-
-            entries.QuickSort((a, b) => -(a.menu.Length.CompareTo(b.menu.Length)));
-            entries.QuickSort(0, multiLayereEntryCount - 1, (a, b) => String.Compare(a.path, b.path, StringComparison.Ordinal));
-            entries.QuickSort(multiLayereEntryCount, entries.Count - 1, (a, b) => String.Compare(a.path, b.path, StringComparison.Ordinal));
-
-            var nodeMenu = ScriptableObject.CreateInstance<NodeMenuWindow>();
-            nodeMenu.Initialize("Nodes", this, entries);
-            SearchWindow.Open(new SearchWindowContext(c.screenMousePosition), nodeMenu);
         }
 
         protected virtual BaseNodeView NewNodeView(BaseNodeVM nodeVM)
