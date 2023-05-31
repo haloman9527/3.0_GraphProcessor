@@ -32,6 +32,11 @@ public class SampleGraphView : BaseGraphView
     {
     }
 
+    protected override BaseNodeView NewNodeView(BaseNodeVM nodeVM)
+    {
+        return base.NewNodeView(nodeVM);
+    }
+
     protected override void NodeCreationRequest(NodeCreationContext c)
     {
         var multiLayereEntryCount = 0;

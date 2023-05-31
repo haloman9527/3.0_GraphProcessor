@@ -108,7 +108,7 @@ namespace CZToolKit.GraphProcessor.Editors
             GraphViewContainer = rootVisualElement.Q("GraphViewContainer");
         }
 
-        protected void Load(BaseGraphVM graph, IGraphOwner graphOwner, UnityObject graphAsset, CommandDispatcher commandDispatcher)
+        protected void Load(BaseGraphVM graph, IGraphOwner graphOwner, UnityObject graphAsset, object argument)
         {
             Clear();
             
@@ -118,7 +118,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
             BuildToolBar();
 
-            GraphView = NewGraphView(commandDispatcher);
+            GraphView = NewGraphView(argument);
             GraphView.onDirty += OnGraphViewDirty;
             GraphView.onUndirty += OnGraphViewUndirty;
             var coroutine = StartCoroutine(GraphView.Initialize());
@@ -168,38 +168,38 @@ namespace CZToolKit.GraphProcessor.Editors
         }
 
         // 从GraphOwner加载
-        public void ForceLoad(IGraphOwner graphOwner)
+        public void ForceLoad(IGraphOwner graphOwner, object argument = null)
         {
             Clear();
-            Load(graphOwner.Graph, graphOwner, (UnityObject)graphOwner, new CommandDispatcher());
+            Load(graphOwner.Graph, graphOwner, (UnityObject)graphOwner, argument);
         }
 
         // 从GraphAssetOwner加载
-        public void ForceLoad(IGraphAssetOwner graphAssetOwner)
+        public void ForceLoad(IGraphAssetOwner graphAssetOwner, object argument = null)
         {
             Clear();
-            Load(graphAssetOwner.Graph, graphAssetOwner, graphAssetOwner.GraphAsset, new CommandDispatcher());
+            Load(graphAssetOwner.Graph, graphAssetOwner, graphAssetOwner.GraphAsset, argument);
         }
 
         // 从Graph资源加载
-        public void ForceLoad(IGraphAsset graphAsset)
+        public void ForceLoad(IGraphAsset graphAsset, object argument = null)
         {
             Clear();
-            Load(ViewModelFactory.CreateViewModel(graphAsset.DeserializeGraph()) as BaseGraphVM, null, graphAsset as UnityObject, new CommandDispatcher());
+            Load(ViewModelFactory.CreateViewModel(graphAsset.DeserializeGraph()) as BaseGraphVM, null, graphAsset as UnityObject, argument);
         }
 
         // 直接加载GraphVM对象
-        public void ForceLoad(BaseGraphVM graph)
+        public void ForceLoad(BaseGraphVM graph, object argument = null)
         {
             Clear();
-            Load(graph, null, null, new CommandDispatcher());
+            Load(graph, null, null, argument);
         }
 
         // 直接加载Graph对象
-        public void ForceLoad(BaseGraph graph)
+        public void ForceLoad(BaseGraph graph, object argument = null)
         {
             Clear();
-            Load(ViewModelFactory.CreateViewModel(ViewModelFactory.CreateViewModel(graph) as BaseGraphVM) as BaseGraphVM, null, null, new CommandDispatcher());
+            Load(ViewModelFactory.CreateViewModel(ViewModelFactory.CreateViewModel(graph) as BaseGraphVM) as BaseGraphVM, null, null, argument);
         }
 
         #endregion
@@ -236,9 +236,9 @@ namespace CZToolKit.GraphProcessor.Editors
 
         #region Overrides
 
-        protected virtual BaseGraphView NewGraphView(CommandDispatcher commandDispatcher)
+        protected virtual BaseGraphView NewGraphView(object argument)
         {
-            return new BaseGraphView(Graph, this, commandDispatcher);
+            return new BaseGraphView(Graph, this, new CommandDispatcher());
         }
 
         protected virtual void BuildToolBar()

@@ -1,8 +1,9 @@
-#title {
+.node {
     min-width: 80px;
-    min-height: 30px;
-    padding-left: 1px;
-    padding-right: 1px;
+}
+
+#title {
+    /*min-height: 30px;*/
 }
 
 #title > #title-button-container {

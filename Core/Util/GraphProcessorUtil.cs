@@ -21,6 +21,12 @@ using CZToolKit.Common;
 
 namespace CZToolKit.GraphProcessor
 {
+    public struct ToggleValue<T>
+    {
+        public bool enable;
+        public T value;
+    }
+    
     public class NodeStaticInfo
     {
         public string path;
@@ -28,8 +34,7 @@ namespace CZToolKit.GraphProcessor
         public bool hidden;
         public string title;
         public string tooltip;
-        public bool customTitleColor;
-        public InternalColor titleColor;
+        public ToggleValue<InternalColor> customTitleColor;
     }
     
     public static class GraphProcessorUtil
@@ -46,7 +51,7 @@ namespace CZToolKit.GraphProcessor
                 var nodeStaticInfo = new NodeStaticInfo();
                 nodeStaticInfo.title = t.Name;
                 nodeStaticInfo.tooltip = string.Empty;
-                nodeStaticInfo.titleColor = default;
+                nodeStaticInfo.customTitleColor = new ToggleValue<InternalColor>();
                 NodeStaticInfos.Add(t, nodeStaticInfo);
                 
                 if (Util_Reflection.TryGetTypeAttribute(t, true, out NodeMenuAttribute nodeMenu))
@@ -79,8 +84,8 @@ namespace CZToolKit.GraphProcessor
                 
                 if (Util_Reflection.TryGetTypeAttribute(t, true, out NodeTitleColorAttribute titleColorAttr))
                 {
-                    nodeStaticInfo.customTitleColor = true;
-                    nodeStaticInfo.titleColor = titleColorAttr.color;
+                    nodeStaticInfo.customTitleColor.enable = true;
+                    nodeStaticInfo.customTitleColor.value = titleColorAttr.color;
                 }
             }
         }

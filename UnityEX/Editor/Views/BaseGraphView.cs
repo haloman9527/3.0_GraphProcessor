@@ -91,28 +91,18 @@ namespace CZToolKit.GraphProcessor.Editors
             BasePortView portView = startPortView as BasePortView;
 
             compatiblePorts.Clear();
-            switch (portView.ViewModel.Direction)
+            foreach (var _nodeView in NodeViews.Values)
             {
-                case BasePort.Direction.Input:
+                if (_nodeView.PortViews.Count == 0)
                 {
-                    ports.ForEach(_portView =>
-                    {
-                        var fromPortView = _portView as BasePortView;
-                        if (IsCompatible(fromPortView, portView, nodeAdapter))
-                            compatiblePorts.Add(_portView);
-                    });
+                    continue;
                 }
-                    break;
-                case BasePort.Direction.Output:
+                
+                foreach (var _portView in _nodeView.PortViews.Values)
                 {
-                    ports.ForEach(_portView =>
-                    {
-                        var toPortView = _portView as BasePortView;
-                        if (IsCompatible(portView, toPortView, nodeAdapter))
-                            compatiblePorts.Add(_portView);
-                    });
+                    if (IsCompatible(_portView, portView, nodeAdapter))
+                        compatiblePorts.Add(_portView);
                 }
-                    break;
             }
 
             return compatiblePorts;

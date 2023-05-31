@@ -31,9 +31,9 @@ using UnityEngine.UIElements;
 [CustomView(typeof(SampleGraph))]
 public class SampleGraphWindow : BaseGraphWindow
 {
-    protected override BaseGraphView NewGraphView(CommandDispatcher commandDispatcher)
+    protected override BaseGraphView NewGraphView(object argument)
     {
-        var graphView = new SampleGraphView(Graph, this, commandDispatcher);
+        var graphView = new SampleGraphView(Graph, this, new CommandDispatcher());
         graphView.RegisterCallback<KeyDownEvent>(KeyDownCallback);
         return graphView;
     }

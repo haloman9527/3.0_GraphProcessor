@@ -96,9 +96,9 @@ namespace CZToolKit.GraphProcessor
             string tooltip = nodeStaticInfo.tooltip;
             this[TOOLTIP_NAME] = new BindableProperty<string>(() => tooltip, v => tooltip = v);
             
-            if (nodeStaticInfo.customTitleColor)
+            if (nodeStaticInfo.customTitleColor.enable)
             {
-                var titleColor = nodeStaticInfo.titleColor;
+                var titleColor = nodeStaticInfo.customTitleColor.value;
                 this[TITLE_COLOR_NAME] = new BindableProperty<InternalColor>(() => titleColor, v => titleColor = v);
             }
             

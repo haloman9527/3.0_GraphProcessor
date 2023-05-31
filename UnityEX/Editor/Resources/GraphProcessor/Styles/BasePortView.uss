@@ -1,102 +1,15 @@
 .port {
     flex-direction: row;
     align-items: center;
-    padding-left: 0px;
-    padding-right: 0px;
-    height: 25px;
+    padding-left: 5px;
+    padding-right: 5px;
     --port-color: #ffc400;
-}
-
-.port.vertical{
-    height: 20px;
 }
 
 .port > #type{
     color: aliceblue;
 }
 
-.port.input > #type{
-    margin-left: 0px;
-    margin-right: 0px;
-    padding-right: 4px;
-}
-
-.port.output > #type{
-    margin-left: 0px;
-    margin-right: 0px;
-    padding-left: 4px;
-}
-
-.port > #connector {
-    width: 15px;
+.port.vertical{
     height: 15px;
-    border-radius: 5px;
-    align-items: center;
-    justify-content: center;
-
-    border-left-width:1px;
-    border-top-width:1px;
-    border-right-width:1px;
-    border-bottom-width:1px;
-}
-
-.port > #connector > #cap{
-    flex: none;
-    display: none;
-    
-    width: 11px;
-    height: 11px;
-    border-radius: 3px;
-    position: relative;
-
-    border-left-width:1px;
-    border-top-width:1px;
-    border-right-width:1px;
-    border-bottom-width:1px;
-}
-
-.port > #connector > #cap-icon-bg{
-    width: 11px;
-    height: 11px;
-    border-radius: 3px;
-    position: relative;
-    border-left-width:1px;
-    border-top-width:1px;
-    border-right-width:1px;
-    border-bottom-width:1px;
-    display: none;
-    
-    background-color: #ffc400;
-}
-
-.port > #connector > #cap-icon{
-    left: 2px;
-    right: 2px;
-    top: 2px;
-    bottom: 2px;
-    position: absolute;
-    
-    -unity-background-image-tint-color: #ffffff;
-}
-
-.port:hover > #connector > #cap-icon-bg{
-    display: flex;
-    background-color: #ffc400;
-}
-
-.port:hover > #connector > #cap-icon{
-    -unity-background-image-tint-color: #313131;
-}
-
-.port.capacity_Single > #connector > #cap-icon{
-    left: 0px;
-    right: 2px;
-}
-
-.port.capacity_Single > #connector > #cap-icon{
-    background-image: resource("GraphProcessor/Textures/One");
-}
-
-.port.capacity_Multi > #connector > #cap-icon{
-    background-image: resource("GraphProcessor/Textures/Infinity");
 }
