@@ -120,18 +120,12 @@ namespace CZToolKit.GraphProcessor
                 type = type == null ? typeof(object) : type
             };
             this.ModelType = typeof(BasePort);
+            this.connections = new List<BaseConnectionVM>();
+            if (Model.orientation == BasePort.Orientation.Horizontal)
+                this.comparer = HorizontalComparer;
+            else
+                this.comparer = VerticalComparer;
             this[nameof(BasePort.type)] = new BindableProperty<Type>(() => Model.type, v => Model.type = v);
-            switch (Model.orientation)
-            {
-                case BasePort.Orientation.Horizontal:
-                    connections = new List<BaseConnectionVM>();
-                    comparer = HorizontalComparer;
-                    break;
-                case BasePort.Orientation.Vertical:
-                    connections = new List<BaseConnectionVM>();
-                    comparer = VerticalComparer;
-                    break;
-            }
             this[nameof(hideLabel)] = new BindableProperty<bool>(() => hideLabel, v => hideLabel = v);
         }
 

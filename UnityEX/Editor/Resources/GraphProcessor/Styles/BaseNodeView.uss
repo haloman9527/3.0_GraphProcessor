@@ -1,16 +1,16 @@
 #node-border{
-    background-color: rgba(30, 30, 30, 1);
-    border-color: black;
+    background-color: rgba(20, 20, 20, 0.8);
     min-width: 60px;
     border-radius: 5px;
+    border-color: rgba(10, 10, 10, 1);
 }
 
 #selection-border{
-    border-radius: 5px;
+    border-radius: 6px;
 }
 
 #node-border > #title {
-    background-color: rgba(0, 0, 0, 0.20);
+    background-color: rgba(0, 0, 0, 0.0);
     height: 20px;
 }
 
@@ -39,30 +39,20 @@
     display: none;
 }
 
-#top > #input{
-    background-color: rgba(0, 0, 0, 0);
-    border-color: rgba(0, 0, 0, 0.6);
+#contents > #top > #input{
+    align-self: flex-start;
     margin-right: 5px;
-    border-width: 1px;
+    background-color: rgba(0, 0, 0, 0.23);
     border-top-right-radius: 10px;
     border-bottom-right-radius: 10px;
-    border-top-left-radius: 0px;
-    border-bottom-left-radius: 0px;
-    border-left-width: 0px;
-    align-self: flex-start;
 }
 
-#top > #output{
-    background-color: rgba(0, 0, 0, 0);
-    border-color: rgba(0, 0, 0, 0.6);
+#contents > #top > #output{
+    align-self: flex-start;
     margin-left: 5px;
-    border-width: 1px;
+    background-color: rgba(0, 0, 0, 0.23);
     border-top-left-radius: 10px;
     border-bottom-left-radius: 10px;
-    border-top-right-radius: 0px;
-    border-bottom-right-radius: 0px;
-    border-right-width: 0px;
-    align-self: flex-start;
 }
 
 #top-input{
@@ -70,7 +60,9 @@
     justify-content: center;
     align-items: center;
     flex-direction: row;
-    background-color: rgba(78, 89, 113, 0.7);
+    background-color: rgba(78, 89, 113, 0.0);
+    border-bottom-width: 1px;
+    border-color: black;
 }
 
 #bottom-input{
@@ -78,7 +70,9 @@
     justify-content: center;
     align-items: center;
     flex-direction: row;
-    background-color: rgba(78, 89, 113, 0.7);
+    background-color: rgba(78, 89, 113, 0.0);
+    border-top-width: 1px;
+    border-color: black;
 }
 
 #divider{
