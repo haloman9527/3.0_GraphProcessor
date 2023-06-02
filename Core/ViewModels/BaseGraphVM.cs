@@ -299,10 +299,10 @@ namespace CZToolKit.GraphProcessor
         public void RevertDisconnect(BaseConnectionVM connection)
         {
             var fromNode = nodes[connection.FromNodeID];
-            var fromPort = fromNode.ports[connection.FromPortName];
+            var fromPort = fromNode.Ports[connection.FromPortName];
 
             var toNode = nodes[connection.ToNodeID];
-            var toPort = toNode.ports[connection.ToPortName];
+            var toPort = toNode.Ports[connection.ToPortName];
 
             var tmpConnection = fromPort.Connections.FirstOrDefault(tmp => tmp.ToNodeID == connection.ToNodeID && tmp.ToPortName == connection.ToPortName);
             if (tmpConnection != null)
@@ -382,7 +382,7 @@ namespace CZToolKit.GraphProcessor
             do
             {
                 id = Util_Snowflake.GenerateIDBySnowflake32();
-            } while (nodes.ContainsKey(id));
+            } while (nodes.ContainsKey(id) || id == 0);
 
             return id;
         }

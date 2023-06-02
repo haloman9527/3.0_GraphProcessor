@@ -18,7 +18,8 @@ namespace CZToolKit.GraphProcessor.Editors
 {
     public interface IGraphElementView
     {
-        void OnCreate();
+        void OnInitialize();
+        
         void OnDestroy();
     }
 

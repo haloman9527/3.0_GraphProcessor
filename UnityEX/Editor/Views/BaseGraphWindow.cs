@@ -21,6 +21,8 @@ using CZToolKit.Common;
 using CZToolKit.Common.ViewModel;
 using CZToolKit.Common.IMGUI;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UnityEditor;
@@ -35,11 +37,12 @@ namespace CZToolKit.GraphProcessor.Editors
     {
         #region Fields
 
-        private IGraphOwner _graphOwner;
+        private IGraphOwner m_graphOwner;
 
         [SerializeField] private UnityObject graphOwner;
         [SerializeField] private UnityObject graphAsset;
-
+        [SerializeField] private UITKSkin skin;
+        
         #endregion
 
         #region Properties
@@ -53,13 +56,13 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             get
             {
-                if (_graphOwner == null && graphOwner != null)
-                    _graphOwner = graphOwner as IGraphOwner;
-                return _graphOwner;
+                if (m_graphOwner == null && graphOwner != null)
+                    m_graphOwner = graphOwner as IGraphOwner;
+                return m_graphOwner;
             }
             protected set
             {
-                _graphOwner = value;
+                m_graphOwner = value;
                 graphOwner = value as UnityObject;
             }
         }
@@ -81,6 +84,8 @@ namespace CZToolKit.GraphProcessor.Editors
         protected virtual void OnEnable()
         {
             titleContent = new GUIContent("Graph Processor");
+            if (skin == null)
+                skin = DefaultSkin();
             InitRootVisualElement();
             Reload();
             EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
@@ -97,15 +102,21 @@ namespace CZToolKit.GraphProcessor.Editors
 
         #region Private Methods
 
-        void InitRootVisualElement()
+        protected virtual void InitRootVisualElement()
         {
             GraphProcessorStyles.GraphWindowTree.CloneTree(rootVisualElement);
+            rootVisualElement.name = "rootVisualContainer";
             rootVisualElement.styleSheets.Add(GraphProcessorStyles.BasicStyle);
-
+            
             ToolbarLeft = rootVisualElement.Q<Toolbar>("ToolbarLeft", "unity-toolbar");
             ToolbarCenter = rootVisualElement.Q<Toolbar>("ToolbarCenter", "unity-toolbar");
             ToolbarRight = rootVisualElement.Q<Toolbar>("ToolbarRight", "unity-toolbar");
             GraphViewContainer = rootVisualElement.Q("GraphViewContainer");
+            
+            // foreach (var styleSheet in FindSkinStyleSheets("basic"))
+            // {
+            //     rootVisualElement.styleSheets.Add(styleSheet);
+            // }
         }
 
         protected void Load(BaseGraphVM graph, IGraphOwner graphOwner, UnityObject graphAsset, object argument)
@@ -129,6 +140,136 @@ namespace CZToolKit.GraphProcessor.Editors
         #endregion
 
         #region Public Methods
+
+        // public virtual void ChangeSkin(UITKSkin skin)
+        // {
+        //     // 清理
+        //     foreach (var styleSheet in FindSkinStyleSheets("basic"))
+        //     {
+        //         rootVisualElement.styleSheets.Remove(styleSheet);
+        //     }
+        //
+        //     if (GraphView != null)
+        //     {
+        //         foreach (var styleSheet in FindSkinStyleSheets("graph"))
+        //         {
+        //             GraphView.styleSheets.Remove(styleSheet);
+        //         }
+        //
+        //         var nodeSkins = FindSkinStyleSheets("node").ToArray();
+        //         var portSkins = FindSkinStyleSheets("port").ToArray();
+        //         foreach (var nodeView in GraphView.NodeViews.Values)
+        //         {
+        //             foreach (var styleSheet in nodeSkins)
+        //             {
+        //                 nodeView.styleSheets.Remove(styleSheet);
+        //             }
+        //             foreach (var portView in nodeView.PortViews.Values)
+        //             {
+        //                 foreach (var styleSheet in portSkins)
+        //                 {
+        //                     portView.styleSheets.Remove(styleSheet);
+        //                 }
+        //             }
+        //         }
+        //         
+        //         var edgeSkins = FindSkinStyleSheets("edge").ToArray();
+        //         foreach (var connectionView in GraphView.ConnectionViews.Values)
+        //         {
+        //             foreach (var styleSheet in edgeSkins)
+        //             {
+        //                 connectionView.styleSheets.Remove(styleSheet);
+        //             }
+        //         }
+        //
+        //         var groupSkins = FindSkinStyleSheets("edge").ToArray();
+        //         foreach (var groupView in GraphView.GroupViews.Values)
+        //         {
+        //             foreach (var styleSheet in groupSkins)
+        //             {
+        //                 groupView.styleSheets.Remove(styleSheet);
+        //             }
+        //         }
+        //     }
+        //
+        //     // 装载
+        //     this.skin = skin;
+        //     
+        //     foreach (var styleSheet in FindSkinStyleSheets("basic"))
+        //     {
+        //         rootVisualElement.styleSheets.Add(styleSheet);
+        //     }
+        //     
+        //     if (GraphView != null)
+        //     {
+        //         foreach (var styleSheet in FindSkinStyleSheets("graph"))
+        //         {
+        //             GraphView.styleSheets.Add(styleSheet);
+        //         }
+        //
+        //         var nodeSkins = FindSkinStyleSheets("node").ToArray();
+        //         var portSkins = FindSkinStyleSheets("port").ToArray();
+        //         foreach (var nodeView in GraphView.NodeViews.Values)
+        //         {
+        //             foreach (var styleSheet in nodeSkins)
+        //             {
+        //                 nodeView.styleSheets.Add(styleSheet);
+        //             }
+        //             foreach (var portView in nodeView.PortViews.Values)
+        //             {
+        //                 foreach (var styleSheet in portSkins)
+        //                 {
+        //                     portView.styleSheets.Add(styleSheet);
+        //                 }
+        //             }
+        //         }
+        //         
+        //         var edgeSkins = FindSkinStyleSheets("edge").ToArray();
+        //         foreach (var connectionView in GraphView.ConnectionViews.Values)
+        //         {
+        //             foreach (var styleSheet in edgeSkins)
+        //             {
+        //                 connectionView.styleSheets.Add(styleSheet);
+        //             }
+        //         }
+        //
+        //         var groupSkins = FindSkinStyleSheets("group").ToArray();
+        //         foreach (var groupView in GraphView.GroupViews.Values)
+        //         {
+        //             foreach (var styleSheet in groupSkins)
+        //             {
+        //                 groupView.styleSheets.Add(styleSheet);
+        //             }
+        //         }
+        //     }
+        // }
+        //
+        // public IEnumerable<StyleSheet> FindSkinStyleSheets(string name)
+        // {
+        //     var foundSkins = new HashSet<UITKSkin>();
+        //     foreach (var styleSheet in FindStyleSheets(skin))
+        //     {
+        //         yield return styleSheet;
+        //     }
+        //
+        //     IEnumerable<StyleSheet> FindStyleSheets(UITKSkin skin)
+        //     {
+        //         foundSkins.Add(skin);
+        //         foreach (var otherSkin in skin.otherSkins)
+        //         {
+        //             if (foundSkins.Contains(skin))
+        //             {
+        //                 continue;
+        //             }
+        //             foreach (var styleSheet in FindStyleSheets(otherSkin))
+        //             {
+        //                 yield return styleSheet;
+        //             }
+        //         }
+        //
+        //         yield return skin.styleSheets.Find(x => x.name == name)?.styleSheet;
+        //     }
+        // }
 
         public virtual void Clear()
         {
@@ -235,6 +376,11 @@ namespace CZToolKit.GraphProcessor.Editors
         #endregion
 
         #region Overrides
+
+        protected virtual UITKSkin DefaultSkin()
+        {
+            return Resources.Load<UITKSkin>("GraphProcessor/Skin/Default Skin");
+        }
 
         protected virtual BaseGraphView NewGraphView(object argument)
         {

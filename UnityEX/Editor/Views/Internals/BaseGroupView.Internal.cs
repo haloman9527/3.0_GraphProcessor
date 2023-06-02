@@ -33,6 +33,7 @@ namespace CZToolKit.GraphProcessor.Editors
         public Label TitleLabel { get; private set; }
         public BaseGroupVM ViewModel { get; protected set; }
         public BaseGraphView Owner { get; private set; }
+        
 
 
         public BaseGroupView()
@@ -56,6 +57,7 @@ namespace CZToolKit.GraphProcessor.Editors
             this.Owner = graphView;
             this.title = ViewModel.GroupName;
             this.style.backgroundColor = ViewModel.BackgroundColor.ToColor();
+            this.style.unityBackgroundImageTintColor = ViewModel.BackgroundColor.ToColor();
             this.BackgroudColorField.SetValueWithoutNotify(ViewModel.BackgroundColor.ToColor());
             base.SetPosition(new Rect(ViewModel.Position.ToVector2(), GetPosition().size));
             WithoutNotify = true;
@@ -65,7 +67,7 @@ namespace CZToolKit.GraphProcessor.Editors
             BackgroudColorField.RegisterValueChangedCallback(OnGroupColorChanged);
         }
 
-        public void OnCreate()
+        public void OnInitialize()
         {
             ViewModel[nameof(BaseGroup.groupName)].AsBindableProperty<string>().RegisterValueChangedEvent(OnTitleChanged);
             ViewModel[nameof(BaseGroup.position)].AsBindableProperty<InternalVector2Int>().RegisterValueChangedEvent(OnPositionChanged);
@@ -101,6 +103,7 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             this.BackgroudColorField.SetValueWithoutNotify(newColor.ToColor());
             this.style.backgroundColor = newColor.ToColor();
+            this.style.unityBackgroundImageTintColor = newColor.ToColor();
             Owner.SetDirty();
         }
 
@@ -117,8 +120,6 @@ namespace CZToolKit.GraphProcessor.Editors
 
         protected override void OnGroupRenamed(string oldName, string newName)
         {
-            if (string.IsNullOrEmpty(newName))
-                return;
             Owner.CommandDispatcher.Do(new RenameGroupCommand(ViewModel, newName));
         }
 

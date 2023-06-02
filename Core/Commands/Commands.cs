@@ -223,6 +223,60 @@ namespace CZToolKit.GraphProcessor
         }
     }
 
+    public class AddToGroupCommand : ICommand
+    {
+        private BaseGroupVM group;
+        private BaseNodeVM[] nodes;
+        
+        public AddToGroupCommand(BaseGroupVM group, BaseNodeVM[] nodes)
+        {
+            this.group = group;
+            this.nodes = nodes;
+        }
+
+        public void Do()
+        {
+            group.AddNodes(nodes);
+        }
+
+        public void Redo()
+        {
+            Do();
+        }
+
+        public void Undo()
+        {
+            group.RemoveNodes(nodes);
+        }
+    }
+
+    public class RemoveFromGroupCommand : ICommand
+    {
+        private BaseGroupVM group;
+        private BaseNodeVM[] nodes;
+        
+        public RemoveFromGroupCommand(BaseGroupVM group, BaseNodeVM[] nodes)
+        {
+            this.group = group;
+            this.nodes = nodes;
+        }
+
+        public void Do()
+        {
+            group.RemoveNodes(nodes);
+        }
+
+        public void Redo()
+        {
+            Do();
+        }
+
+        public void Undo()
+        {
+            group.AddNodes(nodes);
+        }
+    }
+
     public class MoveGroupsCommand : ICommand
     {
         Dictionary<BaseGroupVM, InternalVector2Int> oldPos = new Dictionary<BaseGroupVM, InternalVector2Int>();

@@ -35,11 +35,10 @@ namespace CZToolKit.GraphProcessor.Editors
 
         protected BasePortView(Orientation orientation, Direction direction, Capacity capacity, Type type, IEdgeConnectorListener connectorListener) : base(orientation, direction, capacity, type)
         {
-            styleSheets.Add(GraphProcessorStyles.PortViewStyle);
-            styleSheets.Add(GraphProcessorStyles.PortViewTypesStyle);
+            styleSheets.Add(GraphProcessorStyles.BasePortViewStyle);
             
-            visualClass = "port_" + portType.Name;
-            this.AddToClassList("capacity_" + capacity.ToString());
+            visualClass = "port-" + portType.Name;
+            this.AddToClassList("capacity-" + capacity.ToString());
             
             PortLabel = this.Q("type") as Label;
             Connector = this.Q("connector");
@@ -87,7 +86,7 @@ namespace CZToolKit.GraphProcessor.Editors
             OnInitialized();
         }
 
-        public void OnCreate()
+        public void OnInitialize()
         {
             ViewModel[nameof(BasePort.type)].AsBindableProperty<Type>().RegisterValueChangedEvent(OnPortTypeChanged);
 

@@ -70,6 +70,14 @@ namespace CZToolKit.GraphProcessor
                     }
                     nodeStaticInfo.hidden = nodeMenu.hidden;
                 }
+                else
+                {
+                    
+                    nodeStaticInfo.path = t.Name;
+                    nodeStaticInfo.menu = new string[] { t.Name };
+                    nodeStaticInfo.title = t.Name;
+                    nodeStaticInfo.hidden = false;
+                }
                 
                 if (Util_Reflection.TryGetTypeAttribute(t, true, out NodeTitleAttribute titleAttr))
                 {

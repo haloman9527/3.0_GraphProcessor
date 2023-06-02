@@ -1,11 +1,11 @@
-#node-border{
+#node-border {
     background-color: rgba(20, 20, 20, 0.8);
     min-width: 60px;
     border-radius: 5px;
     border-color: rgba(10, 10, 10, 1);
 }
 
-#selection-border{
+#selection-border {
     border-radius: 6px;
 }
 
@@ -39,7 +39,7 @@
     display: none;
 }
 
-#contents > #top > #input{
+#node-border > #contents > #top > #input {
     align-self: flex-start;
     margin-right: 5px;
     background-color: rgba(0, 0, 0, 0.23);
@@ -47,7 +47,7 @@
     border-bottom-right-radius: 10px;
 }
 
-#contents > #top > #output{
+#node-border > #contents > #top > #output {
     align-self: flex-start;
     margin-left: 5px;
     background-color: rgba(0, 0, 0, 0.23);
@@ -55,7 +55,7 @@
     border-bottom-left-radius: 10px;
 }
 
-#top-input{
+#node-border > #top-input {
     height: 15px;
     justify-content: center;
     align-items: center;
@@ -65,7 +65,7 @@
     border-color: black;
 }
 
-#bottom-input{
+#node-border > #bottom-input {
     height: 15px;
     justify-content: center;
     align-items: center;
@@ -75,16 +75,11 @@
     border-color: black;
 }
 
-#divider{
-    background-color:rgba(255, 128, 0, 1);
+#divider {
+    background-color: rgba(255, 128, 0, 1);
 }
 
-#divider.vertical{
+#divider.vertical {
     display: none;
     border-width: 0;
-}
-
-.highlight {
-    background-color: rgba(0, 255, 255, 1);
-    border-radius: 7px
 }

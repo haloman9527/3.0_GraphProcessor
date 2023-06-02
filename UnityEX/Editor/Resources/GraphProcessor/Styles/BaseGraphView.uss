@@ -5,3 +5,8 @@ GridBackground {
     --spacing: 30;
     --thick-lines: 5;
 }
+
+.scope.group {
+    /*background-image: resource("GraphProcessor/Textures/Wallpaper 4 Desaturated");*/
+    -unity-background-scale-mode: scale-and-crop;
+}

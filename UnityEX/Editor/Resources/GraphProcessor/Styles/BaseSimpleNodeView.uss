@@ -1,16 +1,17 @@
-.node {
+.simple-node-view.node {
     min-width: 80px;
 }
 
-#title {
-    /*min-height: 30px;*/
+
+.simple-node-view.node > #node-border {
+    border-radius: 8px;
 }
 
-#title > #title-button-container {
-    display: none;
+.simple-node-view.node > #selection-border {
+    border-radius: 9px;
 }
 
-#title > #title-label {
+.simple-node-view.node > #title > #title-label {
     margin-left: 2px;
     margin-right: 2px;
     font-size: 12px;
@@ -18,26 +19,22 @@
     -unity-text-align: middle-center;
 }
 
-#title > #input {
+.simple-node-view.node > #title > #title-button-container {
+    display: none;
+}
+
+.simple-node-view.node > #title > #input {
     flex-direction: row-reverse;
     align-items: center;
     flex-direction: row;
 }
 
-#title > #output {
+.simple-node-view.node > #title > #output {
     flex-direction: row-reverse;
     align-items: center;
     flex-direction: row;
 }
 
-.highlight{
+.simple-node-view.node > .highlight{
     border-radius: 8px;
-}
-
-#node-border {
-    border-radius: 8px;
-}
-
-#selection-border {
-    border-radius: 9px;
 }

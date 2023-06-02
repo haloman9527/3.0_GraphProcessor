@@ -13,3 +13,19 @@
 .port.vertical{
     height: 15px;
 }
+
+.port.capacity-Single > #connector.connectorBox{
+    border-radius: 1px;
+}
+
+.port.capacity-Single > #connector.connectorBox > #cap.connectorCap{
+    border-radius: 0px;
+}
+
+.port.capacity-Multi > #connector.connectorBox{
+    border-radius: 8px;
+}
+
+.port.capacity-Multi > #connector.connectorBox > #cap.connectorCap{
+    border-radius: 4px;
+}

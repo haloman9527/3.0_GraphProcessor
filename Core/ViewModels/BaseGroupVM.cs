@@ -119,7 +119,7 @@ namespace CZToolKit.GraphProcessor
         
         #endregion
         
-        #region API
+        #region Public
 
         public void AddNodes(BaseNodeVM[] nodes)
         {
@@ -128,7 +128,7 @@ namespace CZToolKit.GraphProcessor
 
         public void RemoveNodes(BaseNodeVM[] nodes)
         {
-            InternalAddNodes(nodes, true);
+            InternalRemoveNodes(nodes, true);
         }
 
         public void AddNode(BaseNodeVM element)
@@ -150,7 +150,6 @@ namespace CZToolKit.GraphProcessor
         {
             InternalAddNodes(elements, false);
         }
-
         #endregion
     }
 }

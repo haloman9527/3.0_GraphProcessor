@@ -3,20 +3,11 @@
     -unity-font-style: bold;
 }
 
-.hidden
-{
-    display: none;
-    visibility: hidden;
-}
-
-#rootVisualContainer > .unity-toolbar{
+.unity-toolbar{
     border-left-width: 0px;
     border-right-width: 0px;
     border-top-width: 0px;
     border-bottom-width: 1px;
-}
-.unity-toolbar > .unity-toolbar{
-    border-width: 0px;
 }
 
 .unity-toolbar > #ToolbarCenter{
@@ -34,4 +25,15 @@
 
 .unity-toolbar#ToolbarRight > ToolbarButton{
     border-right-width: 0;
+}
+
+.hidden
+{
+    display: none;
+    visibility: hidden;
+}
+
+.highlight {
+    background-color: rgba(0, 255, 255, 1);
+    border-radius: 7px
 }

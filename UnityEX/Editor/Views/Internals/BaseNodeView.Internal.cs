@@ -78,6 +78,8 @@ namespace CZToolKit.GraphProcessor.Editors
 
         public BaseNodeView()
         {
+            styleSheets.Add(GraphProcessorStyles.BaseNodeViewStyle);
+            
             contents = mainContainer.Q("contents");
             
             nodeBorder = this.Q(name: "node-border");
@@ -96,8 +98,6 @@ namespace CZToolKit.GraphProcessor.Editors
 
             bottomPortContainer = new VisualElement { name = "bottom-input" };
             nodeBorder.Add(bottomPortContainer);
-            
-            styleSheets.Add(GraphProcessorStyles.BaseNodeViewStyle);
         }
 
         #region Initialize
@@ -145,7 +145,7 @@ namespace CZToolKit.GraphProcessor.Editors
             OnInitialized();
         }
 
-        public void OnCreate()
+        public void OnInitialize()
         {
             ViewModel.BindingProperty<InternalVector2Int>(nameof(BaseNode.position), OnPositionChanged);
             ViewModel.BindingProperty<string>(BaseNodeVM.TITLE_NAME, OnTitleChanged);
@@ -158,7 +158,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
             foreach (var portView in portViews.Values)
             {
-                portView.OnCreate();
+                portView.OnInitialize();
             }
 
             OnBindingProperties();
@@ -253,7 +253,7 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             BasePortView portView = NewPortView(port);
             portView.SetUp(port, Owner);
-            portView.OnCreate();
+            portView.OnInitialize();
             portViews[port.Name] = portView;
 
             if (portView.orientation == Orientation.Horizontal)

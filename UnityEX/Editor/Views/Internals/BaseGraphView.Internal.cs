@@ -81,7 +81,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
         public BaseGraphView(BaseGraphVM graph, BaseGraphWindow window, CommandDispatcher commandDispatcher)
         {
-            styleSheets.Add(GraphProcessorStyles.GraphViewStyle);
+            styleSheets.Add(GraphProcessorStyles.BaseGraphViewStyle);
 
             Insert(0, new GridBackground());
 
@@ -114,7 +114,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
             RegisterCallback<KeyDownEvent>(KeyDownCallback);
 
-            OnCreate();
+            OnInitialize();
         }
 
         /// <summary> 生成所有NodeView </summary>
@@ -165,7 +165,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
         #region API
 
-        public void OnCreate()
+        public void OnInitialize()
         {
             RegisterCallback<DetachFromPanelEvent>(evt => { OnDestroy(); });
 
@@ -181,10 +181,10 @@ namespace CZToolKit.GraphProcessor.Editors
             ViewModel.OnConnected += OnConnected;
             ViewModel.OnDisconnected += OnDisconnected;
             
-            OnCreated();
+            OnInitialized();
         }
 
-        public virtual void OnDestroy()
+        public void OnDestroy()
         {
             this.Query<GraphElement>().ForEach(element =>
             {
@@ -210,7 +210,7 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             BaseNodeView nodeView = NewNodeView(node);
             nodeView.SetUp(node, this);
-            nodeView.OnCreate();
+            nodeView.OnInitialize();
             NodeViews[node.ID] = nodeView;
             AddElement(nodeView);
             return nodeView;
@@ -227,7 +227,7 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             BaseGroupView groupView = NewGroupView(group);
             groupView.SetUp(group, this);
-            groupView.OnCreate();
+            groupView.OnInitialize();
             GroupViews[group] = groupView;
             AddElement(groupView);
             return groupView;
@@ -245,7 +245,7 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             var connectionView = NewConnectionView(connection);
             connectionView.SetUp(connection, this);
-            connectionView.OnCreate();
+            connectionView.OnInitialize();
             connectionView.userData = connection;
             connectionView.output = from.PortViews[connection.FromPortName];
             connectionView.input = to.PortViews[connection.ToPortName];
@@ -496,10 +496,12 @@ namespace CZToolKit.GraphProcessor.Editors
                 {
                     switch (element)
                     {
-                        case Edge edgeView:
+                        case Group groupView:
                             return 0;
-                        case Node nodeView:
+                        case Edge edgeView:
                             return 1;
+                        case Node nodeView:
+                            return 2;
                     }
 
                     return 4;
@@ -526,7 +528,7 @@ namespace CZToolKit.GraphProcessor.Editors
                             CommandDispatcher.Do(new RemoveGroupCommand(ViewModel, groupView.ViewModel));
                         return true;
                 }
-
+            
                 return false;
             });
             CommandDispatcher.EndGroup();

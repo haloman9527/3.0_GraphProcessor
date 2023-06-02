@@ -27,7 +27,7 @@ namespace CZToolKit.GraphProcessor
     {
         #region Fields
 
-        internal Dictionary<string, BasePortVM> ports;
+        private Dictionary<string, BasePortVM> ports;
         public event Action<BasePortVM> onPortAdded;
         public event Action<BasePortVM> onPortRemoved;
 

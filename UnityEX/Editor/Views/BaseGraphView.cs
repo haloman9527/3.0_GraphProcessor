@@ -35,7 +35,7 @@ namespace CZToolKit.GraphProcessor.Editors
     {
         List<Port> compatiblePorts = new List<Port>();
 
-        protected virtual void OnCreated()
+        protected virtual void OnInitialized()
         {
             
         }

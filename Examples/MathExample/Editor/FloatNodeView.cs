@@ -23,10 +23,6 @@ public class FloatNodeView : BaseNodeView
 {
     public FloatField valueField;
 
-    public FloatNodeView()
-    {
-    }
-
     protected override void OnInitialized()
     {
         base.OnInitialized();
