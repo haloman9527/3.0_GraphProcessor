@@ -22,6 +22,8 @@ using CZToolKit.Common.ViewModel;
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.Collections.Specialized;
+using Sirenix.Serialization;
 
 namespace CZToolKit.GraphProcessor
 {
@@ -30,11 +32,10 @@ namespace CZToolKit.GraphProcessor
     {
         #region Fields
 
-        private Dictionary<int, BaseNodeVM> nodes = new Dictionary<int, BaseNodeVM>();
-        private List<BaseConnectionVM> connections = new List<BaseConnectionVM>();
-        private List<BaseGroupVM> groups = new List<BaseGroupVM>();
-        private Blackboard<string> blackboard = new Blackboard<string>();
-        // private CommandDispatcher commandDispatcher = new CommandDispatcher();
+        private Dictionary<int, BaseNodeVM> nodes;
+        private List<BaseConnectionVM> connections;
+        private Blackboard<string> blackboard;
+        private Groups groups;
 
         public event Action<BaseNodeVM> OnNodeAdded;
         public event Action<BaseNodeVM> OnNodeRemoved;
@@ -48,7 +49,7 @@ namespace CZToolKit.GraphProcessor
         #region Properties
 
         public BaseGraph Model { get; }
-        
+
         public Type ModelType { get; }
 
         public InternalVector2Int Pan
@@ -68,7 +69,7 @@ namespace CZToolKit.GraphProcessor
             get { return nodes; }
         }
 
-        public IReadOnlyList<BaseGroupVM> Groups
+        public Groups Groups
         {
             get { return groups; }
         }
@@ -91,6 +92,10 @@ namespace CZToolKit.GraphProcessor
             ModelType = model.GetType();
             Model.pan = Model.pan == default ? InternalVector2Int.zero : Model.pan;
             Model.zoom = Model.zoom == 0 ? 1 : Model.zoom;
+
+            this.nodes = new Dictionary<int, BaseNodeVM>();
+            this.connections = new List<BaseConnectionVM>();
+            this.groups = new Groups();
 
             this.RegisterProperty(nameof(BaseGraph.pan), new BindableProperty<InternalVector2Int>(() => Model.pan, v => Model.pan = v));
             this.RegisterProperty(nameof(BaseGraph.zoom), new BindableProperty<float>(() => Model.zoom, v => Model.zoom = v));
@@ -136,11 +141,17 @@ namespace CZToolKit.GraphProcessor
                     continue;
                 }
 
-                group.nodes.RemoveAll(nodeID => !nodes.ContainsKey(nodeID));
+                for (int j = group.nodes.Count - 1; j >= 0; j--)
+                {
+                    if (!nodes.ContainsKey(group.nodes[j]))
+                        group.nodes.RemoveAt(j);
+                }
+
                 var groupVM = ViewModelFactory.CreateViewModel(group) as BaseGroupVM;
                 groupVM.Owner = this;
-                groups.Add(groupVM);
+                groups.AddGroup(groupVM);
             }
+
 
             foreach (var connection in connections)
             {
@@ -326,24 +337,17 @@ namespace CZToolKit.GraphProcessor
             OnConnected?.Invoke(connection);
         }
 
-        public void AddGroup(BaseGroupVM groupVM)
+        public void AddGroup(BaseGroupVM group)
         {
-            groups.Add(groupVM);
-            Model.groups.Add(groupVM.Model);
-            groupVM.Owner = this;
-            OnGroupAdded?.Invoke(groupVM);
-        }
-
-        public BaseGroupVM AddGroup(BaseGroup group)
-        {
-            var groupVM = ViewModelFactory.CreateViewModel(group) as BaseGroupVM;
-            AddGroup(groupVM);
-            return groupVM;
+            groups.AddGroup(group);
+            Model.groups.Add(group.Model);
+            group.Owner = this;
+            OnGroupAdded?.Invoke(group);
         }
 
         public void RemoveGroup(BaseGroupVM group)
         {
-            groups.Remove(group);
+            groups.RemoveGroup(group);
             Model.groups.Remove(group.Model);
             OnGroupRemoved?.Invoke(group);
         }
@@ -358,9 +362,11 @@ namespace CZToolKit.GraphProcessor
 
         public virtual BaseNodeVM NewNode<TNode>(InternalVector2Int position) where TNode : BaseNode, new()
         {
-            var node = new TNode();
-            node.id = NewID();
-            node.position = position;
+            var node = new TNode()
+            {
+                id = NewID(),
+                position = position
+            };
             return ViewModelFactory.CreateViewModel(node) as BaseNodeVM;
         }
 
@@ -376,6 +382,16 @@ namespace CZToolKit.GraphProcessor
             return ViewModelFactory.CreateViewModel(connection) as BaseConnectionVM;
         }
 
+        public virtual BaseGroupVM NewGroup(string groupName)
+        {
+            var group = new BaseGroup()
+            {
+                id = NewID(),
+                groupName = groupName
+            };
+            return ViewModelFactory.CreateViewModel(group) as BaseGroupVM;
+        }
+
         public int NewID()
         {
             var id = 0;
@@ -388,5 +404,79 @@ namespace CZToolKit.GraphProcessor
         }
 
         #endregion
+    }
+    
+    public class Groups
+    {
+        private Dictionary<int, BaseGroupVM> groupMap = new Dictionary<int, BaseGroupVM>();
+        private Dictionary<int, BaseGroupVM> nodeGroupMap = new Dictionary<int, BaseGroupVM>();
+
+        public IReadOnlyDictionary<int, BaseGroupVM> GroupMap
+        {
+            get { return groupMap; }
+        }
+
+        public IReadOnlyDictionary<int, BaseGroupVM> NodeGroupMap
+        {
+            get { return nodeGroupMap; }
+        }
+
+        public void AddNodeToGroup(BaseGroupVM group, BaseNodeVM node)
+        {
+            if (node.Owner != group.Owner)
+                return;
+
+            if (nodeGroupMap.TryGetValue(node.ID, out var _group))
+            {
+                if (_group == group)
+                {
+                    return;
+                }
+                else
+                {
+                    _group.Model.nodes.Remove(node.ID);
+                    _group.NotifyNodeRemoved(node);
+                }
+            }
+
+            nodeGroupMap[node.ID] = group;
+            group.Model.nodes.Add(node.ID);
+            group.NotifyNodeAdded(node);
+        }
+
+        public void RemoveNodeFromGroup(BaseGroupVM group, BaseNodeVM node)
+        {
+            if (node.Owner != group.Owner)
+                return;
+
+            if (nodeGroupMap.TryGetValue(node.ID, out var _group) && _group != group)
+                return;
+
+            nodeGroupMap.Remove(node.ID);
+            group.Model.nodes.Remove(node.ID);
+            group.NotifyNodeRemoved(node);
+        }
+
+        public void AddGroup(BaseGroupVM group)
+        {
+            this.groupMap.Add(group.ID, group);
+            foreach (var pair in groupMap)
+            {
+                foreach (var nodeID in pair.Value.Nodes)
+                {
+                    this.nodeGroupMap[nodeID] = pair.Value;
+                }
+            }
+        }
+
+        public void RemoveGroup(BaseGroupVM group)
+        {
+            foreach (var nodeID in group.Nodes)
+            {
+                nodeGroupMap.Remove(nodeID);
+            }
+
+            groupMap.Remove(group.ID);
+        }
     }
 }

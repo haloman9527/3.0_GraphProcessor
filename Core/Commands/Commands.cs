@@ -100,6 +100,58 @@ namespace CZToolKit.GraphProcessor
             connections.Clear();
         }
     }
+    
+    public class RemoveNodesCommand : ICommand
+    {
+        BaseGraphVM graph;
+        BaseNodeVM[] nodes;
+
+        HashSet<BaseConnectionVM> connections = new HashSet<BaseConnectionVM>();
+        public RemoveNodesCommand(BaseGraphVM graph, BaseNodeVM[] nodes)
+        {
+            this.graph = graph;
+            this.nodes = nodes;
+        }
+
+        public void Do()
+        {
+            connections.Clear();
+            foreach (var node in nodes)
+            {
+                foreach (var port in node.Ports.Values)
+                {
+                    foreach (var connection in port.Connections)
+                    {
+                        connections.Add(connection);
+                    }
+                }
+            }
+
+            foreach (var node in nodes)
+            {
+                graph.RemoveNode(node);
+            }
+        }
+
+        public void Redo()
+        {
+            Do();
+        }
+
+        public void Undo()
+        {
+            foreach (var node in nodes)
+            {
+                graph.AddNode(node);
+            }
+            // 还原
+            foreach (var edge in connections)
+            {
+                graph.RevertDisconnect(edge);
+            }
+            connections.Clear();
+        }
+    }
 
     public class MoveNodeCommand : ICommand
     {
@@ -223,20 +275,23 @@ namespace CZToolKit.GraphProcessor
         }
     }
 
-    public class AddToGroupCommand : ICommand
+    public class RemoveGroupsCommand : ICommand
     {
-        private BaseGroupVM group;
-        private BaseNodeVM[] nodes;
-        
-        public AddToGroupCommand(BaseGroupVM group, BaseNodeVM[] nodes)
+        public BaseGraphVM graph;
+        public BaseGroupVM[] groups;
+
+        public RemoveGroupsCommand(BaseGraphVM graph, BaseGroupVM[] groups)
         {
-            this.group = group;
-            this.nodes = nodes;
+            this.graph = graph;
+            this.groups = groups;
         }
 
         public void Do()
         {
-            group.AddNodes(nodes);
+            foreach (var group in groups)
+            {
+                graph.RemoveGroup(group);
+            }
         }
 
         public void Redo()
@@ -246,24 +301,67 @@ namespace CZToolKit.GraphProcessor
 
         public void Undo()
         {
-            group.RemoveNodes(nodes);
+            foreach (var group in groups)
+            {
+                graph.AddGroup(group);
+            }
+        }
+    }
+
+    public class AddToGroupCommand : ICommand
+    {
+        private BaseGraphVM graph;
+        private BaseGroupVM group;
+        private BaseNodeVM[] nodes;
+        
+        public AddToGroupCommand(BaseGraphVM graph, BaseGroupVM group, BaseNodeVM[] nodes)
+        {
+            this.graph = graph;
+            this.group = group;
+            this.nodes = nodes;
+        }
+
+        public void Do()
+        {
+            foreach (var node in nodes)
+            {
+                graph.Groups.AddNodeToGroup(group, node);
+            }
+        }
+
+        public void Redo()
+        {
+            Do();
+        }
+
+        public void Undo()
+        {
+            foreach (var node in nodes)
+            {
+                graph.Groups.RemoveNodeFromGroup(group, node);
+            }
         }
     }
 
     public class RemoveFromGroupCommand : ICommand
     {
+        private BaseGraphVM graph;
         private BaseGroupVM group;
         private BaseNodeVM[] nodes;
         
-        public RemoveFromGroupCommand(BaseGroupVM group, BaseNodeVM[] nodes)
+        public RemoveFromGroupCommand(BaseGraphVM graph, BaseGroupVM group, BaseNodeVM[] nodes)
         {
+            this.graph = graph;
             this.group = group;
             this.nodes = nodes;
         }
 
         public void Do()
         {
-            group.RemoveNodes(nodes);
+            foreach (var node in nodes)
+            {
+                graph.Groups.RemoveNodeFromGroup(group, node);
+            }
         }
 
         public void Redo()
@@ -273,7 +371,10 @@ namespace CZToolKit.GraphProcessor
 
         public void Undo()
         {
-            group.AddNodes(nodes);
+            foreach (var node in nodes)
+            {
+                graph.Groups.AddNodeToGroup(group, node);
+            }
         }
     }
 
@@ -609,6 +710,39 @@ namespace CZToolKit.GraphProcessor
         public void Undo()
         {
             graph.RevertDisconnect(connection);
+        }
+    }
+
+    public class DisconnectsCommand : ICommand
+    {
+        BaseGraphVM graph;
+        BaseConnectionVM[] connections;
+
+        public DisconnectsCommand(BaseGraphVM graph, BaseConnectionVM[] connections)
+        {
+            this.graph = graph;
+            this.connections = connections;
+        }
+
+        public void Do()
+        {
+            foreach (var connection in connections)
+            {
+                graph.Disconnect(connection);
+            }
+        }
+
+        public void Redo()
+        {
+            Do();
+        }
+
+        public void Undo()
+        {
+            foreach (var connection in connections)
+            {
+                graph.RevertDisconnect(connection);
+            }
         }
     }
 }

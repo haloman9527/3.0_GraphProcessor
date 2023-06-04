@@ -140,9 +140,9 @@ public class SampleGraphWindow : BaseGraphWindow
                     group.nodes.RemoveAt(i);
             }
 
-            var vm = ViewModelFactory.CreateViewModel(group) as BaseGroupVM;
-            GraphView.CommandDispatcher.Do(new AddGroupCommand(graph, vm));
-            GraphView.AddToSelection(GraphView.GroupViews[vm]);
+            group.id = graph.NewID();
+            GraphView.CommandDispatcher.Do(new AddGroupCommand(graph, group));
+            GraphView.AddToSelection(GraphView.GroupViews[group.id]);
         }
 
         GraphView.CommandDispatcher.EndGroup();

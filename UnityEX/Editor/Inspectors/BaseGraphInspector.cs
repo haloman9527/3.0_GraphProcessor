@@ -56,6 +56,7 @@ namespace CZToolKit.GraphProcessor.Editors
             EditorGUILayoutExtension.BeginVerticalBoxGroup();
             GUILayout.Label(string.Concat("Nodes：", view.ViewModel.Nodes.Count), bigLabel.value);
             GUILayout.Label(string.Concat("Connections：", view.ViewModel.Connections.Count), bigLabel.value);
+            GUILayout.Label(string.Concat("Connections：", view.ViewModel.Groups.GroupMap.Count), bigLabel.value);
             EditorGUILayoutExtension.EndVerticalBoxGroup();
 
             if (propertyTree == null)

@@ -19,6 +19,7 @@ namespace CZToolKit.GraphProcessor
 {
     public class BaseGroup
     {
+        public int id;
         public string groupName;
         public InternalVector2Int position;
         public InternalColor backgroundColor = new InternalColor(0.3f, 0.3f, 0.3f, 0.3f);

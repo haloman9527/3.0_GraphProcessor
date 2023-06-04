@@ -72,8 +72,8 @@ namespace CZToolKit.GraphProcessor.Editors
             ViewModel[nameof(BaseGroup.groupName)].AsBindableProperty<string>().RegisterValueChangedEvent(OnTitleChanged);
             ViewModel[nameof(BaseGroup.position)].AsBindableProperty<InternalVector2Int>().RegisterValueChangedEvent(OnPositionChanged);
             ViewModel[nameof(BaseGroup.backgroundColor)].AsBindableProperty<InternalColor>().RegisterValueChangedEvent(OnBackgroundColorChanged);
-            ViewModel.onNodesAdded += OnNodesAdded;
-            ViewModel.onNodesRemoved += OnNodesRemoved;
+            ViewModel.onNodeAdded += OnNodesAdded;
+            ViewModel.onNodeRemoved += OnNodesRemoved;
         }
 
         public void OnDestroy()
@@ -81,8 +81,8 @@ namespace CZToolKit.GraphProcessor.Editors
             ViewModel[nameof(BaseGroup.groupName)].AsBindableProperty<string>().UnregisterValueChangedEvent(OnTitleChanged);
             ViewModel[nameof(BaseGroup.position)].AsBindableProperty<InternalVector2Int>().UnregisterValueChangedEvent(OnPositionChanged);
             ViewModel[nameof(BaseGroup.backgroundColor)].AsBindableProperty<InternalColor>().UnregisterValueChangedEvent(OnBackgroundColorChanged);
-            ViewModel.onNodesAdded -= OnNodesAdded;
-            ViewModel.onNodesRemoved -= OnNodesRemoved;
+            ViewModel.onNodeAdded -= OnNodesAdded;
+            ViewModel.onNodeRemoved -= OnNodesRemoved;
         }
 
         #region Callbacks
@@ -107,14 +107,14 @@ namespace CZToolKit.GraphProcessor.Editors
             Owner.SetDirty();
         }
 
-        private void OnNodesAdded(IEnumerable<BaseNodeVM> nodes)
+        private void OnNodesAdded(BaseNodeVM node)
         {
-            base.AddElements(nodes.Select(node => Owner.NodeViews[node.ID]));
+            base.AddElements(new BaseNodeView[] { Owner.NodeViews[node.ID] });
         }
 
-        private void OnNodesRemoved(IEnumerable<BaseNodeVM> nodes)
+        private void OnNodesRemoved(BaseNodeVM node)
         {
-            base.RemoveElements(nodes.Select(node => Owner.NodeViews[node.ID]));
+            base.RemoveElements(new BaseNodeView[] { Owner.NodeViews[node.ID] });
         }
         #endregion
 
@@ -141,15 +141,31 @@ namespace CZToolKit.GraphProcessor.Editors
 
         protected override void OnElementsAdded(IEnumerable<GraphElement> elements)
         {
-            var nodes = elements.Where(element => element is BaseNodeView).Select(element => (element as BaseNodeView).ViewModel).ToArray();
-            ViewModel.AddNodes(nodes);
+            if (WithoutNotify)
+            {
+                return;
+            }
+            foreach (var element in elements)
+            {
+                if (!(element is BaseNodeView nodeView))
+                    continue;
+                Owner.ViewModel.Groups.AddNodeToGroup(ViewModel, nodeView.ViewModel);
+            }
             Owner.SetDirty();
         }
 
         protected override void OnElementsRemoved(IEnumerable<GraphElement> elements)
         {
-            var nodes = elements.Where(element => element is BaseNodeView).Select(element => (element as BaseNodeView).ViewModel).ToArray();
-            ViewModel.RemoveNodes(nodes);
+            if (WithoutNotify)
+            {
+                return;
+            }
+            foreach (var element in elements)
+            {
+                if (!(element is BaseNodeView nodeView))
+                    continue;
+                Owner.ViewModel.Groups.RemoveNodeFromGroup(ViewModel, nodeView.ViewModel);
+            }
             Owner.SetDirty();
         }
 

@@ -28,8 +28,8 @@ namespace CZToolKit.GraphProcessor
     {
         #region Fileds
 
-        public event Action<IEnumerable<BaseNodeVM>> onNodesAdded;
-        public event Action<IEnumerable<BaseNodeVM>> onNodesRemoved;
+        public event Action<BaseNodeVM> onNodeAdded;
+        public event Action<BaseNodeVM> onNodeRemoved;
 
         #endregion
 
@@ -39,6 +39,10 @@ namespace CZToolKit.GraphProcessor
         public Type ModelType { get; }
         public BaseGraphVM Owner { get; internal set; }
 
+        public int ID
+        {
+            get { return Model.id; }
+        }
         public string GroupName
         {
             get { return GetPropertyValue<string>(nameof(Model.groupName)); }
@@ -74,82 +78,14 @@ namespace CZToolKit.GraphProcessor
             this[nameof(BaseGroup.backgroundColor)] = new BindableProperty<InternalColor>(() => Model.backgroundColor, v => Model.backgroundColor = v);
         }
 
-        #region Private
-        
-        private void InternalAddNodes(BaseNodeVM[] nodes, bool withoutNotify)
+        internal void NotifyNodeAdded(BaseNodeVM node)
         {
-            var tempNodes = nodes.Where(element => !Model.nodes.Contains(element.ID) && element.Owner == this.Owner).ToArray();
-            foreach (var node in tempNodes)
-            {
-                if (Model.nodes.Contains(node.ID))
-                    continue;
-                if (node.Owner != Owner)
-                    continue;
-                foreach (var group in Owner.Groups)
-                {
-                    group.Model.nodes.Remove(node.ID);
-                }
-
-                Model.nodes.Add(node.ID);
-            }
-
-            if (withoutNotify)
-                return;
-
-            onNodesAdded?.Invoke(tempNodes);
+            onNodeAdded?.Invoke(node);
         }
 
-        private void InternalRemoveNodes(BaseNodeVM[] nodes, bool withoutNotify)
+        internal void NotifyNodeRemoved(BaseNodeVM node)
         {
-            var tempNodes = nodes.Where(element => Model.nodes.Contains(element.ID) && element.Owner == this.Owner).ToArray();
-            foreach (var node in tempNodes)
-            {
-                if (!Model.nodes.Contains(node.ID))
-                    continue;
-                if (node.Owner != Owner)
-                    continue;
-                Model.nodes.Remove(node.ID);
-            }
-
-            if (withoutNotify)
-                return;
-
-            onNodesRemoved?.Invoke(tempNodes);
+            onNodeRemoved?.Invoke(node);
         }
-        
-        #endregion
-        
-        #region Public
-
-        public void AddNodes(BaseNodeVM[] nodes)
-        {
-            InternalAddNodes(nodes, true);
-        }
-
-        public void RemoveNodes(BaseNodeVM[] nodes)
-        {
-            InternalRemoveNodes(nodes, true);
-        }
-
-        public void AddNode(BaseNodeVM element)
-        {
-            InternalAddNodes(new BaseNodeVM[] { element }, true);
-        }
-
-        public void RemoveNode(BaseNodeVM element)
-        {
-            InternalRemoveNodes(new BaseNodeVM[] { element }, true);
-        }
-
-        public void AddNodesWithoutNotify(BaseNodeVM[] elements)
-        {
-            InternalAddNodes(elements, false);
-        }
-
-        public void RemoveNodesWithoutNotify(BaseNodeVM[] elements)
-        {
-            InternalAddNodes(elements, false);
-        }
-        #endregion
     }
 }

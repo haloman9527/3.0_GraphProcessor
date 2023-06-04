@@ -17,6 +17,7 @@ using CZToolKit.GraphProcessor;
 using Sirenix.Serialization;
 using System;
 using System.Collections.Generic;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 using UnityObject = UnityEngine.Object;
@@ -51,5 +52,11 @@ public class SampleGraphAsset : ScriptableObject, IGraphAsset, IGraphAsset<Sampl
             graph = new SampleGraph();
         }
         return graph;
+    }
+
+    [Button]
+    public void Reset()
+    {
+        SaveGraph(new SampleGraph());
     }
 }

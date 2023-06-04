@@ -63,7 +63,7 @@ namespace CZToolKit.GraphProcessor.Editors
         }
 
         public Dictionary<int, BaseNodeView> NodeViews { get; private set; } = new Dictionary<int, BaseNodeView>();
-        public Dictionary<BaseGroupVM, BaseGroupView> GroupViews { get; private set; } = new Dictionary<BaseGroupVM, BaseGroupView>();
+        public Dictionary<int, BaseGroupView> GroupViews { get; private set; } = new Dictionary<int, BaseGroupView>();
         public Dictionary<BaseConnectionVM, BaseConnectionView> ConnectionViews { get; private set; } = new Dictionary<BaseConnectionVM, BaseConnectionView>();
 
         public BaseGraphVM ViewModel { get; set; }
@@ -151,7 +151,7 @@ namespace CZToolKit.GraphProcessor.Editors
         IEnumerator GenerateGroupViews()
         {
             int step = 0;
-            foreach (var group in ViewModel.Groups)
+            foreach (var group in ViewModel.Groups.GroupMap.Values)
             {
                 if (group == null) continue;
                 AddGroupView(group);
@@ -228,7 +228,7 @@ namespace CZToolKit.GraphProcessor.Editors
             BaseGroupView groupView = NewGroupView(group);
             groupView.SetUp(group, this);
             groupView.OnInitialize();
-            GroupViews[group] = groupView;
+            GroupViews[group.ID] = groupView;
             AddElement(groupView);
             return groupView;
         }
@@ -238,7 +238,7 @@ namespace CZToolKit.GraphProcessor.Editors
             groupView.OnDestroy();
             groupView.RemoveElementsWithoutNotification(groupView.containedElements.ToArray());
             RemoveElement(groupView);
-            GroupViews.Remove(groupView.ViewModel);
+            GroupViews.Remove(groupView.ViewModel.ID);
         }
 
         public BaseConnectionView ConnectView(BaseNodeView from, BaseNodeView to, BaseConnectionVM connection)
@@ -365,7 +365,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
         void OnGroupRemoved(BaseGroupVM group)
         {
-            RemoveGroupView(GroupViews[group]);
+            RemoveGroupView(GroupViews[group.ID]);
             SetDirty();
         }
 
@@ -460,8 +460,6 @@ namespace CZToolKit.GraphProcessor.Editors
                         case BaseGroupView groupView:
                             groupNewPos[groupView.ViewModel] = groupView.GetPosition().position.ToInternalVector2Int();
                             return true;
-                        default:
-                            break;
                     }
 
                     return false;
@@ -478,6 +476,8 @@ namespace CZToolKit.GraphProcessor.Editors
 
                 CommandDispatcher.Do(new MoveNodesCommand(newPos));
                 CommandDispatcher.Do(new MoveGroupsCommand(groupNewPos));
+                
+                
                 // 排序
                 foreach (var port in portsHashset)
                 {
@@ -490,47 +490,26 @@ namespace CZToolKit.GraphProcessor.Editors
             if (changes.elementsToRemove == null)
                 return changes;
 
-            changes.elementsToRemove.Sort((element1, element2) =>
-            {
-                int GetPriority(GraphElement element)
-                {
-                    switch (element)
-                    {
-                        case Group groupView:
-                            return 0;
-                        case Edge edgeView:
-                            return 1;
-                        case Node nodeView:
-                            return 2;
-                    }
-
-                    return 4;
-                }
-
-                return GetPriority(element1).CompareTo(GetPriority(element2));
-            });
-
             CommandDispatcher.BeginGroup();
-            changes.elementsToRemove.RemoveAll(element =>
-            {
-                switch (element)
-                {
-                    case BaseConnectionView edgeView:
-                        if (edgeView.selected)
-                            CommandDispatcher.Do(new DisconnectCommand(ViewModel, edgeView.ViewModel));
-                        return true;
-                    case BaseNodeView nodeView:
-                        if (nodeView.selected)
-                            CommandDispatcher.Do(new RemoveNodeCommand(ViewModel, nodeView.ViewModel));
-                        return true;
-                    case BaseGroupView groupView:
-                        if (groupView.selected)
-                            CommandDispatcher.Do(new RemoveGroupCommand(ViewModel, groupView.ViewModel));
-                        return true;
-                }
             
-                return false;
-            });
+            var groups = changes.elementsToRemove
+                .Where(item => item.selected && item is BaseGroupView)
+                .Select(item => (item as BaseGroupView).ViewModel).ToArray();
+            changes.elementsToRemove.RemoveAll(item => item is BaseGroupView);
+            CommandDispatcher.Do(new RemoveGroupsCommand(ViewModel, groups));
+            
+            var edges = changes.elementsToRemove
+                .Where(item => item.selected && item is BaseConnectionView)
+                .Select(item => (item as BaseConnectionView).ViewModel).ToArray();
+            changes.elementsToRemove.RemoveAll(item => item is BaseConnectionView);
+            CommandDispatcher.Do(new DisconnectsCommand(ViewModel, edges));
+            
+            var nodes = changes.elementsToRemove
+                .Where(item => item.selected && item is BaseNodeView)
+                .Select(item => (item as BaseNodeView).ViewModel).ToArray();
+            changes.elementsToRemove.RemoveAll(item => item is BaseNodeView);
+            CommandDispatcher.Do(new RemoveNodesCommand(ViewModel, nodes));
+
             CommandDispatcher.EndGroup();
 
             UpdateInspector();
