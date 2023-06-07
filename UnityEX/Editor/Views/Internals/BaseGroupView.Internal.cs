@@ -164,7 +164,7 @@ namespace CZToolKit.GraphProcessor.Editors
             {
                 if (!(element is BaseNodeView nodeView))
                     continue;
-                Owner.ViewModel.Groups.RemoveNodeFromGroup(ViewModel, nodeView.ViewModel);
+                Owner.ViewModel.Groups.RemoveNodeFromGroup(nodeView.ViewModel);
             }
             Owner.SetDirty();
         }

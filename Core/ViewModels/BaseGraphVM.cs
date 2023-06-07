@@ -22,8 +22,6 @@ using CZToolKit.Common.ViewModel;
 using System;
 using System.Linq;
 using System.Collections.Generic;
-using System.Collections.Specialized;
-using Sirenix.Serialization;
 
 namespace CZToolKit.GraphProcessor
 {
@@ -203,6 +201,10 @@ namespace CZToolKit.GraphProcessor
         {
             if (node.Owner != this)
                 throw new NullReferenceException("节点不是此Graph中");
+
+            if (groups.NodeGroupMap.TryGetValue(node.ID, out var group))
+                groups.RemoveNodeFromGroup(node);
+            
             Disconnect(node);
             nodes.Remove(node.ID);
             Model.nodes.Remove(node.ID);
@@ -444,12 +446,12 @@ namespace CZToolKit.GraphProcessor
             group.NotifyNodeAdded(node);
         }
 
-        public void RemoveNodeFromGroup(BaseGroupVM group, BaseNodeVM node)
+        public void RemoveNodeFromGroup(BaseNodeVM node)
         {
-            if (node.Owner != group.Owner)
+            if (!nodeGroupMap.TryGetValue(node.ID, out var group))
                 return;
-
-            if (nodeGroupMap.TryGetValue(node.ID, out var _group) && _group != group)
+            
+            if (node.Owner != group.Owner)
                 return;
 
             nodeGroupMap.Remove(node.ID);

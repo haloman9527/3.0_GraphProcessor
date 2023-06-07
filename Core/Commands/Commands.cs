@@ -338,7 +338,7 @@ namespace CZToolKit.GraphProcessor
         {
             foreach (var node in nodes)
             {
-                graph.Groups.RemoveNodeFromGroup(group, node);
+                graph.Groups.RemoveNodeFromGroup(node);
             }
         }
     }
@@ -360,7 +360,7 @@ namespace CZToolKit.GraphProcessor
         {
             foreach (var node in nodes)
             {
-                graph.Groups.RemoveNodeFromGroup(group, node);
+                graph.Groups.RemoveNodeFromGroup(node);
             }
         }
 

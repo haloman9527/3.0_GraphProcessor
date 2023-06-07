@@ -32,23 +32,6 @@ namespace CZToolKit.GraphProcessor.Editors
 {
     public partial class BaseGraphView : GraphView, IGraphElementView<BaseGraphVM>
     {
-        public class NodeEntry
-        {
-            public readonly string path;
-            public readonly string[] menu;
-            public readonly bool hidden;
-            public readonly Type nodeType;
-            public string port;
-
-            public NodeEntry(Type nodeType, string path, string[] menu, bool hidden)
-            {
-                this.nodeType = nodeType;
-                this.path = path;
-                this.menu = menu;
-                this.hidden = hidden;
-            }
-        }
-
         #region Properties
 
         public event Action onDirty;
