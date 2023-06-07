@@ -109,12 +109,16 @@ namespace CZToolKit.GraphProcessor.Editors
 
         private void OnNodesAdded(BaseNodeVM node)
         {
+            WithoutNotify = false;
             base.AddElements(new BaseNodeView[] { Owner.NodeViews[node.ID] });
+            WithoutNotify = true;
         }
 
         private void OnNodesRemoved(BaseNodeVM node)
         {
+            WithoutNotify = false;
             base.RemoveElements(new BaseNodeView[] { Owner.NodeViews[node.ID] });
+            WithoutNotify = true;
         }
         #endregion
 
