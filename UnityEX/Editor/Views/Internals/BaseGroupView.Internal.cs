@@ -109,16 +109,16 @@ namespace CZToolKit.GraphProcessor.Editors
 
         private void OnNodesAdded(BaseNodeVM node)
         {
-            WithoutNotify = false;
+            if (WithoutNotify)
+                return;
             base.AddElements(new BaseNodeView[] { Owner.NodeViews[node.ID] });
-            WithoutNotify = true;
         }
 
         private void OnNodesRemoved(BaseNodeVM node)
         {
-            WithoutNotify = false;
+            if (WithoutNotify)
+                return;
             base.RemoveElements(new BaseNodeView[] { Owner.NodeViews[node.ID] });
-            WithoutNotify = true;
         }
         #endregion
 
@@ -146,14 +146,16 @@ namespace CZToolKit.GraphProcessor.Editors
         protected override void OnElementsAdded(IEnumerable<GraphElement> elements)
         {
             if (WithoutNotify)
-            {
                 return;
-            }
+                
             foreach (var element in elements)
             {
                 if (!(element is BaseNodeView nodeView))
                     continue;
+                var temp = WithoutNotify;
+                WithoutNotify = true;
                 Owner.ViewModel.Groups.AddNodeToGroup(ViewModel, nodeView.ViewModel);
+                WithoutNotify = temp;
             }
             Owner.SetDirty();
         }
@@ -161,14 +163,16 @@ namespace CZToolKit.GraphProcessor.Editors
         protected override void OnElementsRemoved(IEnumerable<GraphElement> elements)
         {
             if (WithoutNotify)
-            {
                 return;
-            }
+                
             foreach (var element in elements)
             {
                 if (!(element is BaseNodeView nodeView))
                     continue;
+                var temp = WithoutNotify;
+                WithoutNotify = true;
                 Owner.ViewModel.Groups.RemoveNodeFromGroup(nodeView.ViewModel);
+                WithoutNotify = temp;
             }
             Owner.SetDirty();
         }

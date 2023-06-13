@@ -153,7 +153,8 @@ namespace CZToolKit.GraphProcessor
         {
             if (port.Owner != this)
                 return;
-            Owner.Disconnect(port);
+            if (Owner != null)
+                Owner.Disconnect(port);
             ports.Remove(port.Name);
             onPortRemoved?.Invoke(port);
         }

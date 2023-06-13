@@ -109,9 +109,9 @@ namespace CZToolKit.GraphProcessor.Editors
         }
     }
 
-    public class BaseNodeView<M> : BaseNodeView where M : BaseNodeVM
+    public class BaseNodeView<VM> : BaseNodeView where VM : BaseNodeVM
     {
-        public M T_ViewModel { get { return base.ViewModel as M; } }
+        public VM T_ViewModel { get { return base.ViewModel as VM; } }
     }
 }
 #endif
