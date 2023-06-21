@@ -56,9 +56,9 @@ public class FloatNodeView : BaseNodeView
         ViewModel[nameof(FloatNode.num)].AsBindableProperty<float>().UnregisterValueChangedEvent(OnFloatNumChanged);
     }
 
-    private void OnFloatNumChanged(float v)
+    private void OnFloatNumChanged(float oldValue, float newValue)
     {
-        valueField.SetValueWithoutNotify(v);
+        valueField.SetValueWithoutNotify(newValue);
     }
 }
 #endif

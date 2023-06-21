@@ -201,23 +201,23 @@ namespace CZToolKit.GraphProcessor.Editors
             RefreshPortContainer();
         }
 
-        void OnTitleChanged(string newTitle)
+        void OnTitleChanged(string oldTitle, string newTitle)
         {
             base.title = newTitle;
         }
 
-        void OnTooltipChanged(string newTooltip)
+        void OnTooltipChanged(string oldTooltip, string newTooltip)
         {
             this.tooltip = newTooltip;
         }
 
-        void OnPositionChanged(InternalVector2Int newPosition)
+        void OnPositionChanged(InternalVector2Int oldPosition, InternalVector2Int newPosition)
         {
             base.SetPosition(new Rect(newPosition.ToVector2(), GetPosition().size));
             Owner.SetDirty();
         }
 
-        void OnTitleColorChanged(InternalColor color)
+        void OnTitleColorChanged(InternalColor oldColor, InternalColor color)
         {
             titleContainer.style.backgroundColor = color.ToColor();
             var lum = 0.299f * color.r + 0.587f * color.g + 0.114f * color.b;

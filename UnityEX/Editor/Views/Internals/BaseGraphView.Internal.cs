@@ -316,13 +316,13 @@ namespace CZToolKit.GraphProcessor.Editors
 
         #region Callbacks
 
-        void OnPositionChanged(InternalVector2Int position)
+        void OnPositionChanged(InternalVector2Int oldPosition, InternalVector2Int position)
         {
             viewTransform.position = position.ToVector2();
             SetDirty();
         }
 
-        void OnZoomChanged(float zoom)
+        void OnZoomChanged(float oldZoom, float zoom)
         {
             viewTransform.scale = new Vector3(zoom, zoom, 1);
             SetDirty();

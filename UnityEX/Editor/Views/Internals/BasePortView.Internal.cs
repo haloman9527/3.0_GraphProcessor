@@ -101,7 +101,7 @@ namespace CZToolKit.GraphProcessor.Editors
         }
 
         #region Callback
-        private void OnPortTypeChanged(Type newPortType)
+        private void OnPortTypeChanged(Type oldPortType, Type newPortType)
         {
             this.portType = newPortType;
         }

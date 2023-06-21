@@ -86,7 +86,7 @@ namespace CZToolKit.GraphProcessor.Editors
         }
 
         #region Callbacks
-        private void OnTitleChanged(string newTitle)
+        private void OnTitleChanged(string oldTitle, string newTitle)
         {
             if (string.IsNullOrEmpty(newTitle))
                 return;
@@ -94,12 +94,12 @@ namespace CZToolKit.GraphProcessor.Editors
             Owner.SetDirty();
         }
 
-        private void OnPositionChanged(InternalVector2Int newPosition)
+        private void OnPositionChanged(InternalVector2Int oldPosition, InternalVector2Int newPosition)
         {
             base.SetPosition(new Rect(newPosition.ToVector2(), GetPosition().size));
         }
 
-        private void OnBackgroundColorChanged(InternalColor newColor)
+        private void OnBackgroundColorChanged(InternalColor oldColor, InternalColor newColor)
         {
             this.BackgroudColorField.SetValueWithoutNotify(newColor.ToColor());
             this.style.backgroundColor = newColor.ToColor();
