@@ -14,6 +14,7 @@
  */
 #endregion
 #if UNITY_EDITOR
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor.Experimental.GraphView;
@@ -117,28 +118,47 @@ namespace CZToolKit.GraphProcessor.Editors
                 NodeLabel.style.color = lum > 0.5f && ViewModel.TitleColor.a > 0.5f ? Color.black : Color.white * 0.9f;
                 titleContainer.style.backgroundColor = color;
             }
-            
-            foreach (var port in ViewModel.Ports.Values)
+
+            foreach (var port in ViewModel.InPorts)
             {
                 BasePortView portView = NewPortView(port);
                 portView.SetUp(port, Owner);
                 portViews[port.Name] = portView;
-
-                if (portView.orientation == Orientation.Horizontal)
+                switch (port.Orientation)
                 {
-                    if (portView.direction == Direction.Input)
+                    case BasePort.Orientation.Horizontal:
+                    {
                         inputContainer.Add(portView);
-                    else
-                        outputContainer.Add(portView);
-                }
-                else
-                {
-                    if (portView.direction == Direction.Input)
+                        break;
+                    }
+                    case BasePort.Orientation.Vertical:
+                    {
                         topPortContainer.Add(portView);
-                    else
-                        bottomPortContainer.Add(portView);
+                        break;
+                    }
                 }
             }
+
+            foreach (var port in ViewModel.OutPorts)
+            {
+                BasePortView portView = NewPortView(port);
+                portView.SetUp(port, Owner);
+                portViews[port.Name] = portView;
+                switch (port.Orientation)
+                {
+                    case BasePort.Orientation.Horizontal:
+                    {
+                        outputContainer.Add(portView);
+                        break;
+                    }
+                    case BasePort.Orientation.Vertical:
+                    {
+                        bottomPortContainer.Add(portView);
+                        break;
+                    }
+                }
+            }
+            
             RefreshPorts();
             RefreshContentsHorizontalDivider();
             RefreshPortContainer();

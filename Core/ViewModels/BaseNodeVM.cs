@@ -16,6 +16,7 @@
 
 #endregion
 
+using CZToolKit.Common.Collection;
 using CZToolKit.Common.ViewModel;
 using System;
 using System.Collections.Generic;
@@ -27,7 +28,10 @@ namespace CZToolKit.GraphProcessor
     {
         #region Fields
 
+        private List<BasePortVM> inPorts;
+        private List<BasePortVM> outPorts;
         private Dictionary<string, BasePortVM> ports;
+
         public event Action<BasePortVM> onPortAdded;
         public event Action<BasePortVM> onPortRemoved;
 
@@ -68,16 +72,22 @@ namespace CZToolKit.GraphProcessor
             set { SetPropertyValue(TOOLTIP_NAME, value); }
         }
 
+        public IReadOnlyList<BasePortVM> InPorts
+        {
+            get { return inPorts; }
+        }
+
+        public IReadOnlyList<BasePortVM> OutPorts
+        {
+            get { return outPorts; }
+        }
+
         public IReadOnlyDictionary<string, BasePortVM> Ports
         {
             get { return ports; }
         }
 
-        public BaseGraphVM Owner
-        {
-            get; 
-            internal set;
-        }
+        public BaseGraphVM Owner { get; internal set; }
 
         #endregion
 
@@ -86,6 +96,8 @@ namespace CZToolKit.GraphProcessor
             Model = model;
             ModelType = model.GetType();
             Model.position = Model.position == default ? InternalVector2Int.zero : Model.position;
+            inPorts = new List<BasePortVM>();
+            outPorts = new List<BasePortVM>();
             ports = new Dictionary<string, BasePortVM>();
 
             var nodeStaticInfo = GraphProcessorUtil.NodeStaticInfos[ModelType];
@@ -95,13 +107,13 @@ namespace CZToolKit.GraphProcessor
 
             string tooltip = nodeStaticInfo.tooltip;
             this[TOOLTIP_NAME] = new BindableProperty<string>(() => tooltip, v => tooltip = v);
-            
+
             if (nodeStaticInfo.customTitleColor.enable)
             {
                 var titleColor = nodeStaticInfo.customTitleColor.value;
                 this[TITLE_COLOR_NAME] = new BindableProperty<InternalColor>(() => titleColor, v => titleColor = v);
             }
-            
+
             this[nameof(BaseNode.position)] = new BindableProperty<InternalVector2Int>(() => Model.position, v => Model.position = v);
         }
 
@@ -112,6 +124,7 @@ namespace CZToolKit.GraphProcessor
                 if (port.connections.Count > 1)
                     port.ResortWithoutNotify();
             }
+
             OnEnabled();
         }
 
@@ -145,6 +158,20 @@ namespace CZToolKit.GraphProcessor
         public void AddPort(BasePortVM port)
         {
             ports.Add(port.Name, port);
+            switch (port.Direction)
+            {
+                case BasePort.Direction.Input:
+                {
+                    inPorts.Add(port);
+                    break;
+                }
+                case BasePort.Direction.Output:
+                {
+                    outPorts.Add(port);
+                    break;
+                }
+            }
+
             port.Owner = this;
             onPortAdded?.Invoke(port);
         }
@@ -156,6 +183,19 @@ namespace CZToolKit.GraphProcessor
             if (Owner != null)
                 Owner.Disconnect(port);
             ports.Remove(port.Name);
+            switch (port.Direction)
+            {
+                case BasePort.Direction.Input:
+                {
+                    inPorts.Remove(port);
+                    break;
+                }
+                case BasePort.Direction.Output:
+                {
+                    outPorts.Remove(port);
+                    break;
+                }
+            }
             onPortRemoved?.Invoke(port);
         }
 
@@ -164,6 +204,11 @@ namespace CZToolKit.GraphProcessor
             RemovePort(ports[portName]);
         }
 
+        public void SortPort(Func<BasePortVM, BasePortVM, int> comparer)
+        {
+            inPorts.QuickSort(comparer);
+            outPorts.QuickSort(comparer);
+        }
         #endregion
 
         #region Overrides
