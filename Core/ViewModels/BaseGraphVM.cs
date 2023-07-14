@@ -91,6 +91,7 @@ namespace CZToolKit.GraphProcessor
             Model.pan = Model.pan == default ? InternalVector2Int.zero : Model.pan;
             Model.zoom = Model.zoom == 0 ? 1 : Model.zoom;
 
+            this.blackboard = new Blackboard<string>();
             this.nodes = new Dictionary<int, BaseNodeVM>();
             this.connections = new List<BaseConnectionVM>();
             this.groups = new Groups();
