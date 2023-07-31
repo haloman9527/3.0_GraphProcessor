@@ -42,16 +42,6 @@ namespace CZToolKit.GraphProcessor.Editors
 
             propertyTree = PropertyTree.Create(view.ViewModel.Model);
             propertyTree.DrawMonoScriptObjectField = true;
-            foreach (var property in propertyTree.EnumerateTree(false, true))
-            {
-                if (property.ValueEntry == null)
-                    continue;
-                property.ValueEntry.OnValueChanged += (i) =>
-                {
-                    if (view.ViewModel.TryGetValue(property.Name, out var bindableProperty))
-                        bindableProperty.SetValueWithNotify(property.ValueEntry.WeakSmartValue);
-                };
-            }
         }
 
         public override void OnInspectorGUI()
