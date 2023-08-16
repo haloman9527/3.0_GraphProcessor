@@ -16,7 +16,7 @@
 
 #endregion
 
-using CZToolKit.Common.Collection;
+using CZToolKit.Common;
 using CZToolKit.Common.ViewModel;
 using System;
 using System.Collections.Generic;

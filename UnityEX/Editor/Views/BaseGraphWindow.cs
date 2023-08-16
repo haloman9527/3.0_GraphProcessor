@@ -21,8 +21,6 @@ using CZToolKit.Common;
 using CZToolKit.Common.ViewModel;
 using CZToolKit.Common.IMGUI;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UnityEditor;
@@ -41,7 +39,6 @@ namespace CZToolKit.GraphProcessor.Editors
 
         [SerializeField] private UnityObject graphOwner;
         [SerializeField] private UnityObject graphAsset;
-        [SerializeField] private UITKSkin skin;
         
         #endregion
 
@@ -84,8 +81,6 @@ namespace CZToolKit.GraphProcessor.Editors
         protected virtual void OnEnable()
         {
             titleContent = new GUIContent("Graph Processor");
-            if (skin == null)
-                skin = DefaultSkin();
             InitRootVisualElement();
             Reload();
             EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
@@ -376,11 +371,6 @@ namespace CZToolKit.GraphProcessor.Editors
         #endregion
 
         #region Overrides
-
-        protected virtual UITKSkin DefaultSkin()
-        {
-            return Resources.Load<UITKSkin>("GraphProcessor/Skin/Default Skin");
-        }
 
         protected virtual BaseGraphView NewGraphView(object argument)
         {

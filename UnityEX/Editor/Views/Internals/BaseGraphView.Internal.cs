@@ -22,8 +22,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using CZToolKit.Common.Collection;
+using UnityEditor;
 using UnityEditor.Experimental.GraphView;
+using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UnityObject = UnityEngine.Object;
@@ -33,6 +34,8 @@ namespace CZToolKit.GraphProcessor.Editors
     public partial class BaseGraphView : GraphView, IGraphElementView<BaseGraphVM>
     {
         #region Properties
+
+        private MiniMap miniMap;
 
         public event Action onDirty;
         public event Action onUndirty;
@@ -77,6 +80,21 @@ namespace CZToolKit.GraphProcessor.Editors
             ViewModel = graph;
             GraphWindow = window;
             CommandDispatcher = commandDispatcher;
+
+            ToolbarToggle togMiniMap = new ToolbarToggle()
+            {
+                name = "togMiniMap",
+                text = "MiniMap",
+                tooltip = "小地图",
+                value = EditorPrefs.GetBool("GraphView.MiniMap.Visiable", false),
+            };
+            togMiniMap.RegisterValueChangedCallback(_v =>
+            {
+                EditorPrefs.SetBool("GraphView.MiniMap.Visiable", _v.newValue);
+                RefreshMiniMap();
+            });
+            GraphWindow.ToolbarLeft.Add(togMiniMap);
+            RefreshMiniMap();
         }
 
         #region Initialize
@@ -84,7 +102,6 @@ namespace CZToolKit.GraphProcessor.Editors
         public IEnumerator Initialize()
         {
             UpdateInspector();
-
             viewTransform.position = ViewModel.Pan.ToVector2();
             viewTransform.scale = new Vector3(ViewModel.Zoom, ViewModel.Zoom, 1);
             yield return GraphWindow.StartCoroutine(GenerateNodeViews());
@@ -98,6 +115,30 @@ namespace CZToolKit.GraphProcessor.Editors
             RegisterCallback<KeyDownEvent>(KeyDownCallback);
 
             OnInitialize();
+        }
+
+        void RefreshMiniMap()
+        {
+            if (EditorPrefs.GetBool("GraphView.MiniMap.Visiable", false))
+            {
+                if (miniMap == null)
+                {
+                    miniMap = new MiniMap()
+                    {
+                        anchored = true,
+                    };
+                    miniMap.SetPosition(new Rect(15, 15, 200, 200));
+                    Add(miniMap);
+                }
+            }
+            else
+            {
+                if (miniMap != null)
+                {
+                    Remove(miniMap);
+                    miniMap = null;
+                }
+            }
         }
 
         /// <summary> 生成所有NodeView </summary>
