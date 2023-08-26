@@ -13,8 +13,8 @@
  *
  */
 #endregion
-using CZToolKit.Common;
-using CZToolKit.Common.ViewModel;
+using CZToolKit;
+using CZToolKit.VM;
 using System;
 using System.Collections.Generic;
 using System.Linq;

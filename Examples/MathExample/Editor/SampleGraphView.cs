@@ -17,7 +17,7 @@
 #endregion
 
 #if UNITY_EDITOR
-using CZToolKit.Common;
+using CZToolKit;
 using CZToolKit.GraphProcessor;
 using CZToolKit.GraphProcessor.Editors;
 using System;

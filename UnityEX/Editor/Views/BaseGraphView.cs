@@ -17,12 +17,10 @@
 #endregion
 
 #if UNITY_EDITOR
-using CZToolKit.Common;
-using CZToolKit.Common.ViewModel;
-using CZToolKit.Common.IMGUI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using CZToolKitEditor;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;

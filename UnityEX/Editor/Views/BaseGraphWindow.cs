@@ -17,10 +17,10 @@
 #endregion
 
 #if UNITY_EDITOR
-using CZToolKit.Common;
-using CZToolKit.Common.ViewModel;
-using CZToolKit.Common.IMGUI;
+using CZToolKit;
+using CZToolKit.VM;
 using System;
+using CZToolKitEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UnityEditor;

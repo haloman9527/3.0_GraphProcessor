@@ -17,7 +17,6 @@
 #endregion
 
 #if UNITY_EDITOR
-using CZToolKit.Common;
 using System;
 using System.Collections;
 using System.Collections.Generic;

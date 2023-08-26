@@ -16,9 +16,9 @@
 
 #endregion
 
-using CZToolKit.Common;
-using CZToolKit.Common.Blackboard;
-using CZToolKit.Common.ViewModel;
+using CZToolKit;
+using CZToolKit.Blackboard;
+using CZToolKit.VM;
 using System;
 using System.Linq;
 using System.Collections.Generic;
@@ -32,7 +32,7 @@ namespace CZToolKit.GraphProcessor
 
         private Dictionary<int, BaseNodeVM> nodes;
         private List<BaseConnectionVM> connections;
-        private Blackboard<string> blackboard;
+        private BlackboardVM<string> blackboard;
         private Groups groups;
 
         public event Action<BaseNodeVM> OnNodeAdded;
@@ -77,7 +77,7 @@ namespace CZToolKit.GraphProcessor
             get { return connections; }
         }
 
-        public Blackboard<string> Blackboard
+        public BlackboardVM<string> Blackboard
         {
             get { return blackboard; }
         }
@@ -91,7 +91,7 @@ namespace CZToolKit.GraphProcessor
             Model.pan = Model.pan == default ? InternalVector2Int.zero : Model.pan;
             Model.zoom = Model.zoom == 0 ? 1 : Model.zoom;
 
-            this.blackboard = new Blackboard<string>();
+            this.blackboard = new BlackboardVM<string>(new Blackboard<string>());
             this.nodes = new Dictionary<int, BaseNodeVM>();
             this.connections = new List<BaseConnectionVM>();
             this.groups = new Groups();
