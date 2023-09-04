@@ -25,7 +25,7 @@ public class SubNode : BaseNode
 }
 
 [ViewModel(typeof(SubNode))]
-public class SubNodeVM : BaseNodeVM, IGetValueFromPort, IGetValueFromPort<float>
+public class SubNodeVM : BaseNodeVM, IGetPortValue, IGetPortValue<float>
 {
     public SubNodeVM(BaseNode model) : base(model)
     {
@@ -44,7 +44,7 @@ public class SubNodeVM : BaseNodeVM, IGetValueFromPort, IGetValueFromPort<float>
         return inputAValue - inputBValue;
     }
 
-    float IGetValueFromPort<float>.GetValue(string port)
+    float IGetPortValue<float>.GetValue(string port)
     {
         var inputAValue = Ports["InputA"].GetConnectionValue<float>();
         var inputBValue = Ports["InputB"].GetConnectionValue<float>();

@@ -400,8 +400,8 @@ namespace CZToolKit.GraphProcessor
             var id = 0;
             do
             {
-                id = Util_Snowflake.GenerateIDBySnowflake32();
-            } while (nodes.ContainsKey(id) || id == 0);
+                id++;
+            } while (nodes.ContainsKey(id) || id == 0); 
 
             return id;
         }

@@ -41,6 +41,7 @@ namespace CZToolKit.GraphProcessor
         }
         #endregion
 
+        public int id;
         public string name;
         public Orientation orientation;
         public Direction direction;
@@ -173,7 +174,7 @@ namespace CZToolKit.GraphProcessor
             {
                 foreach (var connection in Connections)
                 {
-                    if (connection.FromNode is IGetValueFromPort fromPort)
+                    if (connection.FromNode is IGetPortValue fromPort)
                         yield return fromPort.GetValue(connection.FromPortName);
                 }
             }
@@ -181,7 +182,7 @@ namespace CZToolKit.GraphProcessor
             {
                 foreach (var connection in Connections)
                 {
-                    if (connection.ToNode is IGetValueFromPort toPort)
+                    if (connection.ToNode is IGetPortValue toPort)
                         yield return toPort.GetValue(connection.ToPortName);
                 }
             }
@@ -200,7 +201,7 @@ namespace CZToolKit.GraphProcessor
             {
                 foreach (var connection in Connections)
                 {
-                    if (connection.FromNode is IGetValueFromPort<T> fromPort)
+                    if (connection.FromNode is IGetPortValue<T> fromPort)
                         yield return fromPort.GetValue(connection.FromPortName);
                 }
             }
@@ -208,7 +209,7 @@ namespace CZToolKit.GraphProcessor
             {
                 foreach (var connection in Connections)
                 {
-                    if (connection.ToNode is IGetValueFromPort<T> toPort)
+                    if (connection.ToNode is IGetPortValue<T> toPort)
                         yield return toPort.GetValue(connection.ToPortName);
                 }
             }

@@ -16,23 +16,23 @@
 
 namespace CZToolKit.GraphProcessor
 {
-    public interface IGetValue
+    public interface IGetPortValue
     {
-        object GetValue();
+        object GetValue(string portName);
     }
 
-    public interface IGetValue<T>
+    public interface IGetPortValue<T>
     {
-        T GetValue();
+        T GetValue(string portName);
     }
 
-    public interface IGetValueFromPort
+    public interface ISetPortValue
     {
-        object GetValue(string port);
+        void GetValue(string portName, object value);
     }
 
-    public interface IGetValueFromPort<T>
+    public interface ISetPortValue<T>
     {
-        T GetValue(string port);
+        void GetValue(string portName, T value);
     }
 }
