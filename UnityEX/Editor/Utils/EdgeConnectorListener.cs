@@ -29,10 +29,8 @@ namespace CZToolKit.GraphProcessor.Editors
             BasePortVM from = (edge.output as BasePortView).ViewModel;
             BasePortVM to = (edge.input as BasePortView).ViewModel;
             // 如果连线不是一个新建的连线就重定向
-            if (edge.userData is BaseConnectionVM connection)
-            {
+            if (edge.userData is BaseConnectionVM)
                 tempGraphView.CommandDispatcher.Do(new ConnectCommand(tempGraphView.ViewModel, from, to));
-            }
             else
                 tempGraphView.CommandDispatcher.Do(new ConnectCommand(tempGraphView.ViewModel, from, to));
         }
