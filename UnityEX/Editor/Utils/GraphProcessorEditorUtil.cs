@@ -16,6 +16,7 @@
 #if UNITY_EDITOR
 using System;
 using System.Collections.Generic;
+using CZToolKit.VM;
 using UnityEditor;
 
 namespace CZToolKit.GraphProcessor.Editors
@@ -51,34 +52,6 @@ namespace CZToolKit.GraphProcessor.Editors
                 targetType = targetType.BaseType;
             }
             return viewType;
-        }
-        #endregion
-
-        #region NodeNames
-        static Dictionary<Type, NodeMenuAttribute> NodeMenuItemsCache;
-
-        public static NodeMenuAttribute GetNodeMenu(Type nodeType)
-        {
-            if (NodeMenuItemsCache == null)
-            {
-                NodeMenuItemsCache = new Dictionary<Type, NodeMenuAttribute>();
-                foreach (var type in TypeCache.GetTypesWithAttribute<NodeMenuAttribute>())
-                {
-                    if (type.IsAbstract) continue;
-                    foreach (var attribute in type.GetCustomAttributes(false))
-                    {
-                        if (!(attribute is NodeMenuAttribute nodeMenuItemAttribute))
-                            continue;
-                        if (string.IsNullOrEmpty(nodeMenuItemAttribute.path))
-                            continue;
-                        NodeMenuItemsCache[type] = nodeMenuItemAttribute;
-                        break;
-                    }
-                }
-            }
-            if (NodeMenuItemsCache.TryGetValue(nodeType, out var menu))
-                return menu;
-            return null;
         }
         #endregion
     }
