@@ -14,6 +14,7 @@
  */
 #endregion
 #if UNITY_EDITOR
+using CZToolKit.VM;
 using CZToolKit.GraphProcessor.Editors;
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
