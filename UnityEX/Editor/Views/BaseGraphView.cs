@@ -108,11 +108,10 @@ namespace CZToolKit.GraphProcessor.Editors
 
         protected virtual void BuildNodeMenu(NodeMenuWindow nodeMenu)
         {
-            foreach (var nodeType in TypeCache.GetTypesDerivedFrom<BaseNode>())
+            foreach (var pair in GraphProcessorUtil.NodeStaticInfos)
             {
-                if (nodeType.IsAbstract) 
-                    continue;
-                var nodeStaticInfo = GraphProcessorUtil.NodeStaticInfos[nodeType];
+                var nodeType = pair.Key;
+                var nodeStaticInfo = pair.Value;
                 if (nodeStaticInfo.hidden)
                     continue;
                 

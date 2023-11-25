@@ -18,7 +18,6 @@
 
 using System;
 using System.Collections.Generic;
-using CZToolKit;
 
 namespace CZToolKit.GraphProcessor
 {
@@ -40,6 +39,7 @@ namespace CZToolKit.GraphProcessor
 
     public static class GraphProcessorUtil
     {
+        private static bool s_Initialized;
         private static Dictionary<Type, NodeStaticInfo> s_NodeStaticInfos = new Dictionary<Type, NodeStaticInfo>();
 
         public static Dictionary<Type, NodeStaticInfo> NodeStaticInfos
@@ -49,12 +49,19 @@ namespace CZToolKit.GraphProcessor
 
         static GraphProcessorUtil()
         {
-            Init();
+            Init(true);
         }
 
-        private static void Init()
+        public static void Init(bool force)
         {
-            s_NodeStaticInfos = new Dictionary<Type, NodeStaticInfo>();
+            if (!force && s_Initialized)
+                return;
+
+            if (s_NodeStaticInfos == null)
+                s_NodeStaticInfos = new Dictionary<Type, NodeStaticInfo>();
+            else
+                s_NodeStaticInfos.Clear();
+
             foreach (var t in Util_TypeCache.GetTypesDerivedFrom<BaseNode>())
             {
                 if (t.IsAbstract)
@@ -91,16 +98,11 @@ namespace CZToolKit.GraphProcessor
                     nodeStaticInfo.hidden = false;
                 }
 
-                if (Util_Reflection.TryGetTypeAttribute(t, true, out NodeTitleAttribute titleAttr))
-                {
-                    if (!string.IsNullOrEmpty(titleAttr.title))
-                        nodeStaticInfo.title = titleAttr.title;
-                }
+                if (Util_Reflection.TryGetTypeAttribute(t, true, out NodeTitleAttribute titleAttr) && !string.IsNullOrEmpty(titleAttr.title))
+                    nodeStaticInfo.title = titleAttr.title;
 
                 if (Util_Reflection.TryGetTypeAttribute(t, true, out NodeTooltipAttribute tooltipAttr))
-                {
                     nodeStaticInfo.tooltip = tooltipAttr.Tooltip;
-                }
 
                 if (Util_Reflection.TryGetTypeAttribute(t, true, out NodeTitleColorAttribute titleColorAttr))
                 {
@@ -108,6 +110,8 @@ namespace CZToolKit.GraphProcessor
                     nodeStaticInfo.customTitleColor.value = titleColorAttr.color;
                 }
             }
+
+            s_Initialized = true;
         }
     }
 }
