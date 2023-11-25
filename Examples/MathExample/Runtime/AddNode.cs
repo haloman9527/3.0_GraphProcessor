@@ -31,6 +31,8 @@ public class AddNodeVM : BaseNodeVM, IGetPortValue, IGetPortValue<float>
         {
             HideLabel = true
         });
+        AddPort(new BasePortVM("FlowIn", BasePort.Orientation.Horizontal, BasePort.Direction.Input, BasePort.Capacity.Multi, typeof(object)));
+        AddPort(new BasePortVM("FlowOut", BasePort.Orientation.Horizontal, BasePort.Direction.Output, BasePort.Capacity.Multi, typeof(object)));
     }
 
     public object GetValue(string port)

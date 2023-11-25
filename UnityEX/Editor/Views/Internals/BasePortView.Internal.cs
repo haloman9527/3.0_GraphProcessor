@@ -58,7 +58,6 @@ namespace CZToolKit.GraphProcessor.Editors
             CapIcon.pickingMode = PickingMode.Ignore;
             Connector.Add(CapIcon);
 
-
             PortLabel.pickingMode = PickingMode.Position;
             Connector.pickingMode = PickingMode.Position;
             bool vertical = orientation == Orientation.Vertical;

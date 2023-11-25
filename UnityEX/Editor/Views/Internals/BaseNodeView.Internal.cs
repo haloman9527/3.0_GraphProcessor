@@ -1,10 +1,11 @@
 #region 注 释
+
 /***
  *
  *  Title:
- *  
+ *
  *  Description:
- *  
+ *
  *  Date:
  *  Version:
  *  Writer: 半只龙虾人
@@ -12,7 +13,9 @@
  *  Blog: https://www.crosshair.top/
  *
  */
+
 #endregion
+
 #if UNITY_EDITOR
 using System;
 using System.Collections.Generic;
@@ -20,7 +23,6 @@ using System.Linq;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UIElements;
-
 using NodeView = UnityEditor.Experimental.GraphView.Node;
 
 namespace CZToolKit.GraphProcessor.Editors
@@ -28,7 +30,7 @@ namespace CZToolKit.GraphProcessor.Editors
     public partial class BaseNodeView : NodeView, IGraphElementView<BaseNodeVM>
     {
         #region 字段
-        
+
         public readonly Label nodeLabel;
         public readonly Image nodeIcon;
         public readonly VisualElement contents;
@@ -36,53 +38,44 @@ namespace CZToolKit.GraphProcessor.Editors
         public readonly VisualElement nodeBorder;
         public readonly VisualElement topPortContainer;
         public readonly VisualElement bottomPortContainer;
+        public readonly VisualElement titleInputPortContainer;
+        public readonly VisualElement titleOutputPortContainer;
         public readonly VisualElement horizontalDivider;
         public readonly VisualElement verticalDivider;
 
         List<IconBadge> badges = new List<IconBadge>();
         Dictionary<string, BasePortView> portViews = new Dictionary<string, BasePortView>();
+
         #endregion
 
         #region 属性
-        
+
         public Label NodeLabel
         {
-            get
-            {
-                return nodeLabel;
-            }
-        }
-        
-        public Image NodeIcon
-        {
-            get
-            {
-                return nodeIcon;
-            }
+            get { return nodeLabel; }
         }
 
-        public BaseGraphView Owner
+        public Image NodeIcon
         {
-            get;
-            private set;
+            get { return nodeIcon; }
         }
-        public BaseNodeVM ViewModel
-        {
-            get;
-            protected set;
-        }
+
+        public BaseGraphView Owner { get; private set; }
+        public BaseNodeVM ViewModel { get; protected set; }
+
         public IReadOnlyDictionary<string, BasePortView> PortViews
         {
             get { return portViews; }
         }
+
         #endregion
 
-        public BaseNodeView()
+        public BaseNodeView() : base()
         {
             styleSheets.Add(GraphProcessorStyles.BaseNodeViewStyle);
-            
+
             contents = mainContainer.Q("contents");
-            
+
             nodeBorder = this.Q(name: "node-border");
             nodeLabel = titleContainer.Q<Label>("title-label");
             horizontalDivider = this.Q(name: "divider", className: "horizontal");
@@ -99,9 +92,18 @@ namespace CZToolKit.GraphProcessor.Editors
 
             bottomPortContainer = new VisualElement { name = "bottom-input" };
             nodeBorder.Add(bottomPortContainer);
+
+            titleInputPortContainer = new VisualElement { name = "title-input" };
+            titleContainer.Add(titleInputPortContainer);
+            titleInputPortContainer.SendToBack();
+
+            titleOutputPortContainer = new VisualElement { name = "title-output" };
+            titleContainer.Add(titleOutputPortContainer);
+            titleOutputPortContainer.BringToFront();
         }
 
         #region Initialize
+
         public void SetUp(BaseNodeVM node, BaseGraphView graphView)
         {
             ViewModel = node;
@@ -124,17 +126,24 @@ namespace CZToolKit.GraphProcessor.Editors
                 BasePortView portView = NewPortView(port);
                 portView.SetUp(port, Owner);
                 portViews[port.Name] = portView;
-                switch (port.Orientation)
+                if (port.Name == "FlowIn")
                 {
-                    case BasePort.Orientation.Horizontal:
+                    titleInputPortContainer.Add(portView);
+                }
+                else
+                {
+                    switch (port.Orientation)
                     {
-                        inputContainer.Add(portView);
-                        break;
-                    }
-                    case BasePort.Orientation.Vertical:
-                    {
-                        topPortContainer.Add(portView);
-                        break;
+                        case BasePort.Orientation.Horizontal:
+                        {
+                            inputContainer.Add(portView);
+                            break;
+                        }
+                        case BasePort.Orientation.Vertical:
+                        {
+                            topPortContainer.Add(portView);
+                            break;
+                        }
                     }
                 }
             }
@@ -144,25 +153,31 @@ namespace CZToolKit.GraphProcessor.Editors
                 BasePortView portView = NewPortView(port);
                 portView.SetUp(port, Owner);
                 portViews[port.Name] = portView;
-                switch (port.Orientation)
+
+                if (port.Name == "FlowOut")
                 {
-                    case BasePort.Orientation.Horizontal:
+                    titleOutputPortContainer.Add(portView);
+                }
+                else
+                {
+                    switch (port.Orientation)
                     {
-                        outputContainer.Add(portView);
-                        break;
-                    }
-                    case BasePort.Orientation.Vertical:
-                    {
-                        bottomPortContainer.Add(portView);
-                        break;
+                        case BasePort.Orientation.Horizontal:
+                        {
+                            outputContainer.Add(portView);
+                            break;
+                        }
+                        case BasePort.Orientation.Vertical:
+                        {
+                            bottomPortContainer.Add(portView);
+                            break;
+                        }
                     }
                 }
             }
-            
-            RefreshPorts();
-            RefreshContentsHorizontalDivider();
-            RefreshPortContainer();
+
             OnInitialized();
+            PortChanged();
         }
 
         public void OnInitialize()
@@ -202,9 +217,11 @@ namespace CZToolKit.GraphProcessor.Editors
 
             OnUnBindingProperties();
         }
+
         #endregion
 
         #region Callbacks
+
         void OnPortAdded(BasePortVM port)
         {
             AddPortView(port);
@@ -243,6 +260,7 @@ namespace CZToolKit.GraphProcessor.Editors
             var lum = 0.299f * color.r + 0.587f * color.g + 0.114f * color.b;
             NodeLabel.style.color = lum > 0.5f && color.a > 0.5f ? Color.black : Color.white * 0.9f;
         }
+
         #endregion
 
         public void SetDeletable(bool deletable)
@@ -267,6 +285,13 @@ namespace CZToolKit.GraphProcessor.Editors
                 capabilities |= Capabilities.Selectable;
             else
                 capabilities &= ~Capabilities.Selectable;
+        }
+
+        protected void PortChanged()
+        {
+            RefreshPorts();
+            RefreshContentsHorizontalDivider();
+            RefreshPortContainer();
         }
 
         void AddPortView(BasePortVM port)
@@ -301,7 +326,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
         void RefreshContentsHorizontalDivider()
         {
-            if (portViews.Values.FirstOrDefault(port => port.orientation == Orientation.Horizontal) != null)
+            if (inputContainer.childCount > 0 || outputContainer.childCount > 0)
                 horizontalDivider.RemoveFromClassList("hidden");
             else
                 horizontalDivider.AddToClassList("hidden");
@@ -318,6 +343,16 @@ namespace CZToolKit.GraphProcessor.Editors
                 bottomPortContainer.RemoveFromClassList("hidden");
             else
                 bottomPortContainer.AddToClassList("hidden");
+
+            if (titleInputPortContainer.childCount > 0)
+                titleInputPortContainer.RemoveFromClassList("hidden");
+            else
+                titleInputPortContainer.AddToClassList("hidden");
+
+            if (titleOutputPortContainer.childCount > 0)
+                titleOutputPortContainer.RemoveFromClassList("hidden");
+            else
+                titleOutputPortContainer.AddToClassList("hidden");
         }
     }
 }

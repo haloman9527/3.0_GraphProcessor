@@ -29,3 +29,32 @@
 .port.capacity-Multi > #connector.connectorBox > #cap.connectorCap{
     border-radius: 4px;
 }
+
+
+
+
+#title-input > .port {
+    background-image: resource("GraphProcessor/Textures/PlayIcon");
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+#title-output > .port {
+    background-image: resource("GraphProcessor/Textures/PlayIcon");
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+#title-input > .port > Label {
+    display: none;
+}
+
+#title-output > .port > Label {
+    display: none;
+}
+
+#title-input > .port > #connector {
+    visibility: hidden;
+}
+
+#title-output > .port > #connector {
+    visibility: hidden;
+}

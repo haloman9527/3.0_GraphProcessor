@@ -14,6 +14,20 @@
     height: 20px;
 }
 
+#node-border > #title > #title-input {
+    align-items: center;
+    height: 100%;
+    width: 25px;
+    padding: 3px;
+}
+
+#node-border > #title > #title-output {
+    align-items: center;
+    height: 100%;
+    width: 25px;
+    padding: 3px;
+}
+
 #node-border > #title > #title-icon {
     width: 12px;
     height: 12px;

@@ -36,7 +36,6 @@ public class FloatNodeView : BaseNodeView
         valueField.SetValueWithoutNotify(vm.Value);
         valueField.RegisterValueChangedCallback(OnEditedValue);
         PortViews["Output"].Add(valueField);
-        PortViews["Output"].PortLabel.AddToClassList("hidden");
     }
 
     private void OnEditedValue(ChangeEvent<float> evt)
