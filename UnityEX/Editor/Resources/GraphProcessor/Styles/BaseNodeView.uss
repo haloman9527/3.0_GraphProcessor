@@ -69,6 +69,11 @@
     border-bottom-left-radius: 10px;
 }
 
+#node-border > #contents > #controls {
+    padding-top: 1px;
+    padding-bottom: 2px;
+}
+
 #node-border > #top-input {
     height: 15px;
     justify-content: center;

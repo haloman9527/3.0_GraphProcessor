@@ -326,7 +326,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
         void RefreshContentsHorizontalDivider()
         {
-            if (inputContainer.childCount > 0 || outputContainer.childCount > 0)
+            if (inputContainer.childCount > 0 || outputContainer.childCount > 0 || controls.childCount > 0)
                 horizontalDivider.RemoveFromClassList("hidden");
             else
                 horizontalDivider.AddToClassList("hidden");

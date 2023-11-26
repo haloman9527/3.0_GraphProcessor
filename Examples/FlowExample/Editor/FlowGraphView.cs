@@ -51,5 +51,10 @@ public class FlowGraphView : BaseGraphView
     {
         return new SampleConnectionView();
     }
+
+    protected override void UpdateInspector()
+    {
+        // base.UpdateInspector();
+    }
 }
 #endif

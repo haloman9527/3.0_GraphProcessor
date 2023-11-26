@@ -17,6 +17,8 @@
 #endregion
 
 #if UNITY_EDITOR && ODIN_INSPECTOR
+using System;
+using System.Collections.Generic;
 using CZToolKit;
 using CZToolKitEditor;
 using Sirenix.OdinInspector.Editor;
@@ -27,7 +29,24 @@ namespace CZToolKit.GraphProcessor.Editors
     [CustomObjectEditor(typeof(BaseNodeView))]
     public class BaseNodeInspector : ObjectEditor
     {
-        PropertyTree propertyTree;
+        private static Dictionary<string, Action<InspectorProperty>> s_CustomDrawers = new Dictionary<string, Action<InspectorProperty>>();
+
+        static BaseNodeInspector()
+        {
+            s_CustomDrawers[nameof(BaseNode.id)] = CustomIDDrawer;
+        }
+
+        private static void CustomIDDrawer(InspectorProperty property)
+        {
+            // EditorGUILayout.IntField(EditorGUIUtility.TrTextContent("ID"), view.ViewModel.ID);
+        }
+
+        private static void CustomPositionDrawer(InspectorProperty property)
+        {
+            // EditorGUILayout.Vector2IntField(EditorGUIUtility.TrTextContent("Position"), view.ViewModel.Position.ToVector2Int());
+        }
+
+        private PropertyTree propertyTree;
 
         public override void OnEnable()
         {
@@ -52,20 +71,17 @@ namespace CZToolKit.GraphProcessor.Editors
                 return;
             if (propertyTree == null)
                 return;
-            EditorGUI.BeginDisabledGroup(true);
-            EditorGUILayout.IntField(EditorGUIUtility.TrTextContent("ID"), view.ViewModel.ID);
-            EditorGUILayout.Vector2IntField(EditorGUIUtility.TrTextContent("Position"), view.ViewModel.Position.ToVector2Int());
-            EditorGUI.EndDisabledGroup();
-            
+
             propertyTree.BeginDraw(false);
             foreach (var property in propertyTree.EnumerateTree(false, true))
             {
-                switch (property.Name)
+                switch (property.Path)
                 {
                     case nameof(BaseNode.id):
                     case nameof(BaseNode.position):
                         continue;
                 }
+
                 EditorGUI.BeginChangeCheck();
                 property.Draw();
                 if (EditorGUI.EndChangeCheck() && view.ViewModel.TryGetValue(property.Name, out var bindableProperty))
@@ -73,7 +89,7 @@ namespace CZToolKit.GraphProcessor.Editors
             }
 
             propertyTree.EndDraw();
-            Editor.Repaint();
+            Editor?.Repaint();
         }
 
         public override void OnDisable()
