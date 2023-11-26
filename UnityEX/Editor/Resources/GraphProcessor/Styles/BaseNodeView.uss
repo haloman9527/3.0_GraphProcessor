@@ -11,7 +11,7 @@
 
 #node-border > #title {
     background-color: rgba(0, 0, 0, 0.0);
-    height: 20px;
+    height: 25px;
 }
 
 #node-border > #title > #title-input {

@@ -14,33 +14,37 @@
     height: 15px;
 }
 
-.port.capacity-Single > #connector.connectorBox{
+
+#input > .port.capacity-Single > #connector.connectorBox {
     border-radius: 1px;
 }
 
-.port.capacity-Single > #connector.connectorBox > #cap.connectorCap{
+#input > .port.capacity-Single > #connector.connectorBox > #cap.connectorCap{
     border-radius: 0px;
 }
 
-.port.capacity-Multi > #connector.connectorBox{
+#input > .port.capacity-Multi > #connector.connectorBox{
     border-radius: 8px;
 }
 
-.port.capacity-Multi > #connector.connectorBox > #cap.connectorCap{
+#input > .port.capacity-Multi > #connector.connectorBox > #cap.connectorCap{
     border-radius: 4px;
 }
 
-
-
-
-#title-input > .port {
-    background-image: resource("GraphProcessor/Textures/PlayIcon");
-    -unity-background-scale-mode: scale-to-fit;
+#output > .port.capacity-Single > #connector.connectorBox {
+    border-radius: 1px;
 }
 
-#title-output > .port {
-    background-image: resource("GraphProcessor/Textures/PlayIcon");
-    -unity-background-scale-mode: scale-to-fit;
+#output > .port.capacity-Single > #connector.connectorBox > #cap.connectorCap{
+    border-radius: 0px;
+}
+
+#output > .port.capacity-Multi > #connector.connectorBox{
+    border-radius: 8px;
+}
+
+#output > .port.capacity-Multi > #connector.connectorBox > #cap.connectorCap{
+    border-radius: 4px;
 }
 
 #title-input > .port > Label {
@@ -52,9 +56,21 @@
 }
 
 #title-input > .port > #connector {
-    visibility: hidden;
+    border-top-left-radius: 0px;
+    border-bottom-left-radius: 0px;
 }
 
 #title-output > .port > #connector {
-    visibility: hidden;
+    border-top-left-radius: 0px;
+    border-bottom-left-radius: 0px;
+}
+
+#title-input > .port > #connector > #cap {
+    border-top-left-radius: 0px;
+    border-bottom-left-radius: 0px;
+}
+
+#title-output > .port > #connector > #cap {
+    border-top-left-radius: 0px;
+    border-bottom-left-radius: 0px;
 }
