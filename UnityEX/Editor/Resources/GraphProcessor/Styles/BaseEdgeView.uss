@@ -1,6 +1,6 @@
 .edge {
     --edge-width: 2;
-    --layer:-10;
+    --layer: -10;
 }
 
 .edge:hover {
@@ -11,10 +11,10 @@
     --edge-width: 5;
 }
 
-.flow-point{
-    width:6px;
-    height:6px;
-    background-color:#FFFF00;
+.flow-point {
+    width: 6px;
+    height: 6px;
+    background-color: #FFFF00;
     margin-top: -3px;
     margin-bottom: -3px;
     margin-left: -3px;

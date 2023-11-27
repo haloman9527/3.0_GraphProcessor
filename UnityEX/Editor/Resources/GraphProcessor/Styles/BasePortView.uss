@@ -6,28 +6,27 @@
     --port-color: #ffc400;
 }
 
-.port > #type{
+.port > #type {
     color: aliceblue;
 }
 
-.port.vertical{
+.port.vertical {
     height: 15px;
 }
-
 
 #input > .port.capacity-Single > #connector.connectorBox {
     border-radius: 1px;
 }
 
-#input > .port.capacity-Single > #connector.connectorBox > #cap.connectorCap{
-    border-radius: 0px;
-}
-
-#input > .port.capacity-Multi > #connector.connectorBox{
+#input > .port.capacity-Multi > #connector.connectorBox {
     border-radius: 8px;
 }
 
-#input > .port.capacity-Multi > #connector.connectorBox > #cap.connectorCap{
+#input > .port.capacity-Single > #connector.connectorBox > #cap.connectorCap {
+    border-radius: 0px;
+}
+
+#input > .port.capacity-Multi > #connector.connectorBox > #cap.connectorCap {
     border-radius: 4px;
 }
 
@@ -35,23 +34,23 @@
     border-radius: 1px;
 }
 
-#output > .port.capacity-Single > #connector.connectorBox > #cap.connectorCap{
-    border-radius: 0px;
-}
-
-#output > .port.capacity-Multi > #connector.connectorBox{
+#output > .port.capacity-Multi > #connector.connectorBox {
     border-radius: 8px;
 }
 
-#output > .port.capacity-Multi > #connector.connectorBox > #cap.connectorCap{
+#output > .port.capacity-Single > #connector.connectorBox > #cap.connectorCap {
+    border-radius: 0px;
+}
+
+#output > .port.capacity-Multi > #connector.connectorBox > #cap.connectorCap {
     border-radius: 4px;
 }
 
-#title-input > .port > Label {
+#title-input > .port > #type {
     display: none;
 }
 
-#title-output > .port > Label {
+#title-output > .port > #type {
     display: none;
 }
 

@@ -1,21 +1,21 @@
-#titleContainer > #titleLabel{
-	padding-right: 70px;
+#titleContainer > #titleLabel {
+    padding-right: 70px;
 }
 
-#titleContainer > #titleField{
-	padding-right: 70px;
+#titleContainer > #titleField {
+    padding-right: 70px;
 }
 
-#titleContainer > #titleField > #unity-text-input{
-	padding-top: 0px;
-	-unity-text-align: middle-center;
-	-unity-font-style: bold;
-	font-size: 15px;
+#titleContainer > #titleField > #unity-text-input {
+    padding-top: 0px;
+    -unity-text-align: middle-center;
+    -unity-font-style: bold;
+    font-size: 15px;
 }
 
-#backgroundColorField{
-	position: absolute;
-	width: 50px;
-	right: 10px;
-	top: 6px;
+#backgroundColorField {
+    position: absolute;
+    width: 50px;
+    right: 10px;
+    top: 6px;
 }

@@ -34,6 +34,6 @@
     flex-direction: row;
 }
 
-#node-border > .highlight{
+#node-border > .highlight {
     border-radius: 8px;
 }
