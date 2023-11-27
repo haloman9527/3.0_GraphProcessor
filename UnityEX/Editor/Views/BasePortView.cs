@@ -18,8 +18,7 @@ using UnityEditor.Experimental.GraphView;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
-    [CustomView(typeof(BasePort))]
-    public partial class BasePortView
+    public abstract partial class BasePortView
     {
         public BasePortView(BasePortVM port, IEdgeConnectorListener connectorListener) : this(
             orientation: port.Orientation == BasePort.Orientation.Horizontal ? Orientation.Horizontal : Orientation.Vertical,

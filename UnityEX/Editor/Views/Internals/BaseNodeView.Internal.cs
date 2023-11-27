@@ -27,7 +27,7 @@ using NodeView = UnityEditor.Experimental.GraphView.Node;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
-    public partial class BaseNodeView : NodeView, IGraphElementView<BaseNodeVM>
+    public abstract partial class BaseNodeView : NodeView, IGraphElementView<BaseNodeVM>
     {
         #region 字段
 

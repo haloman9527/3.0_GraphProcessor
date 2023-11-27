@@ -23,8 +23,7 @@ using UnityEngine.UIElements;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
-    [CustomView(typeof(BaseNode))]
-    public partial class BaseNodeView
+    public abstract partial class BaseNodeView
     {
         protected virtual void OnInitialized() { }
 

@@ -28,8 +28,7 @@ using UnityEngine.UIElements;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
-    [CustomView(typeof(BaseGraph))]
-    public partial class BaseGraphView
+    public abstract partial class BaseGraphView
     {
         List<Port> compatiblePorts = new List<Port>();
 

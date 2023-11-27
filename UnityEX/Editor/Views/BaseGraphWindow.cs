@@ -374,7 +374,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
         protected virtual BaseGraphView NewGraphView(object argument)
         {
-            return new BaseGraphView(Graph, this, new CommandDispatcher());
+            return new DefaultGraphView(Graph, this, new CommandDispatcher());
         }
 
         protected virtual void BuildToolBar()
