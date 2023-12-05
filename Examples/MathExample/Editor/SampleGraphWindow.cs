@@ -10,7 +10,7 @@
  *  Version:
  *  Writer: 半只龙虾人
  *  Github: https://github.com/HalfLobsterMan
- *  Blog: https://www.crosshair.top/
+ *  Blog: https://www.mindgear.net/
  *
  */
 
@@ -31,7 +31,7 @@ using UnityEngine.UIElements;
 [CustomView(typeof(SampleGraph))]
 public class SampleGraphWindow : BaseGraphWindow
 {
-    protected override BaseGraphView NewGraphView(object argument)
+    protected override BaseGraphView NewGraphView()
     {
         var graphView = new SampleGraphView(Graph, this, new CommandDispatcher());
         graphView.RegisterCallback<KeyDownEvent>(KeyDownCallback);
@@ -150,7 +150,7 @@ public class SampleGraphWindow : BaseGraphWindow
 
     void Save()
     {
-        if (GraphAsset is IGraphSerialization graphSerialization)
+        if (GraphAsset is IGraphAsset graphSerialization)
             graphSerialization.SaveGraph(Graph.Model);
         GraphView.SetDirty();
         AssetDatabase.SaveAssets();

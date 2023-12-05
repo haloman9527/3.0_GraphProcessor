@@ -9,10 +9,12 @@
  *  Version:
  *  Writer: 半只龙虾人
  *  Github: https://github.com/HalfLobsterMan
- *  Blog: https://www.crosshair.top/
+ *  Blog: https://www.mindgear.net/
  *
  */
 #endregion
+
+using System;
 using CZToolKit.VM;
 using UnityEngine;
 
@@ -20,17 +22,19 @@ using UnityObject = UnityEngine.Object;
 
 namespace CZToolKit.GraphProcessor
 {
-    public abstract class GraphAssetOwner<TGraphAsset, TGraph> : MonoBehaviour, IGraphAssetOwner, IGraphSerialization
+    public abstract class GraphAssetOwner<TGraphAsset, TGraph> : MonoBehaviour, IGraphAssetOwner
         where TGraphAsset : UnityObject, IGraphAsset
         where TGraph : BaseGraphVM
     {
         #region Fields
-        [SerializeField] TGraphAsset graphAsset = null;
-        [SerializeField] TGraph graph = null;
+        private TGraph graph = null;
+        [SerializeField]
+        private TGraphAsset graphAsset = null;
         #endregion
 
         #region Properties
-        public UnityObject GraphAsset
+        
+        public IGraphAsset GraphAsset
         {
             get { return graphAsset; }
         }
@@ -48,29 +52,16 @@ namespace CZToolKit.GraphProcessor
         public virtual TGraph T_Graph
         {
             get
-            {
+            { 
                 if (graph == null && graphAsset != null)
                 {
-                    var graphData = DeserializeGraph();
-                    if (graphData != null)
-                    {
-                        graph = ViewModelFactory.CreateViewModel(graphData) as TGraph;
-                    }
+                    var graphData = graphAsset.DeserializeGraph();
+                    graph = ViewModelFactory.CreateViewModel(graphData) as TGraph;
                 }
+                
                 return graph;
             }
             set { graph = value; }
-        }
-        #endregion
-
-        #region Serialize
-        public abstract void SaveGraph(BaseGraph graph);
-
-        public abstract BaseGraph DeserializeGraph();
-
-        public TGraph DeserializeTGraph()
-        {
-            return DeserializeGraph() as TGraph;
         }
         #endregion
     }

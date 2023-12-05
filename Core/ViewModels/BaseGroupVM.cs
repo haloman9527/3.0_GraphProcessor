@@ -10,7 +10,7 @@
  *  Version:
  *  Writer: 半只龙虾人
  *  Github: https://github.com/HalfLobsterMan
- *  Blog: https://www.crosshair.top/
+ *  Blog: https://www.mindgear.net/
  *
  */
 

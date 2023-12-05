@@ -10,7 +10,7 @@
  *  Version:
  *  Writer: 半只龙虾人
  *  Github: https://github.com/HalfLobsterMan
- *  Blog: https://www.crosshair.top/
+ *  Blog: https://www.mindgear.net/
  *
  */
 
@@ -44,7 +44,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
         public UnityObject GraphAsset
         {
-            get { return GraphWindow.GraphAsset; }
+            get { return GraphWindow.GraphAsset.UnityAsset; }
         }
 
         public Dictionary<int, BaseNodeView> NodeViews { get; private set; } = new Dictionary<int, BaseNodeView>();

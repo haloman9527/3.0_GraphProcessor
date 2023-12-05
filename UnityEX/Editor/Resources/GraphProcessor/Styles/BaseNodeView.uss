@@ -1,8 +1,8 @@
 #node-border {
-    background-color: rgba(20, 20, 20, 0.8);
+    background-color: rgba(0, 0, 0, 0.8);
+    /*border-color: rgba(64, 64, 64, 1);*/
     min-width: 60px;
     border-radius: 5px;
-    border-color: rgba(10, 10, 10, 1);
 }
 
 #selection-border {

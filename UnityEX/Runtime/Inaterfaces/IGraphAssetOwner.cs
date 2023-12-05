@@ -9,7 +9,7 @@
  *  Version:
  *  Writer: 半只龙虾人
  *  Github: https://github.com/HalfLobsterMan
- *  Blog: https://www.crosshair.top/
+ *  Blog: https://www.mindgear.net/
  *
  */
 #endregion
@@ -21,6 +21,6 @@ namespace CZToolKit.GraphProcessor
 {
     public interface IGraphAssetOwner : IGraphOwner
     {
-        UnityObject GraphAsset { get; }
+        IGraphAsset GraphAsset { get; }
     }
 }

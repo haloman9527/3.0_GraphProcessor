@@ -10,14 +10,13 @@
  *  Version:
  *  Writer: 半只龙虾人
  *  Github: https://github.com/HalfLobsterMan
- *  Blog: https://www.crosshair.top/
+ *  Blog: https://www.mindgear.net/
  *
  */
 
 #endregion
 
 #if UNITY_EDITOR
-using CZToolKit;
 using CZToolKit.VM;
 using System;
 using CZToolKitEditor;
@@ -27,6 +26,7 @@ using UnityEditor;
 using UnityEditor.Callbacks;
 using UnityEditor.UIElements;
 using UnityEditor.Experimental.GraphView;
+
 using UnityObject = UnityEngine.Object;
 
 namespace CZToolKit.GraphProcessor.Editors
@@ -37,9 +37,10 @@ namespace CZToolKit.GraphProcessor.Editors
 
         private IGraphOwner m_graphOwner;
 
-        [SerializeField] private UnityObject graphOwner;
-        [SerializeField] private UnityObject graphAsset;
-        
+        [SerializeField] private UnityObject unityGraphOwner;
+        [SerializeField] private UnityObject unityGraphAsset;
+        private IGraphAsset graphAsset;
+
         #endregion
 
         #region Properties
@@ -53,21 +54,26 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             get
             {
-                if (m_graphOwner == null && graphOwner != null)
-                    m_graphOwner = graphOwner as IGraphOwner;
-                return m_graphOwner;
+                if (m_graphOwner == null)
+                    m_graphOwner = unityGraphOwner as IGraphOwner;
+                return unityGraphOwner as IGraphOwner;
             }
             protected set
             {
                 m_graphOwner = value;
-                graphOwner = value as UnityObject;
+                unityGraphOwner = value as UnityObject;
             }
         }
 
-        public UnityObject GraphAsset
+
+        public IGraphAsset GraphAsset
         {
             get { return graphAsset; }
-            protected set { graphAsset = value; }
+            protected set
+            {
+                graphAsset = value;
+                unityGraphAsset = graphAsset?.UnityAsset;
+            }
         }
 
         public BaseGraphVM Graph { get; protected set; }
@@ -102,29 +108,24 @@ namespace CZToolKit.GraphProcessor.Editors
             GraphProcessorStyles.GraphWindowTree.CloneTree(rootVisualElement);
             rootVisualElement.name = "rootVisualContainer";
             rootVisualElement.styleSheets.Add(GraphProcessorStyles.BasicStyle);
-            
+
             ToolbarLeft = rootVisualElement.Q<Toolbar>("ToolbarLeft", "unity-toolbar");
             ToolbarCenter = rootVisualElement.Q<Toolbar>("ToolbarCenter", "unity-toolbar");
             ToolbarRight = rootVisualElement.Q<Toolbar>("ToolbarRight", "unity-toolbar");
             GraphViewContainer = rootVisualElement.Q("GraphViewContainer");
-            
-            // foreach (var styleSheet in FindSkinStyleSheets("basic"))
-            // {
-            //     rootVisualElement.styleSheets.Add(styleSheet);
-            // }
         }
 
-        protected void Load(BaseGraphVM graph, IGraphOwner graphOwner, UnityObject graphAsset, object argument)
+        protected void Load(BaseGraphVM graph, IGraphOwner graphOwner, IGraphAsset graphAsset)
         {
             Clear();
-            
+
             Graph = graph;
             GraphOwner = graphOwner;
             GraphAsset = graphAsset;
 
             BuildToolBar();
 
-            GraphView = NewGraphView(argument);
+            GraphView = NewGraphView();
             GraphView.onDirty += OnGraphViewDirty;
             GraphView.onUndirty += OnGraphViewUndirty;
             var coroutine = StartCoroutine(GraphView.Initialize());
@@ -136,140 +137,10 @@ namespace CZToolKit.GraphProcessor.Editors
 
         #region Public Methods
 
-        // public virtual void ChangeSkin(UITKSkin skin)
-        // {
-        //     // 清理
-        //     foreach (var styleSheet in FindSkinStyleSheets("basic"))
-        //     {
-        //         rootVisualElement.styleSheets.Remove(styleSheet);
-        //     }
-        //
-        //     if (GraphView != null)
-        //     {
-        //         foreach (var styleSheet in FindSkinStyleSheets("graph"))
-        //         {
-        //             GraphView.styleSheets.Remove(styleSheet);
-        //         }
-        //
-        //         var nodeSkins = FindSkinStyleSheets("node").ToArray();
-        //         var portSkins = FindSkinStyleSheets("port").ToArray();
-        //         foreach (var nodeView in GraphView.NodeViews.Values)
-        //         {
-        //             foreach (var styleSheet in nodeSkins)
-        //             {
-        //                 nodeView.styleSheets.Remove(styleSheet);
-        //             }
-        //             foreach (var portView in nodeView.PortViews.Values)
-        //             {
-        //                 foreach (var styleSheet in portSkins)
-        //                 {
-        //                     portView.styleSheets.Remove(styleSheet);
-        //                 }
-        //             }
-        //         }
-        //         
-        //         var edgeSkins = FindSkinStyleSheets("edge").ToArray();
-        //         foreach (var connectionView in GraphView.ConnectionViews.Values)
-        //         {
-        //             foreach (var styleSheet in edgeSkins)
-        //             {
-        //                 connectionView.styleSheets.Remove(styleSheet);
-        //             }
-        //         }
-        //
-        //         var groupSkins = FindSkinStyleSheets("edge").ToArray();
-        //         foreach (var groupView in GraphView.GroupViews.Values)
-        //         {
-        //             foreach (var styleSheet in groupSkins)
-        //             {
-        //                 groupView.styleSheets.Remove(styleSheet);
-        //             }
-        //         }
-        //     }
-        //
-        //     // 装载
-        //     this.skin = skin;
-        //     
-        //     foreach (var styleSheet in FindSkinStyleSheets("basic"))
-        //     {
-        //         rootVisualElement.styleSheets.Add(styleSheet);
-        //     }
-        //     
-        //     if (GraphView != null)
-        //     {
-        //         foreach (var styleSheet in FindSkinStyleSheets("graph"))
-        //         {
-        //             GraphView.styleSheets.Add(styleSheet);
-        //         }
-        //
-        //         var nodeSkins = FindSkinStyleSheets("node").ToArray();
-        //         var portSkins = FindSkinStyleSheets("port").ToArray();
-        //         foreach (var nodeView in GraphView.NodeViews.Values)
-        //         {
-        //             foreach (var styleSheet in nodeSkins)
-        //             {
-        //                 nodeView.styleSheets.Add(styleSheet);
-        //             }
-        //             foreach (var portView in nodeView.PortViews.Values)
-        //             {
-        //                 foreach (var styleSheet in portSkins)
-        //                 {
-        //                     portView.styleSheets.Add(styleSheet);
-        //                 }
-        //             }
-        //         }
-        //         
-        //         var edgeSkins = FindSkinStyleSheets("edge").ToArray();
-        //         foreach (var connectionView in GraphView.ConnectionViews.Values)
-        //         {
-        //             foreach (var styleSheet in edgeSkins)
-        //             {
-        //                 connectionView.styleSheets.Add(styleSheet);
-        //             }
-        //         }
-        //
-        //         var groupSkins = FindSkinStyleSheets("group").ToArray();
-        //         foreach (var groupView in GraphView.GroupViews.Values)
-        //         {
-        //             foreach (var styleSheet in groupSkins)
-        //             {
-        //                 groupView.styleSheets.Add(styleSheet);
-        //             }
-        //         }
-        //     }
-        // }
-        //
-        // public IEnumerable<StyleSheet> FindSkinStyleSheets(string name)
-        // {
-        //     var foundSkins = new HashSet<UITKSkin>();
-        //     foreach (var styleSheet in FindStyleSheets(skin))
-        //     {
-        //         yield return styleSheet;
-        //     }
-        //
-        //     IEnumerable<StyleSheet> FindStyleSheets(UITKSkin skin)
-        //     {
-        //         foundSkins.Add(skin);
-        //         foreach (var otherSkin in skin.otherSkins)
-        //         {
-        //             if (foundSkins.Contains(skin))
-        //             {
-        //                 continue;
-        //             }
-        //             foreach (var styleSheet in FindStyleSheets(otherSkin))
-        //             {
-        //                 yield return styleSheet;
-        //             }
-        //         }
-        //
-        //         yield return skin.styleSheets.Find(x => x.name == name)?.styleSheet;
-        //     }
-        // }
-
         public virtual void Clear()
         {
             OnGraphViewUndirty();
-            
+
             ToolbarLeft.Clear();
             ToolbarCenter.Clear();
             ToolbarRight.Clear();
@@ -282,18 +153,19 @@ namespace CZToolKit.GraphProcessor.Editors
             CommandDispatcher = null;
         }
 
+        
         // 重新加载Graph
         public virtual void Reload()
         {
-            if (GraphOwner is IGraphAssetOwner graphAssetOwner && graphAssetOwner.GraphAsset != null)
+            if (unityGraphOwner is IGraphAssetOwner graphAssetOwner && graphAssetOwner.GraphAsset != null)
             {
                 ForceLoad(graphAssetOwner);
             }
-            else if (GraphOwner is IGraphOwner graphOwner)
+            else if (graphAsset is IGraphOwner graphOwner)
             {
                 ForceLoad(graphOwner);
             }
-            else if (GraphAsset is IGraphAsset graphAsset)
+            else if (graphAsset != null)
             {
                 ForceLoad(graphAsset);
             }
@@ -301,41 +173,45 @@ namespace CZToolKit.GraphProcessor.Editors
             {
                 ForceLoad(graphVM);
             }
+            else if (this.unityGraphAsset != null)
+            {
+                AssetDatabase.OpenAsset(this.unityGraphAsset);
+            }
         }
 
         // 从GraphOwner加载
-        public void ForceLoad(IGraphOwner graphOwner, object argument = null)
+        public void ForceLoad(IGraphOwner graphOwner)
         {
             Clear();
-            Load(graphOwner.Graph, graphOwner, (UnityObject)graphOwner, argument);
+            Load(graphOwner.Graph, graphOwner, (IGraphAsset)graphOwner);
         }
 
         // 从GraphAssetOwner加载
-        public void ForceLoad(IGraphAssetOwner graphAssetOwner, object argument = null)
+        public void ForceLoad(IGraphAssetOwner graphAssetOwner)
         {
             Clear();
-            Load(graphAssetOwner.Graph, graphAssetOwner, graphAssetOwner.GraphAsset, argument);
+            Load(graphAssetOwner.Graph, graphAssetOwner, graphAssetOwner.GraphAsset);
         }
 
         // 从Graph资源加载
-        public void ForceLoad(IGraphAsset graphAsset, object argument = null)
+        public void ForceLoad(IGraphAsset graphAsset)
         {
             Clear();
-            Load(ViewModelFactory.CreateViewModel(graphAsset.DeserializeGraph()) as BaseGraphVM, null, graphAsset as UnityObject, argument);
+            Load(ViewModelFactory.CreateViewModel(graphAsset.DeserializeGraph()) as BaseGraphVM, null, graphAsset);
         }
 
         // 直接加载GraphVM对象
-        public void ForceLoad(BaseGraphVM graph, object argument = null)
+        public void ForceLoad(BaseGraphVM graph)
         {
             Clear();
-            Load(graph, null, null, argument);
+            Load(graph, null, null);
         }
 
         // 直接加载Graph对象
-        public void ForceLoad(BaseGraph graph, object argument = null)
+        public void ForceLoad(BaseGraph graph)
         {
             Clear();
-            Load(ViewModelFactory.CreateViewModel(ViewModelFactory.CreateViewModel(graph) as BaseGraphVM) as BaseGraphVM, null, null, argument);
+            Load(ViewModelFactory.CreateViewModel(ViewModelFactory.CreateViewModel(graph) as BaseGraphVM) as BaseGraphVM, null, null);
         }
 
         #endregion
@@ -356,8 +232,8 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             if (!titleContent.text.EndsWith(" *"))
                 titleContent.text += " *";
-            if (GraphAsset != null)
-                EditorUtility.SetDirty(GraphAsset);
+            if (graphAsset != null && graphAsset.UnityAsset != null)
+                EditorUtility.SetDirty(graphAsset.UnityAsset);
             if (GraphOwner is UnityObject uobj && uobj != null)
                 EditorUtility.SetDirty(uobj);
         }
@@ -372,7 +248,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
         #region Overrides
 
-        protected virtual BaseGraphView NewGraphView(object argument)
+        protected virtual BaseGraphView NewGraphView()
         {
             return new DefaultGraphView(Graph, this, new CommandDispatcher());
         }
@@ -388,15 +264,18 @@ namespace CZToolKit.GraphProcessor.Editors
             btnOverview.clicked += () => { GraphView.FrameAll(); };
             ToolbarLeft.Add(btnOverview);
 
-            IMGUIContainer drawName = new IMGUIContainer(() =>
+            if (graphAsset.UnityAsset != null)
             {
-                GUILayout.BeginHorizontal();
-                if (GraphAsset != null && GUILayout.Button(GraphAsset.name, EditorStyles.toolbarButton))
-                    EditorGUIUtility.PingObject(GraphAsset);
-                GUILayout.EndHorizontal();
-            });
-            drawName.style.flexGrow = 1;
-            ToolbarCenter.Add(drawName);
+                IMGUIContainer drawName = new IMGUIContainer(() =>
+                {
+                    GUILayout.BeginHorizontal();
+                    if (graphAsset != null && GUILayout.Button(graphAsset.UnityAsset.name, EditorStyles.toolbarButton))
+                        EditorGUIUtility.PingObject(graphAsset.UnityAsset);
+                    GUILayout.EndHorizontal();
+                });
+                drawName.style.flexGrow = 1;
+                ToolbarCenter.Add(drawName);
+            }
 
             ToolbarButton btnReload = new ToolbarButton()
             {
@@ -481,12 +360,21 @@ namespace CZToolKit.GraphProcessor.Editors
         public static bool OnOpen(int instanceID, int line)
         {
             UnityObject go = EditorUtility.InstanceIDToObject(instanceID);
-            if (go == null) 
+            if (go == null)
                 return false;
             IGraphAsset graphAsset = go as IGraphAsset;
             if (graphAsset == null)
                 return false;
-            Open(graphAsset);
+            if (Selection.activeGameObject != null)
+            {
+                var owner = Selection.activeGameObject.GetComponent<IGraphAssetOwner>();
+                if (owner != null && owner.GraphAsset == graphAsset)
+                    Open(owner);
+                else
+                    Open(graphAsset);
+            }
+            else
+                Open(graphAsset);
             return true;
         }
 

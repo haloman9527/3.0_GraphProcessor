@@ -1,20 +1,21 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using CZToolKit.GraphProcessor;
 using CZToolKit.VM;
 using Sirenix.OdinInspector;
 using Sirenix.Serialization;
 using UnityEngine;
-using Object = UnityEngine.Object;
+
+using UnityObject = UnityEngine.Object;
 
 [CreateAssetMenu]
 public class FlowGraphAsset : ScriptableObject, IGraphAsset, IGraphAsset<FlowGraph>
 {
     [HideInInspector] public byte[] serializedGraph;
-    [HideInInspector] public List<Object> graphUnityReferences = new List<Object>();
+    [HideInInspector] public List<UnityObject> graphUnityReferences = new List<UnityObject>();
 
     public Type GraphType => typeof(FlowGraph);
+    public UnityObject UnityAsset => this;
 
     public void SaveGraph(BaseGraph graph)
     {
@@ -32,15 +33,9 @@ public class FlowGraphAsset : ScriptableObject, IGraphAsset, IGraphAsset<FlowGra
         if (serializedGraph != null && serializedGraph.Length > 0)
             graph = SerializationUtility.DeserializeValue<FlowGraph>(serializedGraph, DataFormat.Binary, graphUnityReferences);
         if (graph == null)
-        {
             graph = new FlowGraph();
-        }
 
         return graph;
-    }
-
-    public void Execute()
-    {
     }
 
     [Button]
@@ -52,6 +47,7 @@ public class FlowGraphAsset : ScriptableObject, IGraphAsset, IGraphAsset<FlowGra
 
 public class FlowGraph : BaseGraph
 {
+    public int startNodeID;
 }
 
 [ViewModel(typeof(FlowGraph))]
@@ -59,18 +55,17 @@ public class FlowGraphVM : BaseGraphVM
 {
     private StartNodeVM StartNode { get; }
 
-    public FlowGraphVM(BaseGraph model) : base(model)
+    public FlowGraphVM(FlowGraph model) : base(model)
     {
-        foreach (var pair in Nodes)
+        if (Nodes.TryGetValue(model.startNodeID, out var _node) && _node is StartNodeVM)
         {
-            if (pair.Value is StartNodeVM startNode)
-            {
-                StartNode = startNode;
-                break;
-            }
+            StartNode = _node as StartNodeVM;
         }
 
         if (StartNode == null)
+        {
             StartNode = AddNode(new StartNode() { position = new InternalVector2Int(100, 100) }) as StartNodeVM;
+            model.startNodeID = StartNode.ID;
+        }
     }
 }
