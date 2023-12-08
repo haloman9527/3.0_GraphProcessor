@@ -180,7 +180,7 @@ namespace CZToolKit.GraphProcessor.Editors
             PortChanged();
         }
 
-        public void OnInitialize()
+        public void OnCreate()
         {
             ViewModel.BindingProperty<InternalVector2Int>(nameof(BaseNode.position), OnPositionChanged);
             ViewModel.BindingProperty<string>(BaseNodeVM.TITLE_NAME, OnTitleChanged);
@@ -193,7 +193,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
             foreach (var portView in portViews.Values)
             {
-                portView.OnInitialize();
+                portView.OnCreate();
             }
 
             OnBindingProperties();
@@ -298,7 +298,7 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             BasePortView portView = NewPortView(port);
             portView.SetUp(port, Owner);
-            portView.OnInitialize();
+            portView.OnCreate();
             portViews[port.Name] = portView;
 
             if (portView.orientation == Orientation.Horizontal)

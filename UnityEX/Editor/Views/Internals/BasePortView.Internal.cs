@@ -86,7 +86,7 @@ namespace CZToolKit.GraphProcessor.Editors
             OnInitialized();
         }
 
-        public void OnInitialize()
+        public void OnCreate()
         {
             ViewModel[nameof(BasePort.type)].AsBindableProperty<Type>().RegisterValueChangedEvent(OnPortTypeChanged);
 

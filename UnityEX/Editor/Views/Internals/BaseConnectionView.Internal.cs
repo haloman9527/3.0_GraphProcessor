@@ -47,14 +47,14 @@ namespace CZToolKit.GraphProcessor.Editors
             OnInitialized();
         }
 
-        public void OnInitialize()
+        public void OnCreate()
         {
-            OnBindingProperties();
+            BindProperties();
         }
 
         public void OnDestroy()
         {
-            OnUnbindingProperties();
+            UnbindProperties();
         }
 
         private void OnMouseEnter(MouseEnterEvent evt)

@@ -30,28 +30,78 @@ using UnityObject = UnityEngine.Object;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
-    public partial class BaseGraphView : GraphView, IGraphElementView<BaseGraphVM>
+    public partial class BaseGraphView : GraphView
     {
         #region Properties
 
         private MiniMap miniMap;
+        private BaseGraphVM viewModel;
+        private BaseGraphWindow graphWindow;
+        private CommandDispatcher commandDispatcher;
+        private Dictionary<int, BaseNodeView> nodeViews = new Dictionary<int, BaseNodeView>();
+        private Dictionary<int, BaseGroupView> groupViews = new Dictionary<int, BaseGroupView>();
+        private Dictionary<BaseConnectionVM, BaseConnectionView> connectionViews = new Dictionary<BaseConnectionVM, BaseConnectionView>();
 
         public event Action onDirty;
         public event Action onUndirty;
 
-        public BaseGraphWindow GraphWindow { get; private set; }
-        public CommandDispatcher CommandDispatcher { get; private set; }
-
-        public UnityObject GraphAsset
+        public BaseGraphWindow GraphWindow
         {
-            get { return GraphWindow.GraphAsset.UnityAsset; }
+            get { return graphWindow; }
         }
 
-        public Dictionary<int, BaseNodeView> NodeViews { get; private set; } = new Dictionary<int, BaseNodeView>();
-        public Dictionary<int, BaseGroupView> GroupViews { get; private set; } = new Dictionary<int, BaseGroupView>();
-        public Dictionary<BaseConnectionVM, BaseConnectionView> ConnectionViews { get; private set; } = new Dictionary<BaseConnectionVM, BaseConnectionView>();
+        public CommandDispatcher CommandDispatcher
+        {
+            get { return commandDispatcher; }
+        }
 
-        public BaseGraphVM ViewModel { get; set; }
+        public IGraphAsset GraphAsset
+        {
+            get { return GraphWindow.GraphAsset; }
+        }
+
+        public BaseGraphVM ViewModel
+        {
+            get { return viewModel; }
+        }
+
+        public Dictionary<int, BaseNodeView> NodeViews
+        {
+            get { return nodeViews; }
+        }
+
+        public Dictionary<int, BaseGroupView> GroupViews
+        {
+            get { return groupViews; }
+        }
+
+        public Dictionary<BaseConnectionVM, BaseConnectionView> ConnectionViews
+        {
+            get { return connectionViews; }
+        }
+
+        public bool MiniMapActive
+        {
+            get { return miniMap != null; }
+            set
+            {
+                if (value == false && miniMap != null)
+                {
+                    Remove(miniMap);
+                    miniMap = null;
+                }
+
+                if (value == true && miniMap == null)
+                {
+                    miniMap = new MiniMap()
+                    {
+                        anchored = true,
+                    };
+                    miniMap.SetPosition(new Rect(15, 15, 200, 200));
+                    Add(miniMap);
+                }
+            }
+        }
 
         #region 不建议使用自带复制粘贴功能，建议自己实现
 
@@ -76,72 +126,54 @@ namespace CZToolKit.GraphProcessor.Editors
             this.AddManipulator(new RectangleSelector());
             this.StretchToParentSize();
 
-            ViewModel = graph;
-            GraphWindow = window;
-            CommandDispatcher = commandDispatcher;
-
-            ToolbarToggle togMiniMap = new ToolbarToggle()
-            {
-                name = "togMiniMap",
-                text = "MiniMap",
-                tooltip = "小地图",
-                value = EditorPrefs.GetBool("GraphView.MiniMap.Visiable", false),
-            };
-            togMiniMap.RegisterValueChangedCallback(_v =>
-            {
-                EditorPrefs.SetBool("GraphView.MiniMap.Visiable", _v.newValue);
-                RefreshMiniMap();
-            });
-            GraphWindow.ToolbarLeft.Add(togMiniMap);
-            RefreshMiniMap();
+            this.viewModel = graph;
+            this.graphWindow = window;
+            this.commandDispatcher = commandDispatcher;
         }
 
         #region Initialize
 
-        public IEnumerator Initialize()
+        public void Init()
         {
-            UpdateInspector();
-            viewTransform.position = ViewModel.Pan.ToVector2();
-            viewTransform.scale = new Vector3(ViewModel.Zoom, ViewModel.Zoom, 1);
-            yield return GraphWindow.StartCoroutine(GenerateNodeViews());
-            yield return GraphWindow.StartCoroutine(LinkNodeViews());
-            yield return GraphWindow.StartCoroutine(GenerateGroupViews());
+            var coroutine = graphWindow.StartCoroutine(InitCoroutine());
+            this.RegisterCallback<DetachFromPanelEvent>(evt => { graphWindow.StopCoroutine(coroutine); });
+            this.RegisterCallback<DetachFromPanelEvent>(evt => { Uninit(); });
 
-            nodeCreationRequest = NodeCreationRequest;
-            graphViewChanged = OnGraphViewChangedCallback;
-            viewTransformChanged = OnViewTransformChanged;
+            IEnumerator InitCoroutine()
+            {
+                UpdateInspector();
 
-            RegisterCallback<KeyDownEvent>(KeyDownCallback);
+                viewTransform.position = ViewModel.Pan.ToVector2();
+                viewTransform.scale = new Vector3(ViewModel.Zoom, ViewModel.Zoom, 1);
 
-            OnInitialize();
+                nodeCreationRequest = NodeCreationRequest;
+                graphViewChanged = OnGraphViewChangedCallback;
+                viewTransformChanged = OnViewTransformChanged;
+
+                yield return GraphWindow.StartCoroutine(GenerateNodeViews());
+                yield return GraphWindow.StartCoroutine(LinkNodeViews());
+                yield return GraphWindow.StartCoroutine(GenerateGroupViews());
+
+                BindEvents();
+                OnInitialized();
+            }
         }
 
-        void RefreshMiniMap()
+        private void Uninit()
         {
-            if (EditorPrefs.GetBool("GraphView.MiniMap.Visiable", false))
+            this.Query<GraphElement>().ForEach(element =>
             {
-                if (miniMap == null)
+                if (element is IGraphElementView bindableView)
                 {
-                    miniMap = new MiniMap()
-                    {
-                        anchored = true,
-                    };
-                    miniMap.SetPosition(new Rect(15, 15, 200, 200));
-                    Add(miniMap);
+                    bindableView.OnDestroy();
                 }
-            }
-            else
-            {
-                if (miniMap != null)
-                {
-                    Remove(miniMap);
-                    miniMap = null;
-                }
-            }
+            });
+            UnbindEvents();
+            OnDestroyed();
         }
 
         /// <summary> 生成所有NodeView </summary>
-        IEnumerator GenerateNodeViews()
+        private IEnumerator GenerateNodeViews()
         {
             int step = 0;
             foreach (var node in ViewModel.Nodes.Values)
@@ -155,7 +187,7 @@ namespace CZToolKit.GraphProcessor.Editors
         }
 
         /// <summary> 连接节点 </summary>
-        IEnumerator LinkNodeViews()
+        private IEnumerator LinkNodeViews()
         {
             int step = 0;
             foreach (var connection in ViewModel.Connections)
@@ -171,7 +203,7 @@ namespace CZToolKit.GraphProcessor.Editors
         }
 
         /// <summary> 生成所有GroupView </summary>
-        IEnumerator GenerateGroupViews()
+        private IEnumerator GenerateGroupViews()
         {
             int step = 0;
             foreach (var group in ViewModel.Groups.GroupMap.Values)
@@ -184,13 +216,9 @@ namespace CZToolKit.GraphProcessor.Editors
             }
         }
 
-        #endregion
-
-        #region API
-
-        public void OnInitialize()
+        private void BindEvents()
         {
-            RegisterCallback<DetachFromPanelEvent>(evt => { OnDestroy(); });
+            RegisterCallback<KeyDownEvent>(KeyDownCallback);
 
             ViewModel.BindingProperty<InternalVector2Int>(nameof(BaseGraph.pan), OnPositionChanged);
             ViewModel.BindingProperty<float>(nameof(BaseGraph.zoom), OnZoomChanged);
@@ -203,19 +231,11 @@ namespace CZToolKit.GraphProcessor.Editors
 
             ViewModel.OnConnected += OnConnected;
             ViewModel.OnDisconnected += OnDisconnected;
-            
-            OnInitialized();
         }
 
-        public void OnDestroy()
+        private void UnbindEvents()
         {
-            this.Query<GraphElement>().ForEach(element =>
-            {
-                if (element is IGraphElementView bindableView)
-                {
-                    bindableView.OnDestroy();
-                }
-            });
+            UnregisterCallback<KeyDownEvent>(KeyDownCallback);
 
             ViewModel.UnBindingProperty<InternalVector2Int>(nameof(BaseGraph.pan), OnPositionChanged);
             ViewModel.UnBindingProperty<float>(nameof(BaseGraph.zoom), OnZoomChanged);
@@ -223,17 +243,23 @@ namespace CZToolKit.GraphProcessor.Editors
             ViewModel.OnNodeAdded -= OnNodeAdded;
             ViewModel.OnNodeRemoved -= OnNodeRemoved;
 
+            ViewModel.OnGroupAdded -= OnGroupAdded;
+            ViewModel.OnGroupRemoved -= OnGroupRemoved;
+
             ViewModel.OnConnected -= OnConnected;
             ViewModel.OnDisconnected -= OnDisconnected;
-
-            OnDestroyed();
         }
+
+        #endregion
+
+        #region API
 
         public BaseNodeView AddNodeView(BaseNodeVM node)
         {
-            BaseNodeView nodeView = NewNodeView(node);
+            var nodeView = NewNodeView(node);
+            nodeView.AddToClassList(node.ModelType.Name);
             nodeView.SetUp(node, this);
-            nodeView.OnInitialize();
+            nodeView.OnCreate();
             NodeViews[node.ID] = nodeView;
             AddElement(nodeView);
             return nodeView;
@@ -248,9 +274,9 @@ namespace CZToolKit.GraphProcessor.Editors
 
         public BaseGroupView AddGroupView(BaseGroupVM group)
         {
-            BaseGroupView groupView = NewGroupView(group);
+            var groupView = NewGroupView(group);
             groupView.SetUp(group, this);
-            groupView.OnInitialize();
+            groupView.OnCreate();
             GroupViews[group.ID] = groupView;
             AddElement(groupView);
             return groupView;
@@ -268,7 +294,7 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             var connectionView = NewConnectionView(connection);
             connectionView.SetUp(connection, this);
-            connectionView.OnInitialize();
+            connectionView.OnCreate();
             connectionView.userData = connection;
             connectionView.output = from.PortViews[connection.FromPortName];
             connectionView.input = to.PortViews[connection.ToPortName];
@@ -316,8 +342,9 @@ namespace CZToolKit.GraphProcessor.Editors
             foreach (var selectable in selectables)
             {
                 base.AddToSelection(selectable);
-            }    
-            UpdateInspector();           
+            }
+
+            UpdateInspector();
         }
 
         public sealed override void RemoveFromSelection(ISelectable selectable)
@@ -331,8 +358,9 @@ namespace CZToolKit.GraphProcessor.Editors
             foreach (var selectable in selectables)
             {
                 base.RemoveFromSelection(selectable);
-            }    
-            UpdateInspector();           
+            }
+
+            UpdateInspector();
         }
 
         public sealed override void ClearSelection()
@@ -356,43 +384,43 @@ namespace CZToolKit.GraphProcessor.Editors
 
         #region Callbacks
 
-        void OnPositionChanged(InternalVector2Int oldPosition, InternalVector2Int position)
+        private void OnPositionChanged(InternalVector2Int oldPosition, InternalVector2Int position)
         {
             viewTransform.position = position.ToVector2();
             SetDirty();
         }
 
-        void OnZoomChanged(float oldZoom, float zoom)
+        private void OnZoomChanged(float oldZoom, float zoom)
         {
             viewTransform.scale = new Vector3(zoom, zoom, 1);
             SetDirty();
         }
 
-        void OnNodeAdded(BaseNodeVM node)
+        private void OnNodeAdded(BaseNodeVM node)
         {
             AddNodeView(node);
             SetDirty();
         }
 
-        void OnNodeRemoved(BaseNodeVM node)
+        private void OnNodeRemoved(BaseNodeVM node)
         {
             RemoveNodeView(NodeViews[node.ID]);
             SetDirty();
         }
 
-        void OnGroupAdded(BaseGroupVM group)
+        private void OnGroupAdded(BaseGroupVM group)
         {
             AddGroupView(group);
             SetDirty();
         }
 
-        void OnGroupRemoved(BaseGroupVM group)
+        private void OnGroupRemoved(BaseGroupVM group)
         {
             RemoveGroupView(GroupViews[group.ID]);
             SetDirty();
         }
 
-        void OnConnected(BaseConnectionVM connection)
+        private void OnConnected(BaseConnectionVM connection)
         {
             var from = NodeViews[connection.FromNodeID];
             var to = NodeViews[connection.ToNodeID];
@@ -400,7 +428,7 @@ namespace CZToolKit.GraphProcessor.Editors
             SetDirty();
         }
 
-        void OnDisconnected(BaseConnectionVM connection)
+        private void OnDisconnected(BaseConnectionVM connection)
         {
             edges.ForEach(edge =>
             {
@@ -410,7 +438,7 @@ namespace CZToolKit.GraphProcessor.Editors
             SetDirty();
         }
 
-        void KeyDownCallback(KeyDownEvent evt)
+        private void KeyDownCallback(KeyDownEvent evt)
         {
             if (evt.commandKey || evt.ctrlKey)
             {
@@ -430,19 +458,20 @@ namespace CZToolKit.GraphProcessor.Editors
             }
         }
 
-        void NodeCreationRequest(NodeCreationContext c)
+        private void NodeCreationRequest(NodeCreationContext c)
         {
             var nodeMenu = ScriptableObject.CreateInstance<NodeMenuWindow>();
             nodeMenu.Initialize("Nodes", this);
-            
+
             BuildNodeMenu(nodeMenu);
-            
+
             var multiLayereEntryCount = 0;
             for (int i = 0; i < nodeMenu.entries.Count; i++)
             {
                 if (nodeMenu.entries[i].Menu.Length > 1)
                     multiLayereEntryCount++;
             }
+
             nodeMenu.entries.QuickSort((a, b) => -(a.Menu.Length.CompareTo(b.Menu.Length)));
             nodeMenu.entries.QuickSort(0, multiLayereEntryCount - 1, (a, b) => String.Compare(a.Path, b.Path, StringComparison.Ordinal));
             nodeMenu.entries.QuickSort(multiLayereEntryCount, nodeMenu.entries.Count - 1, (a, b) => String.Compare(a.Path, b.Path, StringComparison.Ordinal));
@@ -451,7 +480,7 @@ namespace CZToolKit.GraphProcessor.Editors
         }
 
         /// <summary> GraphView发生改变时调用 </summary>
-        GraphViewChange OnGraphViewChangedCallback(GraphViewChange changes)
+        private GraphViewChange OnGraphViewChangedCallback(GraphViewChange changes)
         {
             if (changes.movedElements != null)
             {
@@ -499,8 +528,8 @@ namespace CZToolKit.GraphProcessor.Editors
 
                 CommandDispatcher.Do(new MoveNodesCommand(newPos));
                 CommandDispatcher.Do(new MoveGroupsCommand(groupNewPos));
-                
-                
+
+
                 // 排序
                 foreach (var port in portsHashset)
                 {
@@ -514,19 +543,19 @@ namespace CZToolKit.GraphProcessor.Editors
                 return changes;
 
             CommandDispatcher.BeginGroup();
-            
+
             var groups = changes.elementsToRemove
                 .Where(item => item.selected && item is BaseGroupView)
                 .Select(item => (item as BaseGroupView).ViewModel).ToArray();
             changes.elementsToRemove.RemoveAll(item => item is BaseGroupView);
             CommandDispatcher.Do(new RemoveGroupsCommand(ViewModel, groups));
-            
+
             var edges = changes.elementsToRemove
                 .Where(item => item.selected && item is BaseConnectionView)
                 .Select(item => (item as BaseConnectionView).ViewModel).ToArray();
             changes.elementsToRemove.RemoveAll(item => item is BaseConnectionView);
             CommandDispatcher.Do(new DisconnectsCommand(ViewModel, edges));
-            
+
             var nodes = changes.elementsToRemove
                 .Where(item => item.selected && item is BaseNodeView)
                 .Select(item => (item as BaseNodeView).ViewModel).ToArray();
@@ -540,7 +569,7 @@ namespace CZToolKit.GraphProcessor.Editors
         }
 
         /// <summary> 转换发生改变时调用 </summary>
-        void OnViewTransformChanged(GraphView view)
+        private void OnViewTransformChanged(GraphView view)
         {
             ViewModel.Zoom = viewTransform.scale.x;
             ViewModel.Pan = viewTransform.position.ToInternalVector3Int();

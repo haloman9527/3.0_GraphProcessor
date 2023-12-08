@@ -141,13 +141,13 @@ namespace CZToolKit.GraphProcessor.Editors
             {
                 if (!ObjectEditor.HasEditor(element))
                     continue;
-                ObjectEditor.DrawObjectInInspector((element as GraphElement)?.title, element, GraphAsset);
+                ObjectEditor.DrawObjectInInspector((element as GraphElement)?.title, element, GraphAsset.UnityAsset);
                 return;
             }
 
             if (Selection.activeGameObject != null && Selection.activeGameObject.GetComponent<IGraphAssetOwner>() != null)
                 return;
-            ObjectEditor.DrawObjectInInspector("Graph", this, GraphAsset);
+            ObjectEditor.DrawObjectInInspector("Graph", this, GraphAsset.UnityAsset);
         }
 
         protected virtual bool IsCompatible(BasePortView fromPortView, BasePortView toPortView, NodeAdapter nodeAdapter)

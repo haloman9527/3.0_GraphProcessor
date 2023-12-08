@@ -25,11 +25,11 @@ namespace CZToolKit.GraphProcessor.Editors
             return new BetterEdgeControl(this);
         }
 
+        protected virtual void BindProperties() { }
+
+        protected virtual void UnbindProperties() { }
+
         protected virtual void OnInitialized() { }
-
-        protected virtual void OnBindingProperties() { }
-
-        protected virtual void OnUnbindingProperties() { }
     }
 }
 #endif

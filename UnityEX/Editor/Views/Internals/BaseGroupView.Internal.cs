@@ -68,7 +68,7 @@ namespace CZToolKit.GraphProcessor.Editors
             BackgroudColorField.RegisterValueChangedCallback(OnGroupColorChanged);
         }
 
-        public void OnInitialize()
+        public void OnCreate()
         {
             ViewModel[nameof(BaseGroup.groupName)].AsBindableProperty<string>().RegisterValueChangedEvent(OnTitleChanged);
             ViewModel[nameof(BaseGroup.position)].AsBindableProperty<InternalVector2Int>().RegisterValueChangedEvent(OnPositionChanged);
