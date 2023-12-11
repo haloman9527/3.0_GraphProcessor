@@ -42,9 +42,6 @@ namespace CZToolKit.GraphProcessor.Editors
         private Dictionary<int, BaseGroupView> groupViews = new Dictionary<int, BaseGroupView>();
         private Dictionary<BaseConnectionVM, BaseConnectionView> connectionViews = new Dictionary<BaseConnectionVM, BaseConnectionView>();
 
-        public event Action onDirty;
-        public event Action onUndirty;
-
         public BaseGraphWindow GraphWindow
         {
             get { return graphWindow; }
@@ -372,12 +369,12 @@ namespace CZToolKit.GraphProcessor.Editors
         // 标记Dirty
         public void SetDirty()
         {
-            onDirty?.Invoke();
+            graphWindow?.SetGraphDirty();
         }
 
         public void SetUnDirty()
         {
-            onUndirty?.Invoke();
+            graphWindow?.SetGraphUndirty();
         }
 
         #endregion

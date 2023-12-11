@@ -122,7 +122,7 @@ namespace CZToolKit.GraphProcessor.Editors
             titleContent = new GUIContent("Graph Processor");
             InitRootVisualElement();
 
-            Reload(false);
+            Reload();
             EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
         }
 
@@ -149,9 +149,15 @@ namespace CZToolKit.GraphProcessor.Editors
             graphViewContainer = rootVisualElement.Q("GraphViewContainer");
         }
 
+        protected virtual void BeforeLoad()
+        {
+            
+        }
+
         protected void Load(BaseGraphVM graph, IGraphOwner graphOwner, IGraphAsset graphAsset)
         {
             Clear();
+            BeforeLoad();
 
             this.commandDispatcher = new CommandDispatcher();
             this.graph = graph;
@@ -160,20 +166,25 @@ namespace CZToolKit.GraphProcessor.Editors
             
             this.graphView = NewGraphView();
             this.graphView.Init();
-            this.graphView.onDirty += OnGraphViewDirty;
-            this.graphView.onUndirty += OnGraphViewUndirty;
-            this.graphViewContainer.Add(GraphView);
+            this.graphViewContainer.Add(graphView);
             
             BuildToolBar();
+            AfterLoad();
+        }
+
+        protected virtual void AfterLoad()
+        {
+            
         }
 
         #endregion
 
         #region Public Methods
+        
 
         public virtual void Clear()
         {
-            OnGraphViewUndirty();
+            SetGraphUndirty();
 
             ToolbarLeft.Clear();
             ToolbarCenter.Clear();
@@ -187,13 +198,9 @@ namespace CZToolKit.GraphProcessor.Editors
             commandDispatcher = null;
         }
 
-
         // 重新加载Graph
-        public virtual void Reload(bool force = true)
+        public virtual void Reload()
         {
-            if (!force && graphView != null)
-                return;
-
             if (unityGraphOwner is IGraphAssetOwner graphAssetOwner && graphAssetOwner.GraphAsset != null)
             {
                 LoadFromGraphAssetOwner(graphAssetOwner);
@@ -246,6 +253,22 @@ namespace CZToolKit.GraphProcessor.Editors
             Load(ViewModelFactory.CreateViewModel(ViewModelFactory.CreateViewModel(graph) as BaseGraphVM) as BaseGraphVM, null, null);
         }
 
+        public void SetGraphDirty()
+        {
+            if (!titleContent.text.EndsWith(" *"))
+                titleContent.text += " *";
+            if (graphAsset != null && graphAsset.UnityAsset != null)
+                EditorUtility.SetDirty(graphAsset.UnityAsset);
+            if (GraphOwner is UnityObject uobj && uobj != null)
+                EditorUtility.SetDirty(uobj);
+        }
+
+        public void SetGraphUndirty()
+        {
+            if (titleContent.text.EndsWith(" *"))
+                titleContent.text = titleContent.text.Replace(" *", "");
+        }
+
         #endregion
 
         #region Callbacks
@@ -258,22 +281,6 @@ namespace CZToolKit.GraphProcessor.Editors
                     Reload();
                     break;
             }
-        }
-
-        void OnGraphViewDirty()
-        {
-            if (!titleContent.text.EndsWith(" *"))
-                titleContent.text += " *";
-            if (graphAsset != null && graphAsset.UnityAsset != null)
-                EditorUtility.SetDirty(graphAsset.UnityAsset);
-            if (GraphOwner is UnityObject uobj && uobj != null)
-                EditorUtility.SetDirty(uobj);
-        }
-
-        void OnGraphViewUndirty()
-        {
-            if (titleContent.text.EndsWith(" *"))
-                titleContent.text = titleContent.text.Replace(" *", "");
         }
 
         #endregion
