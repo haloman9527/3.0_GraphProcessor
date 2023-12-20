@@ -23,8 +23,6 @@ using CZToolKit.GraphProcessor.Editors;
 using System.Collections.Generic;
 using CZToolKit;
 using Sirenix.Serialization;
-using UnityEditor;
-using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -33,33 +31,16 @@ public class FlowGraphWindow : BaseGraphWindow
 {
     protected override BaseGraphView NewGraphView()
     {
-        var graphView = new FlowGraphView(Graph, this, new CommandDispatcher());
-        graphView.RegisterCallback<KeyDownEvent>(KeyDownCallback);
-        return graphView;
+        return new FlowGraphView(Graph, this, new CommandDispatcher());
     }
 
-    protected override void BuildToolBar()
+    protected override void OnKeyDownCallback(KeyDownEvent evt)
     {
-        base.BuildToolBar();
-
-        ToolbarButton btnSave = new ToolbarButton();
-        btnSave.text = "Save";
-        btnSave.clicked += Save;
-        btnSave.style.width = 80;
-        btnSave.style.unityTextAlign = TextAnchor.MiddleCenter;
-        ToolbarRight.Add(btnSave);
-    }
-
-    void KeyDownCallback(KeyDownEvent evt)
-    {
+        base.OnKeyDownCallback(evt);
         if (evt.commandKey || evt.ctrlKey)
         {
             switch (evt.keyCode)
             {
-                case KeyCode.S:
-                    Save();
-                    evt.StopImmediatePropagation();
-                    break;
                 case KeyCode.D:
                     Duplicate();
                     evt.StopImmediatePropagation();
@@ -146,16 +127,6 @@ public class FlowGraphWindow : BaseGraphWindow
         }
 
         GraphView.CommandDispatcher.EndGroup();
-    }
-
-    void Save()
-    {
-        if (GraphAsset is IGraphAsset graphSerialization)
-            graphSerialization.SaveGraph(Graph.Model);
-        GraphView.SetDirty();
-        AssetDatabase.SaveAssets();
-        AssetDatabase.Refresh();
-        GraphView.SetUnDirty();
     }
 }
 #endif

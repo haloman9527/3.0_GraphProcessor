@@ -151,7 +151,6 @@ namespace CZToolKit.GraphProcessor.Editors
 
         protected virtual void BeforeLoad()
         {
-            
         }
 
         protected void Load(BaseGraphVM graph, IGraphOwner graphOwner, IGraphAsset graphAsset)
@@ -163,24 +162,23 @@ namespace CZToolKit.GraphProcessor.Editors
             this.graph = graph;
             this.GraphOwner = graphOwner;
             this.GraphAsset = graphAsset;
-            
+
             this.graphView = NewGraphView();
             this.graphView.Init();
             this.graphViewContainer.Add(graphView);
-            
+
+            graphView.RegisterCallback<KeyDownEvent>(OnKeyDownCallback);
             BuildToolBar();
             AfterLoad();
         }
 
         protected virtual void AfterLoad()
         {
-            
         }
 
         #endregion
 
         #region Public Methods
-        
 
         public virtual void Clear()
         {
@@ -292,18 +290,42 @@ namespace CZToolKit.GraphProcessor.Editors
             return new DefaultGraphView(Graph, this, new CommandDispatcher());
         }
 
+        protected virtual void OnBtnSaveClick()
+        {
+            if (GraphAsset is IGraphAsset graphSerialization)
+                graphSerialization.SaveGraph(Graph.Model);
+
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+            GraphView.SetUnDirty();
+        }
+
+        protected virtual void OnKeyDownCallback(KeyDownEvent evt)
+        {
+            if (evt.commandKey || evt.ctrlKey)
+            {
+                switch (evt.keyCode)
+                {
+                    case KeyCode.S:
+                        OnBtnSaveClick();
+                        evt.StopImmediatePropagation();
+                        break;
+                }
+            }
+        }
+
         protected virtual void BuildToolBar()
         {
-            ToolbarButton btnOverview = new ToolbarButton()
+            var btnOverview = new ToolbarButton()
             {
                 name = "btnOverview",
                 text = "Overview",
-                tooltip = "查看所有节点"
+                tooltip = "查看所有节点",
             };
             btnOverview.clicked += () => { GraphView.FrameAll(); };
             ToolbarLeft.Add(btnOverview);
 
-            ToolbarToggle togMiniMap = new ToolbarToggle()
+            var togMiniMap = new ToolbarToggle()
             {
                 name = "togMiniMap",
                 text = "MiniMap",
@@ -331,14 +353,33 @@ namespace CZToolKit.GraphProcessor.Editors
                 ToolbarCenter.Add(drawName);
             }
 
-            ToolbarButton btnReload = new ToolbarButton()
+            var btnReload = new ToolbarButton()
             {
                 name = "btnReload",
                 text = "Reload",
                 tooltip = "重新加载",
+                style =
+                {
+                    width = 80,
+                    // backgroundImage = EditorGUIUtility.FindTexture("Refresh"),
+                }
             };
             btnReload.clicked += () => { Reload(); };
             ToolbarRight.Add(btnReload);
+
+            var btnSave = new ToolbarButton()
+            {
+                name = "btnSave",
+                text = "Save",
+                tooltip = "保存",
+                style =
+                {
+                    width = 80,
+                    // backgroundImage = EditorGUIUtility.FindTexture("SaveActive"),
+                }
+            };
+            btnSave.clicked += OnBtnSaveClick;
+            ToolbarRight.Add(btnSave);
         }
 
         #endregion
