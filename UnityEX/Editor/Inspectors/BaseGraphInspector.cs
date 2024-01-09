@@ -30,7 +30,7 @@ namespace CZToolKit.GraphProcessor.Editors
     {
         static GUIHelper.ContextDataCache ContextDataCache = new GUIHelper.ContextDataCache();
 
-        PropertyTree propertyTree;
+        protected PropertyTree propertyTree;
 
         public override void OnEnable()
         {
@@ -59,28 +59,6 @@ namespace CZToolKit.GraphProcessor.Editors
             GUILayout.Label(string.Concat("Connections：", view.ViewModel.Connections.Count), bigLabel.value);
             GUILayout.Label(string.Concat("Groups：", view.ViewModel.Groups.GroupMap.Count), bigLabel.value);
             EditorGUILayoutExtension.EndVerticalBoxGroup();
-
-            if (propertyTree == null)
-                return;
-            propertyTree.BeginDraw(false);
-            foreach (var property in propertyTree.EnumerateTree(false, true))
-            {
-                switch (property.Name)
-                {
-                    case nameof(BaseGraph.zoom):
-                    case nameof(BaseGraph.pan):
-                    case nameof(BaseGraph.nodes):
-                    case nameof(BaseGraph.connections):
-                    case nameof(BaseGraph.groups):
-                        continue;
-                }
-                EditorGUI.BeginChangeCheck();
-                property.Draw();
-                if (EditorGUI.EndChangeCheck() && view.ViewModel.TryGetValue(property.Name, out var bindableProperty))
-                    bindableProperty.SetValueWithNotify(property.ValueEntry.WeakSmartValue);
-            }
-
-            propertyTree.EndDraw();
         }
 
         public override void OnDisable()
