@@ -32,6 +32,7 @@ namespace CZToolKit.GraphProcessor
 
         private Dictionary<int, BaseNodeVM> nodes;
         private List<BaseConnectionVM> connections;
+        private Events<string> events;
         private BlackboardVM<string> blackboard;
         private Groups groups;
 
@@ -77,6 +78,11 @@ namespace CZToolKit.GraphProcessor
             get { return connections; }
         }
 
+        public Events<string> Events
+        {
+            get { return events; }
+        }
+
         public BlackboardVM<string> Blackboard
         {
             get { return blackboard; }
@@ -91,7 +97,8 @@ namespace CZToolKit.GraphProcessor
             Model.pan = Model.pan == default ? InternalVector2Int.zero : Model.pan;
             Model.zoom = Model.zoom == 0 ? 1 : Model.zoom;
 
-            this.blackboard = new BlackboardVM<string>(new Blackboard<string>());
+            this.events = new Events<string>();
+            this.blackboard = new BlackboardVM<string>(new Blackboard<string>(), events);
             this.nodes = new Dictionary<int, BaseNodeVM>();
             this.connections = new List<BaseConnectionVM>();
             this.groups = new Groups();
@@ -205,7 +212,7 @@ namespace CZToolKit.GraphProcessor
 
             if (groups.NodeGroupMap.TryGetValue(node.ID, out var group))
                 groups.RemoveNodeFromGroup(node);
-            
+
             Disconnect(node);
             nodes.Remove(node.ID);
             Model.nodes.Remove(node.ID);
@@ -401,14 +408,14 @@ namespace CZToolKit.GraphProcessor
             do
             {
                 id++;
-            } while (nodes.ContainsKey(id) || id == 0); 
+            } while (nodes.ContainsKey(id) || id == 0);
 
             return id;
         }
 
         #endregion
     }
-    
+
     public class Groups
     {
         private Dictionary<int, BaseGroupVM> groupMap = new Dictionary<int, BaseGroupVM>();
@@ -451,7 +458,7 @@ namespace CZToolKit.GraphProcessor
         {
             if (!nodeGroupMap.TryGetValue(node.ID, out var group))
                 return;
-            
+
             if (node.Owner != group.Owner)
                 return;
 
