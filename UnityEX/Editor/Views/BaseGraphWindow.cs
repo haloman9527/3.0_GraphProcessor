@@ -3,9 +3,9 @@
 /***
  *
  *  Title:
- *  
+ *
  *  Description:
- *  
+ *
  *  Date:
  *  Version:
  *  Writer: 半只龙虾人
@@ -294,6 +294,9 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             if (GraphAsset is IGraphAsset graphSerialization)
                 graphSerialization.SaveGraph(Graph.Model);
+
+            if (GraphAsset is UnityObject uo)
+                EditorUtility.SetDirty(uo);
 
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
