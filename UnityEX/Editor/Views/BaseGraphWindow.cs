@@ -44,7 +44,7 @@ namespace CZToolKit.GraphProcessor.Editors
         [SerializeField] private UnityObject unityGraphAsset;
         private IGraphOwner graphOwner;
         private IGraphAsset graphAsset;
-        private BaseGraphVM graph;
+        private BaseGraphProcessor graph;
         private BaseGraphView graphView;
         private CommandDispatcher commandDispatcher;
 
@@ -98,7 +98,7 @@ namespace CZToolKit.GraphProcessor.Editors
             }
         }
 
-        public BaseGraphVM Graph
+        public BaseGraphProcessor Graph
         {
             get { return graph; }
         }
@@ -153,7 +153,7 @@ namespace CZToolKit.GraphProcessor.Editors
         {
         }
 
-        protected void Load(BaseGraphVM graph, IGraphOwner graphOwner, IGraphAsset graphAsset)
+        protected void Load(BaseGraphProcessor graph, IGraphOwner graphOwner, IGraphAsset graphAsset)
         {
             Clear();
             BeforeLoad();
@@ -211,7 +211,7 @@ namespace CZToolKit.GraphProcessor.Editors
             {
                 LoadFromGraphAsset(graphAsset);
             }
-            else if (Graph is BaseGraphVM graphVM)
+            else if (Graph is BaseGraphProcessor graphVM)
             {
                 LoadFromGraphVM(graphVM);
             }
@@ -236,11 +236,11 @@ namespace CZToolKit.GraphProcessor.Editors
         // 从Graph资源加载
         public void LoadFromGraphAsset(IGraphAsset graphAsset)
         {
-            Load(ViewModelFactory.CreateViewModel(graphAsset.DeserializeGraph()) as BaseGraphVM, null, graphAsset);
+            Load(ViewModelFactory.CreateViewModel(graphAsset.DeserializeGraph()) as BaseGraphProcessor, null, graphAsset);
         }
 
         // 直接加载GraphVM对象
-        public void LoadFromGraphVM(BaseGraphVM graph)
+        public void LoadFromGraphVM(BaseGraphProcessor graph)
         {
             Load(graph, null, null);
         }
@@ -248,7 +248,7 @@ namespace CZToolKit.GraphProcessor.Editors
         // 直接加载Graph对象
         public void LoadFromGraph(BaseGraph graph)
         {
-            Load(ViewModelFactory.CreateViewModel(ViewModelFactory.CreateViewModel(graph) as BaseGraphVM) as BaseGraphVM, null, null);
+            Load(ViewModelFactory.CreateViewModel(ViewModelFactory.CreateViewModel(graph) as BaseGraphProcessor) as BaseGraphProcessor, null, null);
         }
 
         public void SetGraphDirty()
@@ -438,7 +438,7 @@ namespace CZToolKit.GraphProcessor.Editors
         }
 
         /// <summary> 打开Graph </summary>
-        public static BaseGraphWindow Open(BaseGraphVM graph)
+        public static BaseGraphWindow Open(BaseGraphProcessor graph)
         {
             var window = GetGraphWindow(graph.ModelType);
             window.LoadFromGraphVM(graph);

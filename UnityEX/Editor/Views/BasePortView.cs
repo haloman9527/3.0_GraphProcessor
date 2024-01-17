@@ -20,7 +20,7 @@ namespace CZToolKit.GraphProcessor.Editors
 {
     public abstract partial class BasePortView
     {
-        public BasePortView(BasePortVM port, IEdgeConnectorListener connectorListener) : this(
+        public BasePortView(BasePortProcessor port, IEdgeConnectorListener connectorListener) : this(
             orientation: port.Orientation == BasePort.Orientation.Horizontal ? Orientation.Horizontal : Orientation.Vertical,
             direction: port.Direction == BasePort.Direction.Input ? Direction.Input : Direction.Output,
             capacity: port.Capacity == BasePort.Capacity.Single ? Capacity.Single : Capacity.Multi,

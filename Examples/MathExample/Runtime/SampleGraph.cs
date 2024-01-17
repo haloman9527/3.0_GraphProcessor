@@ -21,7 +21,7 @@ using System;
 public class SampleGraph : BaseGraph { }
 
 [ViewModel(typeof(SampleGraph))]
-public class SampleGraphVM : BaseGraphVM
+public class SampleGraphProcessor : BaseGraphProcessor
 {
-    public SampleGraphVM(BaseGraph model) : base(model) { }
+    public SampleGraphProcessor(BaseGraph model) : base(model) { }
 }

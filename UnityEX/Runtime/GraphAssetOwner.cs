@@ -24,7 +24,7 @@ namespace CZToolKit.GraphProcessor
 {
     public abstract class GraphAssetOwner<TGraphAsset, TGraph> : MonoBehaviour, IGraphAssetOwner
         where TGraphAsset : UnityObject, IGraphAsset
-        where TGraph : BaseGraphVM
+        where TGraph : BaseGraphProcessor
     {
         #region Fields
         private TGraph graph = null;
@@ -39,7 +39,7 @@ namespace CZToolKit.GraphProcessor
             get { return graphAsset; }
         }
 
-        public BaseGraphVM Graph
+        public BaseGraphProcessor Graph
         {
             get { return T_Graph; }
         }

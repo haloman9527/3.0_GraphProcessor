@@ -84,7 +84,7 @@ public class FlowGraphWindow : BaseGraphWindow
         groups = Sirenix.Serialization.SerializationUtility.DeserializeValue<List<BaseGroup>>(groupsStr, DataFormat.Binary);
 
         var graph = GraphView.ViewModel;
-        var nodeMaps = new Dictionary<int, BaseNodeVM>();
+        var nodeMaps = new Dictionary<int, BaseNodeProcessor>();
 
         GraphView.ClearSelection();
 
@@ -92,7 +92,7 @@ public class FlowGraphWindow : BaseGraphWindow
         {
             pair.Value.id = graph.NewID();
             pair.Value.position += new InternalVector2Int(50, 50);
-            var vm = ViewModelFactory.CreateViewModel(pair.Value) as BaseNodeVM;
+            var vm = ViewModelFactory.CreateViewModel(pair.Value) as BaseNodeProcessor;
             GraphView.CommandDispatcher.Do(new AddNodeCommand(graph, vm));
             nodeMaps[pair.Key] = vm;
             GraphView.AddToSelection(GraphView.NodeViews[vm.ID]);
@@ -106,7 +106,7 @@ public class FlowGraphWindow : BaseGraphWindow
             if (nodeMaps.TryGetValue(connection.toNode, out var to))
                 connection.toNode = to.ID;
 
-            var vm = ViewModelFactory.CreateViewModel(connection) as BaseConnectionVM;
+            var vm = ViewModelFactory.CreateViewModel(connection) as BaseConnectionProcessor;
             GraphView.CommandDispatcher.Do(new ConnectCommand(graph, vm));
             GraphView.AddToSelection(GraphView.ConnectionViews[vm]);
         }

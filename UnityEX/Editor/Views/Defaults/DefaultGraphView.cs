@@ -3,7 +3,7 @@
     [CustomView(typeof(BaseGraph))]
     public class DefaultGraphView : BaseGraphView
     {
-        public DefaultGraphView(BaseGraphVM graph, BaseGraphWindow window, CommandDispatcher commandDispatcher) : base(graph, window, commandDispatcher)
+        public DefaultGraphView(BaseGraphProcessor graph, BaseGraphWindow window, CommandDispatcher commandDispatcher) : base(graph, window, commandDispatcher)
         {
         }
     }

@@ -24,12 +24,12 @@ using System.Linq;
 namespace CZToolKit.GraphProcessor
 {
     [ViewModel(typeof(BaseGroup))]
-    public class BaseGroupVM : ViewModel, IGraphElementViewModel
+    public class BaseGroupProcessor : ViewModel, IGraphElementViewModel
     {
         #region Fileds
 
-        public event Action<BaseNodeVM> onNodeAdded;
-        public event Action<BaseNodeVM> onNodeRemoved;
+        public event Action<BaseNodeProcessor> onNodeAdded;
+        public event Action<BaseNodeProcessor> onNodeRemoved;
 
         #endregion
 
@@ -37,7 +37,7 @@ namespace CZToolKit.GraphProcessor
 
         public BaseGroup Model { get; }
         public Type ModelType { get; }
-        public BaseGraphVM Owner { get; internal set; }
+        public BaseGraphProcessor Owner { get; internal set; }
 
         public int ID
         {
@@ -68,7 +68,7 @@ namespace CZToolKit.GraphProcessor
 
         #endregion
 
-        public BaseGroupVM(BaseGroup model)
+        public BaseGroupProcessor(BaseGroup model)
         {
             Model = model;
             ModelType = model.GetType();
@@ -78,12 +78,12 @@ namespace CZToolKit.GraphProcessor
             this[nameof(BaseGroup.backgroundColor)] = new BindableProperty<InternalColor>(() => Model.backgroundColor, v => Model.backgroundColor = v);
         }
 
-        internal void NotifyNodeAdded(BaseNodeVM node)
+        internal void NotifyNodeAdded(BaseNodeProcessor node)
         {
             onNodeAdded?.Invoke(node);
         }
 
-        internal void NotifyNodeRemoved(BaseNodeVM node)
+        internal void NotifyNodeRemoved(BaseNodeProcessor node)
         {
             onNodeRemoved?.Invoke(node);
         }

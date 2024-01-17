@@ -35,12 +35,12 @@ namespace CZToolKit.GraphProcessor.Editors
         #region Properties
 
         private MiniMap miniMap;
-        private BaseGraphVM viewModel;
+        private BaseGraphProcessor viewModel;
         private BaseGraphWindow graphWindow;
         private CommandDispatcher commandDispatcher;
         private Dictionary<int, BaseNodeView> nodeViews = new Dictionary<int, BaseNodeView>();
         private Dictionary<int, BaseGroupView> groupViews = new Dictionary<int, BaseGroupView>();
-        private Dictionary<BaseConnectionVM, BaseConnectionView> connectionViews = new Dictionary<BaseConnectionVM, BaseConnectionView>();
+        private Dictionary<BaseConnectionProcessor, BaseConnectionView> connectionViews = new Dictionary<BaseConnectionProcessor, BaseConnectionView>();
 
         public BaseGraphWindow GraphWindow
         {
@@ -57,7 +57,7 @@ namespace CZToolKit.GraphProcessor.Editors
             get { return GraphWindow.GraphAsset; }
         }
 
-        public BaseGraphVM ViewModel
+        public BaseGraphProcessor ViewModel
         {
             get { return viewModel; }
         }
@@ -72,7 +72,7 @@ namespace CZToolKit.GraphProcessor.Editors
             get { return groupViews; }
         }
 
-        public Dictionary<BaseConnectionVM, BaseConnectionView> ConnectionViews
+        public Dictionary<BaseConnectionProcessor, BaseConnectionView> ConnectionViews
         {
             get { return connectionViews; }
         }
@@ -111,7 +111,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
         #endregion
 
-        public BaseGraphView(BaseGraphVM graph, BaseGraphWindow window, CommandDispatcher commandDispatcher)
+        public BaseGraphView(BaseGraphProcessor graph, BaseGraphWindow window, CommandDispatcher commandDispatcher)
         {
             styleSheets.Add(GraphProcessorStyles.BaseGraphViewStyle);
 
@@ -251,7 +251,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
         #region API
 
-        public BaseNodeView AddNodeView(BaseNodeVM node)
+        public BaseNodeView AddNodeView(BaseNodeProcessor node)
         {
             var nodeView = NewNodeView(node);
             nodeView.AddToClassList(node.ModelType.Name);
@@ -269,7 +269,7 @@ namespace CZToolKit.GraphProcessor.Editors
             NodeViews.Remove(nodeView.ViewModel.ID);
         }
 
-        public BaseGroupView AddGroupView(BaseGroupVM group)
+        public BaseGroupView AddGroupView(BaseGroupProcessor group)
         {
             var groupView = NewGroupView(group);
             groupView.SetUp(group, this);
@@ -287,7 +287,7 @@ namespace CZToolKit.GraphProcessor.Editors
             GroupViews.Remove(groupView.ViewModel.ID);
         }
 
-        public BaseConnectionView ConnectView(BaseNodeView from, BaseNodeView to, BaseConnectionVM connection)
+        public BaseConnectionView ConnectView(BaseNodeView from, BaseNodeView to, BaseConnectionProcessor connection)
         {
             var connectionView = NewConnectionView(connection);
             connectionView.SetUp(connection, this);
@@ -393,31 +393,31 @@ namespace CZToolKit.GraphProcessor.Editors
             SetDirty();
         }
 
-        private void OnNodeAdded(BaseNodeVM node)
+        private void OnNodeAdded(BaseNodeProcessor node)
         {
             AddNodeView(node);
             SetDirty();
         }
 
-        private void OnNodeRemoved(BaseNodeVM node)
+        private void OnNodeRemoved(BaseNodeProcessor node)
         {
             RemoveNodeView(NodeViews[node.ID]);
             SetDirty();
         }
 
-        private void OnGroupAdded(BaseGroupVM group)
+        private void OnGroupAdded(BaseGroupProcessor group)
         {
             AddGroupView(group);
             SetDirty();
         }
 
-        private void OnGroupRemoved(BaseGroupVM group)
+        private void OnGroupRemoved(BaseGroupProcessor group)
         {
             RemoveGroupView(GroupViews[group.ID]);
             SetDirty();
         }
 
-        private void OnConnected(BaseConnectionVM connection)
+        private void OnConnected(BaseConnectionProcessor connection)
         {
             var from = NodeViews[connection.FromNodeID];
             var to = NodeViews[connection.ToNodeID];
@@ -425,7 +425,7 @@ namespace CZToolKit.GraphProcessor.Editors
             SetDirty();
         }
 
-        private void OnDisconnected(BaseConnectionVM connection)
+        private void OnDisconnected(BaseConnectionProcessor connection)
         {
             edges.ForEach(edge =>
             {
@@ -483,9 +483,9 @@ namespace CZToolKit.GraphProcessor.Editors
             {
                 CommandDispatcher.BeginGroup();
                 // 当节点移动之后，与之连接的接口重新排序
-                Dictionary<BaseNodeVM, InternalVector2Int> newPos = new Dictionary<BaseNodeVM, InternalVector2Int>();
-                Dictionary<BaseGroupVM, InternalVector2Int> groupNewPos = new Dictionary<BaseGroupVM, InternalVector2Int>();
-                HashSet<BasePortVM> portsHashset = new HashSet<BasePortVM>();
+                Dictionary<BaseNodeProcessor, InternalVector2Int> newPos = new Dictionary<BaseNodeProcessor, InternalVector2Int>();
+                Dictionary<BaseGroupProcessor, InternalVector2Int> groupNewPos = new Dictionary<BaseGroupProcessor, InternalVector2Int>();
+                HashSet<BasePortProcessor> portsHashset = new HashSet<BasePortProcessor>();
 
                 changes.movedElements.RemoveAll(element =>
                 {

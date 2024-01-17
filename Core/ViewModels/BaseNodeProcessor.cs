@@ -24,16 +24,16 @@ using System.Collections.Generic;
 namespace CZToolKit.GraphProcessor
 {
     [ViewModel(typeof(BaseNode))]
-    public class BaseNodeVM : ViewModel, IGraphElementViewModel
+    public class BaseNodeProcessor : ViewModel, IGraphElementViewModel
     {
         #region Fields
 
-        private List<BasePortVM> inPorts;
-        private List<BasePortVM> outPorts;
-        private Dictionary<string, BasePortVM> ports;
+        private List<BasePortProcessor> inPorts;
+        private List<BasePortProcessor> outPorts;
+        private Dictionary<string, BasePortProcessor> ports;
 
-        public event Action<BasePortVM> onPortAdded;
-        public event Action<BasePortVM> onPortRemoved;
+        public event Action<BasePortProcessor> onPortAdded;
+        public event Action<BasePortProcessor> onPortRemoved;
 
         #endregion
 
@@ -72,33 +72,33 @@ namespace CZToolKit.GraphProcessor
             set { SetPropertyValue(TOOLTIP_NAME, value); }
         }
 
-        public IReadOnlyList<BasePortVM> InPorts
+        public IReadOnlyList<BasePortProcessor> InPorts
         {
             get { return inPorts; }
         }
 
-        public IReadOnlyList<BasePortVM> OutPorts
+        public IReadOnlyList<BasePortProcessor> OutPorts
         {
             get { return outPorts; }
         }
 
-        public IReadOnlyDictionary<string, BasePortVM> Ports
+        public IReadOnlyDictionary<string, BasePortProcessor> Ports
         {
             get { return ports; }
         }
 
-        public BaseGraphVM Owner { get; internal set; }
+        public BaseGraphProcessor Owner { get; internal set; }
 
         #endregion
 
-        public BaseNodeVM(BaseNode model)
+        public BaseNodeProcessor(BaseNode model)
         {
             Model = model;
             ModelType = model.GetType();
             Model.position = Model.position == default ? InternalVector2Int.zero : Model.position;
-            inPorts = new List<BasePortVM>();
-            outPorts = new List<BasePortVM>();
-            ports = new Dictionary<string, BasePortVM>();
+            inPorts = new List<BasePortProcessor>();
+            outPorts = new List<BasePortProcessor>();
+            ports = new Dictionary<string, BasePortProcessor>();
 
             var nodeStaticInfo = GraphProcessorUtil.NodeStaticInfos[ModelType];
 
@@ -135,7 +135,12 @@ namespace CZToolKit.GraphProcessor
 
         #region API
 
-        public IEnumerable<BaseNodeVM> GetConnections(string portName)
+        public T ModelAs<T>() where T : BaseNode
+        {
+            return Model as T;
+        }
+
+        public IEnumerable<BaseNodeProcessor> GetConnections(string portName)
         {
             if (!Ports.TryGetValue(portName, out var port))
                 yield break;
@@ -155,7 +160,7 @@ namespace CZToolKit.GraphProcessor
             }
         }
 
-        public void AddPort(BasePortVM port)
+        public void AddPort(BasePortProcessor port)
         {
             ports.Add(port.Name, port);
             switch (port.Direction)
@@ -176,7 +181,7 @@ namespace CZToolKit.GraphProcessor
             onPortAdded?.Invoke(port);
         }
 
-        public void RemovePort(BasePortVM port)
+        public void RemovePort(BasePortProcessor port)
         {
             if (port.Owner != this)
                 return;
@@ -196,6 +201,7 @@ namespace CZToolKit.GraphProcessor
                     break;
                 }
             }
+
             onPortRemoved?.Invoke(port);
         }
 
@@ -204,11 +210,12 @@ namespace CZToolKit.GraphProcessor
             RemovePort(ports[portName]);
         }
 
-        public void SortPort(Func<BasePortVM, BasePortVM, int> comparer)
+        public void SortPort(Func<BasePortProcessor, BasePortProcessor, int> comparer)
         {
             inPorts.QuickSort(comparer);
             outPorts.QuickSort(comparer);
         }
+
         #endregion
 
         #region Overrides
@@ -236,7 +243,7 @@ namespace CZToolKit.GraphProcessor
         public const string TOOLTIP_NAME = "tooltip";
     }
 
-    public class BaseNodeVM<T> : BaseNodeVM where T : BaseNode
+    public class BaseNodeVM<T> : BaseNodeProcessor where T : BaseNode
     {
         public T T_Model { get; }
 

@@ -19,11 +19,11 @@ using System;
 namespace CZToolKit.GraphProcessor
 {
     [ViewModel(typeof(BaseConnection))]
-    public class BaseConnectionVM : ViewModel, IGraphElementViewModel
+    public class BaseConnectionProcessor : ViewModel, IGraphElementViewModel
     {
         #region Fields
-        [NonSerialized] BasePortVM from;
-        [NonSerialized] BasePortVM to;
+        [NonSerialized] BasePortProcessor from;
+        [NonSerialized] BasePortProcessor to;
         #endregion
 
         #region Properties
@@ -38,7 +38,7 @@ namespace CZToolKit.GraphProcessor
             get;
         }
         
-        public BaseGraphVM Owner
+        public BaseGraphProcessor Owner
         {
             get;
             internal set;
@@ -64,29 +64,29 @@ namespace CZToolKit.GraphProcessor
             get { return Model.toPort; }
         }
         
-        public BaseNodeVM FromNode
+        public BaseNodeProcessor FromNode
         {
             get { return from.Owner; }
         }
         
-        public BasePortVM FromPort
+        public BasePortProcessor FromPort
         {
             get { return from; }
         }
         
-        public BaseNodeVM ToNode
+        public BaseNodeProcessor ToNode
         {
             get { return to.Owner; }
         }
         
-        public BasePortVM ToPort
+        public BasePortProcessor ToPort
         {
             get { return to; }
         }
         
         #endregion
 
-        public BaseConnectionVM(BaseConnection model)
+        public BaseConnectionProcessor(BaseConnection model)
         {
             Model = model;
             ModelType = model.GetType();
@@ -100,7 +100,7 @@ namespace CZToolKit.GraphProcessor
         }
 
         /// <summary> 重定向 </summary>
-        internal void Redirect(BasePortVM from, BasePortVM to)
+        internal void Redirect(BasePortProcessor from, BasePortProcessor to)
         {
             Model.fromNode = from.Owner.ID;
             Model.fromPort = from.Name;

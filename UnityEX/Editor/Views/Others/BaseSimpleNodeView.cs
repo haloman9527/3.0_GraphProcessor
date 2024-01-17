@@ -18,7 +18,7 @@ using UnityEngine.UIElements;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
-    public abstract class BaseSimpleNodeView<M> : BaseNodeView<M> where M : BaseNodeVM
+    public abstract class BaseSimpleNodeView<M> : BaseNodeView<M> where M : BaseNodeProcessor
     {
         protected BaseSimpleNodeView() : base()
         {
@@ -28,6 +28,6 @@ namespace CZToolKit.GraphProcessor.Editors
         }
     }
 
-    public class BaseSimpleNodeView : BaseSimpleNodeView<BaseNodeVM> { }
+    public class BaseSimpleNodeView : BaseSimpleNodeView<BaseNodeProcessor> { }
 }
 #endif

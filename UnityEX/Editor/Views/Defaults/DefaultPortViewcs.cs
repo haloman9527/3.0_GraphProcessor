@@ -10,7 +10,7 @@ namespace CZToolKit.GraphProcessor.Editors
         {
         }
 
-        public DefaultPortView(BasePortVM port, IEdgeConnectorListener connectorListener) : base(port, connectorListener)
+        public DefaultPortView(BasePortProcessor port, IEdgeConnectorListener connectorListener) : base(port, connectorListener)
         {
         }
     }

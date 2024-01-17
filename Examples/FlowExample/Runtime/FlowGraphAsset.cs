@@ -51,11 +51,11 @@ public class FlowGraph : BaseGraph
 }
 
 [ViewModel(typeof(FlowGraph))]
-public class FlowGraphVM : BaseGraphVM
+public class FlowGraphProcessor : BaseGraphProcessor
 {
     private StartNodeVM StartNode { get; }
 
-    public FlowGraphVM(FlowGraph model) : base(model)
+    public FlowGraphProcessor(FlowGraph model) : base(model)
     {
         if (Nodes.TryGetValue(model.startNodeID, out var _node) && _node is StartNodeVM)
         {

@@ -24,7 +24,7 @@ public class FloatNode : BaseNode
 }
 
 [ViewModel(typeof(FloatNode))]
-public class FloatNodeVM : BaseNodeVM, IGetPortValue, IGetPortValue<float>
+public class FloatNodeVM : BaseNodeProcessor, IGetPortValue, IGetPortValue<float>
 {
     public FloatNode T_Model
     {
@@ -41,11 +41,11 @@ public class FloatNodeVM : BaseNodeVM, IGetPortValue, IGetPortValue<float>
     {
         T_Model = model;
         this[nameof(FloatNode.num)] = new BindableProperty<float>(() => T_Model.num, v => T_Model.num = v);
-        AddPort(new BasePortVM("Output", BasePort.Orientation.Horizontal, BasePort.Direction.Output, BasePort.Capacity.Multi, typeof(float))
+        AddPort(new BasePortProcessor("Output", BasePort.Orientation.Horizontal, BasePort.Direction.Output, BasePort.Capacity.Multi, typeof(float))
         {
             HideLabel = true
-        });AddPort(new BasePortVM("FlowIn", BasePort.Orientation.Horizontal, BasePort.Direction.Input, BasePort.Capacity.Multi, typeof(object)));
-        AddPort(new BasePortVM("FlowOut", BasePort.Orientation.Horizontal, BasePort.Direction.Output, BasePort.Capacity.Multi, typeof(object)));
+        });AddPort(new BasePortProcessor("FlowIn", BasePort.Orientation.Horizontal, BasePort.Direction.Input, BasePort.Capacity.Multi, typeof(object)));
+        AddPort(new BasePortProcessor("FlowOut", BasePort.Orientation.Horizontal, BasePort.Direction.Output, BasePort.Capacity.Multi, typeof(object)));
     }
 
     public object GetValue(string port)

@@ -18,6 +18,6 @@ namespace CZToolKit.GraphProcessor
 {
     public interface ISubGraph
     {
-        BaseGraphVM Parent { get; set; }
+        BaseGraphProcessor Parent { get; set; }
     }
 }

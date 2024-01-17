@@ -26,13 +26,13 @@ using GroupView = UnityEditor.Experimental.GraphView.Group;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
-    public partial class BaseGroupView : GroupView, IGraphElementView<BaseGroupVM>
+    public partial class BaseGroupView : GroupView, IGraphElementView<BaseGroupProcessor>
     {
         bool WithoutNotify { get; set; }
         public TextField TitleField { get; private set; }
         public ColorField BackgroudColorField { get; private set; }
         public Label TitleLabel { get; private set; }
-        public BaseGroupVM ViewModel { get; protected set; }
+        public BaseGroupProcessor ViewModel { get; protected set; }
         public BaseGraphView Owner { get; private set; }
         
 
@@ -52,7 +52,7 @@ namespace CZToolKit.GraphProcessor.Editors
             TitleField.RegisterCallback<FocusOutEvent>(evt => { Input.imeCompositionMode = IMECompositionMode.Auto; });
         }
 
-        public void SetUp(BaseGroupVM group, BaseGraphView graphView)
+        public void SetUp(BaseGroupProcessor group, BaseGraphView graphView)
         {
             this.ViewModel = group;
             this.Owner = graphView;
@@ -108,14 +108,14 @@ namespace CZToolKit.GraphProcessor.Editors
             Owner.SetDirty();
         }
 
-        private void OnNodesAdded(BaseNodeVM node)
+        private void OnNodesAdded(BaseNodeProcessor node)
         {
             if (WithoutNotify)
                 return;
             base.AddElements(new BaseNodeView[] { Owner.NodeViews[node.ID] });
         }
 
-        private void OnNodesRemoved(BaseNodeVM node)
+        private void OnNodesRemoved(BaseNodeProcessor node)
         {
             if (WithoutNotify)
                 return;

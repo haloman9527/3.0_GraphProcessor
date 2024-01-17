@@ -27,7 +27,7 @@ using UnityEngine;
 
 public class SampleGraphView : BaseGraphView
 {
-    public SampleGraphView(BaseGraphVM graph, BaseGraphWindow window, CommandDispatcher commandDispatcher) : base(graph, window, commandDispatcher)
+    public SampleGraphView(BaseGraphProcessor graph, BaseGraphWindow window, CommandDispatcher commandDispatcher) : base(graph, window, commandDispatcher)
     {
     }
 
@@ -54,7 +54,7 @@ public class SampleGraphView : BaseGraphView
         yield return typeof(LogNode);
     }
 
-    protected override BaseConnectionView NewConnectionView(BaseConnectionVM connection)
+    protected override BaseConnectionView NewConnectionView(BaseConnectionProcessor connection)
     {
         return new SampleConnectionView();
     }

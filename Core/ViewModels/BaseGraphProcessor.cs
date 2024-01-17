@@ -26,22 +26,22 @@ using System.Collections.Generic;
 namespace CZToolKit.GraphProcessor
 {
     [ViewModel(typeof(BaseGraph))]
-    public class BaseGraphVM : ViewModel, IGraphElementViewModel
+    public class BaseGraphProcessor : ViewModel, IGraphElementViewModel
     {
         #region Fields
 
-        private Dictionary<int, BaseNodeVM> nodes;
-        private List<BaseConnectionVM> connections;
+        private Dictionary<int, BaseNodeProcessor> nodes;
+        private List<BaseConnectionProcessor> connections;
         private Events<string> events;
         private BlackboardVM<string> blackboard;
         private Groups groups;
 
-        public event Action<BaseNodeVM> OnNodeAdded;
-        public event Action<BaseNodeVM> OnNodeRemoved;
-        public event Action<BaseConnectionVM> OnConnected;
-        public event Action<BaseConnectionVM> OnDisconnected;
-        public event Action<BaseGroupVM> OnGroupAdded;
-        public event Action<BaseGroupVM> OnGroupRemoved;
+        public event Action<BaseNodeProcessor> OnNodeAdded;
+        public event Action<BaseNodeProcessor> OnNodeRemoved;
+        public event Action<BaseConnectionProcessor> OnConnected;
+        public event Action<BaseConnectionProcessor> OnDisconnected;
+        public event Action<BaseGroupProcessor> OnGroupAdded;
+        public event Action<BaseGroupProcessor> OnGroupRemoved;
 
         #endregion
 
@@ -63,7 +63,7 @@ namespace CZToolKit.GraphProcessor
             set { SetPropertyValue(nameof(BaseGraph.zoom), value); }
         }
 
-        public IReadOnlyDictionary<int, BaseNodeVM> Nodes
+        public IReadOnlyDictionary<int, BaseNodeProcessor> Nodes
         {
             get { return nodes; }
         }
@@ -73,7 +73,7 @@ namespace CZToolKit.GraphProcessor
             get { return groups; }
         }
 
-        public IReadOnlyList<BaseConnectionVM> Connections
+        public IReadOnlyList<BaseConnectionProcessor> Connections
         {
             get { return connections; }
         }
@@ -90,7 +90,7 @@ namespace CZToolKit.GraphProcessor
 
         #endregion
 
-        public BaseGraphVM(BaseGraph model)
+        public BaseGraphProcessor(BaseGraph model)
         {
             Model = model;
             ModelType = model.GetType();
@@ -99,8 +99,8 @@ namespace CZToolKit.GraphProcessor
 
             this.events = new Events<string>();
             this.blackboard = new BlackboardVM<string>(new Blackboard<string>(), events);
-            this.nodes = new Dictionary<int, BaseNodeVM>();
-            this.connections = new List<BaseConnectionVM>();
+            this.nodes = new Dictionary<int, BaseNodeProcessor>();
+            this.connections = new List<BaseConnectionProcessor>();
             this.groups = new Groups();
 
             this.RegisterProperty(nameof(BaseGraph.pan), new BindableProperty<InternalVector2Int>(() => Model.pan, v => Model.pan = v));
@@ -110,7 +110,7 @@ namespace CZToolKit.GraphProcessor
             {
                 if (pair.Value == null)
                     continue;
-                var nodeVM = ViewModelFactory.CreateViewModel(pair.Value) as BaseNodeVM;
+                var nodeVM = ViewModelFactory.CreateViewModel(pair.Value) as BaseNodeProcessor;
                 nodeVM.Owner = this;
                 nodes.Add(pair.Key, nodeVM);
             }
@@ -131,7 +131,7 @@ namespace CZToolKit.GraphProcessor
                     continue;
                 }
 
-                var connectionVM = ViewModelFactory.CreateViewModel(connection) as BaseConnectionVM;
+                var connectionVM = ViewModelFactory.CreateViewModel(connection) as BaseConnectionProcessor;
                 connectionVM.Owner = this;
                 fromPort.connections.Add(connectionVM);
                 toPort.connections.Add(connectionVM);
@@ -153,7 +153,7 @@ namespace CZToolKit.GraphProcessor
                         group.nodes.RemoveAt(j);
                 }
 
-                var groupVM = ViewModelFactory.CreateViewModel(group) as BaseGroupVM;
+                var groupVM = ViewModelFactory.CreateViewModel(group) as BaseGroupProcessor;
                 groupVM.Owner = this;
                 groups.AddGroup(groupVM);
             }
@@ -172,26 +172,26 @@ namespace CZToolKit.GraphProcessor
 
         #region API
 
-        public BaseNodeVM AddNode<T>(InternalVector2Int position) where T : BaseNode, new()
+        public BaseNodeProcessor AddNode<T>(InternalVector2Int position) where T : BaseNode, new()
         {
             return AddNode(typeof(T), position);
         }
 
-        public BaseNodeVM AddNode(Type nodeType, InternalVector2Int position)
+        public BaseNodeProcessor AddNode(Type nodeType, InternalVector2Int position)
         {
             var nodeVM = NewNode(nodeType, position);
             AddNode(nodeVM);
             return nodeVM;
         }
 
-        public BaseNodeVM AddNode(BaseNode node)
+        public BaseNodeProcessor AddNode(BaseNode node)
         {
-            var nodeVM = ViewModelFactory.CreateViewModel(node) as BaseNodeVM;
+            var nodeVM = ViewModelFactory.CreateViewModel(node) as BaseNodeProcessor;
             AddNode(nodeVM);
             return nodeVM;
         }
 
-        public void AddNode(BaseNodeVM node)
+        public void AddNode(BaseNodeProcessor node)
         {
             nodes.Add(node.ID, node);
             Model.nodes.Add(node.ID, node.Model);
@@ -205,7 +205,7 @@ namespace CZToolKit.GraphProcessor
             RemoveNode(Nodes[id]);
         }
 
-        public void RemoveNode(BaseNodeVM node)
+        public void RemoveNode(BaseNodeProcessor node)
         {
             if (node.Owner != this)
                 throw new NullReferenceException("节点不是此Graph中");
@@ -220,7 +220,7 @@ namespace CZToolKit.GraphProcessor
             OnNodeRemoved?.Invoke(node);
         }
 
-        public BaseConnectionVM Connect(BasePortVM fromPort, BasePortVM toPort)
+        public BaseConnectionProcessor Connect(BasePortProcessor fromPort, BasePortProcessor toPort)
         {
             var tmpConnection = fromPort.Connections.FirstOrDefault(tmp => tmp.FromNode == fromPort.Owner && tmp.ToPortName == toPort.Name);
             if (tmpConnection != null)
@@ -247,7 +247,7 @@ namespace CZToolKit.GraphProcessor
             return connection;
         }
 
-        public void Connect(BaseConnectionVM connection)
+        public void Connect(BaseConnectionProcessor connection)
         {
             var fromNode = Nodes[connection.FromNodeID];
             var fromPort = fromNode.Ports[connection.FromPortName];
@@ -276,15 +276,15 @@ namespace CZToolKit.GraphProcessor
             OnConnected?.Invoke(connection);
         }
 
-        public void Disconnect(BaseConnectionVM connection)
+        public void Disconnect(BaseConnectionProcessor connection)
         {
-            if (connection.FromNode.Ports.TryGetValue(connection.FromPortName, out BasePortVM fromPort))
+            if (connection.FromNode.Ports.TryGetValue(connection.FromPortName, out BasePortProcessor fromPort))
             {
                 fromPort.DisconnectTo(connection);
                 fromPort.Resort();
             }
 
-            if (connection.ToNode.Ports.TryGetValue(connection.ToPortName, out BasePortVM toPort))
+            if (connection.ToNode.Ports.TryGetValue(connection.ToPortName, out BasePortProcessor toPort))
             {
                 toPort.DisconnectTo(connection);
                 toPort.Resort();
@@ -296,7 +296,7 @@ namespace CZToolKit.GraphProcessor
             OnDisconnected?.Invoke(connection);
         }
 
-        public void Disconnect(BaseNodeVM node)
+        public void Disconnect(BaseNodeProcessor node)
         {
             for (int i = 0; i < connections.Count; i++)
             {
@@ -309,7 +309,7 @@ namespace CZToolKit.GraphProcessor
             }
         }
 
-        public void Disconnect(BasePortVM port)
+        public void Disconnect(BasePortProcessor port)
         {
             for (int i = 0; i < port.connections.Count; i++)
             {
@@ -317,7 +317,7 @@ namespace CZToolKit.GraphProcessor
             }
         }
 
-        public void RevertDisconnect(BaseConnectionVM connection)
+        public void RevertDisconnect(BaseConnectionProcessor connection)
         {
             var fromNode = nodes[connection.FromNodeID];
             var fromPort = fromNode.Ports[connection.FromPortName];
@@ -347,7 +347,7 @@ namespace CZToolKit.GraphProcessor
             OnConnected?.Invoke(connection);
         }
 
-        public void AddGroup(BaseGroupVM group)
+        public void AddGroup(BaseGroupProcessor group)
         {
             groups.AddGroup(group);
             Model.groups.Add(group.Model);
@@ -355,32 +355,32 @@ namespace CZToolKit.GraphProcessor
             OnGroupAdded?.Invoke(group);
         }
 
-        public void RemoveGroup(BaseGroupVM group)
+        public void RemoveGroup(BaseGroupProcessor group)
         {
             groups.RemoveGroup(group);
             Model.groups.Remove(group.Model);
             OnGroupRemoved?.Invoke(group);
         }
 
-        public virtual BaseNodeVM NewNode(Type nodeType, InternalVector2Int position)
+        public virtual BaseNodeProcessor NewNode(Type nodeType, InternalVector2Int position)
         {
             var node = Activator.CreateInstance(nodeType) as BaseNode;
             node.id = NewID();
             node.position = position;
-            return ViewModelFactory.CreateViewModel(node) as BaseNodeVM;
+            return ViewModelFactory.CreateViewModel(node) as BaseNodeProcessor;
         }
 
-        public virtual BaseNodeVM NewNode<TNode>(InternalVector2Int position) where TNode : BaseNode, new()
+        public virtual BaseNodeProcessor NewNode<TNode>(InternalVector2Int position) where TNode : BaseNode, new()
         {
             var node = new TNode()
             {
                 id = NewID(),
                 position = position
             };
-            return ViewModelFactory.CreateViewModel(node) as BaseNodeVM;
+            return ViewModelFactory.CreateViewModel(node) as BaseNodeProcessor;
         }
 
-        public virtual BaseConnectionVM NewConnection(BasePortVM from, BasePortVM to)
+        public virtual BaseConnectionProcessor NewConnection(BasePortProcessor from, BasePortProcessor to)
         {
             var connection = new BaseConnection()
             {
@@ -389,17 +389,17 @@ namespace CZToolKit.GraphProcessor
                 toNode = to.Owner.ID,
                 toPort = to.Name
             };
-            return ViewModelFactory.CreateViewModel(connection) as BaseConnectionVM;
+            return ViewModelFactory.CreateViewModel(connection) as BaseConnectionProcessor;
         }
 
-        public virtual BaseGroupVM NewGroup(string groupName)
+        public virtual BaseGroupProcessor NewGroup(string groupName)
         {
             var group = new BaseGroup()
             {
                 id = NewID(),
                 groupName = groupName
             };
-            return ViewModelFactory.CreateViewModel(group) as BaseGroupVM;
+            return ViewModelFactory.CreateViewModel(group) as BaseGroupProcessor;
         }
 
         public int NewID()
@@ -418,20 +418,20 @@ namespace CZToolKit.GraphProcessor
 
     public class Groups
     {
-        private Dictionary<int, BaseGroupVM> groupMap = new Dictionary<int, BaseGroupVM>();
-        private Dictionary<int, BaseGroupVM> nodeGroupMap = new Dictionary<int, BaseGroupVM>();
+        private Dictionary<int, BaseGroupProcessor> groupMap = new Dictionary<int, BaseGroupProcessor>();
+        private Dictionary<int, BaseGroupProcessor> nodeGroupMap = new Dictionary<int, BaseGroupProcessor>();
 
-        public IReadOnlyDictionary<int, BaseGroupVM> GroupMap
+        public IReadOnlyDictionary<int, BaseGroupProcessor> GroupMap
         {
             get { return groupMap; }
         }
 
-        public IReadOnlyDictionary<int, BaseGroupVM> NodeGroupMap
+        public IReadOnlyDictionary<int, BaseGroupProcessor> NodeGroupMap
         {
             get { return nodeGroupMap; }
         }
 
-        public void AddNodeToGroup(BaseGroupVM group, BaseNodeVM node)
+        public void AddNodeToGroup(BaseGroupProcessor group, BaseNodeProcessor node)
         {
             if (node.Owner != group.Owner)
                 return;
@@ -454,7 +454,7 @@ namespace CZToolKit.GraphProcessor
             group.NotifyNodeAdded(node);
         }
 
-        public void RemoveNodeFromGroup(BaseNodeVM node)
+        public void RemoveNodeFromGroup(BaseNodeProcessor node)
         {
             if (!nodeGroupMap.TryGetValue(node.ID, out var group))
                 return;
@@ -467,7 +467,7 @@ namespace CZToolKit.GraphProcessor
             group.NotifyNodeRemoved(node);
         }
 
-        public void AddGroup(BaseGroupVM group)
+        public void AddGroup(BaseGroupProcessor group)
         {
             this.groupMap.Add(group.ID, group);
             foreach (var pair in groupMap)
@@ -479,7 +479,7 @@ namespace CZToolKit.GraphProcessor
             }
         }
 
-        public void RemoveGroup(BaseGroupVM group)
+        public void RemoveGroup(BaseGroupProcessor group)
         {
             foreach (var nodeID in group.Nodes)
             {

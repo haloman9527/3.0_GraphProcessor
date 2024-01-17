@@ -21,18 +21,18 @@ using CZToolKit.GraphProcessor;
 public class AddNode : BaseNode { }
 
 [ViewModel(typeof(AddNode))]
-public class AddNodeVM : BaseNodeVM, IGetPortValue, IGetPortValue<float>
+public class AddNodeVM : BaseNodeProcessor, IGetPortValue, IGetPortValue<float>
 {
     public AddNodeVM(BaseNode model) : base(model)
     {
-        AddPort(new BasePortVM("InputA", BasePort.Orientation.Horizontal, BasePort.Direction.Input, BasePort.Capacity.Single, typeof(float)));
-        AddPort(new BasePortVM("InputB", BasePort.Orientation.Horizontal, BasePort.Direction.Input, BasePort.Capacity.Single, typeof(float)));
-        AddPort(new BasePortVM("Result", BasePort.Orientation.Horizontal, BasePort.Direction.Output, BasePort.Capacity.Multi, typeof(float))
+        AddPort(new BasePortProcessor("InputA", BasePort.Orientation.Horizontal, BasePort.Direction.Input, BasePort.Capacity.Single, typeof(float)));
+        AddPort(new BasePortProcessor("InputB", BasePort.Orientation.Horizontal, BasePort.Direction.Input, BasePort.Capacity.Single, typeof(float)));
+        AddPort(new BasePortProcessor("Result", BasePort.Orientation.Horizontal, BasePort.Direction.Output, BasePort.Capacity.Multi, typeof(float))
         {
             HideLabel = true
         });
-        AddPort(new BasePortVM("FlowIn", BasePort.Orientation.Horizontal, BasePort.Direction.Input, BasePort.Capacity.Multi, typeof(object)));
-        AddPort(new BasePortVM("FlowOut", BasePort.Orientation.Horizontal, BasePort.Direction.Output, BasePort.Capacity.Multi, typeof(object)));
+        AddPort(new BasePortProcessor("FlowIn", BasePort.Orientation.Horizontal, BasePort.Direction.Input, BasePort.Capacity.Multi, typeof(object)));
+        AddPort(new BasePortProcessor("FlowOut", BasePort.Orientation.Horizontal, BasePort.Direction.Output, BasePort.Capacity.Multi, typeof(object)));
     }
 
     public object GetValue(string port)

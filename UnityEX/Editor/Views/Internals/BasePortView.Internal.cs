@@ -22,7 +22,7 @@ using UnityEngine.UIElements;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
-    public abstract partial class BasePortView : Port, IGraphElementView<BasePortVM>
+    public abstract partial class BasePortView : Port, IGraphElementView<BasePortProcessor>
     {
         public Image Icon { get; }
         public VisualElement CapIconBG { get; }
@@ -31,8 +31,8 @@ namespace CZToolKit.GraphProcessor.Editors
         public VisualElement Connector { get; }
         public VisualElement ConnectorCap { get; }
         public BaseGraphView GraphView { get; private set; }
-        public BasePortVM ViewModel { get; private set; }
-        public Dictionary<BaseConnectionVM, BaseConnectionView> ConnectionViews { get; private set; }
+        public BasePortProcessor ViewModel { get; private set; }
+        public Dictionary<BaseConnectionProcessor, BaseConnectionView> ConnectionViews { get; private set; }
 
         protected BasePortView(Orientation orientation, Direction direction, Capacity capacity, Type type, IEdgeConnectorListener connectorListener) : base(orientation, direction, capacity, type)
         {
@@ -68,11 +68,11 @@ namespace CZToolKit.GraphProcessor.Editors
             }
 
             m_EdgeConnector = new EdgeConnector<BaseConnectionView>(connectorListener);
-            ConnectionViews = new Dictionary<BaseConnectionVM, BaseConnectionView>();
+            ConnectionViews = new Dictionary<BaseConnectionProcessor, BaseConnectionView>();
             this.AddManipulator(m_EdgeConnector);
         }
 
-        public void SetUp(BasePortVM port, BaseGraphView graphView)
+        public void SetUp(BasePortProcessor port, BaseGraphView graphView)
         {
             ViewModel = port;
             GraphView = graphView;

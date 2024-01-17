@@ -23,22 +23,22 @@ namespace CZToolKit.GraphProcessor
 {
     public class AddNodeCommand : ICommand
     {
-        BaseGraphVM graph;
-        BaseNodeVM nodeVM;
+        BaseGraphProcessor graph;
+        BaseNodeProcessor nodeVM;
 
-        public AddNodeCommand(BaseGraphVM graph, Type nodeType, InternalVector2Int position)
+        public AddNodeCommand(BaseGraphProcessor graph, Type nodeType, InternalVector2Int position)
         {
             this.graph = graph;
             this.nodeVM = graph.NewNode(nodeType, position);
         }
 
-        public AddNodeCommand(BaseGraphVM graph, BaseNode node)
+        public AddNodeCommand(BaseGraphProcessor graph, BaseNode node)
         {
             this.graph = graph;
-            this.nodeVM = ViewModelFactory.CreateViewModel(node) as BaseNodeVM;
+            this.nodeVM = ViewModelFactory.CreateViewModel(node) as BaseNodeProcessor;
         }
 
-        public AddNodeCommand(BaseGraphVM graph, BaseNodeVM node)
+        public AddNodeCommand(BaseGraphProcessor graph, BaseNodeProcessor node)
         {
             this.graph = graph;
             this.nodeVM = node;
@@ -62,11 +62,11 @@ namespace CZToolKit.GraphProcessor
 
     public class RemoveNodeCommand : ICommand
     {
-        BaseGraphVM graph;
-        BaseNodeVM node;
+        BaseGraphProcessor graph;
+        BaseNodeProcessor node;
 
-        List<BaseConnectionVM> connections = new List<BaseConnectionVM>();
-        public RemoveNodeCommand(BaseGraphVM graph, BaseNodeVM node)
+        List<BaseConnectionProcessor> connections = new List<BaseConnectionProcessor>();
+        public RemoveNodeCommand(BaseGraphProcessor graph, BaseNodeProcessor node)
         {
             this.graph = graph;
             this.node = node;
@@ -103,11 +103,11 @@ namespace CZToolKit.GraphProcessor
     
     public class RemoveNodesCommand : ICommand
     {
-        BaseGraphVM graph;
-        BaseNodeVM[] nodes;
+        BaseGraphProcessor graph;
+        BaseNodeProcessor[] nodes;
 
-        HashSet<BaseConnectionVM> connections = new HashSet<BaseConnectionVM>();
-        public RemoveNodesCommand(BaseGraphVM graph, BaseNodeVM[] nodes)
+        HashSet<BaseConnectionProcessor> connections = new HashSet<BaseConnectionProcessor>();
+        public RemoveNodesCommand(BaseGraphProcessor graph, BaseNodeProcessor[] nodes)
         {
             this.graph = graph;
             this.nodes = nodes;
@@ -155,11 +155,11 @@ namespace CZToolKit.GraphProcessor
 
     public class MoveNodeCommand : ICommand
     {
-        BaseNodeVM node;
+        BaseNodeProcessor node;
         InternalVector2Int currentPosition;
         InternalVector2Int targetPosition;
 
-        public MoveNodeCommand(BaseNodeVM node, InternalVector2Int position)
+        public MoveNodeCommand(BaseNodeProcessor node, InternalVector2Int position)
         {
             this.node = node;
             currentPosition = node.Position;
@@ -184,10 +184,10 @@ namespace CZToolKit.GraphProcessor
 
     public class MoveNodesCommand : ICommand
     {
-        Dictionary<BaseNodeVM, InternalVector2Int> oldPos = new Dictionary<BaseNodeVM, InternalVector2Int>();
-        Dictionary<BaseNodeVM, InternalVector2Int> newPos = new Dictionary<BaseNodeVM, InternalVector2Int>();
+        Dictionary<BaseNodeProcessor, InternalVector2Int> oldPos = new Dictionary<BaseNodeProcessor, InternalVector2Int>();
+        Dictionary<BaseNodeProcessor, InternalVector2Int> newPos = new Dictionary<BaseNodeProcessor, InternalVector2Int>();
 
-        public MoveNodesCommand(Dictionary<BaseNodeVM, InternalVector2Int> newPos)
+        public MoveNodesCommand(Dictionary<BaseNodeProcessor, InternalVector2Int> newPos)
         {
             this.newPos = newPos;
         }
@@ -217,19 +217,19 @@ namespace CZToolKit.GraphProcessor
 
     public class AddGroupCommand : ICommand
     {
-        public BaseGraphVM graph;
-        public BaseGroupVM group;
+        public BaseGraphProcessor graph;
+        public BaseGroupProcessor group;
 
-        public AddGroupCommand(BaseGraphVM graph, BaseGroupVM group)
+        public AddGroupCommand(BaseGraphProcessor graph, BaseGroupProcessor group)
         {
             this.graph = graph;
             this.group = group;
         }
 
-        public AddGroupCommand(BaseGraphVM graph, BaseGroup group)
+        public AddGroupCommand(BaseGraphProcessor graph, BaseGroup group)
         {
             this.graph = graph;
-            this.group = ViewModelFactory.CreateViewModel(group) as BaseGroupVM;
+            this.group = ViewModelFactory.CreateViewModel(group) as BaseGroupProcessor;
         }
 
         public void Do()
@@ -250,10 +250,10 @@ namespace CZToolKit.GraphProcessor
 
     public class RemoveGroupCommand : ICommand
     {
-        public BaseGraphVM graph;
-        public BaseGroupVM group;
+        public BaseGraphProcessor graph;
+        public BaseGroupProcessor group;
 
-        public RemoveGroupCommand(BaseGraphVM graph, BaseGroupVM group)
+        public RemoveGroupCommand(BaseGraphProcessor graph, BaseGroupProcessor group)
         {
             this.graph = graph;
             this.group = group;
@@ -277,10 +277,10 @@ namespace CZToolKit.GraphProcessor
 
     public class RemoveGroupsCommand : ICommand
     {
-        public BaseGraphVM graph;
-        public BaseGroupVM[] groups;
+        public BaseGraphProcessor graph;
+        public BaseGroupProcessor[] groups;
 
-        public RemoveGroupsCommand(BaseGraphVM graph, BaseGroupVM[] groups)
+        public RemoveGroupsCommand(BaseGraphProcessor graph, BaseGroupProcessor[] groups)
         {
             this.graph = graph;
             this.groups = groups;
@@ -310,11 +310,11 @@ namespace CZToolKit.GraphProcessor
 
     public class AddToGroupCommand : ICommand
     {
-        private BaseGraphVM graph;
-        private BaseGroupVM group;
-        private BaseNodeVM[] nodes;
+        private BaseGraphProcessor graph;
+        private BaseGroupProcessor group;
+        private BaseNodeProcessor[] nodes;
         
-        public AddToGroupCommand(BaseGraphVM graph, BaseGroupVM group, BaseNodeVM[] nodes)
+        public AddToGroupCommand(BaseGraphProcessor graph, BaseGroupProcessor group, BaseNodeProcessor[] nodes)
         {
             this.graph = graph;
             this.group = group;
@@ -345,11 +345,11 @@ namespace CZToolKit.GraphProcessor
 
     public class RemoveFromGroupCommand : ICommand
     {
-        private BaseGraphVM graph;
-        private BaseGroupVM group;
-        private BaseNodeVM[] nodes;
+        private BaseGraphProcessor graph;
+        private BaseGroupProcessor group;
+        private BaseNodeProcessor[] nodes;
         
-        public RemoveFromGroupCommand(BaseGraphVM graph, BaseGroupVM group, BaseNodeVM[] nodes)
+        public RemoveFromGroupCommand(BaseGraphProcessor graph, BaseGroupProcessor group, BaseNodeProcessor[] nodes)
         {
             this.graph = graph;
             this.group = group;
@@ -380,10 +380,10 @@ namespace CZToolKit.GraphProcessor
 
     public class MoveGroupsCommand : ICommand
     {
-        Dictionary<BaseGroupVM, InternalVector2Int> oldPos = new Dictionary<BaseGroupVM, InternalVector2Int>();
-        Dictionary<BaseGroupVM, InternalVector2Int> newPos = new Dictionary<BaseGroupVM, InternalVector2Int>();
+        Dictionary<BaseGroupProcessor, InternalVector2Int> oldPos = new Dictionary<BaseGroupProcessor, InternalVector2Int>();
+        Dictionary<BaseGroupProcessor, InternalVector2Int> newPos = new Dictionary<BaseGroupProcessor, InternalVector2Int>();
 
-        public MoveGroupsCommand(Dictionary<BaseGroupVM, InternalVector2Int> groups)
+        public MoveGroupsCommand(Dictionary<BaseGroupProcessor, InternalVector2Int> groups)
         {
             this.newPos = groups;
             foreach (var pair in groups)
@@ -416,11 +416,11 @@ namespace CZToolKit.GraphProcessor
 
     public class RenameGroupCommand : ICommand
     {
-        public BaseGroupVM group;
+        public BaseGroupProcessor group;
         public string oldName;
         public string newName;
 
-        public RenameGroupCommand(BaseGroupVM group, string newName)
+        public RenameGroupCommand(BaseGroupProcessor group, string newName)
         {
             this.group = group;
             this.oldName = group.GroupName;
@@ -445,10 +445,10 @@ namespace CZToolKit.GraphProcessor
 
     public class GroupAddNodesCommand : ICommand
     {
-        private BaseNodeVM[] nodes;
-        private Dictionary<BaseGroupVM, List<int>> cache = new Dictionary<BaseGroupVM, List<int>>();
+        private BaseNodeProcessor[] nodes;
+        private Dictionary<BaseGroupProcessor, List<int>> cache = new Dictionary<BaseGroupProcessor, List<int>>();
 
-        public GroupAddNodesCommand(BaseGroupVM group, BaseNodeVM[] nodes)
+        public GroupAddNodesCommand(BaseGroupProcessor group, BaseNodeProcessor[] nodes)
         {
             this.nodes.Where(item => item.Owner == group.Owner && !group.Nodes.Contains(item.ID));
         }
@@ -481,14 +481,14 @@ namespace CZToolKit.GraphProcessor
 
     public class AddPortCommand : ICommand
     {
-        BaseNodeVM node;
-        BasePortVM port;
+        BaseNodeProcessor node;
+        BasePortProcessor port;
         bool successed = false;
 
-        public AddPortCommand(BaseNodeVM node, string name, BasePort.Orientation orientation, BasePort.Direction direction, BasePort.Capacity capacity, Type type = null)
+        public AddPortCommand(BaseNodeProcessor node, string name, BasePort.Orientation orientation, BasePort.Direction direction, BasePort.Capacity capacity, Type type = null)
         {
             this.node = node;
-            port = new BasePortVM(name, orientation, direction, capacity, type);
+            port = new BasePortProcessor(name, orientation, direction, capacity, type);
         }
 
         public void Do()
@@ -518,17 +518,17 @@ namespace CZToolKit.GraphProcessor
 
     public class RemovePortCommand : ICommand
     {
-        BaseNodeVM node;
-        BasePortVM port;
+        BaseNodeProcessor node;
+        BasePortProcessor port;
         bool successed = false;
 
-        public RemovePortCommand(BaseNodeVM node, BasePortVM port)
+        public RemovePortCommand(BaseNodeProcessor node, BasePortProcessor port)
         {
             this.node = node;
             this.port = port;
         }
 
-        public RemovePortCommand(BaseNodeVM node, string name)
+        public RemovePortCommand(BaseNodeProcessor node, string name)
         {
             this.node = node;
             node.Ports.TryGetValue(name, out port);
@@ -561,14 +561,14 @@ namespace CZToolKit.GraphProcessor
 
     public class ConnectCommand : ICommand
     {
-        private readonly BaseGraphVM graph;
+        private readonly BaseGraphProcessor graph;
 
-        BasePortVM from;
-        BasePortVM to;
-        BaseConnectionVM connectionVM;
-        HashSet<BaseConnectionVM> replacedConnections = new HashSet<BaseConnectionVM>();
+        BasePortProcessor from;
+        BasePortProcessor to;
+        BaseConnectionProcessor connectionVM;
+        HashSet<BaseConnectionProcessor> replacedConnections = new HashSet<BaseConnectionProcessor>();
 
-        public ConnectCommand(BaseGraphVM graph, BasePortVM from, BasePortVM to)
+        public ConnectCommand(BaseGraphProcessor graph, BasePortProcessor from, BasePortProcessor to)
         {
             this.graph = graph;
             this.connectionVM = graph.NewConnection(from, to);
@@ -577,7 +577,7 @@ namespace CZToolKit.GraphProcessor
             this.to = to;
         }
 
-        public ConnectCommand(BaseGraphVM graph, BaseConnectionVM connection)
+        public ConnectCommand(BaseGraphProcessor graph, BaseConnectionProcessor connection)
         {
             this.graph = graph;
             this.connectionVM = connection;
@@ -629,15 +629,15 @@ namespace CZToolKit.GraphProcessor
 
     public class ConnectionRedirectCommand : ICommand
     {
-        BaseGraphVM graph;
-        BaseConnectionVM connection;
+        BaseGraphProcessor graph;
+        BaseConnectionProcessor connection;
 
-        BasePortVM oldFromPort, oldToPort;
-        BasePortVM newFromPort, newToPort;
+        BasePortProcessor oldFromPort, oldToPort;
+        BasePortProcessor newFromPort, newToPort;
 
-        List<BaseConnectionVM> replacedConnections = new List<BaseConnectionVM>();
+        List<BaseConnectionProcessor> replacedConnections = new List<BaseConnectionProcessor>();
 
-        public ConnectionRedirectCommand(BaseGraphVM graph, BaseConnectionVM connection, BasePortVM from, BasePortVM to)
+        public ConnectionRedirectCommand(BaseGraphProcessor graph, BaseConnectionProcessor connection, BasePortProcessor from, BasePortProcessor to)
         {
             this.graph = graph;
             this.connection = connection;
@@ -688,10 +688,10 @@ namespace CZToolKit.GraphProcessor
 
     public class DisconnectCommand : ICommand
     {
-        BaseGraphVM graph;
-        BaseConnectionVM connection;
+        BaseGraphProcessor graph;
+        BaseConnectionProcessor connection;
 
-        public DisconnectCommand(BaseGraphVM graph, BaseConnectionVM connection)
+        public DisconnectCommand(BaseGraphProcessor graph, BaseConnectionProcessor connection)
         {
             this.graph = graph;
             this.connection = connection;
@@ -715,10 +715,10 @@ namespace CZToolKit.GraphProcessor
 
     public class DisconnectsCommand : ICommand
     {
-        BaseGraphVM graph;
-        BaseConnectionVM[] connections;
+        BaseGraphProcessor graph;
+        BaseConnectionProcessor[] connections;
 
-        public DisconnectsCommand(BaseGraphVM graph, BaseConnectionVM[] connections)
+        public DisconnectsCommand(BaseGraphProcessor graph, BaseConnectionProcessor[] connections)
         {
             this.graph = graph;
             this.connections = connections;

@@ -31,7 +31,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
         protected virtual void OnUnBindingProperties() { }
 
-        protected virtual BasePortView NewPortView(BasePortVM port)
+        protected virtual BasePortView NewPortView(BasePortProcessor port)
         {
             return Activator.CreateInstance(GraphProcessorEditorUtil.GetViewType(port.ModelType), port, new EdgeConnectorListener()) as BasePortView;
         }
@@ -108,7 +108,7 @@ namespace CZToolKit.GraphProcessor.Editors
         }
     }
 
-    public class BaseNodeView<VM> : BaseNodeView where VM : BaseNodeVM
+    public class BaseNodeView<VM> : BaseNodeView where VM : BaseNodeProcessor
     {
         public VM T_ViewModel { get { return base.ViewModel as VM; } }
     }

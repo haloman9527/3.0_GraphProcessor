@@ -19,6 +19,6 @@ namespace CZToolKit.GraphProcessor
 {
     public interface IGraphOwner
     {
-        BaseGraphVM Graph { get; }
+        BaseGraphProcessor Graph { get; }
     }
 }

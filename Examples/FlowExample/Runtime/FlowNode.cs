@@ -7,12 +7,12 @@ public abstract class FlowNode : BaseNode
 }
 
 [ViewModel(typeof(FlowNode))]
-public abstract class FlowNodeVM : BaseNodeVM
+public abstract class FlowNodeVM : BaseNodeProcessor
 {
     public FlowNodeVM(BaseNode model) : base(model)
     {
-        AddPort(new BasePortVM("FlowIn", BasePort.Orientation.Horizontal, BasePort.Direction.Input, BasePort.Capacity.Multi));
-        AddPort(new BasePortVM("FlowOut", BasePort.Orientation.Horizontal, BasePort.Direction.Output, BasePort.Capacity.Single));
+        AddPort(new BasePortProcessor("FlowIn", BasePort.Orientation.Horizontal, BasePort.Direction.Input, BasePort.Capacity.Multi));
+        AddPort(new BasePortProcessor("FlowOut", BasePort.Orientation.Horizontal, BasePort.Direction.Output, BasePort.Capacity.Single));
     }
 
     protected abstract void Execute();

@@ -25,13 +25,13 @@ public class SubNode : BaseNode
 }
 
 [ViewModel(typeof(SubNode))]
-public class SubNodeVM : BaseNodeVM, IGetPortValue, IGetPortValue<float>
+public class SubNodeVM : BaseNodeProcessor, IGetPortValue, IGetPortValue<float>
 {
     public SubNodeVM(BaseNode model) : base(model)
     {
-        AddPort(new BasePortVM("InputA", BasePort.Orientation.Horizontal, BasePort.Direction.Input, BasePort.Capacity.Single, typeof(float)));
-        AddPort(new BasePortVM("InputB", BasePort.Orientation.Horizontal, BasePort.Direction.Input, BasePort.Capacity.Single, typeof(float)));
-        AddPort(new BasePortVM("Result", BasePort.Orientation.Horizontal, BasePort.Direction.Output, BasePort.Capacity.Multi, typeof(float))
+        AddPort(new BasePortProcessor("InputA", BasePort.Orientation.Horizontal, BasePort.Direction.Input, BasePort.Capacity.Single, typeof(float)));
+        AddPort(new BasePortProcessor("InputB", BasePort.Orientation.Horizontal, BasePort.Direction.Input, BasePort.Capacity.Single, typeof(float)));
+        AddPort(new BasePortProcessor("Result", BasePort.Orientation.Horizontal, BasePort.Direction.Output, BasePort.Capacity.Multi, typeof(float))
         {
             HideLabel = true
         });

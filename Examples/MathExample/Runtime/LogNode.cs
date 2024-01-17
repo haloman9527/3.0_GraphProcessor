@@ -21,11 +21,11 @@ using UnityEngine;
 public class LogNode : BaseNode { }
 
 [ViewModel(typeof(LogNode))]
-public class LogNodeVM : BaseNodeVM
+public class LogNodeVM : BaseNodeProcessor
 {
     public LogNodeVM(BaseNode model) : base(model)
     {
-        AddPort(new BasePortVM("Input", BasePort.Orientation.Horizontal, BasePort.Direction.Input, BasePort.Capacity.Single));
+        AddPort(new BasePortProcessor("Input", BasePort.Orientation.Horizontal, BasePort.Direction.Input, BasePort.Capacity.Single));
     }
 
     public void DebugInput()

@@ -27,7 +27,7 @@ using UnityEngine;
 
 public class FlowGraphView : BaseGraphView
 {
-    public FlowGraphView(BaseGraphVM graph, BaseGraphWindow window, CommandDispatcher commandDispatcher) : base(graph, window, commandDispatcher)
+    public FlowGraphView(BaseGraphProcessor graph, BaseGraphWindow window, CommandDispatcher commandDispatcher) : base(graph, window, commandDispatcher)
     {
     }
 
@@ -47,7 +47,7 @@ public class FlowGraphView : BaseGraphView
         }
     }
     
-    protected override BaseConnectionView NewConnectionView(BaseConnectionVM connection)
+    protected override BaseConnectionView NewConnectionView(BaseConnectionProcessor connection)
     {
         return new SampleConnectionView();
     }

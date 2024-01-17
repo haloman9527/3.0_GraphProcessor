@@ -50,17 +50,17 @@ namespace CZToolKit.GraphProcessor
     }
 
     [ViewModel(typeof(BasePort))]
-    public class BasePortVM : ViewModel, IGraphElementViewModel
+    public class BasePortProcessor : ViewModel, IGraphElementViewModel
     {
         #region Fields
         private bool hideLabel;
-        internal List<BaseConnectionVM> connections;
-        internal Func<BaseConnectionVM, BaseConnectionVM, int> comparer;
+        internal List<BaseConnectionProcessor> connections;
+        internal Func<BaseConnectionProcessor, BaseConnectionProcessor, int> comparer;
 
-        public event Action<BaseConnectionVM> onBeforeConnected;
-        public event Action<BaseConnectionVM> onAfterConnected;
-        public event Action<BaseConnectionVM> onBeforeDisconnected;
-        public event Action<BaseConnectionVM> onAfterDisconnected;
+        public event Action<BaseConnectionProcessor> onBeforeConnected;
+        public event Action<BaseConnectionProcessor> onAfterConnected;
+        public event Action<BaseConnectionProcessor> onBeforeDisconnected;
+        public event Action<BaseConnectionProcessor> onAfterDisconnected;
         public event Action onConnectionChanged;
         #endregion
 
@@ -73,7 +73,7 @@ namespace CZToolKit.GraphProcessor
         {
             get;
         }
-        public BaseNodeVM Owner
+        public BaseNodeProcessor Owner
         {
             get;
             internal set;
@@ -104,13 +104,13 @@ namespace CZToolKit.GraphProcessor
             get { return GetPropertyValue<bool>(nameof(hideLabel)); }
             set { SetPropertyValue(nameof(hideLabel), value); }
         }
-        public IReadOnlyList<BaseConnectionVM> Connections
+        public IReadOnlyList<BaseConnectionProcessor> Connections
         {
             get { return connections; }
         }
         #endregion
 
-        public BasePortVM(string name, BasePort.Orientation orientation, BasePort.Direction direction, BasePort.Capacity capacity, Type type = null)
+        public BasePortProcessor(string name, BasePort.Orientation orientation, BasePort.Direction direction, BasePort.Capacity capacity, Type type = null)
         {
             this.Model = new BasePort()
             {
@@ -121,7 +121,7 @@ namespace CZToolKit.GraphProcessor
                 type = type == null ? typeof(object) : type
             };
             this.ModelType = typeof(BasePort);
-            this.connections = new List<BaseConnectionVM>();
+            this.connections = new List<BaseConnectionProcessor>();
             if (Model.orientation == BasePort.Orientation.Horizontal)
                 this.comparer = HorizontalComparer;
             else
@@ -131,7 +131,7 @@ namespace CZToolKit.GraphProcessor
         }
 
         #region API
-        public void ConnectTo(BaseConnectionVM connection)
+        public void ConnectTo(BaseConnectionProcessor connection)
         {
             onBeforeConnected?.Invoke(connection);
             connections.Add(connection);
@@ -139,7 +139,7 @@ namespace CZToolKit.GraphProcessor
             onConnectionChanged?.Invoke();
         }
 
-        public void DisconnectTo(BaseConnectionVM connection)
+        public void DisconnectTo(BaseConnectionProcessor connection)
         {
             onBeforeDisconnected?.Invoke(connection);
             connections.Remove(connection);
@@ -217,7 +217,7 @@ namespace CZToolKit.GraphProcessor
         #endregion
 
         #region Helper
-        private int VerticalComparer(BaseConnectionVM x, BaseConnectionVM y)
+        private int VerticalComparer(BaseConnectionProcessor x, BaseConnectionProcessor y)
         {
             // 若需要重新排序的是input接口，则根据FromNode排序
             // 若需要重新排序的是output接口，则根据ToNode排序
@@ -241,7 +241,7 @@ namespace CZToolKit.GraphProcessor
             return 0;
         }
 
-        private int HorizontalComparer(BaseConnectionVM x, BaseConnectionVM y)
+        private int HorizontalComparer(BaseConnectionProcessor x, BaseConnectionProcessor y)
         {
             // 若需要重新排序的是input接口，则根据FromNode排序
             // 若需要重新排序的是output接口，则根据ToNode排序

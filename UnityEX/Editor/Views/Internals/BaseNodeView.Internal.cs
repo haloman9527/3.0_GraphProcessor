@@ -27,7 +27,7 @@ using NodeView = UnityEditor.Experimental.GraphView.Node;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
-    public abstract partial class BaseNodeView : NodeView, IGraphElementView<BaseNodeVM>
+    public abstract partial class BaseNodeView : NodeView, IGraphElementView<BaseNodeProcessor>
     {
         #region 字段
 
@@ -61,7 +61,7 @@ namespace CZToolKit.GraphProcessor.Editors
         }
 
         public BaseGraphView Owner { get; private set; }
-        public BaseNodeVM ViewModel { get; protected set; }
+        public BaseNodeProcessor ViewModel { get; protected set; }
 
         public IReadOnlyDictionary<string, BasePortView> PortViews
         {
@@ -104,7 +104,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
         #region Initialize
 
-        public void SetUp(BaseNodeVM node, BaseGraphView graphView)
+        public void SetUp(BaseNodeProcessor node, BaseGraphView graphView)
         {
             ViewModel = node;
             Owner = graphView;
@@ -113,7 +113,7 @@ namespace CZToolKit.GraphProcessor.Editors
             base.SetPosition(new Rect(ViewModel.Position.ToVector2(), GetPosition().size));
             title = ViewModel.Title;
             tooltip = ViewModel.Tooltip;
-            if (ViewModel.ContainsKey(BaseNodeVM.TITLE_COLOR_NAME))
+            if (ViewModel.ContainsKey(BaseNodeProcessor.TITLE_COLOR_NAME))
             {
                 var color = ViewModel.TitleColor.ToColor();
                 var lum = 0.299f * color.r + 0.587f * color.g + 0.114f * color.b;
@@ -183,10 +183,10 @@ namespace CZToolKit.GraphProcessor.Editors
         public void OnCreate()
         {
             ViewModel.BindingProperty<InternalVector2Int>(nameof(BaseNode.position), OnPositionChanged);
-            ViewModel.BindingProperty<string>(BaseNodeVM.TITLE_NAME, OnTitleChanged);
-            if (ViewModel.ContainsKey(BaseNodeVM.TITLE_COLOR_NAME))
-                ViewModel.BindingProperty<InternalColor>(BaseNodeVM.TITLE_COLOR_NAME, OnTitleColorChanged);
-            ViewModel.BindingProperty<string>(BaseNodeVM.TOOLTIP_NAME, OnTooltipChanged);
+            ViewModel.BindingProperty<string>(BaseNodeProcessor.TITLE_NAME, OnTitleChanged);
+            if (ViewModel.ContainsKey(BaseNodeProcessor.TITLE_COLOR_NAME))
+                ViewModel.BindingProperty<InternalColor>(BaseNodeProcessor.TITLE_COLOR_NAME, OnTitleColorChanged);
+            ViewModel.BindingProperty<string>(BaseNodeProcessor.TOOLTIP_NAME, OnTooltipChanged);
 
             ViewModel.onPortAdded += OnPortAdded;
             ViewModel.onPortRemoved += OnPortRemoved;
@@ -201,10 +201,10 @@ namespace CZToolKit.GraphProcessor.Editors
 
         public void OnDestroy()
         {
-            ViewModel.UnBindingProperty<string>(BaseNodeVM.TITLE_NAME, OnTitleChanged);
-            if (ViewModel.ContainsKey(BaseNodeVM.TITLE_COLOR_NAME))
-                ViewModel.UnBindingProperty<InternalColor>(BaseNodeVM.TITLE_COLOR_NAME, OnTitleColorChanged);
-            ViewModel.UnBindingProperty<string>(BaseNodeVM.TOOLTIP_NAME, OnTooltipChanged);
+            ViewModel.UnBindingProperty<string>(BaseNodeProcessor.TITLE_NAME, OnTitleChanged);
+            if (ViewModel.ContainsKey(BaseNodeProcessor.TITLE_COLOR_NAME))
+                ViewModel.UnBindingProperty<InternalColor>(BaseNodeProcessor.TITLE_COLOR_NAME, OnTitleColorChanged);
+            ViewModel.UnBindingProperty<string>(BaseNodeProcessor.TOOLTIP_NAME, OnTooltipChanged);
             ViewModel.UnBindingProperty<InternalVector2Int>(nameof(BaseNode.position), OnPositionChanged);
 
             ViewModel.onPortAdded -= OnPortAdded;
@@ -222,7 +222,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
         #region Callbacks
 
-        void OnPortAdded(BasePortVM port)
+        void OnPortAdded(BasePortProcessor port)
         {
             AddPortView(port);
             RefreshPorts();
@@ -230,7 +230,7 @@ namespace CZToolKit.GraphProcessor.Editors
             RefreshPortContainer();
         }
 
-        void OnPortRemoved(BasePortVM port)
+        void OnPortRemoved(BasePortProcessor port)
         {
             RemovePortView(port);
             RefreshPorts();
@@ -294,7 +294,7 @@ namespace CZToolKit.GraphProcessor.Editors
             RefreshPortContainer();
         }
 
-        void AddPortView(BasePortVM port)
+        void AddPortView(BasePortProcessor port)
         {
             BasePortView portView = NewPortView(port);
             portView.SetUp(port, Owner);
@@ -317,7 +317,7 @@ namespace CZToolKit.GraphProcessor.Editors
             }
         }
 
-        void RemovePortView(BasePortVM port)
+        void RemovePortView(BasePortProcessor port)
         {
             portViews[port.Name].RemoveFromHierarchy();
             portViews[port.Name].OnDestroy();

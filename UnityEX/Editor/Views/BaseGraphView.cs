@@ -120,17 +120,17 @@ namespace CZToolKit.GraphProcessor.Editors
             }
         }
 
-        protected virtual BaseNodeView NewNodeView(BaseNodeVM nodeVM)
+        protected virtual BaseNodeView NewNodeView(BaseNodeProcessor nodeVM)
         {
             return Activator.CreateInstance(GraphProcessorEditorUtil.GetViewType(nodeVM.ModelType)) as BaseNodeView;
         }
 
-        protected virtual BaseGroupView NewGroupView(BaseGroupVM groupVM)
+        protected virtual BaseGroupView NewGroupView(BaseGroupProcessor groupVM)
         {
             return Activator.CreateInstance(GraphProcessorEditorUtil.GetViewType(groupVM.ModelType)) as BaseGroupView;
         }
 
-        protected virtual BaseConnectionView NewConnectionView(BaseConnectionVM connectionVM)
+        protected virtual BaseConnectionView NewConnectionView(BaseConnectionProcessor connectionVM)
         {
             return Activator.CreateInstance(GraphProcessorEditorUtil.GetViewType(connectionVM.ModelType)) as BaseConnectionView;
         }
