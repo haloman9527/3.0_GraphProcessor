@@ -13,7 +13,7 @@
  *
  */
 #endregion
-using CZToolKit.VM;
+using CZToolKit;
 using CZToolKit.GraphProcessor;
 using UnityEngine;
 
@@ -21,9 +21,9 @@ using UnityEngine;
 public class LogNode : BaseNode { }
 
 [ViewModel(typeof(LogNode))]
-public class LogNodeVM : BaseNodeProcessor
+public class LogNodeProcessor : BaseNodeProcessor
 {
-    public LogNodeVM(BaseNode model) : base(model)
+    public LogNodeProcessor(BaseNode model) : base(model)
     {
         AddPort(new BasePortProcessor("Input", BasePort.Orientation.Horizontal, BasePort.Direction.Input, BasePort.Capacity.Single));
     }

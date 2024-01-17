@@ -15,7 +15,7 @@
 #endregion
 
 using System.Collections.Generic;
-using CZToolKit.VM;
+using CZToolKit;
 using CZToolKit.GraphProcessor;
 
 [NodeMenu("Sub")]
@@ -25,9 +25,9 @@ public class SubNode : BaseNode
 }
 
 [ViewModel(typeof(SubNode))]
-public class SubNodeVM : BaseNodeProcessor, IGetPortValue, IGetPortValue<float>
+public class SubNodeProcessor : BaseNodeProcessor, IGetPortValue, IGetPortValue<float>
 {
-    public SubNodeVM(BaseNode model) : base(model)
+    public SubNodeProcessor(BaseNode model) : base(model)
     {
         AddPort(new BasePortProcessor("InputA", BasePort.Orientation.Horizontal, BasePort.Direction.Input, BasePort.Capacity.Single, typeof(float)));
         AddPort(new BasePortProcessor("InputB", BasePort.Orientation.Horizontal, BasePort.Direction.Input, BasePort.Capacity.Single, typeof(float)));

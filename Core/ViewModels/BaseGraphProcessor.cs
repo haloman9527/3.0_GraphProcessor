@@ -18,7 +18,6 @@
 
 using CZToolKit;
 using CZToolKit.Blackboard;
-using CZToolKit.VM;
 using System;
 using System.Linq;
 using System.Collections.Generic;
@@ -33,7 +32,7 @@ namespace CZToolKit.GraphProcessor
         private Dictionary<int, BaseNodeProcessor> nodes;
         private List<BaseConnectionProcessor> connections;
         private Events<string> events;
-        private BlackboardVM<string> blackboard;
+        private BlackboardProcessor<string> blackboard;
         private Groups groups;
 
         public event Action<BaseNodeProcessor> OnNodeAdded;
@@ -83,7 +82,7 @@ namespace CZToolKit.GraphProcessor
             get { return events; }
         }
 
-        public BlackboardVM<string> Blackboard
+        public BlackboardProcessor<string> Blackboard
         {
             get { return blackboard; }
         }
@@ -98,7 +97,7 @@ namespace CZToolKit.GraphProcessor
             Model.zoom = Model.zoom == 0 ? 1 : Model.zoom;
 
             this.events = new Events<string>();
-            this.blackboard = new BlackboardVM<string>(new Blackboard<string>(), events);
+            this.blackboard = new BlackboardProcessor<string>(new Blackboard<string>(), events);
             this.nodes = new Dictionary<int, BaseNodeProcessor>();
             this.connections = new List<BaseConnectionProcessor>();
             this.groups = new Groups();

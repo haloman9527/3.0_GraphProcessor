@@ -1,5 +1,5 @@
 ﻿using CZToolKit.GraphProcessor;
-using CZToolKit.VM;
+using CZToolKit;
 
 [NodeMenu("Start", hidden = true)]
 public class StartNode : FlowNode
@@ -7,9 +7,9 @@ public class StartNode : FlowNode
 }
 
 [ViewModel(typeof(StartNode))]
-public class StartNodeVM : FlowNodeVM
+public class StartNodeProcessor : FlowNodeProcessor
 {
-    public StartNodeVM(StartNode model) : base(model)
+    public StartNodeProcessor(StartNode model) : base(model)
     {
     }
 

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using CZToolKit.GraphProcessor;
-using CZToolKit.VM;
+using CZToolKit;
 using Sirenix.OdinInspector;
 
 [NodeMenu("刷新Wwise信息")]
@@ -10,9 +10,9 @@ public class RefreshWwiseNode : FlowNode
 }
 
 [ViewModel(typeof(RefreshWwiseNode))]
-public class RefreshWwiseNodeVM : FlowNodeVM
+public class RefreshWwiseNodeProcessor : FlowNodeProcessor
 {
-    public RefreshWwiseNodeVM(RefreshWwiseNode model) : base(model)
+    public RefreshWwiseNodeProcessor(RefreshWwiseNode model) : base(model)
     {
         
     }

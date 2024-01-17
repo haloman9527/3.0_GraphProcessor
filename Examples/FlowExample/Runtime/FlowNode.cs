@@ -1,5 +1,5 @@
 ﻿using CZToolKit.GraphProcessor;
-using CZToolKit.VM;
+using CZToolKit;
 
 public abstract class FlowNode : BaseNode
 {
@@ -7,9 +7,9 @@ public abstract class FlowNode : BaseNode
 }
 
 [ViewModel(typeof(FlowNode))]
-public abstract class FlowNodeVM : BaseNodeProcessor
+public abstract class FlowNodeProcessor : BaseNodeProcessor
 {
-    public FlowNodeVM(BaseNode model) : base(model)
+    public FlowNodeProcessor(BaseNode model) : base(model)
     {
         AddPort(new BasePortProcessor("FlowIn", BasePort.Orientation.Horizontal, BasePort.Direction.Input, BasePort.Capacity.Multi));
         AddPort(new BasePortProcessor("FlowOut", BasePort.Orientation.Horizontal, BasePort.Direction.Output, BasePort.Capacity.Single));
@@ -24,7 +24,7 @@ public abstract class FlowNodeVM : BaseNodeProcessor
 
     public void FlowTo(string port)
     {
-        foreach (FlowNodeVM item in GetConnections("FlowOut"))
+        foreach (FlowNodeProcessor item in GetConnections("FlowOut"))
         {
             if (item == null)
                 continue;

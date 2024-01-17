@@ -22,7 +22,7 @@ public class SampleGraphTest : GraphAssetOwner<SampleGraphAsset, SampleGraphProc
     {
         foreach (var node in T_Graph.Nodes.Values)
         {
-            if (node is LogNodeVM debugNode)
+            if (node is LogNodeProcessor debugNode)
             {
                 debugNode.DebugInput();
             }

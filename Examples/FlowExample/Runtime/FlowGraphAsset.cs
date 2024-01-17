@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using CZToolKit.GraphProcessor;
-using CZToolKit.VM;
+using CZToolKit;
 using Sirenix.OdinInspector;
 using Sirenix.Serialization;
 using UnityEngine;
@@ -53,18 +53,18 @@ public class FlowGraph : BaseGraph
 [ViewModel(typeof(FlowGraph))]
 public class FlowGraphProcessor : BaseGraphProcessor
 {
-    private StartNodeVM StartNode { get; }
+    private StartNodeProcessor StartNode { get; }
 
     public FlowGraphProcessor(FlowGraph model) : base(model)
     {
-        if (Nodes.TryGetValue(model.startNodeID, out var _node) && _node is StartNodeVM)
+        if (Nodes.TryGetValue(model.startNodeID, out var _node) && _node is StartNodeProcessor)
         {
-            StartNode = _node as StartNodeVM;
+            StartNode = _node as StartNodeProcessor;
         }
 
         if (StartNode == null)
         {
-            StartNode = AddNode(new StartNode() { position = new InternalVector2Int(100, 100) }) as StartNodeVM;
+            StartNode = AddNode(new StartNode() { position = new InternalVector2Int(100, 100) }) as StartNodeProcessor;
             model.startNodeID = StartNode.ID;
         }
     }

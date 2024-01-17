@@ -14,7 +14,7 @@
  */
 #endregion
 #if UNITY_EDITOR
-using CZToolKit.VM;
+using CZToolKit;
 using CZToolKit.GraphProcessor.Editors;
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
@@ -27,7 +27,7 @@ public class FloatNodeView : BaseNodeView
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        var vm = ViewModel as FloatNodeVM;
+        var vm = ViewModel as FloatNodeProcessor;
         
         valueField = new FloatField();
         valueField.style.marginLeft = 3;
@@ -40,7 +40,7 @@ public class FloatNodeView : BaseNodeView
 
     private void OnEditedValue(ChangeEvent<float> evt)
     {
-        var vm = ViewModel as FloatNodeVM;
+        var vm = ViewModel as FloatNodeProcessor;
         vm.Value = evt.newValue;
     }
 

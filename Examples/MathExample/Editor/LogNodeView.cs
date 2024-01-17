@@ -38,7 +38,7 @@ public class LogNodeView : BaseNodeView
 
     private void OnClick()
     {
-        (ViewModel as LogNodeVM).DebugInput();
+        (ViewModel as LogNodeProcessor).DebugInput();
     }
 }
 #endif

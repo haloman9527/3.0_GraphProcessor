@@ -17,7 +17,7 @@
 #endregion
 
 #if UNITY_EDITOR
-using CZToolKit.VM;
+using CZToolKit;
 using System;
 using CZToolKitEditor;
 using UnityEngine;

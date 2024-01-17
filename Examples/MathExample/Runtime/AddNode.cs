@@ -13,7 +13,7 @@
  *
  */
 #endregion
-using CZToolKit.VM;
+using CZToolKit;
 using CZToolKit.GraphProcessor;
 
 [NodeTooltip("加法节点")]
@@ -21,9 +21,9 @@ using CZToolKit.GraphProcessor;
 public class AddNode : BaseNode { }
 
 [ViewModel(typeof(AddNode))]
-public class AddNodeVM : BaseNodeProcessor, IGetPortValue, IGetPortValue<float>
+public class AddNodeProcessor : BaseNodeProcessor, IGetPortValue, IGetPortValue<float>
 {
-    public AddNodeVM(BaseNode model) : base(model)
+    public AddNodeProcessor(BaseNode model) : base(model)
     {
         AddPort(new BasePortProcessor("InputA", BasePort.Orientation.Horizontal, BasePort.Direction.Input, BasePort.Capacity.Single, typeof(float)));
         AddPort(new BasePortProcessor("InputB", BasePort.Orientation.Horizontal, BasePort.Direction.Input, BasePort.Capacity.Single, typeof(float)));

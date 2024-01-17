@@ -15,7 +15,7 @@
 #endregion
 
 using System;
-using CZToolKit.VM;
+using CZToolKit;
 using UnityEngine;
 
 using UnityObject = UnityEngine.Object;

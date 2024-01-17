@@ -13,7 +13,7 @@
  *
  */
 #endregion
-using CZToolKit.VM;
+using CZToolKit;
 using CZToolKit.GraphProcessor;
 
 [NodeTooltip("浮点数节点")]
@@ -24,7 +24,7 @@ public class FloatNode : BaseNode
 }
 
 [ViewModel(typeof(FloatNode))]
-public class FloatNodeVM : BaseNodeProcessor, IGetPortValue, IGetPortValue<float>
+public class FloatNodeProcessor : BaseNodeProcessor, IGetPortValue, IGetPortValue<float>
 {
     public FloatNode T_Model
     {
@@ -37,7 +37,7 @@ public class FloatNodeVM : BaseNodeProcessor, IGetPortValue, IGetPortValue<float
         set { SetPropertyValue(nameof(FloatNode.num), value); }
     }
 
-    public FloatNodeVM(FloatNode model) : base(model)
+    public FloatNodeProcessor(FloatNode model) : base(model)
     {
         T_Model = model;
         this[nameof(FloatNode.num)] = new BindableProperty<float>(() => T_Model.num, v => T_Model.num = v);

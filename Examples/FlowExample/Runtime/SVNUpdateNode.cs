@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using CZToolKit.GraphProcessor;
-using CZToolKit.VM;
+using CZToolKit;
 using Sirenix.OdinInspector;
 
 [NodeMenu("SVN Update")]
@@ -12,9 +12,9 @@ public class SVNUpdateNode : FlowNode
 }
 
 [ViewModel(typeof(SVNUpdateNode))]
-public class SVNUpdateNodeVM : FlowNodeVM
+public class SvnUpdateNodeProcessor : FlowNodeProcessor
 {
-    public SVNUpdateNodeVM(SVNUpdateNode model) : base(model)
+    public SvnUpdateNodeProcessor(SVNUpdateNode model) : base(model)
     {
         this[nameof(SVNUpdateNode.folders)] = new BindableList<string>(() => model.folders, v => model.folders = v);
     }

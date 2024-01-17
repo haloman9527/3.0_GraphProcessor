@@ -16,7 +16,7 @@
 #if UNITY_EDITOR
 using System;
 using System.Collections.Generic;
-using CZToolKit.VM;
+using CZToolKit;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine.UIElements;
 
