@@ -22,7 +22,7 @@ namespace CZToolKit.GraphProcessor.Editors
     {
         public BasePortView(BasePortProcessor port, IEdgeConnectorListener connectorListener) : this(
             orientation: port.Orientation == BasePort.Orientation.Horizontal ? Orientation.Horizontal : Orientation.Vertical,
-            direction: port.Direction == BasePort.Direction.Input ? Direction.Input : Direction.Output,
+            direction: port.Direction == BasePort.Direction.Left ? Direction.Input : Direction.Output,
             capacity: port.Capacity == BasePort.Capacity.Single ? Capacity.Single : Capacity.Multi,
             port.Type, connectorListener)
         {

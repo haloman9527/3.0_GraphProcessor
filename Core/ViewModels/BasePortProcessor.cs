@@ -25,8 +25,8 @@ namespace CZToolKit.GraphProcessor
         #region Define
         public enum Direction
         {
-            Input,
-            Output
+            Left,
+            Right
         }
         public enum Orientation
         {
@@ -169,7 +169,7 @@ namespace CZToolKit.GraphProcessor
         /// <summary> 获取连接的接口的值 </summary>
         public IEnumerable<object> GetConnectionValues()
         {
-            if (Model.direction == BasePort.Direction.Input)
+            if (Model.direction == BasePort.Direction.Left)
             {
                 foreach (var connection in Connections)
                 {
@@ -196,7 +196,7 @@ namespace CZToolKit.GraphProcessor
         /// <summary> 获取连接的接口的值 </summary>
         public IEnumerable<T> GetConnectionValues<T>()
         {
-            if (Model.direction == BasePort.Direction.Input)
+            if (Model.direction == BasePort.Direction.Left)
             {
                 foreach (var connection in Connections)
                 {
@@ -220,8 +220,8 @@ namespace CZToolKit.GraphProcessor
         {
             // 若需要重新排序的是input接口，则根据FromNode排序
             // 若需要重新排序的是output接口，则根据ToNode排序
-            var nodeX = Model.direction == BasePort.Direction.Input ? x.FromNode : x.ToNode;
-            var nodeY = Model.direction == BasePort.Direction.Input ? y.FromNode : y.ToNode;
+            var nodeX = Model.direction == BasePort.Direction.Left ? x.FromNode : x.ToNode;
+            var nodeY = Model.direction == BasePort.Direction.Left ? y.FromNode : y.ToNode;
 
             // 则使用x坐标比较排序
             // 遵循从左到右
@@ -244,8 +244,8 @@ namespace CZToolKit.GraphProcessor
         {
             // 若需要重新排序的是input接口，则根据FromNode排序
             // 若需要重新排序的是output接口，则根据ToNode排序
-            var nodeX = Model.direction == BasePort.Direction.Input ? x.FromNode : x.ToNode;
-            var nodeY = Model.direction == BasePort.Direction.Input ? y.FromNode : y.ToNode;
+            var nodeX = Model.direction == BasePort.Direction.Left ? x.FromNode : x.ToNode;
+            var nodeY = Model.direction == BasePort.Direction.Left ? y.FromNode : y.ToNode;
 
             // 则使用y坐标比较排序
             // 遵循从上到下

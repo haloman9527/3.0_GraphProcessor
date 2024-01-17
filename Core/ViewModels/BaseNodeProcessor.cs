@@ -27,8 +27,8 @@ namespace CZToolKit.GraphProcessor
     {
         #region Fields
 
-        private List<BasePortProcessor> inPorts;
-        private List<BasePortProcessor> outPorts;
+        private List<BasePortProcessor> leftPorts;
+        private List<BasePortProcessor> rightPorts;
         private Dictionary<string, BasePortProcessor> ports;
 
         public event Action<BasePortProcessor> onPortAdded;
@@ -71,14 +71,14 @@ namespace CZToolKit.GraphProcessor
             set { SetPropertyValue(TOOLTIP_NAME, value); }
         }
 
-        public IReadOnlyList<BasePortProcessor> InPorts
+        public IReadOnlyList<BasePortProcessor> LeftPorts
         {
-            get { return inPorts; }
+            get { return leftPorts; }
         }
 
-        public IReadOnlyList<BasePortProcessor> OutPorts
+        public IReadOnlyList<BasePortProcessor> RightPorts
         {
-            get { return outPorts; }
+            get { return rightPorts; }
         }
 
         public IReadOnlyDictionary<string, BasePortProcessor> Ports
@@ -95,8 +95,8 @@ namespace CZToolKit.GraphProcessor
             Model = model;
             ModelType = model.GetType();
             Model.position = Model.position == default ? InternalVector2Int.zero : Model.position;
-            inPorts = new List<BasePortProcessor>();
-            outPorts = new List<BasePortProcessor>();
+            leftPorts = new List<BasePortProcessor>();
+            rightPorts = new List<BasePortProcessor>();
             ports = new Dictionary<string, BasePortProcessor>();
 
             var nodeStaticInfo = GraphProcessorUtil.NodeStaticInfos[ModelType];
@@ -143,7 +143,7 @@ namespace CZToolKit.GraphProcessor
         {
             if (!Ports.TryGetValue(portName, out var port))
                 yield break;
-            if (port.Direction == BasePort.Direction.Input)
+            if (port.Direction == BasePort.Direction.Left)
             {
                 foreach (var connection in port.Connections)
                 {
@@ -164,14 +164,14 @@ namespace CZToolKit.GraphProcessor
             ports.Add(port.Name, port);
             switch (port.Direction)
             {
-                case BasePort.Direction.Input:
+                case BasePort.Direction.Left:
                 {
-                    inPorts.Add(port);
+                    leftPorts.Add(port);
                     break;
                 }
-                case BasePort.Direction.Output:
+                case BasePort.Direction.Right:
                 {
-                    outPorts.Add(port);
+                    rightPorts.Add(port);
                     break;
                 }
             }
@@ -189,14 +189,14 @@ namespace CZToolKit.GraphProcessor
             ports.Remove(port.Name);
             switch (port.Direction)
             {
-                case BasePort.Direction.Input:
+                case BasePort.Direction.Left:
                 {
-                    inPorts.Remove(port);
+                    leftPorts.Remove(port);
                     break;
                 }
-                case BasePort.Direction.Output:
+                case BasePort.Direction.Right:
                 {
-                    outPorts.Remove(port);
+                    rightPorts.Remove(port);
                     break;
                 }
             }
@@ -211,8 +211,8 @@ namespace CZToolKit.GraphProcessor
 
         public void SortPort(Func<BasePortProcessor, BasePortProcessor, int> comparer)
         {
-            inPorts.QuickSort(comparer);
-            outPorts.QuickSort(comparer);
+            leftPorts.QuickSort(comparer);
+            rightPorts.QuickSort(comparer);
         }
 
         #endregion

@@ -121,12 +121,12 @@ namespace CZToolKit.GraphProcessor.Editors
                 titleContainer.style.backgroundColor = color;
             }
 
-            foreach (var port in ViewModel.InPorts)
+            foreach (var port in ViewModel.LeftPorts)
             {
-                BasePortView portView = NewPortView(port);
+                var portView = NewPortView(port);
                 portView.SetUp(port, Owner);
                 portViews[port.Name] = portView;
-                if (port.Name == "FlowIn")
+                if (port.Name.StartsWith("Flow-"))
                 {
                     titleInputPortContainer.Add(portView);
                 }
@@ -148,13 +148,13 @@ namespace CZToolKit.GraphProcessor.Editors
                 }
             }
 
-            foreach (var port in ViewModel.OutPorts)
+            foreach (var port in ViewModel.RightPorts)
             {
                 BasePortView portView = NewPortView(port);
                 portView.SetUp(port, Owner);
                 portViews[port.Name] = portView;
 
-                if (port.Name == "FlowOut")
+                if (port.Name.StartsWith("Flow-"))
                 {
                     titleOutputPortContainer.Add(portView);
                 }

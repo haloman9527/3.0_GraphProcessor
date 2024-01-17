@@ -11,8 +11,8 @@ public abstract class FlowNodeProcessor : BaseNodeProcessor
 {
     public FlowNodeProcessor(BaseNode model) : base(model)
     {
-        AddPort(new BasePortProcessor("FlowIn", BasePort.Orientation.Horizontal, BasePort.Direction.Input, BasePort.Capacity.Multi));
-        AddPort(new BasePortProcessor("FlowOut", BasePort.Orientation.Horizontal, BasePort.Direction.Output, BasePort.Capacity.Single));
+        AddPort(new BasePortProcessor("FlowIn", BasePort.Orientation.Horizontal, BasePort.Direction.Left, BasePort.Capacity.Multi));
+        AddPort(new BasePortProcessor("FlowOut", BasePort.Orientation.Horizontal, BasePort.Direction.Right, BasePort.Capacity.Single));
     }
 
     protected abstract void Execute();

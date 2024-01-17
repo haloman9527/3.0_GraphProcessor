@@ -25,7 +25,7 @@ public class LogNodeProcessor : BaseNodeProcessor
 {
     public LogNodeProcessor(BaseNode model) : base(model)
     {
-        AddPort(new BasePortProcessor("Input", BasePort.Orientation.Horizontal, BasePort.Direction.Input, BasePort.Capacity.Single));
+        AddPort(new BasePortProcessor("Input", BasePort.Orientation.Horizontal, BasePort.Direction.Left, BasePort.Capacity.Single));
     }
 
     public void DebugInput()

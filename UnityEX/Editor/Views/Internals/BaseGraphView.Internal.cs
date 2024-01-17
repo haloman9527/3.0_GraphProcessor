@@ -498,7 +498,7 @@ namespace CZToolKit.GraphProcessor.Editors
                             {
                                 foreach (var connection in port.Connections)
                                 {
-                                    if (port.Direction == BasePort.Direction.Input)
+                                    if (port.Direction == BasePort.Direction.Left)
                                         portsHashset.Add(connection.FromNode.Ports[connection.FromPortName]);
                                     else
                                         portsHashset.Add(connection.ToNode.Ports[connection.ToPortName]);

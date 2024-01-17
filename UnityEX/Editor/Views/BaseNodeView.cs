@@ -1,10 +1,11 @@
 #region 注 释
+
 /***
  *
  *  Title:
- *  
+ *
  *  Description:
- *  
+ *
  *  Date:
  *  Version:
  *  Writer: 半只龙虾人
@@ -12,7 +13,9 @@
  *  Blog: https://www.mindgear.net/
  *
  */
+
 #endregion
+
 #if UNITY_EDITOR
 using System;
 using CZToolKitEditor;
@@ -25,15 +28,23 @@ namespace CZToolKit.GraphProcessor.Editors
 {
     public abstract partial class BaseNodeView
     {
-        protected virtual void OnInitialized() { }
+        protected virtual void OnInitialized()
+        {
+        }
 
-        protected virtual void OnBindingProperties() { }
+        protected virtual void OnBindingProperties()
+        {
+        }
 
-        protected virtual void OnUnBindingProperties() { }
+        protected virtual void OnUnBindingProperties()
+        {
+        }
 
         protected virtual BasePortView NewPortView(BasePortProcessor port)
         {
-            return Activator.CreateInstance(GraphProcessorEditorUtil.GetViewType(port.ModelType), port, new EdgeConnectorListener()) as BasePortView;
+            var portView = Activator.CreateInstance(GraphProcessorEditorUtil.GetViewType(port.ModelType), port, new EdgeConnectorListener()) as BasePortView;
+            portView.AddToClassList("lr");
+            return portView;
         }
 
         public override void BuildContextualMenu(ContextualMenuPopulateEvent evt)
@@ -42,10 +53,12 @@ namespace CZToolKit.GraphProcessor.Editors
             {
                 evt.menu.AppendAction($"Open Script/" + script.name, _ => { AssetDatabase.OpenAsset(script); });
             }
+
             foreach (var script in EditorUtilityExtension.FindAllScriptFromType(ViewModel.Model.GetType()))
             {
                 evt.menu.AppendAction($"Open Script/" + script.name, _ => { AssetDatabase.OpenAsset(script); });
             }
+
             evt.menu.AppendSeparator();
         }
 
@@ -103,6 +116,7 @@ namespace CZToolKit.GraphProcessor.Editors
                     b.RemoveFromHierarchy();
                     return true;
                 }
+
                 return false;
             });
         }
@@ -110,7 +124,10 @@ namespace CZToolKit.GraphProcessor.Editors
 
     public class BaseNodeView<T> : BaseNodeView where T : BaseNodeProcessor
     {
-        public T T_ViewModel { get { return base.ViewModel as T; } }
+        public T T_ViewModel
+        {
+            get { return base.ViewModel as T; }
+        }
     }
 }
 #endif
