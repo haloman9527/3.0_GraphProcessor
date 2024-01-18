@@ -33,7 +33,6 @@ namespace CZToolKit.GraphProcessor.Editors
 
         public readonly Label nodeLabel;
         public readonly Image nodeIcon;
-        public readonly VisualElement contents;
         public readonly VisualElement controls;
         public readonly VisualElement nodeBorder;
         public readonly VisualElement topPortContainer;
@@ -49,6 +48,8 @@ namespace CZToolKit.GraphProcessor.Editors
         #endregion
 
         #region 属性
+
+        public override VisualElement contentContainer => controls;
 
         public Label NodeLabel
         {
@@ -74,7 +75,7 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             styleSheets.Add(GraphProcessorStyles.BaseNodeViewStyle);
 
-            contents = mainContainer.Q("contents");
+            var contents = mainContainer.Q("contents");
 
             nodeBorder = this.Q(name: "node-border");
             nodeLabel = titleContainer.Q<Label>("title-label");
@@ -84,7 +85,7 @@ namespace CZToolKit.GraphProcessor.Editors
             nodeIcon = new Image() { name = "title-icon" };
             titleContainer.Insert(0, nodeIcon);
 
-            controls = new VisualElement { name = "controls" };
+            controls = new BaseVisualElement() { name = "controls" };
             contents.Add(controls);
 
             topPortContainer = new VisualElement { name = "top-input" };
@@ -100,6 +101,8 @@ namespace CZToolKit.GraphProcessor.Editors
             titleOutputPortContainer = new VisualElement { name = "title-output" };
             titleContainer.Add(titleOutputPortContainer);
             titleOutputPortContainer.BringToFront();
+            
+            controls.RegisterCallback<BaseVisualElement.ChildChangedEvent>(OnChildChanged);
         }
 
         #region Initialize
@@ -177,16 +180,26 @@ namespace CZToolKit.GraphProcessor.Editors
             }
 
             OnInitialized();
-            PortChanged();
+            
+            RefreshPorts();
+            RefreshPortContainer();
+            RefreshControls();
+            RefreshContentsHorizontalDivider();
+        }
+
+        private void OnChildChanged(BaseVisualElement.ChildChangedEvent evt)
+        {
+            RefreshControls();
+            RefreshContentsHorizontalDivider();
         }
 
         public void OnCreate()
         {
-            ViewModel.BindingProperty<InternalVector2Int>(nameof(BaseNode.position), OnPositionChanged);
-            ViewModel.BindingProperty<string>(BaseNodeProcessor.TITLE_NAME, OnTitleChanged);
+            ViewModel.BindProperty<InternalVector2Int>(nameof(BaseNode.position), OnPositionChanged);
+            ViewModel.BindProperty<string>(BaseNodeProcessor.TITLE_NAME, OnTitleChanged);
             if (ViewModel.ContainsKey(BaseNodeProcessor.TITLE_COLOR_NAME))
-                ViewModel.BindingProperty<InternalColor>(BaseNodeProcessor.TITLE_COLOR_NAME, OnTitleColorChanged);
-            ViewModel.BindingProperty<string>(BaseNodeProcessor.TOOLTIP_NAME, OnTooltipChanged);
+                ViewModel.BindProperty<InternalColor>(BaseNodeProcessor.TITLE_COLOR_NAME, OnTitleColorChanged);
+            ViewModel.BindProperty<string>(BaseNodeProcessor.TOOLTIP_NAME, OnTooltipChanged);
 
             ViewModel.onPortAdded += OnPortAdded;
             ViewModel.onPortRemoved += OnPortRemoved;
@@ -201,11 +214,11 @@ namespace CZToolKit.GraphProcessor.Editors
 
         public void OnDestroy()
         {
-            ViewModel.UnBindingProperty<string>(BaseNodeProcessor.TITLE_NAME, OnTitleChanged);
+            ViewModel.UnBindProperty<string>(BaseNodeProcessor.TITLE_NAME, OnTitleChanged);
             if (ViewModel.ContainsKey(BaseNodeProcessor.TITLE_COLOR_NAME))
-                ViewModel.UnBindingProperty<InternalColor>(BaseNodeProcessor.TITLE_COLOR_NAME, OnTitleColorChanged);
-            ViewModel.UnBindingProperty<string>(BaseNodeProcessor.TOOLTIP_NAME, OnTooltipChanged);
-            ViewModel.UnBindingProperty<InternalVector2Int>(nameof(BaseNode.position), OnPositionChanged);
+                ViewModel.UnBindProperty<InternalColor>(BaseNodeProcessor.TITLE_COLOR_NAME, OnTitleColorChanged);
+            ViewModel.UnBindProperty<string>(BaseNodeProcessor.TOOLTIP_NAME, OnTooltipChanged);
+            ViewModel.UnBindProperty<InternalVector2Int>(nameof(BaseNode.position), OnPositionChanged);
 
             ViewModel.onPortAdded -= OnPortAdded;
             ViewModel.onPortRemoved -= OnPortRemoved;
@@ -290,8 +303,8 @@ namespace CZToolKit.GraphProcessor.Editors
         protected void PortChanged()
         {
             RefreshPorts();
-            RefreshContentsHorizontalDivider();
             RefreshPortContainer();
+            RefreshContentsHorizontalDivider();
         }
 
         void AddPortView(BasePortProcessor port)
@@ -353,6 +366,14 @@ namespace CZToolKit.GraphProcessor.Editors
                 titleOutputPortContainer.RemoveFromClassList("hidden");
             else
                 titleOutputPortContainer.AddToClassList("hidden");
+        }
+        
+        void RefreshControls()
+        {
+            if (controls.childCount > 0)
+                controls.RemoveFromClassList("hidden");
+            else
+                controls.AddToClassList("hidden");
         }
     }
 }

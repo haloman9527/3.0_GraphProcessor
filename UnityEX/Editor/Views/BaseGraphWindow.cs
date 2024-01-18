@@ -149,14 +149,14 @@ namespace CZToolKit.GraphProcessor.Editors
             graphViewContainer = rootVisualElement.Q("GraphViewContainer");
         }
 
-        protected virtual void BeforeLoad()
+        protected virtual void BeforeLoad(BaseGraphProcessor graph, IGraphOwner graphOwner, IGraphAsset graphAsset)
         {
         }
 
         protected void Load(BaseGraphProcessor graph, IGraphOwner graphOwner, IGraphAsset graphAsset)
         {
             Clear();
-            BeforeLoad();
+            BeforeLoad(graph, graphOwner, graphAsset);
 
             this.commandDispatcher = new CommandDispatcher();
             this.graph = graph;

@@ -217,8 +217,8 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             RegisterCallback<KeyDownEvent>(KeyDownCallback);
 
-            ViewModel.BindingProperty<InternalVector2Int>(nameof(BaseGraph.pan), OnPositionChanged);
-            ViewModel.BindingProperty<float>(nameof(BaseGraph.zoom), OnZoomChanged);
+            ViewModel.BindProperty<InternalVector2Int>(nameof(BaseGraph.pan), OnPositionChanged);
+            ViewModel.BindProperty<float>(nameof(BaseGraph.zoom), OnZoomChanged);
 
             ViewModel.OnNodeAdded += OnNodeAdded;
             ViewModel.OnNodeRemoved += OnNodeRemoved;
@@ -234,8 +234,8 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             UnregisterCallback<KeyDownEvent>(KeyDownCallback);
 
-            ViewModel.UnBindingProperty<InternalVector2Int>(nameof(BaseGraph.pan), OnPositionChanged);
-            ViewModel.UnBindingProperty<float>(nameof(BaseGraph.zoom), OnZoomChanged);
+            ViewModel.UnBindProperty<InternalVector2Int>(nameof(BaseGraph.pan), OnPositionChanged);
+            ViewModel.UnBindProperty<float>(nameof(BaseGraph.zoom), OnZoomChanged);
 
             ViewModel.OnNodeAdded -= OnNodeAdded;
             ViewModel.OnNodeRemoved -= OnNodeRemoved;
