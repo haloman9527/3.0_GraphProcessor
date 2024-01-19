@@ -1,4 +1,5 @@
 ﻿#region 注 释
+
 /***
  *
  *  Title:
@@ -12,7 +13,9 @@
  *  Blog: https://www.mindgear.net/
  *
  */
+
 #endregion
+
 #if UNITY_EDITOR
 using System;
 using System.Collections.Generic;
@@ -37,10 +40,10 @@ namespace CZToolKit.GraphProcessor.Editors
         protected BasePortView(Orientation orientation, Direction direction, Capacity capacity, Type type, IEdgeConnectorListener connectorListener) : base(orientation, direction, capacity, type)
         {
             styleSheets.Add(GraphProcessorStyles.BasePortViewStyle);
-            
+
             visualClass = "port-" + portType.Name;
             this.AddToClassList("capacity-" + capacity.ToString());
-            
+
             PortLabel = this.Q("type") as Label;
             Connector = this.Q("connector");
             ConnectorCap = Connector.Q("connectorCap");
@@ -52,7 +55,7 @@ namespace CZToolKit.GraphProcessor.Editors
             CapIconBG = new VisualElement();
             CapIconBG.name = "cap-icon-bg";
             Connector.Add(CapIconBG);
-            
+
             CapIcon = new VisualElement();
             CapIcon.name = "cap-icon";
             CapIcon.pickingMode = PickingMode.Ignore;
@@ -89,6 +92,7 @@ namespace CZToolKit.GraphProcessor.Editors
         public void OnCreate()
         {
             ViewModel[nameof(BasePort.type)].AsBindableProperty<Type>().RegisterValueChangedEvent(OnPortTypeChanged);
+            ViewModel["hideLabel"].AsBindableProperty<bool>().RegisterValueChangedEvent(OnHideLabelChanged);
 
             OnBindingProperties();
         }
@@ -101,10 +105,20 @@ namespace CZToolKit.GraphProcessor.Editors
         }
 
         #region Callback
+
+        private void OnHideLabelChanged(bool oldvalue, bool newvalue)
+        {
+            if (ViewModel.HideLabel)
+                PortLabel.AddToClassList("hidden");
+            else
+                PortLabel.RemoveFromClassList("hidden");
+        }
+
         private void OnPortTypeChanged(Type oldPortType, Type newPortType)
         {
             this.portType = newPortType;
         }
+
         #endregion
 
         public void Connect(BaseConnectionView connection)
@@ -125,13 +139,20 @@ namespace CZToolKit.GraphProcessor.Editors
             }
         }
 
-        protected virtual void OnInitialized() { }
+        protected virtual void OnInitialized()
+        {
+        }
 
-        protected virtual void OnBindingProperties() { }
+        protected virtual void OnBindingProperties()
+        {
+        }
 
-        protected virtual void OnUnBindingProperties() { }
+        protected virtual void OnUnBindingProperties()
+        {
+        }
 
         #region 不建议使用
+
         /// <summary>
         /// 不建议使用
         /// </summary>
@@ -149,6 +170,7 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             base.Connect(edge);
         }
+
         #endregion
     }
 }

@@ -159,6 +159,13 @@ namespace CZToolKit.GraphProcessor
             }
         }
 
+        public BasePortProcessor AddPort(BasePort port)
+        {
+            var portVM = ViewModelFactory.CreateViewModel(port) as BasePortProcessor;
+            AddPort(portVM);
+            return portVM;
+        }
+
         public void AddPort(BasePortProcessor port)
         {
             ports.Add(port.Name, port);

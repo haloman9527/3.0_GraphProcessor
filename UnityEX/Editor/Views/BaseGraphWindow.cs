@@ -139,7 +139,8 @@ namespace CZToolKit.GraphProcessor.Editors
 
         protected virtual void InitRootVisualElement()
         {
-            GraphProcessorStyles.GraphWindowTree.CloneTree(rootVisualElement);
+            var tree = Resources.Load<VisualTreeAsset>(GraphProcessorStyles.GraphWindowUXMLFile);
+            tree.CloneTree(rootVisualElement);
             rootVisualElement.name = "rootVisualContainer";
             rootVisualElement.styleSheets.Add(GraphProcessorStyles.BasicStyle);
 
@@ -348,10 +349,20 @@ namespace CZToolKit.GraphProcessor.Editors
                 IMGUIContainer drawName = new IMGUIContainer(() =>
                 {
                     GUILayout.BeginHorizontal();
-                    if (graphAsset != null && GUILayout.Button(graphAsset.UnityAsset.name, EditorStyles.toolbarButton))
-                        EditorGUIUtility.PingObject(graphAsset.UnityAsset);
+                    if (unityGraphOwner != null)
+                    {
+                        EditorGUILayout.ObjectField(unityGraphOwner, typeof(UnityObject), true, GUILayout.Height(25));
+                    }
+
+                    if (unityGraphAsset != null)
+                    {
+                        EditorGUILayout.ObjectField(unityGraphAsset, typeof(UnityObject), true, GUILayout.Height(25));
+                    }
+
+                    GUILayout.Space(2);
                     GUILayout.EndHorizontal();
                 });
+                drawName.style.height = new StyleLength(new Length(100, LengthUnit.Percent));
                 drawName.style.flexGrow = 1;
                 ToolbarCenter.Add(drawName);
             }

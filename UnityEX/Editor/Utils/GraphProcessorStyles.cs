@@ -30,7 +30,6 @@ namespace CZToolKit.GraphProcessor.Editors
         public const string BaseEdgeStyleFile = "GraphProcessor/USS/BaseEdgeView";
         public const string BaseGroupStyleFile = "GraphProcessor/USS/BaseGroupView";
 
-        public static VisualTreeAsset GraphWindowTree { get; } = Resources.Load<VisualTreeAsset>(GraphWindowUXMLFile);
         public static StyleSheet BasicStyle { get; } = Resources.Load<StyleSheet>(BassicStyleFile);
         public static StyleSheet BaseGraphViewStyle { get; } = Resources.Load<StyleSheet>(BaseGraphViewStyleFile);
         public static StyleSheet BaseNodeViewStyle { get; } = Resources.Load<StyleSheet>(BaseNodeViewStyleFile);

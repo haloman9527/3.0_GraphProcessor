@@ -1,4 +1,5 @@
 ﻿#region 注 释
+
 /***
  *
  *  Title:
@@ -12,7 +13,9 @@
  *  Blog: https://www.mindgear.net/
  *
  */
+
 #endregion
+
 using CZToolKit;
 using System;
 using System.Collections.Generic;
@@ -23,35 +26,48 @@ namespace CZToolKit.GraphProcessor
     public class BasePort
     {
         #region Define
+
         public enum Direction
         {
             Left,
             Right
         }
+
         public enum Orientation
         {
             Horizontal,
             Vertical
         }
+
         public enum Capacity
         {
             Single,
             Multi
         }
+
         #endregion
 
-        public int id;
         public string name;
         public Orientation orientation;
         public Direction direction;
         public Capacity capacity;
         public Type type;
+
+        public BasePort(string name, BasePort.Orientation orientation, BasePort.Direction direction, BasePort.Capacity capacity, Type type = null)
+        {
+            this.name = name;
+            this.orientation = orientation;
+            this.direction = direction;
+            this.capacity = capacity;
+            this.type = type;
+        }
     }
 
     [ViewModel(typeof(BasePort))]
     public class BasePortProcessor : ViewModel, IGraphElementViewModel
     {
         #region Fields
+
         private bool hideLabel;
         internal List<BaseConnectionProcessor> connections;
         internal Func<BaseConnectionProcessor, BaseConnectionProcessor, int> comparer;
@@ -61,63 +77,79 @@ namespace CZToolKit.GraphProcessor
         public event Action<BaseConnectionProcessor> onBeforeDisconnected;
         public event Action<BaseConnectionProcessor> onAfterDisconnected;
         public event Action onConnectionChanged;
+
         #endregion
 
         #region Properties
-        public BasePort Model
-        {
-            get;
-        }
-        public Type ModelType
-        {
-            get;
-        }
-        public BaseNodeProcessor Owner
-        {
-            get;
-            internal set;
-        }
+
+        public BasePort Model { get; }
+        public Type ModelType { get; }
+        public BaseNodeProcessor Owner { get; internal set; }
+
         public string Name
         {
             get { return Model.name; }
         }
+
         public BasePort.Direction Direction
         {
             get { return Model.direction; }
         }
+
         public BasePort.Orientation Orientation
         {
             get { return Model.orientation; }
         }
+
         public BasePort.Capacity Capacity
         {
             get { return Model.capacity; }
         }
+
         public Type Type
         {
-            get { return GetPropertyValue<Type>(nameof(BasePort.type)); }
+            get
+            {
+                var t = GetPropertyValue<Type>(nameof(BasePort.type));
+                return t == null ? typeof(object) : t;
+            }
             set { SetPropertyValue(nameof(BasePort.type), value); }
         }
+
         public bool HideLabel
         {
             get { return GetPropertyValue<bool>(nameof(hideLabel)); }
             set { SetPropertyValue(nameof(hideLabel), value); }
         }
+
         public IReadOnlyList<BaseConnectionProcessor> Connections
         {
             get { return connections; }
         }
+
         #endregion
+
+        public BasePortProcessor(BasePort model)
+        {
+            this.Model = model;
+            this.ModelType = typeof(BasePort);
+            this.connections = new List<BaseConnectionProcessor>();
+            if (Model.orientation == BasePort.Orientation.Horizontal)
+                this.comparer = HorizontalComparer;
+            else
+                this.comparer = VerticalComparer;
+            this[nameof(BasePort.type)] = new BindableProperty<Type>(() => Model.type, v => Model.type = v);
+            this[nameof(hideLabel)] = new BindableProperty<bool>(() => hideLabel, v => hideLabel = v);
+        }
 
         public BasePortProcessor(string name, BasePort.Orientation orientation, BasePort.Direction direction, BasePort.Capacity capacity, Type type = null)
         {
-            this.Model = new BasePort()
+            this.Model = new BasePort(name, orientation, direction, capacity, type)
             {
                 name = name,
                 orientation = orientation,
                 direction = direction,
-                capacity = capacity,
-                type = type == null ? typeof(object) : type
+                capacity = capacity
             };
             this.ModelType = typeof(BasePort);
             this.connections = new List<BaseConnectionProcessor>();
@@ -130,6 +162,12 @@ namespace CZToolKit.GraphProcessor
         }
 
         #region API
+
+        public T ModelAs<T>() where T : BasePort
+        {
+            return Model as T;
+        }
+
         public void ConnectTo(BaseConnectionProcessor connection)
         {
             onBeforeConnected?.Invoke(connection);
@@ -213,9 +251,11 @@ namespace CZToolKit.GraphProcessor
                 }
             }
         }
+
         #endregion
 
         #region Helper
+
         private int VerticalComparer(BaseConnectionProcessor x, BaseConnectionProcessor y)
         {
             // 若需要重新排序的是input接口，则根据FromNode排序
@@ -263,6 +303,7 @@ namespace CZToolKit.GraphProcessor
 
             return 0;
         }
+
         #endregion
     }
 }

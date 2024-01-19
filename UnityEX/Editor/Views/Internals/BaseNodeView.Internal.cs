@@ -94,6 +94,8 @@ namespace CZToolKit.GraphProcessor.Editors
             bottomPortContainer = new VisualElement { name = "bottom-input" };
             nodeBorder.Add(bottomPortContainer);
 
+            outputContainer.style.alignItems = Align.FlexEnd;
+
             titleInputPortContainer = new VisualElement { name = "title-input" };
             titleContainer.Add(titleInputPortContainer);
             titleInputPortContainer.SendToBack();
@@ -343,6 +345,11 @@ namespace CZToolKit.GraphProcessor.Editors
                 horizontalDivider.RemoveFromClassList("hidden");
             else
                 horizontalDivider.AddToClassList("hidden");
+            
+            if (inputContainer.childCount > 0 || outputContainer.childCount > 0)
+                verticalDivider.RemoveFromClassList("hidden");
+            else
+                verticalDivider.AddToClassList("hidden");
         }
 
         void RefreshPortContainer()

@@ -1,4 +1,5 @@
 ﻿#region 注 释
+
 /***
  *
  *  Title:
@@ -12,7 +13,9 @@
  *  Blog: https://www.mindgear.net/
  *
  */
+
 #endregion
+
 #if UNITY_EDITOR
 using UnityEditor.Experimental.GraphView;
 
@@ -26,7 +29,6 @@ namespace CZToolKit.GraphProcessor.Editors
             capacity: port.Capacity == BasePort.Capacity.Single ? Capacity.Single : Capacity.Multi,
             port.Type, connectorListener)
         {
-
         }
     }
 }

@@ -97,8 +97,3 @@
 #divider {
     background-color: rgba(255, 128, 0, 1);
 }
-
-#divider.vertical {
-    display: none;
-    border-width: 0;
-}
