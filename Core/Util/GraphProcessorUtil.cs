@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace CZToolKit.GraphProcessor
 {
@@ -72,13 +73,13 @@ namespace CZToolKit.GraphProcessor
                 nodeStaticInfo.tooltip = string.Empty;
                 nodeStaticInfo.customTitleColor = new ToggleValue<InternalColor>();
                 NodeStaticInfos.Add(t, nodeStaticInfo);
-
-                if (Util_Reflection.TryGetTypeAttribute(t, true, out NodeMenuAttribute nodeMenu))
+                var nodeMenuAttribute = t.GetCustomAttribute(typeof(NodeMenuAttribute)) as NodeMenuAttribute;
+                if (nodeMenuAttribute != null)
                 {
-                    if (!string.IsNullOrEmpty(nodeMenu.path))
+                    if (!string.IsNullOrEmpty(nodeMenuAttribute.path))
                     {
-                        nodeStaticInfo.path = nodeMenu.path;
-                        nodeStaticInfo.menu = nodeMenu.path.Split('/');
+                        nodeStaticInfo.path = nodeMenuAttribute.path;
+                        nodeStaticInfo.menu = nodeMenuAttribute.path.Split('/');
                         nodeStaticInfo.title = nodeStaticInfo.menu[nodeStaticInfo.menu.Length - 1];
                     }
                     else
@@ -88,7 +89,7 @@ namespace CZToolKit.GraphProcessor
                         nodeStaticInfo.title = t.Name;
                     }
 
-                    nodeStaticInfo.hidden = nodeMenu.hidden;
+                    nodeStaticInfo.hidden = nodeMenuAttribute.hidden;
                 }
                 else
                 {
@@ -98,16 +99,19 @@ namespace CZToolKit.GraphProcessor
                     nodeStaticInfo.hidden = false;
                 }
 
-                if (Util_Reflection.TryGetTypeAttribute(t, true, out NodeTitleAttribute titleAttr) && !string.IsNullOrEmpty(titleAttr.title))
-                    nodeStaticInfo.title = titleAttr.title;
+                var titleAttribute = t.GetCustomAttribute(typeof(NodeTitleAttribute)) as NodeTitleAttribute;
+                if (titleAttribute != null && !string.IsNullOrEmpty(titleAttribute.title))
+                    nodeStaticInfo.title = titleAttribute.title;
 
-                if (Util_Reflection.TryGetTypeAttribute(t, true, out NodeTooltipAttribute tooltipAttr))
-                    nodeStaticInfo.tooltip = tooltipAttr.Tooltip;
+                var tooltipAttribute = t.GetCustomAttribute(typeof(NodeTooltipAttribute)) as NodeTooltipAttribute;
+                if (tooltipAttribute != null)
+                    nodeStaticInfo.tooltip = tooltipAttribute.Tooltip;
 
-                if (Util_Reflection.TryGetTypeAttribute(t, true, out NodeTitleColorAttribute titleColorAttr))
+                var titleColorAttribute = t.GetCustomAttribute(typeof(NodeTitleColorAttribute)) as NodeTitleColorAttribute;
+                if (titleColorAttribute != null)
                 {
                     nodeStaticInfo.customTitleColor.enable = true;
-                    nodeStaticInfo.customTitleColor.value = titleColorAttr.color;
+                    nodeStaticInfo.customTitleColor.value = titleColorAttribute.color;
                 }
             }
 
