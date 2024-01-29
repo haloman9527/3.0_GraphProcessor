@@ -31,8 +31,6 @@ public class AddNodeProcessor : BaseNodeProcessor, IGetPortValue, IGetPortValue<
         {
             HideLabel = true
         });
-        AddPort(new BasePortProcessor("FlowIn", BasePort.Orientation.Horizontal, BasePort.Direction.Left, BasePort.Capacity.Multi, typeof(object)));
-        AddPort(new BasePortProcessor("FlowOut", BasePort.Orientation.Horizontal, BasePort.Direction.Right, BasePort.Capacity.Multi, typeof(object)));
     }
 
     public object GetValue(string port)

@@ -3,9 +3,9 @@
 /***
  *
  *  Title:
- *  
+ *
  *  Description:
- *  
+ *
  *  Date:
  *  Version:
  *  Writer: 半只龙虾人
@@ -16,7 +16,6 @@
 
 #endregion
 
-using CZToolKit;
 using CZToolKit.Blackboard;
 using System;
 using System.Linq;
@@ -25,11 +24,12 @@ using System.Collections.Generic;
 namespace CZToolKit.GraphProcessor
 {
     [ViewModel(typeof(BaseGraph))]
-    public class BaseGraphProcessor : ViewModel, IGraphElementViewModel
+    public class BaseGraphProcessor : ViewModel
     {
         #region Fields
 
         private Dictionary<int, BaseNodeProcessor> nodes;
+        private Dictionary<int, StickNoteProcessor> notes;
         private List<BaseConnectionProcessor> connections;
         private Events<string> events;
         private BlackboardProcessor<string> blackboard;
@@ -41,6 +41,9 @@ namespace CZToolKit.GraphProcessor
         public event Action<BaseConnectionProcessor> OnDisconnected;
         public event Action<BaseGroupProcessor> OnGroupAdded;
         public event Action<BaseGroupProcessor> OnGroupRemoved;
+
+        public event Action<StickNoteProcessor> OnNoteAdded;
+        public event Action<StickNoteProcessor> OnNoteRemoved;
 
         #endregion
 
@@ -77,6 +80,11 @@ namespace CZToolKit.GraphProcessor
             get { return connections; }
         }
 
+        public IReadOnlyDictionary<int, StickNoteProcessor> Notes
+        {
+            get { return notes; }
+        }
+
         public Events<string> Events
         {
             get { return events; }
@@ -95,12 +103,15 @@ namespace CZToolKit.GraphProcessor
             ModelType = model.GetType();
             Model.pan = Model.pan == default ? InternalVector2Int.zero : Model.pan;
             Model.zoom = Model.zoom == 0 ? 1 : Model.zoom;
+            if (Model.notes == null)
+                Model.notes = new Dictionary<int, StickNote>();
 
             this.events = new Events<string>();
             this.blackboard = new BlackboardProcessor<string>(new Blackboard<string>(), events);
             this.nodes = new Dictionary<int, BaseNodeProcessor>();
             this.connections = new List<BaseConnectionProcessor>();
             this.groups = new Groups();
+            this.notes = new Dictionary<int, StickNoteProcessor>();
 
             this.RegisterProperty(nameof(BaseGraph.pan), new BindableProperty<InternalVector2Int>(() => Model.pan, v => Model.pan = v));
             this.RegisterProperty(nameof(BaseGraph.zoom), new BindableProperty<float>(() => Model.zoom, v => Model.zoom = v));
@@ -157,7 +168,6 @@ namespace CZToolKit.GraphProcessor
                 groups.AddGroup(groupVM);
             }
 
-
             foreach (var connection in connections)
             {
                 connection.Enable();
@@ -166,6 +176,12 @@ namespace CZToolKit.GraphProcessor
             foreach (var node in nodes.Values)
             {
                 node.Enable();
+            }
+
+            foreach (var pair in model.notes)
+            {
+                var note = ViewModelFactory.CreateViewModel(pair.Value) as StickNoteProcessor;
+                notes.Add(pair.Key, note);
             }
         }
 
@@ -361,6 +377,34 @@ namespace CZToolKit.GraphProcessor
             OnGroupRemoved?.Invoke(group);
         }
 
+        public void AddNote(string title, string content, InternalVector2Int position)
+        {
+            var note = new StickNote();
+            note.id = NewID();
+            note.position = position;
+            note.title = title;
+            note.content = content;
+            var noteVm = ViewModelFactory.CreateViewModel(note) as StickNoteProcessor;
+
+            AddNote(noteVm);
+        }
+
+        public void AddNote(StickNoteProcessor note)
+        {
+            notes.Add(note.ID, note);
+            Model.notes.Add(note.ID, note.Model);
+            OnNoteAdded?.Invoke(note);
+        }
+
+        public void RemoveNote(int id)
+        {
+            if (!notes.TryGetValue(id, out var note))
+                return;
+            notes.Remove(note.ID);
+            Model.notes.Remove(note.ID);
+            OnNoteRemoved?.Invoke(note);
+        }
+
         public virtual BaseNodeProcessor NewNode(Type nodeType, InternalVector2Int position)
         {
             var node = Activator.CreateInstance(nodeType) as BaseNode;
@@ -407,7 +451,7 @@ namespace CZToolKit.GraphProcessor
             do
             {
                 id++;
-            } while (nodes.ContainsKey(id) || id == 0);
+            } while (nodes.ContainsKey(id) || notes.ContainsKey(id) || id == 0);
 
             return id;
         }

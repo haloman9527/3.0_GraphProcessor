@@ -26,5 +26,6 @@ namespace CZToolKit.GraphProcessor
         public Dictionary<int, BaseNode> nodes = new Dictionary<int, BaseNode>();
         public List<BaseConnection> connections = new List<BaseConnection>();
         public List<BaseGroup> groups = new List<BaseGroup>();
+        public Dictionary<int, StickNote> notes = new Dictionary<int, StickNote>();
     }
 }

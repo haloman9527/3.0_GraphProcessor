@@ -41,11 +41,7 @@ public class FloatNodeProcessor : BaseNodeProcessor, IGetPortValue, IGetPortValu
     {
         T_Model = model;
         this[nameof(FloatNode.num)] = new BindableProperty<float>(() => T_Model.num, v => T_Model.num = v);
-        AddPort(new BasePortProcessor("Output", BasePort.Orientation.Horizontal, BasePort.Direction.Right, BasePort.Capacity.Multi, typeof(float))
-        {
-            HideLabel = true
-        });AddPort(new BasePortProcessor("FlowIn", BasePort.Orientation.Horizontal, BasePort.Direction.Left, BasePort.Capacity.Multi, typeof(object)));
-        AddPort(new BasePortProcessor("FlowOut", BasePort.Orientation.Horizontal, BasePort.Direction.Right, BasePort.Capacity.Multi, typeof(object)));
+        AddPort(new BasePortProcessor("Flow-Out", BasePort.Orientation.Horizontal, BasePort.Direction.Right, BasePort.Capacity.Multi, typeof(object)));
     }
 
     public object GetValue(string port)

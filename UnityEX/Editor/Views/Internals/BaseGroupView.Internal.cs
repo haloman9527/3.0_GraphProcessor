@@ -1,10 +1,11 @@
 ﻿#region 注 释
+
 /***
  *
  *  Title:
- *  
+ *
  *  Description:
- *  
+ *
  *  Date:
  *  Version:
  *  Writer: 半只龙虾人
@@ -12,7 +13,9 @@
  *  Blog: https://www.mindgear.net/
  *
  */
+
 #endregion
+
 #if UNITY_EDITOR
 using System.Collections.Generic;
 using System.Linq;
@@ -21,7 +24,6 @@ using UnityEditor.Experimental.GraphView;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
-
 using GroupView = UnityEditor.Experimental.GraphView.Group;
 
 namespace CZToolKit.GraphProcessor.Editors
@@ -34,7 +36,6 @@ namespace CZToolKit.GraphProcessor.Editors
         public Label TitleLabel { get; private set; }
         public BaseGroupProcessor ViewModel { get; protected set; }
         public BaseGraphView Owner { get; private set; }
-        
 
 
         public BaseGroupView()
@@ -62,7 +63,7 @@ namespace CZToolKit.GraphProcessor.Editors
             this.BackgroudColorField.SetValueWithoutNotify(ViewModel.BackgroundColor.ToColor());
             base.SetPosition(new Rect(ViewModel.Position.ToVector2(), GetPosition().size));
             WithoutNotify = true;
-            base.AddElements(ViewModel.Nodes.Where(nodeID=>Owner.NodeViews.ContainsKey(nodeID)).Select(nodeID => Owner.NodeViews[nodeID]).ToArray());
+            base.AddElements(ViewModel.Nodes.Where(nodeID => Owner.NodeViews.ContainsKey(nodeID)).Select(nodeID => Owner.NodeViews[nodeID]).ToArray());
             WithoutNotify = false;
             this.AddManipulator(new ContextualMenuManipulator(BuildContextualMenu));
             BackgroudColorField.RegisterValueChangedCallback(OnGroupColorChanged);
@@ -87,6 +88,7 @@ namespace CZToolKit.GraphProcessor.Editors
         }
 
         #region Callbacks
+
         private void OnTitleChanged(string oldTitle, string newTitle)
         {
             if (string.IsNullOrEmpty(newTitle))
@@ -121,6 +123,7 @@ namespace CZToolKit.GraphProcessor.Editors
                 return;
             base.RemoveElements(new BaseNodeView[] { Owner.NodeViews[node.ID] });
         }
+
         #endregion
 
         protected override void OnGroupRenamed(string oldName, string newName)
@@ -137,10 +140,13 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             if (!base.AcceptsElement(element, ref reasonWhyNotAccepted))
                 return false;
-            if (element is BaseNodeView)
-                return true;
-            if (element is BaseConnectionView)
-                return true;
+            switch (element)
+            {
+                case BaseNodeView:
+                case StickyNote:
+                    return true;
+            }
+
             return false;
         }
 
@@ -148,16 +154,22 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             if (WithoutNotify)
                 return;
-                
+
             foreach (var element in elements)
             {
-                if (!(element is BaseNodeView nodeView))
-                    continue;
-                var temp = WithoutNotify;
-                WithoutNotify = true;
-                Owner.ViewModel.Groups.AddNodeToGroup(ViewModel, nodeView.ViewModel);
-                WithoutNotify = temp;
+                switch (element)
+                {
+                    case BaseNodeView nodeView:
+                    {
+                        var temp = WithoutNotify;
+                        WithoutNotify = true;
+                        Owner.ViewModel.Groups.AddNodeToGroup(ViewModel, nodeView.ViewModel);
+                        WithoutNotify = temp;
+                        break;
+                    }
+                }
             }
+
             Owner.SetDirty();
         }
 
@@ -165,7 +177,7 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             if (WithoutNotify)
                 return;
-                
+
             foreach (var element in elements)
             {
                 if (!(element is BaseNodeView nodeView))
@@ -175,6 +187,7 @@ namespace CZToolKit.GraphProcessor.Editors
                 Owner.ViewModel.Groups.RemoveNodeFromGroup(nodeView.ViewModel);
                 WithoutNotify = temp;
             }
+
             Owner.SetDirty();
         }
 

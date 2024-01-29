@@ -49,8 +49,6 @@ namespace CZToolKit.GraphProcessor.Editors
 
         #region 属性
 
-        public override VisualElement contentContainer => controls;
-
         public Label NodeLabel
         {
             get { return nodeLabel; }
@@ -71,7 +69,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
         #endregion
 
-        public BaseNodeView() : base()
+        public BaseNodeView()
         {
             styleSheets.Add(GraphProcessorStyles.BaseNodeViewStyle);
 

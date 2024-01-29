@@ -3,9 +3,9 @@
 /***
  *
  *  Title:
- *  
+ *
  *  Description:
- *  
+ *
  *  Date:
  *  Version:
  *  Writer: 半只龙虾人
@@ -41,6 +41,7 @@ namespace CZToolKit.GraphProcessor.Editors
         private Dictionary<int, BaseNodeView> nodeViews = new Dictionary<int, BaseNodeView>();
         private Dictionary<int, BaseGroupView> groupViews = new Dictionary<int, BaseGroupView>();
         private Dictionary<BaseConnectionProcessor, BaseConnectionView> connectionViews = new Dictionary<BaseConnectionProcessor, BaseConnectionView>();
+        private Dictionary<int, StickNoteView> noteViews = new Dictionary<int, StickNoteView>();
 
         public BaseGraphWindow GraphWindow
         {
@@ -65,6 +66,11 @@ namespace CZToolKit.GraphProcessor.Editors
         public Dictionary<int, BaseNodeView> NodeViews
         {
             get { return nodeViews; }
+        }
+
+        public Dictionary<int, StickNoteView> NoteViews
+        {
+            get { return noteViews; }
         }
 
         public Dictionary<int, BaseGroupView> GroupViews
@@ -150,6 +156,7 @@ namespace CZToolKit.GraphProcessor.Editors
                 yield return GraphWindow.StartCoroutine(GenerateNodeViews());
                 yield return GraphWindow.StartCoroutine(LinkNodeViews());
                 yield return GraphWindow.StartCoroutine(GenerateGroupViews());
+                yield return GraphWindow.StartCoroutine(GenerateNoteViews());
 
                 BindEvents();
                 OnInitialized();
@@ -213,6 +220,19 @@ namespace CZToolKit.GraphProcessor.Editors
             }
         }
 
+        private IEnumerator GenerateNoteViews()
+        {
+            int step = 0;
+            foreach (var pair in ViewModel.Notes)
+            {
+                if (pair.Value == null) continue;
+                AddNoteView(pair.Value);
+                step++;
+                if (step % 10 == 0)
+                    yield return null;
+            }
+        }
+
         private void BindEvents()
         {
             RegisterCallback<KeyDownEvent>(KeyDownCallback);
@@ -228,6 +248,9 @@ namespace CZToolKit.GraphProcessor.Editors
 
             ViewModel.OnConnected += OnConnected;
             ViewModel.OnDisconnected += OnDisconnected;
+
+            ViewModel.OnNoteAdded += OnNoteAdded;
+            ViewModel.OnNoteRemoved += OnNoteRemoved;
         }
 
         private void UnbindEvents()
@@ -245,6 +268,9 @@ namespace CZToolKit.GraphProcessor.Editors
 
             ViewModel.OnConnected -= OnConnected;
             ViewModel.OnDisconnected -= OnDisconnected;
+
+            ViewModel.OnNoteAdded -= OnNoteAdded;
+            ViewModel.OnNoteRemoved -= OnNoteRemoved;
         }
 
         #endregion
@@ -320,10 +346,28 @@ namespace CZToolKit.GraphProcessor.Editors
             ConnectionViews.Remove(connectionView.ViewModel);
         }
 
+
+        private void AddNoteView(StickNoteProcessor note)
+        {
+            var noteView = new StickNoteView();
+            noteView.SetUp(note, this);
+            noteView.OnCreate();
+            NoteViews[note.ID] = noteView;
+            AddElement(noteView);
+        }
+
+        private void RemoveNoteView(StickNoteProcessor note)
+        {
+            var noteView = NoteViews[note.ID];
+            noteView.OnDestroy();
+            RemoveElement(noteView);
+            NoteViews.Remove(noteView.ViewModel.ID);
+        }
+
         /// <summary> 获取鼠标在GraphView中的坐标，如果鼠标不在GraphView内，则返回当前GraphView显示的中心点 </summary>
         public Vector2 GetMousePosition()
         {
-            if (worldBound.Contains(Event.current.mousePosition))
+            if (Event.current != null && worldBound.Contains(Event.current.mousePosition))
                 return contentViewContainer.WorldToLocal(Event.current.mousePosition);
             return contentViewContainer.WorldToLocal(worldBound.center);
         }
@@ -405,6 +449,18 @@ namespace CZToolKit.GraphProcessor.Editors
             SetDirty();
         }
 
+        private void OnNoteAdded(StickNoteProcessor note)
+        {
+            AddNoteView(note);
+            SetDirty();
+        }
+
+        private void OnNoteRemoved(StickNoteProcessor note)
+        {
+            RemoveNoteView(note);
+            SetDirty();
+        }
+
         private void OnGroupAdded(BaseGroupProcessor group)
         {
             AddGroupView(group);
@@ -481,10 +537,9 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             if (changes.movedElements != null)
             {
-                CommandDispatcher.BeginGroup();
                 // 当节点移动之后，与之连接的接口重新排序
-                Dictionary<BaseNodeProcessor, InternalVector2Int> newPos = new Dictionary<BaseNodeProcessor, InternalVector2Int>();
-                Dictionary<BaseGroupProcessor, InternalVector2Int> groupNewPos = new Dictionary<BaseGroupProcessor, InternalVector2Int>();
+                var newPos = new Dictionary<IGraphScopeViewModel, Rect>();
+                // Dictionary<BaseGroupProcessor, InternalVector2Int> groupNewPos = new Dictionary<BaseGroupProcessor, InternalVector2Int>();
                 HashSet<BasePortProcessor> portsHashset = new HashSet<BasePortProcessor>();
 
                 changes.movedElements.RemoveAll(element =>
@@ -492,7 +547,8 @@ namespace CZToolKit.GraphProcessor.Editors
                     switch (element)
                     {
                         case BaseNodeView nodeView:
-                            newPos[nodeView.ViewModel] = nodeView.GetPosition().position.ToInternalVector2Int();
+                        {
+                            newPos[nodeView.ViewModel] = nodeView.GetPosition();
                             // 记录需要重新排序的接口
                             foreach (var port in nodeView.ViewModel.Ports.Values)
                             {
@@ -506,34 +562,38 @@ namespace CZToolKit.GraphProcessor.Editors
                             }
 
                             return true;
+                        }
                         case BaseGroupView groupView:
-                            groupNewPos[groupView.ViewModel] = groupView.GetPosition().position.ToInternalVector2Int();
+                        {
+                            newPos[groupView.ViewModel] = groupView.GetPosition();
+                            foreach (var nodeGUID in groupView.ViewModel.Nodes)
+                            {
+                                var node = ViewModel.Nodes[nodeGUID];
+                                var nodeView = NodeViews[nodeGUID];
+                                newPos[node] = nodeView.GetPosition();
+                            }
+
                             return true;
+                        }
                     }
 
                     return false;
                 });
-                foreach (var pair in groupNewPos)
+
+                if (newPos.Count > 0)
                 {
-                    foreach (var nodeGUID in pair.Key.Nodes)
+                    CommandDispatcher.BeginGroup();
+
+                    // 排序
+                    foreach (var port in portsHashset)
                     {
-                        var node = ViewModel.Nodes[nodeGUID];
-                        var nodeView = NodeViews[nodeGUID];
-                        newPos[node] = nodeView.GetPosition().position.ToInternalVector2Int();
+                        port.Resort();
                     }
+
+                    CommandDispatcher.Do(new MoveElementsCommand(newPos));
+
+                    CommandDispatcher.EndGroup();
                 }
-
-                CommandDispatcher.Do(new MoveNodesCommand(newPos));
-                CommandDispatcher.Do(new MoveGroupsCommand(groupNewPos));
-
-
-                // 排序
-                foreach (var port in portsHashset)
-                {
-                    port.Resort();
-                }
-
-                CommandDispatcher.EndGroup();
             }
 
             if (changes.elementsToRemove == null)

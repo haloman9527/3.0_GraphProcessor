@@ -23,7 +23,7 @@ using System.Collections.Generic;
 namespace CZToolKit.GraphProcessor
 {
     [ViewModel(typeof(BaseNode))]
-    public class BaseNodeProcessor : ViewModel, IGraphElementViewModel
+    public class BaseNodeProcessor : ViewModel, IGraphScopeViewModel
     {
         #region Fields
 

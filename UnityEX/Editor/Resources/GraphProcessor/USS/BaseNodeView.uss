@@ -1,12 +1,11 @@
 #node-border {
     background-color: rgba(0, 0, 0, 0.8);
-    /*border-color: rgba(64, 64, 64, 1);*/
-    min-width: 60px;
-    border-radius: 5px;
+    border-radius: 3px;
+    border-width: 1px;
 }
 
 #selection-border {
-    border-radius: 6px;
+    border-radius: 4px;
 }
 
 #node-border > #title {
@@ -80,7 +79,6 @@
     align-items: center;
     flex-direction: row;
     background-color: rgba(78, 89, 113, 0.0);
-    border-bottom-width: 1px;
     border-color: black;
 }
 
@@ -90,7 +88,6 @@
     align-items: center;
     flex-direction: row;
     background-color: rgba(78, 89, 113, 0.0);
-    border-top-width: 1px;
     border-color: black;
 }
 

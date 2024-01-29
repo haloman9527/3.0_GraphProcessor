@@ -1,10 +1,11 @@
 ﻿#region 注 释
+
 /***
  *
  *  Title:
- *  
+ *
  *  Description:
- *  
+ *
  *  Date:
  *  Version:
  *  Writer: 半只龙虾人
@@ -12,11 +13,14 @@
  *  Blog: https://www.mindgear.net/
  *
  */
+
 #endregion
+
 using CZToolKit;
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace CZToolKit.GraphProcessor
 {
@@ -65,6 +69,7 @@ namespace CZToolKit.GraphProcessor
         BaseNodeProcessor node;
 
         List<BaseConnectionProcessor> connections = new List<BaseConnectionProcessor>();
+
         public RemoveNodeCommand(BaseGraphProcessor graph, BaseNodeProcessor node)
         {
             this.graph = graph;
@@ -80,6 +85,7 @@ namespace CZToolKit.GraphProcessor
                     connections.Add(connection);
                 }
             }
+
             graph.RemoveNode(node);
         }
 
@@ -96,16 +102,18 @@ namespace CZToolKit.GraphProcessor
             {
                 graph.RevertDisconnect(edge);
             }
+
             connections.Clear();
         }
     }
-    
+
     public class RemoveNodesCommand : ICommand
     {
         BaseGraphProcessor graph;
         BaseNodeProcessor[] nodes;
 
         HashSet<BaseConnectionProcessor> connections = new HashSet<BaseConnectionProcessor>();
+
         public RemoveNodesCommand(BaseGraphProcessor graph, BaseNodeProcessor[] nodes)
         {
             this.graph = graph;
@@ -143,60 +151,49 @@ namespace CZToolKit.GraphProcessor
             {
                 graph.AddNode(node);
             }
+
             // 还原
             foreach (var edge in connections)
             {
                 graph.RevertDisconnect(edge);
             }
+
             connections.Clear();
         }
     }
 
-    public class MoveNodeCommand : ICommand
+    public class MoveElementsCommand : ICommand
     {
-        BaseNodeProcessor node;
-        InternalVector2Int currentPosition;
-        InternalVector2Int targetPosition;
+        Dictionary<IGraphScopeViewModel, Rect> oldPos;
+        Dictionary<IGraphScopeViewModel, Rect> newPos;
 
-        public MoveNodeCommand(BaseNodeProcessor node, InternalVector2Int position)
-        {
-            this.node = node;
-            currentPosition = node.Position;
-            targetPosition = position;
-        }
-
-        public void Do()
-        {
-            node.Position = targetPosition;
-        }
-
-        public void Redo()
-        {
-            Do();
-        }
-
-        public void Undo()
-        {
-            node.Position = currentPosition;
-        }
-    }
-
-    public class MoveNodesCommand : ICommand
-    {
-        Dictionary<BaseNodeProcessor, InternalVector2Int> oldPos = new Dictionary<BaseNodeProcessor, InternalVector2Int>();
-        Dictionary<BaseNodeProcessor, InternalVector2Int> newPos = new Dictionary<BaseNodeProcessor, InternalVector2Int>();
-
-        public MoveNodesCommand(Dictionary<BaseNodeProcessor, InternalVector2Int> newPos)
+        public MoveElementsCommand(Dictionary<IGraphScopeViewModel, Rect> newPos)
         {
             this.newPos = newPos;
         }
 
         public void Do()
         {
+            if (oldPos == null)
+                oldPos = new Dictionary<IGraphScopeViewModel, Rect>();
+            else
+                oldPos.Clear();
+
             foreach (var pair in newPos)
             {
-                oldPos[pair.Key] = pair.Key.Position;
-                pair.Key.Position = pair.Value;
+                if (pair.Key is StickNoteProcessor note)
+                {
+                    var rect = new Rect(pair.Key.Position.ToVector2(), pair.Key.Position.ToVector2());
+                    oldPos[pair.Key] = rect;
+                    note.Position = pair.Value.position.ToInternalVector2Int();
+                    note.Size = pair.Value.size.ToInternalVector2Int();
+                }
+                else
+                {
+                    var rect = new Rect(pair.Key.Position.ToVector2(), Vector2.zero);
+                    oldPos[pair.Key] = rect;
+                    pair.Key.Position = pair.Value.position.ToInternalVector2Int();
+                }
             }
         }
 
@@ -209,7 +206,15 @@ namespace CZToolKit.GraphProcessor
         {
             foreach (var pair in oldPos)
             {
-                pair.Key.Position = pair.Value;
+                if (pair.Key is StickNoteProcessor note)
+                {
+                    note.Position = pair.Value.position.ToInternalVector2Int();
+                    note.Size = pair.Value.size.ToInternalVector2Int();
+                }
+                else
+                {
+                    pair.Key.Position = pair.Value.position.ToInternalVector2Int();
+                }
             }
         }
     }
@@ -312,7 +317,7 @@ namespace CZToolKit.GraphProcessor
         private BaseGraphProcessor graph;
         private BaseGroupProcessor group;
         private BaseNodeProcessor[] nodes;
-        
+
         public AddToGroupCommand(BaseGraphProcessor graph, BaseGroupProcessor group, BaseNodeProcessor[] nodes)
         {
             this.graph = graph;
@@ -347,7 +352,7 @@ namespace CZToolKit.GraphProcessor
         private BaseGraphProcessor graph;
         private BaseGroupProcessor group;
         private BaseNodeProcessor[] nodes;
-        
+
         public RemoveFromGroupCommand(BaseGraphProcessor graph, BaseGroupProcessor group, BaseNodeProcessor[] nodes)
         {
             this.graph = graph;
@@ -511,6 +516,7 @@ namespace CZToolKit.GraphProcessor
             {
                 return;
             }
+
             node.RemovePort(port);
         }
     }
@@ -554,6 +560,7 @@ namespace CZToolKit.GraphProcessor
             {
                 return;
             }
+
             node.RemovePort(port);
         }
     }
@@ -594,6 +601,7 @@ namespace CZToolKit.GraphProcessor
                     replacedConnections.Add(connection);
                 }
             }
+
             if (to.Capacity == BasePort.Capacity.Single)
             {
                 foreach (var connection in to.Connections)
@@ -606,6 +614,7 @@ namespace CZToolKit.GraphProcessor
             {
                 graph.Disconnect(connection);
             }
+
             graph.Connect(connectionVM);
         }
 
@@ -745,4 +754,3 @@ namespace CZToolKit.GraphProcessor
         }
     }
 }
-

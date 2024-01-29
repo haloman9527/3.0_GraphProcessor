@@ -1,10 +1,11 @@
 #region 注 释
+
 /***
  *
  *  Title:
- *  
+ *
  *  Description:
- *  
+ *
  *  Date:
  *  Version:
  *  Writer: 半只龙虾人
@@ -12,12 +13,17 @@
  *  Blog: https://www.mindgear.net/
  *
  */
+
 #endregion
 
 namespace CZToolKit.GraphProcessor
 {
     public interface IGraphElementViewModel
     {
-        
+    }
+
+    public interface IGraphScopeViewModel : IGraphElementViewModel
+    {
+        public InternalVector2Int Position { get; set; }
     }
 }

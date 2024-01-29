@@ -3,9 +3,9 @@
 /***
  *
  *  Title:
- *  
+ *
  *  Description:
- *  
+ *
  *  Date:
  *  Version:
  *  Writer: 半只龙虾人
@@ -34,14 +34,12 @@ namespace CZToolKit.GraphProcessor.Editors
 
         protected virtual void OnInitialized()
         {
-            
         }
 
         protected virtual void OnDestroyed()
         {
-            
         }
-        
+
         public override void BuildContextualMenu(ContextualMenuPopulateEvent evt)
         {
             evt.menu.AppendAction("Create Group", delegate
@@ -77,9 +75,28 @@ namespace CZToolKit.GraphProcessor.Editors
                 }
             });
 
-            if (evt.target is GraphView || evt.target is Node || evt.target is Group || evt.target is Edge)
+            evt.menu.AppendAction("Create Note", delegate
             {
-                evt.menu.AppendAction("Delete", delegate { DeleteSelectionCallback(AskUser.DontAskUser); }, (DropdownMenuAction a) => canDeleteSelection ? DropdownMenuAction.Status.Normal : DropdownMenuAction.Status.Hidden);
+                var data = new StickNote();
+                data.id = ViewModel.NewID();
+                data.position = this.GetMousePosition().ToInternalVector2Int();
+                data.title = "title";
+                data.content = "contents";
+                var note = ViewModelFactory.CreateViewModel(data) as StickNoteProcessor;
+                CommandDispatcher.Do(() => { ViewModel.AddNote(note); }, () => { ViewModel.RemoveNote(note.ID); });
+            });
+
+            switch (evt.target)
+            {
+                case GraphView:
+                case Node:
+                case Group:
+                case Edge:
+                case StickNote:
+                {
+                    evt.menu.AppendAction("Delete", delegate { DeleteSelectionCallback(AskUser.DontAskUser); }, (DropdownMenuAction a) => canDeleteSelection ? DropdownMenuAction.Status.Normal : DropdownMenuAction.Status.Hidden);
+                    break;
+                }
             }
         }
 
@@ -94,7 +111,7 @@ namespace CZToolKit.GraphProcessor.Editors
                 {
                     continue;
                 }
-                
+
                 foreach (var _portView in _nodeView.PortViews.Values)
                 {
                     if (IsCompatible(_portView, portView, nodeAdapter))
@@ -113,7 +130,7 @@ namespace CZToolKit.GraphProcessor.Editors
                 var nodeStaticInfo = pair.Value;
                 if (nodeStaticInfo.hidden)
                     continue;
-                
+
                 var path = nodeStaticInfo.path;
                 var menu = nodeStaticInfo.menu;
                 nodeMenu.entries.Add(new NodeMenuWindow.NodeEntry(path, menu, nodeType));

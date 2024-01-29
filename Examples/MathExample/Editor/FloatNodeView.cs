@@ -32,10 +32,10 @@ public class FloatNodeView : BaseNodeView
         valueField = new FloatField();
         valueField.style.marginLeft = 3;
         valueField.style.marginRight = 3;
-        valueField.style.minWidth = 50;
+        // valueField.style.minWidth = 50;
         valueField.SetValueWithoutNotify(vm.Value);
         valueField.RegisterValueChangedCallback(OnEditedValue);
-        PortViews["Output"].Add(valueField);
+        controls.Add(valueField);
     }
 
     private void OnEditedValue(ChangeEvent<float> evt)

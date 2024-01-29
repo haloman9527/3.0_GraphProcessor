@@ -3,9 +3,9 @@
 /***
  *
  *  Title:
- *  
+ *
  *  Description:
- *  
+ *
  *  Date:
  *  Version:
  *  Writer: 半只龙虾人
@@ -19,12 +19,11 @@
 using CZToolKit;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace CZToolKit.GraphProcessor
 {
     [ViewModel(typeof(BaseGroup))]
-    public class BaseGroupProcessor : ViewModel, IGraphElementViewModel
+    public class BaseGroupProcessor : ViewModel, IGraphScopeViewModel
     {
         #region Fileds
 
@@ -43,6 +42,7 @@ namespace CZToolKit.GraphProcessor
         {
             get { return Model.id; }
         }
+
         public string GroupName
         {
             get { return GetPropertyValue<string>(nameof(Model.groupName)); }
