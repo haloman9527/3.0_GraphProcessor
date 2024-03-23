@@ -89,7 +89,7 @@ namespace CZToolKit.GraphProcessor.Editors
             switch (evt.target)
             {
                 case GraphView:
-                case Node:
+                case UnityEditor.Experimental.GraphView.Node:
                 case Group:
                 case Edge:
                 case StickNote:
