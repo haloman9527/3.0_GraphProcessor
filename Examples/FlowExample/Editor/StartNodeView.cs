@@ -1,4 +1,5 @@
-﻿using CZToolKit.GraphProcessor.Editors;
+﻿#if UNITY_EDITOR
+using CZToolKit.GraphProcessor.Editors;
 using CZToolKitEditor;
 using UnityEditor;
 using UnityEngine.UIElements;
@@ -13,3 +14,4 @@ public class StartNodeView : FlowNodeView
         this.SetMovable(false);
     }
 }
+#endif

@@ -1,4 +1,6 @@
-﻿using System;
+﻿
+#if UNITY_EDITOR
+using System;
 using UnityEditor.Experimental.GraphView;
 
 namespace CZToolKit.GraphProcessor.Editors
@@ -15,3 +17,4 @@ namespace CZToolKit.GraphProcessor.Editors
         }
     }
 }
+#endif

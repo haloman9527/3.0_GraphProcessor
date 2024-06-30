@@ -1,4 +1,6 @@
-﻿using UnityEngine.UIElements;
+﻿
+#if UNITY_EDITOR
+using UnityEngine.UIElements;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
@@ -35,3 +37,4 @@ namespace CZToolKit.GraphProcessor.Editors
         }
     }
 }
+#endif

@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 #region 注 释
 
 /***
@@ -16,7 +17,6 @@
 
 #endregion
 
-#if UNITY_EDITOR
 using CZToolKit;
 using CZToolKit.GraphProcessor;
 using CZToolKit.GraphProcessor.Editors;
