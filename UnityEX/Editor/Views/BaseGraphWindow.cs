@@ -329,20 +329,25 @@ namespace CZToolKit.GraphProcessor.Editors
             btnOverview.clicked += () => { GraphView.FrameAll(); };
             ToolbarLeft.Add(btnOverview);
 
-            var togMiniMap = new ToolbarToggle()
+            var minimapActive = new BindableProperty<bool>(() =>
+            {
+                return EditorPrefs.GetBool("GraphView.MiniMap.Active", false);
+            }, v =>
+            {
+                EditorPrefs.SetBool("GraphView.MiniMap.Active", v);
+                GraphView.MiniMapActive = v;
+            });
+            var togMiniMap = new ToolbarButton()
             {
                 name = "togMiniMap",
                 text = "MiniMap",
                 tooltip = "小地图",
-                value = EditorPrefs.GetBool("GraphView.MiniMap.Active", false),
             };
-            togMiniMap.RegisterValueChangedCallback(_v =>
+            togMiniMap.clicked += () =>
             {
-                EditorPrefs.SetBool("GraphView.MiniMap.Active", _v.newValue);
-                GraphView.MiniMapActive = _v.newValue;
-            });
+                minimapActive.Value = !minimapActive.Value;
+            };
             ToolbarLeft.Add(togMiniMap);
-            GraphView.MiniMapActive = togMiniMap.value;
 
             if (graphAsset.UnityAsset != null)
             {

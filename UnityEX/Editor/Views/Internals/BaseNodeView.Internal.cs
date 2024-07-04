@@ -116,7 +116,7 @@ namespace CZToolKit.GraphProcessor.Editors
             base.SetPosition(new Rect(ViewModel.Position.ToVector2(), GetPosition().size));
             title = ViewModel.Title;
             tooltip = ViewModel.Tooltip;
-            if (ViewModel.ContainsKey(BaseNodeProcessor.TITLE_COLOR_NAME))
+            if (ViewModel.Contains(BaseNodeProcessor.TITLE_COLOR_NAME))
             {
                 var color = ViewModel.TitleColor.ToColor();
                 var lum = 0.299f * color.r + 0.587f * color.g + 0.114f * color.b;
@@ -197,7 +197,7 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             ViewModel.BindProperty<InternalVector2Int>(nameof(BaseNode.position), OnPositionChanged);
             ViewModel.BindProperty<string>(BaseNodeProcessor.TITLE_NAME, OnTitleChanged);
-            if (ViewModel.ContainsKey(BaseNodeProcessor.TITLE_COLOR_NAME))
+            if (ViewModel.Contains(BaseNodeProcessor.TITLE_COLOR_NAME))
                 ViewModel.BindProperty<InternalColor>(BaseNodeProcessor.TITLE_COLOR_NAME, OnTitleColorChanged);
             ViewModel.BindProperty<string>(BaseNodeProcessor.TOOLTIP_NAME, OnTooltipChanged);
 
@@ -215,7 +215,7 @@ namespace CZToolKit.GraphProcessor.Editors
         public void OnDestroy()
         {
             ViewModel.UnBindProperty<string>(BaseNodeProcessor.TITLE_NAME, OnTitleChanged);
-            if (ViewModel.ContainsKey(BaseNodeProcessor.TITLE_COLOR_NAME))
+            if (ViewModel.Contains(BaseNodeProcessor.TITLE_COLOR_NAME))
                 ViewModel.UnBindProperty<InternalColor>(BaseNodeProcessor.TITLE_COLOR_NAME, OnTitleColorChanged);
             ViewModel.UnBindProperty<string>(BaseNodeProcessor.TOOLTIP_NAME, OnTooltipChanged);
             ViewModel.UnBindProperty<InternalVector2Int>(nameof(BaseNode.position), OnPositionChanged);
