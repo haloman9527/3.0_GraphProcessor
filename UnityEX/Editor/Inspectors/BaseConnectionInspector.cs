@@ -52,8 +52,14 @@ namespace CZToolKit.GraphProcessor.Editors
                 }
                 EditorGUI.BeginChangeCheck();
                 property.Draw();
-                if (EditorGUI.EndChangeCheck() && view.ViewModel.TryGetProperty(property.Name, out var bindableProperty))
-                    bindableProperty.NotifyValueChanged();
+                if (EditorGUI.EndChangeCheck())
+                {
+                    if (view.ViewModel.TryGetProperty(property.Name, out var bindableProperty))
+                    {
+                        bindableProperty.NotifyValueChanged();
+                    }
+                    view.ViewModel.NotifyPropertyChanged(property.Name);
+                }
             }
             propertyTree.EndDraw();
             Editor.Repaint();

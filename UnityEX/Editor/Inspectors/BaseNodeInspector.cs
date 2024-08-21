@@ -71,7 +71,7 @@ namespace CZToolKit.GraphProcessor.Editors
                 return;
             if (propertyTree == null)
                 return;
-
+            
             propertyTree.BeginDraw(false);
             foreach (var property in propertyTree.EnumerateTree(false, true))
             {
@@ -84,8 +84,14 @@ namespace CZToolKit.GraphProcessor.Editors
 
                 EditorGUI.BeginChangeCheck();
                 property.Draw();
-                if (EditorGUI.EndChangeCheck() && view.ViewModel.TryGetProperty(property.Name, out var bindableProperty))
-                    bindableProperty.SetValueWithNotify(property.ValueEntry.WeakSmartValue);
+                if (EditorGUI.EndChangeCheck())
+                {
+                    if (view.ViewModel.TryGetProperty(property.Name, out var bindableProperty))
+                    {
+                        bindableProperty.NotifyValueChanged();
+                    }
+                    view.ViewModel.NotifyPropertyChanged(property.Name);
+                }
             }
 
             propertyTree.EndDraw();
