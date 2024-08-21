@@ -18,8 +18,8 @@
 
 #if UNITY_EDITOR
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
-using CZToolKit;
 using UnityEditor.Experimental.GraphView;
 using UnityEditor.UIElements;
 using UnityEngine;
@@ -71,43 +71,47 @@ namespace CZToolKit.GraphProcessor.Editors
 
         public void OnCreate()
         {
-            ViewModel[nameof(BaseGroup.groupName)].AsBindableProperty<string>().RegisterValueChangedEvent(OnTitleChanged);
-            ViewModel[nameof(BaseGroup.position)].AsBindableProperty<InternalVector2Int>().RegisterValueChangedEvent(OnPositionChanged);
-            ViewModel[nameof(BaseGroup.backgroundColor)].AsBindableProperty<InternalColor>().RegisterValueChangedEvent(OnBackgroundColorChanged);
+            ViewModel.PropertyChanged += OnViewModelChanged;
             ViewModel.onNodeAdded += OnNodesAdded;
             ViewModel.onNodeRemoved += OnNodesRemoved;
         }
 
         public void OnDestroy()
         {
-            ViewModel[nameof(BaseGroup.groupName)].AsBindableProperty<string>().UnregisterValueChangedEvent(OnTitleChanged);
-            ViewModel[nameof(BaseGroup.position)].AsBindableProperty<InternalVector2Int>().UnregisterValueChangedEvent(OnPositionChanged);
-            ViewModel[nameof(BaseGroup.backgroundColor)].AsBindableProperty<InternalColor>().UnregisterValueChangedEvent(OnBackgroundColorChanged);
+            ViewModel.PropertyChanged -= OnViewModelChanged;
             ViewModel.onNodeAdded -= OnNodesAdded;
             ViewModel.onNodeRemoved -= OnNodesRemoved;
         }
 
         #region Callbacks
 
-        private void OnTitleChanged(string oldTitle, string newTitle)
+        private void OnViewModelChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (string.IsNullOrEmpty(newTitle))
-                return;
-            this.title = ViewModel.GroupName;
-            Owner.SetDirty();
-        }
-
-        private void OnPositionChanged(InternalVector2Int oldPosition, InternalVector2Int newPosition)
-        {
-            base.SetPosition(new Rect(newPosition.ToVector2(), GetPosition().size));
-        }
-
-        private void OnBackgroundColorChanged(InternalColor oldColor, InternalColor newColor)
-        {
-            this.BackgroudColorField.SetValueWithoutNotify(newColor.ToColor());
-            this.style.backgroundColor = newColor.ToColor();
-            this.style.unityBackgroundImageTintColor = newColor.ToColor();
-            Owner.SetDirty();
+            var group = sender as BaseGroupProcessor;
+            switch (e.PropertyName)
+            {
+                case nameof(BaseGroup.position):
+                {
+                    base.SetPosition(new Rect(group.Position.ToVector2(), GetPosition().size));
+                    break;
+                }
+                case nameof(BaseGroup.groupName):
+                {
+                    if (string.IsNullOrEmpty(group.GroupName))
+                        return;
+                    this.title = ViewModel.GroupName;
+                    Owner.SetDirty();
+                    break;
+                }
+                case nameof(BaseGroup.backgroundColor):
+                {
+                    this.BackgroudColorField.SetValueWithoutNotify(group.BackgroundColor.ToColor());
+                    this.style.backgroundColor = group.BackgroundColor.ToColor();
+                    this.style.unityBackgroundImageTintColor = group.BackgroundColor.ToColor();
+                    Owner.SetDirty();
+                    break;
+                }
+            }
         }
 
         private void OnNodesAdded(BaseNodeProcessor node)

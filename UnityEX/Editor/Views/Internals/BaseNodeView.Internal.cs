@@ -19,6 +19,7 @@
 #if UNITY_EDITOR
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
@@ -69,6 +70,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
         #endregion
 
+        
         public BaseNodeView()
         {
             styleSheets.Add(GraphProcessorStyles.BaseNodeViewStyle);
@@ -101,7 +103,7 @@ namespace CZToolKit.GraphProcessor.Editors
             titleOutputPortContainer = new VisualElement { name = "title-output" };
             titleContainer.Add(titleOutputPortContainer);
             titleOutputPortContainer.BringToFront();
-            
+
             controls.RegisterCallback<BaseVisualElement.ChildChangedEvent>(OnChildChanged);
         }
 
@@ -116,7 +118,7 @@ namespace CZToolKit.GraphProcessor.Editors
             base.SetPosition(new Rect(ViewModel.Position.ToVector2(), GetPosition().size));
             title = ViewModel.Title;
             tooltip = ViewModel.Tooltip;
-            if (ViewModel.Contains(BaseNodeProcessor.TITLE_COLOR_NAME))
+            if (ViewModel.Properties.ContainsKey(ConstValues.NODE_TITLE_COLOR_NAME))
             {
                 var color = ViewModel.TitleColor.ToColor();
                 var lum = 0.299f * color.r + 0.587f * color.g + 0.114f * color.b;
@@ -180,7 +182,7 @@ namespace CZToolKit.GraphProcessor.Editors
             }
 
             OnInitialized();
-            
+
             RefreshPorts();
             RefreshPortContainer();
             RefreshControls();
@@ -195,11 +197,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
         public void OnCreate()
         {
-            ViewModel.BindProperty<InternalVector2Int>(nameof(BaseNode.position), OnPositionChanged);
-            ViewModel.BindProperty<string>(BaseNodeProcessor.TITLE_NAME, OnTitleChanged);
-            if (ViewModel.Contains(BaseNodeProcessor.TITLE_COLOR_NAME))
-                ViewModel.BindProperty<InternalColor>(BaseNodeProcessor.TITLE_COLOR_NAME, OnTitleColorChanged);
-            ViewModel.BindProperty<string>(BaseNodeProcessor.TOOLTIP_NAME, OnTooltipChanged);
+            ViewModel.PropertyChanged += OnViewModelChanged;
 
             ViewModel.onPortAdded += OnPortAdded;
             ViewModel.onPortRemoved += OnPortRemoved;
@@ -214,11 +212,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
         public void OnDestroy()
         {
-            ViewModel.UnBindProperty<string>(BaseNodeProcessor.TITLE_NAME, OnTitleChanged);
-            if (ViewModel.Contains(BaseNodeProcessor.TITLE_COLOR_NAME))
-                ViewModel.UnBindProperty<InternalColor>(BaseNodeProcessor.TITLE_COLOR_NAME, OnTitleColorChanged);
-            ViewModel.UnBindProperty<string>(BaseNodeProcessor.TOOLTIP_NAME, OnTooltipChanged);
-            ViewModel.UnBindProperty<InternalVector2Int>(nameof(BaseNode.position), OnPositionChanged);
+            ViewModel.PropertyChanged -= OnViewModelChanged;
 
             ViewModel.onPortAdded -= OnPortAdded;
             ViewModel.onPortRemoved -= OnPortRemoved;
@@ -251,27 +245,35 @@ namespace CZToolKit.GraphProcessor.Editors
             RefreshPortContainer();
         }
 
-        void OnTitleChanged(string oldTitle, string newTitle)
+        private void OnViewModelChanged(object sender, PropertyChangedEventArgs e)
         {
-            base.title = newTitle;
-        }
-
-        void OnTooltipChanged(string oldTooltip, string newTooltip)
-        {
-            this.tooltip = newTooltip;
-        }
-
-        void OnPositionChanged(InternalVector2Int oldPosition, InternalVector2Int newPosition)
-        {
-            base.SetPosition(new Rect(newPosition.ToVector2(), GetPosition().size));
-            Owner.SetDirty();
-        }
-
-        void OnTitleColorChanged(InternalColor oldColor, InternalColor color)
-        {
-            titleContainer.style.backgroundColor = color.ToColor();
-            var lum = 0.299f * color.r + 0.587f * color.g + 0.114f * color.b;
-            NodeLabel.style.color = lum > 0.5f && color.a > 0.5f ? Color.black : Color.white * 0.9f;
+            var node = sender as BaseNodeProcessor;
+            switch (e.PropertyName)
+            {
+                case nameof(BaseNode.position):
+                {
+                    base.SetPosition(new Rect(node.Position.ToVector2(), GetPosition().size));
+                    Owner.SetDirty();
+                    break;
+                }
+                case ConstValues.NODE_TITLE_NAME:
+                {
+                    base.title = node.Title;
+                    break;
+                }
+                case ConstValues.NODE_TITLE_COLOR_NAME:
+                {
+                    titleContainer.style.backgroundColor = node.TitleColor.ToColor();
+                    var lum = 0.299f * node.TitleColor.r + 0.587f * node.TitleColor.g + 0.114f * node.TitleColor.b;
+                    NodeLabel.style.color = lum > 0.5f && node.TitleColor.a > 0.5f ? Color.black : Color.white * 0.9f;
+                    break;
+                }
+                case ConstValues.NODE_TOOLTIP_NAME:
+                {
+                    this.tooltip = node.Tooltip;
+                    break;
+                }
+            }
         }
 
         #endregion
@@ -343,7 +345,7 @@ namespace CZToolKit.GraphProcessor.Editors
                 horizontalDivider.RemoveFromClassList("hidden");
             else
                 horizontalDivider.AddToClassList("hidden");
-            
+
             if (inputContainer.childCount > 0 || outputContainer.childCount > 0)
                 verticalDivider.RemoveFromClassList("hidden");
             else
@@ -372,7 +374,7 @@ namespace CZToolKit.GraphProcessor.Editors
             else
                 titleOutputPortContainer.AddToClassList("hidden");
         }
-        
+
         void RefreshControls()
         {
             if (controls.childCount > 0)

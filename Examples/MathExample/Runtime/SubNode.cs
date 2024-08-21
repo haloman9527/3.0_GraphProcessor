@@ -31,7 +31,7 @@ public class SubNodeProcessor : BaseNodeProcessor, IGetPortValue, IGetPortValue<
     {
         AddPort(new BasePortProcessor("InputA", BasePort.Orientation.Horizontal, BasePort.Direction.Left, BasePort.Capacity.Single, typeof(float)));
         AddPort(new BasePortProcessor("InputB", BasePort.Orientation.Horizontal, BasePort.Direction.Left, BasePort.Capacity.Single, typeof(float)));
-        AddPort(new BasePortProcessor("Result", BasePort.Orientation.Horizontal, BasePort.Direction.Right, BasePort.Capacity.Multi, typeof(float))
+        AddPort(new BasePortProcessor(ConstValues.FLOW_OUT_PORT_NAME, BasePort.Orientation.Horizontal, BasePort.Direction.Right, BasePort.Capacity.Multi, typeof(float))
         {
             HideLabel = true
         });

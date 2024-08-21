@@ -45,20 +45,20 @@ namespace CZToolKit.GraphProcessor
 
         public string GroupName
         {
-            get { return GetPropertyValue<string>(nameof(Model.groupName)); }
-            set { SetPropertyValue(nameof(Model.groupName), value); }
+            get { return GetField<string>(nameof(Model.groupName)); }
+            set { SetField(nameof(Model.groupName), value); }
         }
 
         public InternalVector2Int Position
         {
-            get { return GetPropertyValue<InternalVector2Int>(nameof(Model.position)); }
-            set { SetPropertyValue(nameof(Model.position), value); }
+            get { return GetField<InternalVector2Int>(nameof(Model.position)); }
+            set { SetField(nameof(Model.position), value); }
         }
 
         public InternalColor BackgroundColor
         {
-            get { return GetPropertyValue<InternalColor>(nameof(Model.backgroundColor)); }
-            set { SetPropertyValue(nameof(Model.backgroundColor), value); }
+            get { return GetField<InternalColor>(nameof(Model.backgroundColor)); }
+            set { SetField(nameof(Model.backgroundColor), value); }
         }
 
         public IReadOnlyList<int> Nodes
@@ -73,9 +73,10 @@ namespace CZToolKit.GraphProcessor
             Model = model;
             ModelType = model.GetType();
             Model.position = Model.position == default ? InternalVector2Int.zero : Model.position;
-            this[nameof(BaseGroup.groupName)] = new BindableProperty<string>(() => Model.groupName, v => Model.groupName = v);
-            this[nameof(BaseGroup.position)] = new BindableProperty<InternalVector2Int>(() => Model.position, v => Model.position = v);
-            this[nameof(BaseGroup.backgroundColor)] = new BindableProperty<InternalColor>(() => Model.backgroundColor, v => Model.backgroundColor = v);
+
+            this.RegisterField(nameof(BaseGroup.groupName), () => ref model.groupName);
+            this.RegisterField(nameof(BaseGroup.position), () => ref model.position);
+            this.RegisterField(nameof(BaseGroup.backgroundColor), () => ref model.backgroundColor);
         }
 
         internal void NotifyNodeAdded(BaseNodeProcessor node)

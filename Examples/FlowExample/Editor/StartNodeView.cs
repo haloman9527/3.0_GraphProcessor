@@ -11,7 +11,7 @@ public class StartNodeView : FlowNodeView
     {
         base.OnInitialized();
 
-        this.SetMovable(false);
+        // this.SetMovable(false);
     }
 }
 #endif

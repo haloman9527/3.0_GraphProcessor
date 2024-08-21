@@ -62,7 +62,7 @@ namespace CZToolKit.GraphProcessor.Editors
                 }
             }
             propertyTree.EndDraw();
-            Editor.Repaint();
+            SourceEditor.Repaint();
         }
 
         public override void OnDisable()

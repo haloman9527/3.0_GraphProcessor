@@ -19,6 +19,7 @@
 #if UNITY_EDITOR
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using CZToolKit;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine.UIElements;
@@ -91,32 +92,39 @@ namespace CZToolKit.GraphProcessor.Editors
 
         public void OnCreate()
         {
-            ViewModel[nameof(BasePort.type)].AsBindableProperty<Type>().RegisterValueChangedEvent(OnPortTypeChanged);
-            ViewModel["hideLabel"].AsBindableProperty<bool>().RegisterValueChangedEvent(OnHideLabelChanged);
+            ViewModel.PropertyChanged += OnViewModelChanged;
 
             OnBindingProperties();
         }
 
         public void OnDestroy()
         {
-            ViewModel[nameof(BasePort.type)].AsBindableProperty<Type>().UnregisterValueChangedEvent(OnPortTypeChanged);
+            ViewModel.PropertyChanged -= OnViewModelChanged;
 
             OnUnBindingProperties();
         }
 
         #region Callback
 
-        private void OnHideLabelChanged(bool oldvalue, bool newvalue)
+        private void OnViewModelChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (ViewModel.HideLabel)
-                PortLabel.AddToClassList("hidden");
-            else
-                PortLabel.RemoveFromClassList("hidden");
-        }
-
-        private void OnPortTypeChanged(Type oldPortType, Type newPortType)
-        {
-            this.portType = newPortType;
+            var port = sender as BasePortProcessor;
+            switch (e.PropertyName)
+            {
+                case nameof(BasePort.type):
+                {
+                    this.portType = port.Type;
+                    break;
+                }
+                case "hideLabel":
+                {
+                    if (port.HideLabel)
+                        PortLabel.AddToClassList("hidden");
+                    else
+                        PortLabel.RemoveFromClassList("hidden");
+                    break;
+                }
+            }
         }
 
         #endregion

@@ -55,14 +55,14 @@ namespace CZToolKit.GraphProcessor
 
         public InternalVector2Int Pan
         {
-            get { return GetPropertyValue<InternalVector2Int>(nameof(BaseGraph.pan)); }
-            set { SetPropertyValue(nameof(BaseGraph.pan), value); }
+            get { return GetField<InternalVector2Int>(nameof(BaseGraph.pan)); }
+            set { SetField(nameof(BaseGraph.pan), value); }
         }
 
         public float Zoom
         {
-            get { return GetPropertyValue<float>(nameof(BaseGraph.zoom)); }
-            set { SetPropertyValue(nameof(BaseGraph.zoom), value); }
+            get { return GetField<float>(nameof(BaseGraph.zoom)); }
+            set { SetField(nameof(BaseGraph.zoom), value); }
         }
 
         public IReadOnlyDictionary<int, BaseNodeProcessor> Nodes
@@ -113,8 +113,8 @@ namespace CZToolKit.GraphProcessor
             this.groups = new Groups();
             this.notes = new Dictionary<int, StickNoteProcessor>();
 
-            this.RegisterProperty(nameof(BaseGraph.pan), new BindableProperty<InternalVector2Int>(() => Model.pan, v => Model.pan = v));
-            this.RegisterProperty(nameof(BaseGraph.zoom), new BindableProperty<float>(() => Model.zoom, v => Model.zoom = v));
+            this.RegisterField(nameof(BaseGraph.pan), () => ref Model.pan);
+            this.RegisterField(nameof(BaseGraph.zoom), () => ref Model.zoom);
 
             foreach (var pair in Model.nodes)
             {

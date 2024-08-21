@@ -16,26 +16,26 @@ namespace CZToolKit.GraphProcessor
 
         public InternalVector2Int Position
         {
-            get { return GetPropertyValue<InternalVector2Int>(nameof(StickNote.position)); }
-            set { SetPropertyValue(nameof(StickNote.position), value); }
+            get { return GetField<InternalVector2Int>(nameof(StickNote.position)); }
+            set { SetField(nameof(StickNote.position), value); }
         }
 
         public InternalVector2Int Size
         {
-            get { return GetPropertyValue<InternalVector2Int>(nameof(StickNote.size)); }
-            set { SetPropertyValue(nameof(StickNote.size), value); }
+            get { return GetField<InternalVector2Int>(nameof(StickNote.size)); }
+            set { SetField(nameof(StickNote.size), value); }
         }
 
         public string Title
         {
-            get { return GetPropertyValue<string>(nameof(StickNote.title)); }
-            set { SetPropertyValue(nameof(StickNote.title), value); }
+            get { return GetField<string>(nameof(StickNote.title)); }
+            set { SetField(nameof(StickNote.title), value); }
         }
 
         public string Content
         {
-            get { return GetPropertyValue<string>(nameof(StickNote.content)); }
-            set { SetPropertyValue(nameof(StickNote.content), value); }
+            get { return GetField<string>(nameof(StickNote.content)); }
+            set { SetField(nameof(StickNote.content), value); }
         }
 
         public StickNoteProcessor(StickNote model)
@@ -43,10 +43,10 @@ namespace CZToolKit.GraphProcessor
             this.Model = model;
             this.ModelType = model.GetType();
 
-            this[nameof(StickNote.title)] = new BindableProperty<string>(() => model.title, v => model.title = v);
-            this[nameof(StickNote.content)] = new BindableProperty<string>(() => model.content, v => model.content = v);
-            this[nameof(StickNote.position)] = new BindableProperty<InternalVector2Int>(() => model.position, v => model.position = v);
-            this[nameof(StickNote.size)] = new BindableProperty<InternalVector2Int>(() => model.size, v => model.size = v);
+            this.RegisterField(nameof(StickNote.title), () => ref model.title);
+            this.RegisterField(nameof(StickNote.content), () => ref model.content);
+            this.RegisterField(nameof(StickNote.position), () => ref model.position);
+            this.RegisterField(nameof(StickNote.size), () => ref model.size);
         }
     }
 }

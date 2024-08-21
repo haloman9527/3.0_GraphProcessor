@@ -156,15 +156,21 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             foreach (var element in selection)
             {
-                if (!ObjectEditor.HasEditor(element))
+                if (!ObjectEditor.HasEditor(element.GetType()))
                     continue;
-                ObjectEditor.DrawObjectInInspector((element as GraphElement)?.title, element, GraphAsset.UnityAsset);
+
+                var inspector = ScriptableObject.CreateInstance<ObjectInspector>();
+                inspector.target = element;
+                Selection.activeObject = inspector;
                 return;
             }
 
             if (Selection.activeGameObject != null && Selection.activeGameObject.GetComponent<IGraphAssetOwner>() != null)
                 return;
-            ObjectEditor.DrawObjectInInspector("Graph", this, GraphAsset.UnityAsset);
+            var graphInspector = ScriptableObject.CreateInstance<ObjectInspector>();
+            graphInspector.target = this;
+            Selection.activeObject = graphInspector;
+            // ObjectEditor.DrawObjectInInspector("Graph", this, GraphAsset.UnityAsset);
         }
 
         protected virtual bool IsCompatible(BasePortView fromPortView, BasePortView toPortView, NodeAdapter nodeAdapter)

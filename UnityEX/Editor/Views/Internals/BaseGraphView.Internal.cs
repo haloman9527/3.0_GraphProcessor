@@ -20,6 +20,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
@@ -237,8 +238,7 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             RegisterCallback<KeyDownEvent>(KeyDownCallback);
 
-            ViewModel.BindProperty<InternalVector2Int>(nameof(BaseGraph.pan), OnPositionChanged);
-            ViewModel.BindProperty<float>(nameof(BaseGraph.zoom), OnZoomChanged);
+            ViewModel.PropertyChanged += OnViewModelChanged;
 
             ViewModel.OnNodeAdded += OnNodeAdded;
             ViewModel.OnNodeRemoved += OnNodeRemoved;
@@ -257,8 +257,7 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             UnregisterCallback<KeyDownEvent>(KeyDownCallback);
 
-            ViewModel.UnBindProperty<InternalVector2Int>(nameof(BaseGraph.pan), OnPositionChanged);
-            ViewModel.UnBindProperty<float>(nameof(BaseGraph.zoom), OnZoomChanged);
+            ViewModel.PropertyChanged -= OnViewModelChanged;
 
             ViewModel.OnNodeAdded -= OnNodeAdded;
             ViewModel.OnNodeRemoved -= OnNodeRemoved;
@@ -425,16 +424,24 @@ namespace CZToolKit.GraphProcessor.Editors
 
         #region Callbacks
 
-        private void OnPositionChanged(InternalVector2Int oldPosition, InternalVector2Int position)
+        private void OnViewModelChanged(object sender, PropertyChangedEventArgs e)
         {
-            viewTransform.position = position.ToVector2();
-            SetDirty();
-        }
-
-        private void OnZoomChanged(float oldZoom, float zoom)
-        {
-            viewTransform.scale = new Vector3(zoom, zoom, 1);
-            SetDirty();
+            var graph = sender as BaseGraphProcessor;
+            switch (e.PropertyName)
+            {
+                case nameof(BaseGraph.pan):
+                {
+                    viewTransform.position = graph.Pan.ToVector2();
+                    SetDirty();
+                    break;
+                }
+                case nameof(BaseGraph.zoom):
+                {
+                    viewTransform.scale = new Vector3(graph.Zoom, graph.Zoom, 1);
+                    SetDirty();
+                    break;
+                }
+            }
         }
 
         private void OnNodeAdded(BaseNodeProcessor node)

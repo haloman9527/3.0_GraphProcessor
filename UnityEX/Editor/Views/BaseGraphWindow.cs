@@ -129,7 +129,7 @@ namespace CZToolKit.GraphProcessor.Editors
         protected virtual void OnDestroy()
         {
             EditorApplication.playModeStateChanged -= OnPlayModeStateChanged;
-            if (Selection.activeObject is ObjectInspector objectInspector && objectInspector.Target is GraphElement)
+            if (Selection.activeObject is ObjectInspector objectInspector && objectInspector.target is GraphElement)
                 Selection.activeObject = null;
         }
 

@@ -15,6 +15,7 @@
 #endregion
 
 #if UNITY_EDITOR
+using CZToolKit.GraphProcessor;
 using CZToolKit.GraphProcessor.Editors;
 using UnityEngine.UIElements;
 
@@ -23,18 +24,14 @@ public class LogNodeView : BaseNodeView
 {
     Button btnDebug;
 
-    public LogNodeView()
-    {
-    }
-
     protected override void OnInitialized()
     {
         base.OnInitialized();
         btnDebug = new Button();
         btnDebug.text = "Log";
         btnDebug.clicked += OnClick;
-        PortViews["Input"].Add(btnDebug);
-        PortViews["Input"].PortLabel.AddToClassList("hidden");
+        this.controls.Add(btnDebug);
+        PortViews[ConstValues.FLOW_IN_PORT_NAME].PortLabel.AddToClassList("hidden");
     }
 
     private void OnClick()

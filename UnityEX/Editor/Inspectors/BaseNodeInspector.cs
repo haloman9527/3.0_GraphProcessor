@@ -50,12 +50,6 @@ namespace CZToolKit.GraphProcessor.Editors
 
         public override void OnEnable()
         {
-            if (Target == null)
-            {
-                base.OnEnable();
-                return;
-            }
-
             var view = Target as BaseNodeView;
             if (view == null || view.ViewModel == null)
                 return;
@@ -71,7 +65,7 @@ namespace CZToolKit.GraphProcessor.Editors
                 return;
             if (propertyTree == null)
                 return;
-            
+
             propertyTree.BeginDraw(false);
             foreach (var property in propertyTree.EnumerateTree(false, true))
             {
@@ -95,7 +89,7 @@ namespace CZToolKit.GraphProcessor.Editors
             }
 
             propertyTree.EndDraw();
-            Editor?.Repaint();
+            SourceEditor?.Repaint();
         }
 
         public override void OnDisable()

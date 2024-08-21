@@ -25,11 +25,11 @@ public class LogNodeProcessor : BaseNodeProcessor
 {
     public LogNodeProcessor(BaseNode model) : base(model)
     {
-        AddPort(new BasePortProcessor("Input", BasePort.Orientation.Horizontal, BasePort.Direction.Left, BasePort.Capacity.Single));
+        AddPort(new BasePortProcessor(ConstValues.FLOW_IN_PORT_NAME, BasePort.Orientation.Horizontal, BasePort.Direction.Left, BasePort.Capacity.Single));
     }
 
     public void DebugInput()
     {
-        Debug.Log(Ports["Input"].GetConnectionValue());
+        Debug.Log(Ports[ConstValues.FLOW_IN_PORT_NAME].GetConnectionValue());
     }
 }

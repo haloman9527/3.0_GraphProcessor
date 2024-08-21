@@ -2,6 +2,7 @@
 using CZToolKit.GraphProcessor.Editors;
 using CZToolKitEditor;
 using UnityEditor;
+using UnityEngine;
 using UnityEngine.UIElements;
 
 [CustomView(typeof(FlowNode))]
@@ -13,14 +14,15 @@ public class FlowNodeView : BaseNodeView
 
         if (ViewModel.Count > 3)
         {
-            var editor = ObjectEditor.CreateEditor(this);
-            editor.OnEnable();
+            var editor = ObjectInspectorEditor.CreateEditor(this);
             controls.Add(new IMGUIContainer(() =>
             {
-                EditorGUIUtility.labelWidth = 70;
-                EditorGUI.BeginChangeCheck();
-                editor.OnInspectorGUI();
-                MarkDirtyRepaint();
+                if (this.Owner.worldBound.Overlaps( this.worldBound))
+                {
+                    EditorGUIUtility.labelWidth = 70;
+                    editor.OnInspectorGUI();
+                    MarkDirtyRepaint();
+                }
             }));
         }
     }

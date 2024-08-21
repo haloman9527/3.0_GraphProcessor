@@ -27,6 +27,11 @@ namespace CZToolKit.GraphProcessor
     {
         #region Fields
 
+        private string title;
+        private string tooltip;
+        private InternalColor titleColor;
+
+
         private List<BasePortProcessor> leftPorts;
         private List<BasePortProcessor> rightPorts;
         private Dictionary<string, BasePortProcessor> ports;
@@ -49,26 +54,26 @@ namespace CZToolKit.GraphProcessor
 
         public virtual InternalVector2Int Position
         {
-            get { return GetPropertyValue<InternalVector2Int>(nameof(BaseNode.position)); }
-            set { SetPropertyValue(nameof(BaseNode.position), value); }
+            get { return GetField<InternalVector2Int>(nameof(BaseNode.position)); }
+            set { SetField(nameof(BaseNode.position), value); }
         }
 
         public virtual string Title
         {
-            get { return GetPropertyValue<string>(TITLE_NAME); }
-            set { SetPropertyValue(TITLE_NAME, value); }
+            get { return GetField<string>(ConstValues.NODE_TITLE_NAME); }
+            set { SetField(ConstValues.NODE_TITLE_NAME, value); }
         }
 
         public virtual InternalColor TitleColor
         {
-            get { return GetPropertyValue<InternalColor>(TITLE_COLOR_NAME); }
-            set { SetPropertyValue(TITLE_COLOR_NAME, value); }
+            get { return GetField<InternalColor>(ConstValues.NODE_TITLE_COLOR_NAME); }
+            set { SetField(ConstValues.NODE_TITLE_COLOR_NAME, value); }
         }
 
         public virtual string Tooltip
         {
-            get { return GetPropertyValue<string>(TOOLTIP_NAME); }
-            set { SetPropertyValue(TOOLTIP_NAME, value); }
+            get { return GetField<string>(ConstValues.NODE_TOOLTIP_NAME); }
+            set { SetField(ConstValues.NODE_TOOLTIP_NAME, value); }
         }
 
         public IReadOnlyList<BasePortProcessor> LeftPorts
@@ -98,22 +103,22 @@ namespace CZToolKit.GraphProcessor
             leftPorts = new List<BasePortProcessor>();
             rightPorts = new List<BasePortProcessor>();
             ports = new Dictionary<string, BasePortProcessor>();
-
+            
             var nodeStaticInfo = GraphProcessorUtil.NodeStaticInfos[ModelType];
+            
+            title = nodeStaticInfo.title;
+            tooltip = nodeStaticInfo.tooltip;
+            tooltip = nodeStaticInfo.tooltip;
 
-            string title = nodeStaticInfo.title;
-            this[TITLE_NAME] = new BindableProperty<string>(() => title, v => title = v);
-
-            string tooltip = nodeStaticInfo.tooltip;
-            this[TOOLTIP_NAME] = new BindableProperty<string>(() => tooltip, v => tooltip = v);
+            this.RegisterField(ConstValues.NODE_TITLE_NAME, () => ref title);
+            this.RegisterField(ConstValues.NODE_TOOLTIP_NAME, () => ref tooltip);
+            this.RegisterField(nameof(BaseNode.position), () => ref model.position);
 
             if (nodeStaticInfo.customTitleColor.enable)
             {
-                var titleColor = nodeStaticInfo.customTitleColor.value;
-                this[TITLE_COLOR_NAME] = new BindableProperty<InternalColor>(() => titleColor, v => titleColor = v);
+                titleColor = nodeStaticInfo.customTitleColor.value;
+                this.RegisterField(ConstValues.NODE_TITLE_COLOR_NAME, () => ref titleColor);
             }
-
-            this[nameof(BaseNode.position)] = new BindableProperty<InternalVector2Int>(() => Model.position, v => Model.position = v);
         }
 
         internal void Enable()
@@ -235,18 +240,6 @@ namespace CZToolKit.GraphProcessor
         }
 
         #endregion
-
-        #region Helper
-
-        public virtual void DrawGizmos(IGraphOwner graphOwner)
-        {
-        }
-
-        #endregion
-
-        public const string TITLE_NAME = "title";
-        public const string TITLE_COLOR_NAME = "titleColor";
-        public const string TOOLTIP_NAME = "tooltip";
     }
 
     public class BaseNodeVM<T> : BaseNodeProcessor where T : BaseNode

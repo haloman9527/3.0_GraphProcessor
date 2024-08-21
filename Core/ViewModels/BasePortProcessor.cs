@@ -110,16 +110,16 @@ namespace CZToolKit.GraphProcessor
         {
             get
             {
-                var t = GetPropertyValue<Type>(nameof(BasePort.type));
+                var t = GetField<Type>(nameof(BasePort.type));
                 return t == null ? typeof(object) : t;
             }
-            set { SetPropertyValue(nameof(BasePort.type), value); }
+            set { SetField(nameof(BasePort.type), value); }
         }
 
         public bool HideLabel
         {
-            get { return GetPropertyValue<bool>(nameof(hideLabel)); }
-            set { SetPropertyValue(nameof(hideLabel), value); }
+            get { return GetField<bool>(nameof(hideLabel)); }
+            set { SetField(nameof(hideLabel), value); }
         }
 
         public IReadOnlyList<BaseConnectionProcessor> Connections
@@ -138,8 +138,8 @@ namespace CZToolKit.GraphProcessor
                 this.comparer = HorizontalComparer;
             else
                 this.comparer = VerticalComparer;
-            this[nameof(BasePort.type)] = new BindableProperty<Type>(() => Model.type, v => Model.type = v);
-            this[nameof(hideLabel)] = new BindableProperty<bool>(() => hideLabel, v => hideLabel = v);
+            this.RegisterField(nameof(BasePort.type), () => ref Model.type);
+            this.RegisterField(nameof(hideLabel), () => ref hideLabel);
         }
 
         public BasePortProcessor(string name, BasePort.Orientation orientation, BasePort.Direction direction, BasePort.Capacity capacity, Type type = null)
