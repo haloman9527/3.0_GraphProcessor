@@ -1,10 +1,11 @@
 #region 注 释
+
 /***
  *
  *  Title:
- *  
+ *
  *  Description:
- *  
+ *
  *  Date:
  *  Version:
  *  Writer: 半只龙虾人
@@ -12,6 +13,7 @@
  *  Blog: https://www.haloman.net/
  *
  */
+
 #endregion
 
 #if UNITY_EDITOR
@@ -29,7 +31,7 @@ public class FloatNodeView : BaseNodeView
     {
         base.OnInitialized();
         var vm = ViewModel as FloatNodeProcessor;
-        
+
         valueField = new FloatField();
         valueField.style.marginLeft = 3;
         valueField.style.marginRight = 3;
@@ -48,13 +50,13 @@ public class FloatNodeView : BaseNodeView
     protected override void OnBindingProperties()
     {
         base.OnBindingProperties();
-        ViewModel[nameof(FloatNode.num)].AsBindableProperty<float>().RegisterValueChangedEvent(OnFloatNumChanged);
+        ViewModel.GetProperty<float>(nameof(FloatNode.num)).RegisterValueChangedEvent(OnFloatNumChanged);
     }
 
     protected override void OnUnBindingProperties()
     {
         base.OnUnBindingProperties();
-        ViewModel[nameof(FloatNode.num)].AsBindableProperty<float>().UnregisterValueChangedEvent(OnFloatNumChanged);
+        ViewModel.GetProperty<float>(nameof(FloatNode.num)).UnregisterValueChangedEvent(OnFloatNumChanged);
     }
 
     private void OnFloatNumChanged(float oldValue, float newValue)

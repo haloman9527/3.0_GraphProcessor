@@ -44,49 +44,25 @@ namespace CZToolKit.GraphProcessor.Editors
         private Dictionary<BaseConnectionProcessor, BaseConnectionView> connectionViews = new Dictionary<BaseConnectionProcessor, BaseConnectionView>();
         private Dictionary<int, StickNoteView> noteViews = new Dictionary<int, StickNoteView>();
 
-        public BaseGraphWindow GraphWindow
-        {
-            get { return graphWindow; }
-        }
+        public BaseGraphWindow GraphWindow => graphWindow;
 
-        public CommandDispatcher CommandDispatcher
-        {
-            get { return commandDispatcher; }
-        }
+        public CommandDispatcher CommandDispatcher => commandDispatcher;
 
-        public IGraphAsset GraphAsset
-        {
-            get { return GraphWindow.GraphAsset; }
-        }
+        public IGraphAsset GraphAsset => GraphWindow.GraphAsset;
 
-        public BaseGraphProcessor ViewModel
-        {
-            get { return viewModel; }
-        }
+        public BaseGraphProcessor ViewModel => viewModel;
 
-        public Dictionary<int, BaseNodeView> NodeViews
-        {
-            get { return nodeViews; }
-        }
+        public Dictionary<int, BaseNodeView> NodeViews => nodeViews;
 
-        public Dictionary<int, StickNoteView> NoteViews
-        {
-            get { return noteViews; }
-        }
+        public Dictionary<int, StickNoteView> NoteViews => noteViews;
 
-        public Dictionary<int, BaseGroupView> GroupViews
-        {
-            get { return groupViews; }
-        }
+        public Dictionary<int, BaseGroupView> GroupViews => groupViews;
 
-        public Dictionary<BaseConnectionProcessor, BaseConnectionView> ConnectionViews
-        {
-            get { return connectionViews; }
-        }
+        public Dictionary<BaseConnectionProcessor, BaseConnectionView> ConnectionViews => connectionViews;
 
         public bool MiniMapActive
         {
-            get { return miniMap != null; }
+            get => miniMap != null;
             set
             {
                 if (value == false && miniMap != null)

@@ -1,5 +1,4 @@
-﻿
-#if UNITY_EDITOR
+﻿#if UNITY_EDITOR
 using System;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
@@ -40,20 +39,20 @@ namespace CZToolKit.GraphProcessor.Editors
 
         public void OnCreate()
         {
-            ViewModel.BindProperty<InternalVector2Int>(nameof(StickNote.position), OnPositionChanged);
-            ViewModel.BindProperty<InternalVector2Int>(nameof(StickNote.size), OnSizeChanged);
-            viewModel.BindProperty<string>(nameof(StickNote.title), OnTitleChanged);
-            viewModel.BindProperty<string>(nameof(StickNote.content), OnContentsChanged);
+            ViewModel.GetProperty<InternalVector2Int>(nameof(StickNote.position)).RegisterValueChangedEvent(OnPositionChanged);
+            ViewModel.GetProperty<InternalVector2Int>(nameof(StickNote.size)).RegisterValueChangedEvent(OnSizeChanged);
+            ViewModel.GetProperty<string>(nameof(StickNote.title)).RegisterValueChangedEvent(OnTitleChanged);
+            ViewModel.GetProperty<string>(nameof(StickNote.content)).RegisterValueChangedEvent(OnContentsChanged);
 
             this.RegisterCallback<StickyNoteChangeEvent>(OnChanged);
         }
 
         public void OnDestroy()
         {
-            ViewModel.UnBindProperty<InternalVector2Int>(nameof(BaseNode.position), OnPositionChanged);
-            ViewModel.UnBindProperty<InternalVector2Int>(nameof(StickNote.size), OnSizeChanged);
-            viewModel.UnBindProperty<string>(nameof(StickNote.title), OnTitleChanged);
-            viewModel.UnBindProperty<string>(nameof(StickNote.content), OnContentsChanged);
+            ViewModel.GetProperty<InternalVector2Int>(nameof(StickNote.position)).UnregisterValueChangedEvent(OnPositionChanged);
+            ViewModel.GetProperty<InternalVector2Int>(nameof(StickNote.size)).UnregisterValueChangedEvent(OnSizeChanged);
+            ViewModel.GetProperty<string>(nameof(StickNote.title)).UnregisterValueChangedEvent(OnTitleChanged);
+            ViewModel.GetProperty<string>(nameof(StickNote.content)).UnregisterValueChangedEvent(OnContentsChanged);
 
             this.UnregisterCallback<StickyNoteChangeEvent>(OnChanged);
         }

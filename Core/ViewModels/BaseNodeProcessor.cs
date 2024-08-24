@@ -54,42 +54,33 @@ namespace CZToolKit.GraphProcessor
 
         public virtual InternalVector2Int Position
         {
-            get { return GetField<InternalVector2Int>(nameof(BaseNode.position)); }
-            set { SetField(nameof(BaseNode.position), value); }
+            get => GetPropertyValue<InternalVector2Int>(nameof(BaseNode.position));
+            set => SetPropertyValue(nameof(BaseNode.position), value);
         }
 
         public virtual string Title
         {
-            get { return GetField<string>(ConstValues.NODE_TITLE_NAME); }
-            set { SetField(ConstValues.NODE_TITLE_NAME, value); }
+            get => GetPropertyValue<string>(ConstValues.NODE_TITLE_NAME);
+            set => SetPropertyValue(ConstValues.NODE_TITLE_NAME, value);
         }
 
         public virtual InternalColor TitleColor
         {
-            get { return GetField<InternalColor>(ConstValues.NODE_TITLE_COLOR_NAME); }
-            set { SetField(ConstValues.NODE_TITLE_COLOR_NAME, value); }
+            get => GetPropertyValue<InternalColor>(ConstValues.NODE_TITLE_COLOR_NAME);
+            set => SetPropertyValue(ConstValues.NODE_TITLE_COLOR_NAME, value);
         }
 
         public virtual string Tooltip
         {
-            get { return GetField<string>(ConstValues.NODE_TOOLTIP_NAME); }
-            set { SetField(ConstValues.NODE_TOOLTIP_NAME, value); }
+            get => GetPropertyValue<string>(ConstValues.NODE_TOOLTIP_NAME);
+            set => SetPropertyValue(ConstValues.NODE_TOOLTIP_NAME, value);
         }
 
-        public IReadOnlyList<BasePortProcessor> LeftPorts
-        {
-            get { return leftPorts; }
-        }
+        public IReadOnlyList<BasePortProcessor> LeftPorts => leftPorts;
 
-        public IReadOnlyList<BasePortProcessor> RightPorts
-        {
-            get { return rightPorts; }
-        }
+        public IReadOnlyList<BasePortProcessor> RightPorts => rightPorts;
 
-        public IReadOnlyDictionary<string, BasePortProcessor> Ports
-        {
-            get { return ports; }
-        }
+        public IReadOnlyDictionary<string, BasePortProcessor> Ports => ports;
 
         public BaseGraphProcessor Owner { get; internal set; }
 
@@ -110,14 +101,14 @@ namespace CZToolKit.GraphProcessor
             tooltip = nodeStaticInfo.tooltip;
             tooltip = nodeStaticInfo.tooltip;
 
-            this.RegisterField(ConstValues.NODE_TITLE_NAME, () => ref title);
-            this.RegisterField(ConstValues.NODE_TOOLTIP_NAME, () => ref tooltip);
-            this.RegisterField(nameof(BaseNode.position), () => ref model.position);
+            this.RegisterProperty(ConstValues.NODE_TITLE_NAME, () => ref title);
+            this.RegisterProperty(ConstValues.NODE_TOOLTIP_NAME, () => ref tooltip);
+            this.RegisterProperty(nameof(BaseNode.position), () => ref model.position);
 
             if (nodeStaticInfo.customTitleColor.enable)
             {
                 titleColor = nodeStaticInfo.customTitleColor.value;
-                this.RegisterField(ConstValues.NODE_TITLE_COLOR_NAME, () => ref titleColor);
+                this.RegisterProperty(ConstValues.NODE_TITLE_COLOR_NAME, () => ref titleColor);
             }
         }
 

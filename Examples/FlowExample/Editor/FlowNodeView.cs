@@ -12,7 +12,7 @@ public class FlowNodeView : BaseNodeView
     {
         base.OnInitialized();
 
-        if (ViewModel.Count > 3)
+        if (ViewModel.Properties.Count > 3)
         {
             var editor = ObjectInspectorEditor.CreateEditor(this);
             controls.Add(new IMGUIContainer(() =>

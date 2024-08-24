@@ -16,7 +16,7 @@ public class SvnUpdateNodeProcessor : FlowNodeProcessor
 {
     public SvnUpdateNodeProcessor(SVNUpdateNode model) : base(model)
     {
-        this[nameof(SVNUpdateNode.folders)] = new BindableList<string>(() => model.folders, v => model.folders = v);
+        
     }
 
     protected override void Execute()

@@ -50,23 +50,14 @@ namespace CZToolKit.GraphProcessor.Editors
 
         #region 属性
 
-        public Label NodeLabel
-        {
-            get { return nodeLabel; }
-        }
+        public Label NodeLabel => nodeLabel;
 
-        public Image NodeIcon
-        {
-            get { return nodeIcon; }
-        }
+        public Image NodeIcon => nodeIcon;
 
         public BaseGraphView Owner { get; private set; }
         public BaseNodeProcessor ViewModel { get; protected set; }
 
-        public IReadOnlyDictionary<string, BasePortView> PortViews
-        {
-            get { return portViews; }
-        }
+        public IReadOnlyDictionary<string, BasePortView> PortViews => portViews;
 
         #endregion
 

@@ -38,32 +38,26 @@ namespace CZToolKit.GraphProcessor
         public Type ModelType { get; }
         public BaseGraphProcessor Owner { get; internal set; }
 
-        public int ID
-        {
-            get { return Model.id; }
-        }
+        public int ID => Model.id;
+
+        public IReadOnlyList<int> Nodes => Model.nodes;
 
         public string GroupName
         {
-            get { return GetField<string>(nameof(Model.groupName)); }
-            set { SetField(nameof(Model.groupName), value); }
+            get => GetPropertyValue<string>(nameof(Model.groupName));
+            set => SetPropertyValue(nameof(Model.groupName), value);
         }
 
         public InternalVector2Int Position
         {
-            get { return GetField<InternalVector2Int>(nameof(Model.position)); }
-            set { SetField(nameof(Model.position), value); }
+            get => GetPropertyValue<InternalVector2Int>(nameof(Model.position));
+            set => SetPropertyValue(nameof(Model.position), value);
         }
 
         public InternalColor BackgroundColor
         {
-            get { return GetField<InternalColor>(nameof(Model.backgroundColor)); }
-            set { SetField(nameof(Model.backgroundColor), value); }
-        }
-
-        public IReadOnlyList<int> Nodes
-        {
-            get { return Model.nodes; }
+            get => GetPropertyValue<InternalColor>(nameof(Model.backgroundColor));
+            set => SetPropertyValue(nameof(Model.backgroundColor), value);
         }
 
         #endregion
@@ -74,9 +68,9 @@ namespace CZToolKit.GraphProcessor
             ModelType = model.GetType();
             Model.position = Model.position == default ? InternalVector2Int.zero : Model.position;
 
-            this.RegisterField(nameof(BaseGroup.groupName), () => ref model.groupName);
-            this.RegisterField(nameof(BaseGroup.position), () => ref model.position);
-            this.RegisterField(nameof(BaseGroup.backgroundColor), () => ref model.backgroundColor);
+            this.RegisterProperty(nameof(BaseGroup.groupName), () => ref model.groupName);
+            this.RegisterProperty(nameof(BaseGroup.position), () => ref model.position);
+            this.RegisterProperty(nameof(BaseGroup.backgroundColor), () => ref model.backgroundColor);
         }
 
         internal void NotifyNodeAdded(BaseNodeProcessor node)

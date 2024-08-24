@@ -55,45 +55,27 @@ namespace CZToolKit.GraphProcessor
 
         public InternalVector2Int Pan
         {
-            get { return GetField<InternalVector2Int>(nameof(BaseGraph.pan)); }
-            set { SetField(nameof(BaseGraph.pan), value); }
+            get => GetPropertyValue<InternalVector2Int>(nameof(BaseGraph.pan));
+            set => SetPropertyValue(nameof(BaseGraph.pan), value);
         }
 
         public float Zoom
         {
-            get { return GetField<float>(nameof(BaseGraph.zoom)); }
-            set { SetField(nameof(BaseGraph.zoom), value); }
+            get => GetPropertyValue<float>(nameof(BaseGraph.zoom));
+            set => SetPropertyValue(nameof(BaseGraph.zoom), value);
         }
 
-        public IReadOnlyDictionary<int, BaseNodeProcessor> Nodes
-        {
-            get { return nodes; }
-        }
+        public IReadOnlyDictionary<int, BaseNodeProcessor> Nodes => nodes;
 
-        public Groups Groups
-        {
-            get { return groups; }
-        }
+        public Groups Groups => groups;
 
-        public IReadOnlyList<BaseConnectionProcessor> Connections
-        {
-            get { return connections; }
-        }
+        public IReadOnlyList<BaseConnectionProcessor> Connections => connections;
 
-        public IReadOnlyDictionary<int, StickNoteProcessor> Notes
-        {
-            get { return notes; }
-        }
+        public IReadOnlyDictionary<int, StickNoteProcessor> Notes => notes;
 
-        public Events<string> Events
-        {
-            get { return events; }
-        }
+        public Events<string> Events => events;
 
-        public BlackboardProcessor<string> Blackboard
-        {
-            get { return blackboard; }
-        }
+        public BlackboardProcessor<string> Blackboard => blackboard;
 
         #endregion
 
@@ -113,8 +95,8 @@ namespace CZToolKit.GraphProcessor
             this.groups = new Groups();
             this.notes = new Dictionary<int, StickNoteProcessor>();
 
-            this.RegisterField(nameof(BaseGraph.pan), () => ref Model.pan);
-            this.RegisterField(nameof(BaseGraph.zoom), () => ref Model.zoom);
+            this.RegisterProperty(nameof(BaseGraph.pan), () => ref Model.pan);
+            this.RegisterProperty(nameof(BaseGraph.zoom), () => ref Model.zoom);
 
             foreach (var pair in Model.nodes)
             {

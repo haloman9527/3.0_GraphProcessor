@@ -16,7 +16,6 @@
 
 #endregion
 
-using CZToolKit;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -86,46 +85,31 @@ namespace CZToolKit.GraphProcessor
         public Type ModelType { get; }
         public BaseNodeProcessor Owner { get; internal set; }
 
-        public string Name
-        {
-            get { return Model.name; }
-        }
+        public string Name => Model.name;
 
-        public BasePort.Direction Direction
-        {
-            get { return Model.direction; }
-        }
+        public BasePort.Direction Direction => Model.direction;
 
-        public BasePort.Orientation Orientation
-        {
-            get { return Model.orientation; }
-        }
+        public BasePort.Orientation Orientation => Model.orientation;
 
-        public BasePort.Capacity Capacity
-        {
-            get { return Model.capacity; }
-        }
+        public BasePort.Capacity Capacity => Model.capacity;
 
         public Type Type
         {
             get
             {
-                var t = GetField<Type>(nameof(BasePort.type));
+                var t = GetPropertyValue<Type>(nameof(BasePort.type));
                 return t == null ? typeof(object) : t;
             }
-            set { SetField(nameof(BasePort.type), value); }
+            set => SetPropertyValue(nameof(BasePort.type), value);
         }
 
         public bool HideLabel
         {
-            get { return GetField<bool>(nameof(hideLabel)); }
-            set { SetField(nameof(hideLabel), value); }
+            get => GetPropertyValue<bool>(nameof(hideLabel));
+            set => SetPropertyValue(nameof(hideLabel), value);
         }
 
-        public IReadOnlyList<BaseConnectionProcessor> Connections
-        {
-            get { return connections; }
-        }
+        public IReadOnlyList<BaseConnectionProcessor> Connections => connections;
 
         #endregion
 
@@ -138,8 +122,8 @@ namespace CZToolKit.GraphProcessor
                 this.comparer = HorizontalComparer;
             else
                 this.comparer = VerticalComparer;
-            this.RegisterField(nameof(BasePort.type), () => ref Model.type);
-            this.RegisterField(nameof(hideLabel), () => ref hideLabel);
+            this.RegisterProperty(nameof(BasePort.type), () => ref Model.type);
+            this.RegisterProperty(nameof(hideLabel), () => ref hideLabel);
         }
 
         public BasePortProcessor(string name, BasePort.Orientation orientation, BasePort.Direction direction, BasePort.Capacity capacity, Type type = null)
@@ -157,8 +141,8 @@ namespace CZToolKit.GraphProcessor
                 this.comparer = HorizontalComparer;
             else
                 this.comparer = VerticalComparer;
-            this[nameof(BasePort.type)] = new BindableProperty<Type>(() => Model.type, v => Model.type = v);
-            this[nameof(hideLabel)] = new BindableProperty<bool>(() => hideLabel, v => hideLabel = v);
+            this.RegisterProperty(nameof(BasePort.type), () => ref Model.type);
+            this.RegisterProperty(nameof(hideLabel), () => ref hideLabel);
         }
 
         #region API

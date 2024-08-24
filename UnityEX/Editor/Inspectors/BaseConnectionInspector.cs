@@ -54,10 +54,6 @@ namespace CZToolKit.GraphProcessor.Editors
                 property.Draw();
                 if (EditorGUI.EndChangeCheck())
                 {
-                    if (view.ViewModel.TryGetProperty(property.Name, out var bindableProperty))
-                    {
-                        bindableProperty.NotifyValueChanged();
-                    }
                     view.ViewModel.NotifyPropertyChanged(property.Name);
                 }
             }
