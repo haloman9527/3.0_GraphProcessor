@@ -12,19 +12,13 @@ public class FlowNodeView : BaseNodeView
     {
         base.OnInitialized();
 
-        if (ViewModel.Properties.Count > 3)
+        var editor = ObjectInspectorEditor.CreateEditor(this);
+        controls.Add(new IMGUIContainer(() =>
         {
-            var editor = ObjectInspectorEditor.CreateEditor(this);
-            controls.Add(new IMGUIContainer(() =>
-            {
-                if (this.Owner.worldBound.Overlaps( this.worldBound))
-                {
-                    EditorGUIUtility.labelWidth = 70;
-                    editor.OnInspectorGUI();
-                    MarkDirtyRepaint();
-                }
-            }));
-        }
+            EditorGUIUtility.labelWidth = 70;
+            editor.OnInspectorGUI();
+            this.MarkDirtyRepaint();
+        }));
     }
 }
 #endif

@@ -35,50 +35,43 @@ namespace CZToolKit.GraphProcessor.Editors
     {
         #region Properties
 
-        private MiniMap miniMap;
-        private BaseGraphProcessor viewModel;
-        private BaseGraphWindow graphWindow;
-        private CommandDispatcher commandDispatcher;
-        private Dictionary<int, BaseNodeView> nodeViews = new Dictionary<int, BaseNodeView>();
-        private Dictionary<int, BaseGroupView> groupViews = new Dictionary<int, BaseGroupView>();
-        private Dictionary<BaseConnectionProcessor, BaseConnectionView> connectionViews = new Dictionary<BaseConnectionProcessor, BaseConnectionView>();
-        private Dictionary<int, StickNoteView> noteViews = new Dictionary<int, StickNoteView>();
+        private MiniMap MiniMap { get; set; }
 
-        public BaseGraphWindow GraphWindow => graphWindow;
+        public BaseGraphWindow GraphWindow { get; }
 
-        public CommandDispatcher CommandDispatcher => commandDispatcher;
+        public CommandDispatcher CommandDispatcher { get; }
 
         public IGraphAsset GraphAsset => GraphWindow.GraphAsset;
 
-        public BaseGraphProcessor ViewModel => viewModel;
+        public BaseGraphProcessor ViewModel { get; }
 
-        public Dictionary<int, BaseNodeView> NodeViews => nodeViews;
+        public Dictionary<int, BaseNodeView> NodeViews { get; } = new Dictionary<int, BaseNodeView>();
 
-        public Dictionary<int, StickNoteView> NoteViews => noteViews;
+        public Dictionary<int, StickNoteView> NoteViews { get; } = new Dictionary<int, StickNoteView>();
 
-        public Dictionary<int, BaseGroupView> GroupViews => groupViews;
+        public Dictionary<int, BaseGroupView> GroupViews { get; } = new Dictionary<int, BaseGroupView>();
 
-        public Dictionary<BaseConnectionProcessor, BaseConnectionView> ConnectionViews => connectionViews;
+        public Dictionary<BaseConnectionProcessor, BaseConnectionView> ConnectionViews { get; } = new Dictionary<BaseConnectionProcessor, BaseConnectionView>();
 
         public bool MiniMapActive
         {
-            get => miniMap != null;
+            get => MiniMap != null;
             set
             {
-                if (value == false && miniMap != null)
+                if (value == false && MiniMap != null)
                 {
-                    Remove(miniMap);
-                    miniMap = null;
+                    Remove(MiniMap);
+                    MiniMap = null;
                 }
 
-                if (value == true && miniMap == null)
+                if (value == true && MiniMap == null)
                 {
-                    miniMap = new MiniMap()
+                    MiniMap = new MiniMap()
                     {
                         anchored = true,
                     };
-                    miniMap.SetPosition(new Rect(15, 15, 200, 200));
-                    Add(miniMap);
+                    MiniMap.SetPosition(new Rect(15, 15, 200, 200));
+                    Add(MiniMap);
                 }
             }
         }
@@ -106,17 +99,17 @@ namespace CZToolKit.GraphProcessor.Editors
             this.AddManipulator(new RectangleSelector());
             this.StretchToParentSize();
 
-            this.viewModel = graph;
-            this.graphWindow = window;
-            this.commandDispatcher = commandDispatcher;
+            this.ViewModel = graph;
+            this.GraphWindow = window;
+            this.CommandDispatcher = commandDispatcher;
         }
 
         #region Initialize
 
         public void Init()
         {
-            var coroutine = graphWindow.StartCoroutine(InitCoroutine());
-            this.RegisterCallback<DetachFromPanelEvent>(evt => { graphWindow.StopCoroutine(coroutine); });
+            var coroutine = GraphWindow.StartCoroutine(InitCoroutine());
+            this.RegisterCallback<DetachFromPanelEvent>(evt => { GraphWindow.StopCoroutine(coroutine); });
             this.RegisterCallback<DetachFromPanelEvent>(evt => { Uninit(); });
 
             IEnumerator InitCoroutine()
@@ -388,12 +381,12 @@ namespace CZToolKit.GraphProcessor.Editors
         // 标记Dirty
         public void SetDirty()
         {
-            graphWindow?.SetGraphDirty();
+            GraphWindow?.SetGraphDirty();
         }
 
         public void SetUnDirty()
         {
-            graphWindow?.SetGraphUndirty();
+            GraphWindow?.SetGraphUndirty();
         }
 
         #endregion

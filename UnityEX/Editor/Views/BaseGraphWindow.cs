@@ -17,7 +17,6 @@
 #endregion
 
 #if UNITY_EDITOR
-using CZToolKit;
 using System;
 using CZToolKitEditor;
 using UnityEngine;
@@ -169,6 +168,20 @@ namespace CZToolKit.GraphProcessor.Editors
             this.graphViewContainer.Add(graphView);
 
             graphView.RegisterCallback<KeyDownEvent>(OnKeyDownCallback);
+            graphView.schedule.Execute(() =>
+            {
+                foreach (var pair in graphView.NodeViews)
+                {
+                    if (!graphView.worldBound.Overlaps(pair.Value.worldBound))
+                    {
+                        pair.Value.controls.visible = false;
+                    }
+                    else
+                    {
+                        pair.Value.controls.visible = true;
+                    }
+                }
+            }).Every(50);
             BuildToolBar();
             AfterLoad();
         }
@@ -329,10 +342,7 @@ namespace CZToolKit.GraphProcessor.Editors
             btnOverview.clicked += () => { GraphView.FrameAll(); };
             ToolbarLeft.Add(btnOverview);
 
-            var minimapActive = new BindableProperty<bool>(() =>
-            {
-                return EditorPrefs.GetBool("GraphView.MiniMap.Active", false);
-            }, v =>
+            var minimapActive = new BindableProperty<bool>(() => { return EditorPrefs.GetBool("GraphView.MiniMap.Active", false); }, v =>
             {
                 EditorPrefs.SetBool("GraphView.MiniMap.Active", v);
                 GraphView.MiniMapActive = v;
@@ -343,10 +353,7 @@ namespace CZToolKit.GraphProcessor.Editors
                 text = "MiniMap",
                 tooltip = "小地图",
             };
-            togMiniMap.clicked += () =>
-            {
-                minimapActive.Value = !minimapActive.Value;
-            };
+            togMiniMap.clicked += () => { minimapActive.Value = !minimapActive.Value; };
             ToolbarLeft.Add(togMiniMap);
 
             if (graphAsset.UnityAsset != null)

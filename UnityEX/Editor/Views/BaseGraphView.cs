@@ -23,7 +23,6 @@ using System.Linq;
 using CZToolKitEditor;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
-using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace CZToolKit.GraphProcessor.Editors
@@ -159,18 +158,13 @@ namespace CZToolKit.GraphProcessor.Editors
                 if (!ObjectEditor.HasEditor(element.GetType()))
                     continue;
 
-                var inspector = ScriptableObject.CreateInstance<ObjectInspector>();
-                inspector.target = element;
-                Selection.activeObject = inspector;
+                ObjectInspector.Show(element);
                 return;
             }
 
             if (Selection.activeGameObject != null && Selection.activeGameObject.GetComponent<IGraphAssetOwner>() != null)
                 return;
-            var graphInspector = ScriptableObject.CreateInstance<ObjectInspector>();
-            graphInspector.target = this;
-            Selection.activeObject = graphInspector;
-            // ObjectEditor.DrawObjectInInspector("Graph", this, GraphAsset.UnityAsset);
+            ObjectInspector.Show(this);
         }
 
         protected virtual bool IsCompatible(BasePortView fromPortView, BasePortView toPortView, NodeAdapter nodeAdapter)
