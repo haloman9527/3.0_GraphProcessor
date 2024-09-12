@@ -11,12 +11,8 @@ namespace CZToolKit.GraphProcessor.Editors
         private TextField titleField;
         private TextField contentsField;
 
-        private StickNoteProcessor viewModel;
-
-        public StickNoteProcessor ViewModel
-        {
-            get { return viewModel; }
-        }
+        public StickNoteProcessor ViewModel { get; private set; }
+        public IGraphElementProcessor V => ViewModel;
 
         public BaseGraphView Owner { get; private set; }
 
@@ -29,7 +25,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
         public void SetUp(StickNoteProcessor note, BaseGraphView graphView)
         {
-            this.viewModel = note;
+            this.ViewModel = note;
             this.Owner = graphView;
             // 初始化
             base.SetPosition(new Rect(ViewModel.Position.ToVector2(), ViewModel.Size.ToVector2()));

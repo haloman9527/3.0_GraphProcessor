@@ -16,7 +16,6 @@
 
 #endregion
 
-using CZToolKit;
 using System;
 using System.Linq;
 using System.Collections.Generic;
@@ -24,150 +23,13 @@ using UnityEngine;
 
 namespace CZToolKit.GraphProcessor
 {
-    public class AddNodeCommand : ICommand
-    {
-        BaseGraphProcessor graph;
-        BaseNodeProcessor nodeVM;
-
-        public AddNodeCommand(BaseGraphProcessor graph, Type nodeType, InternalVector2Int position)
-        {
-            this.graph = graph;
-            this.nodeVM = graph.NewNode(nodeType, position);
-        }
-
-        public AddNodeCommand(BaseGraphProcessor graph, BaseNode node)
-        {
-            this.graph = graph;
-            this.nodeVM = ViewModelFactory.CreateViewModel(node) as BaseNodeProcessor;
-        }
-
-        public AddNodeCommand(BaseGraphProcessor graph, BaseNodeProcessor node)
-        {
-            this.graph = graph;
-            this.nodeVM = node;
-        }
-
-        public void Do()
-        {
-            graph.AddNode(nodeVM);
-        }
-
-        public void Redo()
-        {
-            Do();
-        }
-
-        public void Undo()
-        {
-            graph.RemoveNode(nodeVM);
-        }
-    }
-
-    public class RemoveNodeCommand : ICommand
-    {
-        BaseGraphProcessor graph;
-        BaseNodeProcessor node;
-
-        List<BaseConnectionProcessor> connections = new List<BaseConnectionProcessor>();
-
-        public RemoveNodeCommand(BaseGraphProcessor graph, BaseNodeProcessor node)
-        {
-            this.graph = graph;
-            this.node = node;
-        }
-
-        public void Do()
-        {
-            foreach (var connection in graph.Connections.ToArray())
-            {
-                if (connection.FromNode == node || connection.ToNode == node)
-                {
-                    connections.Add(connection);
-                }
-            }
-
-            graph.RemoveNode(node);
-        }
-
-        public void Redo()
-        {
-            Do();
-        }
-
-        public void Undo()
-        {
-            graph.AddNode(node);
-            // 还原
-            foreach (var edge in connections)
-            {
-                graph.RevertDisconnect(edge);
-            }
-
-            connections.Clear();
-        }
-    }
-
-    public class RemoveNodesCommand : ICommand
-    {
-        BaseGraphProcessor graph;
-        BaseNodeProcessor[] nodes;
-
-        HashSet<BaseConnectionProcessor> connections = new HashSet<BaseConnectionProcessor>();
-
-        public RemoveNodesCommand(BaseGraphProcessor graph, BaseNodeProcessor[] nodes)
-        {
-            this.graph = graph;
-            this.nodes = nodes;
-        }
-
-        public void Do()
-        {
-            connections.Clear();
-            foreach (var node in nodes)
-            {
-                foreach (var port in node.Ports.Values)
-                {
-                    foreach (var connection in port.Connections)
-                    {
-                        connections.Add(connection);
-                    }
-                }
-            }
-
-            foreach (var node in nodes)
-            {
-                graph.RemoveNode(node);
-            }
-        }
-
-        public void Redo()
-        {
-            Do();
-        }
-
-        public void Undo()
-        {
-            foreach (var node in nodes)
-            {
-                graph.AddNode(node);
-            }
-
-            // 还原
-            foreach (var edge in connections)
-            {
-                graph.RevertDisconnect(edge);
-            }
-
-            connections.Clear();
-        }
-    }
 
     public class MoveElementsCommand : ICommand
     {
-        Dictionary<IGraphScopeViewModel, Rect> oldPos;
-        Dictionary<IGraphScopeViewModel, Rect> newPos;
+        Dictionary<IGraphElementProcessor_Scope, Rect> oldPos;
+        Dictionary<IGraphElementProcessor_Scope, Rect> newPos;
 
-        public MoveElementsCommand(Dictionary<IGraphScopeViewModel, Rect> newPos)
+        public MoveElementsCommand(Dictionary<IGraphElementProcessor_Scope, Rect> newPos)
         {
             this.newPos = newPos;
         }
@@ -175,7 +37,7 @@ namespace CZToolKit.GraphProcessor
         public void Do()
         {
             if (oldPos == null)
-                oldPos = new Dictionary<IGraphScopeViewModel, Rect>();
+                oldPos = new Dictionary<IGraphElementProcessor_Scope, Rect>();
             else
                 oldPos.Clear();
 
@@ -219,6 +81,171 @@ namespace CZToolKit.GraphProcessor
         }
     }
 
+    public class RemoveElementsCommand : ICommand
+    {
+        private BaseGraphProcessor graph;
+        private List<IGraphElementProcessor> graphElements;
+        private HashSet<IGraphElementProcessor> graphElementsSet = new HashSet<IGraphElementProcessor>();
+
+        public RemoveElementsCommand(BaseGraphProcessor graph, IGraphElementProcessor[] graphElements)
+        {
+            this.graph = graph;
+            this.graphElements = new List<IGraphElementProcessor>(graphElements);
+            foreach (var graphElement in this.graphElements)
+            {
+                graphElementsSet.Add(graphElement);
+            }
+
+            for (int i = 0; i < graphElements.Length; i++)
+            {
+                var graphElement = graphElements[i];
+                switch (graphElement)
+                {
+                    case BaseNodeProcessor node:
+                    {
+                        foreach (var connection in node.Ports.Values.SelectMany(port => port.connections))
+                        {
+                            if (this.graphElementsSet.Add(connection))
+                            {
+                                this.graphElements.Add(connection);
+                            }
+                        }
+
+                        break;
+                    }
+                }
+            }
+
+            this.graphElements.QuickSort((a, b) => { return GetPriority(a).CompareTo(GetPriority(b)); });
+        }
+
+        public void Do()
+        {
+            // 正向移除
+            for (int i = 0; i < graphElements.Count; i++)
+            {
+                var graphElement = graphElements[i];
+                switch (graphElement)
+                {
+                    case BaseConnectionProcessor connection:
+                    {
+                        graph.Disconnect(connection);
+                        break;
+                    }
+                    case BaseGroupProcessor group:
+                    {
+                        graph.RemoveGroup(group);
+                        break;
+                    }
+                    case BaseNodeProcessor node:
+                    {
+                        graph.RemoveNode(node);
+                        break;
+                    }
+                    case StickNoteProcessor stickNote:
+                    {
+                        graph.RemoveNote(stickNote.ID);
+                        break;
+                    }
+                }
+            }
+        }
+
+        public void Undo()
+        {
+            // 反向添加
+            for (int i = graphElements.Count - 1; i >= 0; i--)
+            {
+                var graphElement = graphElements[i];
+                switch (graphElement)
+                {
+                    case BaseNodeProcessor node:
+                    {
+                        graph.AddNode(node);
+                        break;
+                    }
+                    case StickNoteProcessor stickNote:
+                    {
+                        graph.AddNote(stickNote);
+                        break;
+                    }
+                    case BaseConnectionProcessor connection:
+                    {
+                        graph.RevertDisconnect(connection);
+                        break;
+                    }
+                    case BaseGroupProcessor group:
+                    {
+                        graph.AddGroup(group);
+                        break;
+                    }
+                }
+            }
+        }
+
+        public void Redo()
+        {
+            Do();
+        }
+
+        public int GetPriority(IGraphElementProcessor graphElement)
+        {
+            switch (graphElement)
+            {
+                case BaseConnectionProcessor:
+                case BaseGroupProcessor:
+                {
+                    return 1;
+                }
+                case BaseNodeProcessor:
+                case StickNoteProcessor:
+                {
+                    return 2;
+                }
+            }
+
+            return int.MaxValue;
+        }
+    }
+    public class AddNodeCommand : ICommand
+    {
+        BaseGraphProcessor graph;
+        BaseNodeProcessor nodeVM;
+
+        public AddNodeCommand(BaseGraphProcessor graph, Type nodeType, InternalVector2Int position)
+        {
+            this.graph = graph;
+            this.nodeVM = graph.NewNode(nodeType, position);
+        }
+
+        public AddNodeCommand(BaseGraphProcessor graph, BaseNode node)
+        {
+            this.graph = graph;
+            this.nodeVM = ViewModelFactory.CreateViewModel(node) as BaseNodeProcessor;
+        }
+
+        public AddNodeCommand(BaseGraphProcessor graph, BaseNodeProcessor node)
+        {
+            this.graph = graph;
+            this.nodeVM = node;
+        }
+
+        public void Do()
+        {
+            graph.AddNode(nodeVM);
+        }
+
+        public void Redo()
+        {
+            Do();
+        }
+
+        public void Undo()
+        {
+            graph.RemoveNode(nodeVM);
+        }
+    }
+
     public class AddGroupCommand : ICommand
     {
         public BaseGraphProcessor graph;
@@ -249,66 +276,6 @@ namespace CZToolKit.GraphProcessor
         public void Undo()
         {
             graph.RemoveGroup(group);
-        }
-    }
-
-    public class RemoveGroupCommand : ICommand
-    {
-        public BaseGraphProcessor graph;
-        public BaseGroupProcessor group;
-
-        public RemoveGroupCommand(BaseGraphProcessor graph, BaseGroupProcessor group)
-        {
-            this.graph = graph;
-            this.group = group;
-        }
-
-        public void Do()
-        {
-            graph.RemoveGroup(group);
-        }
-
-        public void Redo()
-        {
-            Do();
-        }
-
-        public void Undo()
-        {
-            graph.AddGroup(group);
-        }
-    }
-
-    public class RemoveGroupsCommand : ICommand
-    {
-        public BaseGraphProcessor graph;
-        public BaseGroupProcessor[] groups;
-
-        public RemoveGroupsCommand(BaseGraphProcessor graph, BaseGroupProcessor[] groups)
-        {
-            this.graph = graph;
-            this.groups = groups;
-        }
-
-        public void Do()
-        {
-            foreach (var group in groups)
-            {
-                graph.RemoveGroup(group);
-            }
-        }
-
-        public void Redo()
-        {
-            Do();
-        }
-
-        public void Undo()
-        {
-            foreach (var group in groups)
-            {
-                graph.AddGroup(group);
-            }
         }
     }
 
@@ -382,42 +349,6 @@ namespace CZToolKit.GraphProcessor
         }
     }
 
-    public class MoveGroupsCommand : ICommand
-    {
-        Dictionary<BaseGroupProcessor, InternalVector2Int> oldPos = new Dictionary<BaseGroupProcessor, InternalVector2Int>();
-        Dictionary<BaseGroupProcessor, InternalVector2Int> newPos = new Dictionary<BaseGroupProcessor, InternalVector2Int>();
-
-        public MoveGroupsCommand(Dictionary<BaseGroupProcessor, InternalVector2Int> groups)
-        {
-            this.newPos = groups;
-            foreach (var pair in groups)
-            {
-                oldPos[pair.Key] = pair.Key.Position;
-            }
-        }
-
-        public void Do()
-        {
-            foreach (var pair in newPos)
-            {
-                pair.Key.Position = pair.Value;
-            }
-        }
-
-        public void Redo()
-        {
-            Do();
-        }
-
-        public void Undo()
-        {
-            foreach (var pair in oldPos)
-            {
-                pair.Key.Position = pair.Value;
-            }
-        }
-    }
-
     public class RenameGroupCommand : ICommand
     {
         public BaseGroupProcessor group;
@@ -444,42 +375,6 @@ namespace CZToolKit.GraphProcessor
         public void Undo()
         {
             group.GroupName = oldName;
-        }
-    }
-
-    public class GroupAddNodesCommand : ICommand
-    {
-        private BaseNodeProcessor[] nodes;
-        private Dictionary<BaseGroupProcessor, List<int>> cache = new Dictionary<BaseGroupProcessor, List<int>>();
-
-        public GroupAddNodesCommand(BaseGroupProcessor group, BaseNodeProcessor[] nodes)
-        {
-            this.nodes.Where(item => item.Owner == group.Owner && !group.Nodes.Contains(item.ID));
-        }
-
-        public void Do()
-        {
-            // 记录从其他Group移动过来的节点，以便撤销时还原
-            // 
-            // foreach (var node in nodes)
-            // {
-            //     if (node.Owner != group.Owner)
-            //         continue;
-            //     if (group.Model.nodes.Contains(node.ID))
-            //         continue;
-            //     
-            //     
-            // }
-        }
-
-        public void Redo()
-        {
-            Do();
-        }
-
-        public void Undo()
-        {
-            // 还原从其他Group移动过来的节点
         }
     }
 
@@ -629,125 +524,6 @@ namespace CZToolKit.GraphProcessor
 
             // 还原
             foreach (var connection in replacedConnections)
-            {
-                graph.RevertDisconnect(connection);
-            }
-        }
-    }
-
-    public class ConnectionRedirectCommand : ICommand
-    {
-        BaseGraphProcessor graph;
-        BaseConnectionProcessor connection;
-
-        BasePortProcessor oldFromPort, oldToPort;
-        BasePortProcessor newFromPort, newToPort;
-
-        List<BaseConnectionProcessor> replacedConnections = new List<BaseConnectionProcessor>();
-
-        public ConnectionRedirectCommand(BaseGraphProcessor graph, BaseConnectionProcessor connection, BasePortProcessor from, BasePortProcessor to)
-        {
-            this.graph = graph;
-            this.connection = connection;
-
-            newFromPort = from;
-            newToPort = to;
-        }
-
-        public void Do()
-        {
-            oldFromPort = connection.FromPort;
-            oldToPort = connection.ToPort;
-
-            replacedConnections.Clear();
-            if (connection.FromPort == newFromPort)
-            {
-                if (newToPort.Capacity == BasePort.Capacity.Single)
-                    replacedConnections.AddRange(newToPort.Connections);
-            }
-            else
-            {
-                if (newFromPort.Capacity == BasePort.Capacity.Single)
-                    replacedConnections.AddRange(newFromPort.Connections);
-            }
-
-            connection.Redirect(newFromPort, newToPort);
-            graph.RevertDisconnect(connection);
-        }
-
-        public void Redo()
-        {
-            Do();
-        }
-
-        public void Undo()
-        {
-            graph.Disconnect(connection);
-            connection.Redirect(oldFromPort, oldToPort);
-            graph.RevertDisconnect(connection);
-
-            // 还原
-            foreach (var connection in replacedConnections)
-            {
-                graph.RevertDisconnect(connection);
-            }
-        }
-    }
-
-    public class DisconnectCommand : ICommand
-    {
-        BaseGraphProcessor graph;
-        BaseConnectionProcessor connection;
-
-        public DisconnectCommand(BaseGraphProcessor graph, BaseConnectionProcessor connection)
-        {
-            this.graph = graph;
-            this.connection = connection;
-        }
-
-        public void Do()
-        {
-            graph.Disconnect(connection);
-        }
-
-        public void Redo()
-        {
-            Do();
-        }
-
-        public void Undo()
-        {
-            graph.RevertDisconnect(connection);
-        }
-    }
-
-    public class DisconnectsCommand : ICommand
-    {
-        BaseGraphProcessor graph;
-        BaseConnectionProcessor[] connections;
-
-        public DisconnectsCommand(BaseGraphProcessor graph, BaseConnectionProcessor[] connections)
-        {
-            this.graph = graph;
-            this.connections = connections;
-        }
-
-        public void Do()
-        {
-            foreach (var connection in connections)
-            {
-                graph.Disconnect(connection);
-            }
-        }
-
-        public void Redo()
-        {
-            Do();
-        }
-
-        public void Undo()
-        {
-            foreach (var connection in connections)
             {
                 graph.RevertDisconnect(connection);
             }

@@ -18,13 +18,15 @@ namespace CZToolKit.GraphProcessor.Editors
 {
     public interface IGraphElementView
     {
+        IGraphElementProcessor V { get; }
+        
         void OnCreate();
         
         void OnDestroy();
     }
 
-    public interface IGraphElementView<VM> : IGraphElementView where VM: IGraphElementViewModel
+    public interface IGraphElementView<T> : IGraphElementView where T: IGraphElementProcessor
     {
-        VM ViewModel { get; }
+        T ViewModel { get; }
     }
 }

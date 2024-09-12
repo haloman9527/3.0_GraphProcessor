@@ -63,7 +63,7 @@ namespace CZToolKit.GraphProcessor
     }
 
     [ViewModel(typeof(BasePort))]
-    public class BasePortProcessor : ViewModel, IGraphElementViewModel
+    public class BasePortProcessor : ViewModel
     {
         #region Fields
 

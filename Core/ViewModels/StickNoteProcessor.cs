@@ -3,7 +3,7 @@
 namespace CZToolKit.GraphProcessor
 {
     [ViewModel(typeof(StickNote))]
-    public sealed class StickNoteProcessor : ViewModel, IGraphScopeViewModel
+    public sealed class StickNoteProcessor : ViewModel, IGraphElementProcessor, IGraphElementProcessor_Scope
     {
         public StickNote Model { get; }
         public Type ModelType { get; }

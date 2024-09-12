@@ -1,10 +1,11 @@
 #region 注 释
+
 /***
  *
  *  Title:
- *  
+ *
  *  Description:
- *  
+ *
  *  Date:
  *  Version:
  *  Writer: 半只龙虾人
@@ -12,9 +13,10 @@
  *  Blog: https://www.haloman.net/
  *
  */
+
 #endregion
+
 #if UNITY_EDITOR
-using System;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine.UIElements;
 
@@ -23,16 +25,9 @@ namespace CZToolKit.GraphProcessor.Editors
     [CustomView(typeof(BaseConnection))]
     public partial class BaseConnectionView : Edge, IGraphElementView<BaseConnectionProcessor>
     {
-        public BaseConnectionProcessor ViewModel
-        {
-            get;
-            private set;
-        }
-        protected BaseGraphView Owner
-        {
-            get;
-            private set;
-        }
+        public BaseConnectionProcessor ViewModel { get; private set; }
+        public IGraphElementProcessor V => ViewModel;
+        protected BaseGraphView Owner { get; private set; }
 
         public BaseConnectionView() : base()
         {

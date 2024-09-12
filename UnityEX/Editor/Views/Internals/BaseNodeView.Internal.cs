@@ -17,10 +17,8 @@
 #endregion
 
 #if UNITY_EDITOR
-using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -56,6 +54,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
         public BaseGraphView Owner { get; private set; }
         public BaseNodeProcessor ViewModel { get; protected set; }
+        public IGraphElementProcessor V => ViewModel;
 
         public IReadOnlyDictionary<string, BasePortView> PortViews => portViews;
 

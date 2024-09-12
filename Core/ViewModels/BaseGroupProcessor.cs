@@ -23,7 +23,7 @@ using System.Collections.Generic;
 namespace CZToolKit.GraphProcessor
 {
     [ViewModel(typeof(BaseGroup))]
-    public class BaseGroupProcessor : ViewModel, IGraphScopeViewModel
+    public class BaseGroupProcessor : ViewModel, IGraphElementProcessor, IGraphElementProcessor_Scope
     {
         #region Fileds
 

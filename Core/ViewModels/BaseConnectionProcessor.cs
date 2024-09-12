@@ -3,9 +3,9 @@
 /***
  *
  *  Title:
- *  
+ *
  *  Description:
- *  
+ *
  *  Date:
  *  Version:
  *  Writer: 半只龙虾人
@@ -22,7 +22,7 @@ using System;
 namespace CZToolKit.GraphProcessor
 {
     [ViewModel(typeof(BaseConnection))]
-    public class BaseConnectionProcessor : ViewModel, IGraphElementViewModel
+    public class BaseConnectionProcessor : ViewModel, IGraphElementProcessor
     {
         #region Fields
 

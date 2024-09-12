@@ -514,9 +514,8 @@ namespace CZToolKit.GraphProcessor.Editors
             if (changes.movedElements != null)
             {
                 // 当节点移动之后，与之连接的接口重新排序
-                var newPos = new Dictionary<IGraphScopeViewModel, Rect>();
-                // Dictionary<BaseGroupProcessor, InternalVector2Int> groupNewPos = new Dictionary<BaseGroupProcessor, InternalVector2Int>();
-                HashSet<BasePortProcessor> portsHashset = new HashSet<BasePortProcessor>();
+                var newPos = new Dictionary<IGraphElementProcessor_Scope, Rect>();
+                var portsHashset = new HashSet<BasePortProcessor>();
 
                 changes.movedElements.RemoveAll(element =>
                 {
@@ -558,8 +557,6 @@ namespace CZToolKit.GraphProcessor.Editors
 
                 if (newPos.Count > 0)
                 {
-                    CommandDispatcher.BeginGroup();
-
                     // 排序
                     foreach (var port in portsHashset)
                     {
@@ -567,35 +564,17 @@ namespace CZToolKit.GraphProcessor.Editors
                     }
 
                     CommandDispatcher.Do(new MoveElementsCommand(newPos));
-
-                    CommandDispatcher.EndGroup();
                 }
             }
 
-            if (changes.elementsToRemove == null)
-                return changes;
-
-            CommandDispatcher.BeginGroup();
-
-            var groups = changes.elementsToRemove
-                .Where(item => item.selected && item is BaseGroupView)
-                .Select(item => (item as BaseGroupView).ViewModel).ToArray();
-            changes.elementsToRemove.RemoveAll(item => item is BaseGroupView);
-            CommandDispatcher.Do(new RemoveGroupsCommand(ViewModel, groups));
-
-            var edges = changes.elementsToRemove
-                .Where(item => item.selected && item is BaseConnectionView)
-                .Select(item => (item as BaseConnectionView).ViewModel).ToArray();
-            changes.elementsToRemove.RemoveAll(item => item is BaseConnectionView);
-            CommandDispatcher.Do(new DisconnectsCommand(ViewModel, edges));
-
-            var nodes = changes.elementsToRemove
-                .Where(item => item.selected && item is BaseNodeView)
-                .Select(item => (item as BaseNodeView).ViewModel).ToArray();
-            changes.elementsToRemove.RemoveAll(item => item is BaseNodeView);
-            CommandDispatcher.Do(new RemoveNodesCommand(ViewModel, nodes));
-
-            CommandDispatcher.EndGroup();
+            if (changes.elementsToRemove != null)
+            {
+                var graphElements = changes.elementsToRemove
+                    .Where(item => item.selected && item is IGraphElementView)
+                    .Select(item => ((IGraphElementView)item).V).ToArray();
+                changes.elementsToRemove.RemoveAll(item => item is IGraphElementView);
+                CommandDispatcher.Do(new RemoveElementsCommand(ViewModel, graphElements));
+            }
 
             UpdateInspector();
             return changes;

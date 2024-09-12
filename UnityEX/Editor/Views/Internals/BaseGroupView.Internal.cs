@@ -35,6 +35,7 @@ namespace CZToolKit.GraphProcessor.Editors
         public ColorField BackgroudColorField { get; private set; }
         public Label TitleLabel { get; private set; }
         public BaseGroupProcessor ViewModel { get; protected set; }
+        public IGraphElementProcessor V => ViewModel;
         public BaseGraphView Owner { get; private set; }
 
 

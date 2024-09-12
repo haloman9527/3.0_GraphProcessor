@@ -26,7 +26,7 @@ using UnityEngine.UIElements;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
-    public abstract partial class BasePortView : Port, IGraphElementView<BasePortProcessor>
+    public abstract partial class BasePortView : Port
     {
         public Image Icon { get; }
         public VisualElement CapIconBG { get; }
