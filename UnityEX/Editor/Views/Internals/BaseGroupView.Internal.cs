@@ -17,6 +17,7 @@
 #endregion
 
 #if UNITY_EDITOR
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -126,7 +127,7 @@ namespace CZToolKit.GraphProcessor.Editors
         {
             if (WithoutNotify)
                 return;
-            base.RemoveElements(new BaseNodeView[] { Owner.NodeViews[node.ID] });
+            base.RemoveElementsWithoutNotification(new BaseNodeView[] { Owner.NodeViews[node.ID] });
         }
 
         #endregion
@@ -148,7 +149,6 @@ namespace CZToolKit.GraphProcessor.Editors
             switch (element)
             {
                 case BaseNodeView:
-                case StickyNote:
                     return true;
             }
 
@@ -160,20 +160,29 @@ namespace CZToolKit.GraphProcessor.Editors
             if (WithoutNotify)
                 return;
 
+            var temp = WithoutNotify;
+            WithoutNotify = true;
             foreach (var element in elements)
             {
                 switch (element)
                 {
                     case BaseNodeView nodeView:
                     {
-                        var temp = WithoutNotify;
-                        WithoutNotify = true;
-                        Owner.ViewModel.Groups.AddNodeToGroup(ViewModel, nodeView.ViewModel);
-                        WithoutNotify = temp;
+                        try
+                        {
+                            Owner.ViewModel.Groups.AddNodeToGroup(ViewModel, nodeView.ViewModel);
+                        }
+                        catch
+                        {
+                            // ignored
+                        }
+
                         break;
                     }
                 }
             }
+
+            WithoutNotify = temp;
 
             Owner.SetDirty();
         }
@@ -185,12 +194,15 @@ namespace CZToolKit.GraphProcessor.Editors
 
             foreach (var element in elements)
             {
-                if (!(element is BaseNodeView nodeView))
-                    continue;
-                var temp = WithoutNotify;
-                WithoutNotify = true;
-                Owner.ViewModel.Groups.RemoveNodeFromGroup(nodeView.ViewModel);
-                WithoutNotify = temp;
+                var nodeView = (BaseNodeView)element;
+                try
+                {
+                    Owner.ViewModel.Groups.RemoveNodeFromGroup(nodeView.ViewModel);
+                }
+                catch
+                {
+                    // ignored
+                }
             }
 
             Owner.SetDirty();

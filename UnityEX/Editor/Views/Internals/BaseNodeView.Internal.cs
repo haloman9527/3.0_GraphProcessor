@@ -60,7 +60,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
         #endregion
 
-        
+
         public BaseNodeView()
         {
             styleSheets.Add(GraphProcessorStyles.BaseNodeViewStyle);
@@ -121,7 +121,7 @@ namespace CZToolKit.GraphProcessor.Editors
                 var portView = NewPortView(port);
                 portView.SetUp(port, Owner);
                 portViews[port.Name] = portView;
-                if (port.Name.StartsWith("Flow-"))
+                if (port.Name == ConstValues.FLOW_IN_PORT_NAME)
                 {
                     titleInputPortContainer.Add(portView);
                 }
@@ -145,11 +145,11 @@ namespace CZToolKit.GraphProcessor.Editors
 
             foreach (var port in ViewModel.RightPorts)
             {
-                BasePortView portView = NewPortView(port);
+                var portView = NewPortView(port);
                 portView.SetUp(port, Owner);
                 portViews[port.Name] = portView;
 
-                if (port.Name.StartsWith("Flow-"))
+                if (port.Name == ConstValues.FLOW_OUT_PORT_NAME)
                 {
                     titleOutputPortContainer.Add(portView);
                 }

@@ -22,12 +22,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using UnityEditor;
 using UnityEditor.Experimental.GraphView;
-using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
-using UnityObject = UnityEngine.Object;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
@@ -47,7 +44,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
         public Dictionary<int, BaseNodeView> NodeViews { get; } = new Dictionary<int, BaseNodeView>();
 
-        public Dictionary<int, StickNoteView> NoteViews { get; } = new Dictionary<int, StickNoteView>();
+        public Dictionary<int, StickyNoteView> NoteViews { get; } = new Dictionary<int, StickyNoteView>();
 
         public Dictionary<int, BaseGroupView> GroupViews { get; } = new Dictionary<int, BaseGroupView>();
 
@@ -315,16 +312,16 @@ namespace CZToolKit.GraphProcessor.Editors
         }
 
 
-        private void AddNoteView(StickNoteProcessor note)
+        private void AddNoteView(StickyNoteProcessor note)
         {
-            var noteView = new StickNoteView();
+            var noteView = new StickyNoteView();
             noteView.SetUp(note, this);
             noteView.OnCreate();
             NoteViews[note.ID] = noteView;
             AddElement(noteView);
         }
 
-        private void RemoveNoteView(StickNoteProcessor note)
+        private void RemoveNoteView(StickyNoteProcessor note)
         {
             var noteView = NoteViews[note.ID];
             noteView.OnDestroy();
@@ -425,13 +422,13 @@ namespace CZToolKit.GraphProcessor.Editors
             SetDirty();
         }
 
-        private void OnNoteAdded(StickNoteProcessor note)
+        private void OnNoteAdded(StickyNoteProcessor note)
         {
             AddNoteView(note);
             SetDirty();
         }
 
-        private void OnNoteRemoved(StickNoteProcessor note)
+        private void OnNoteRemoved(StickyNoteProcessor note)
         {
             RemoveNoteView(note);
             SetDirty();

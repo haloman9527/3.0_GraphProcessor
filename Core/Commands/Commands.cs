@@ -23,7 +23,6 @@ using UnityEngine;
 
 namespace CZToolKit.GraphProcessor
 {
-
     public class MoveElementsCommand : ICommand
     {
         Dictionary<IGraphElementProcessor_Scope, Rect> oldPos;
@@ -43,7 +42,7 @@ namespace CZToolKit.GraphProcessor
 
             foreach (var pair in newPos)
             {
-                if (pair.Key is StickNoteProcessor note)
+                if (pair.Key is StickyNoteProcessor note)
                 {
                     var rect = new Rect(pair.Key.Position.ToVector2(), pair.Key.Position.ToVector2());
                     oldPos[pair.Key] = rect;
@@ -68,7 +67,7 @@ namespace CZToolKit.GraphProcessor
         {
             foreach (var pair in oldPos)
             {
-                if (pair.Key is StickNoteProcessor note)
+                if (pair.Key is StickyNoteProcessor note)
                 {
                     note.Position = pair.Value.position.ToInternalVector2Int();
                     note.Size = pair.Value.size.ToInternalVector2Int();
@@ -86,6 +85,7 @@ namespace CZToolKit.GraphProcessor
         private BaseGraphProcessor graph;
         private List<IGraphElementProcessor> graphElements;
         private HashSet<IGraphElementProcessor> graphElementsSet = new HashSet<IGraphElementProcessor>();
+        private Dictionary<BaseNodeProcessor, BaseGroupProcessor> nodeGroups = new Dictionary<BaseNodeProcessor, BaseGroupProcessor>();
 
         public RemoveElementsCommand(BaseGraphProcessor graph, IGraphElementProcessor[] graphElements)
         {
@@ -103,6 +103,11 @@ namespace CZToolKit.GraphProcessor
                 {
                     case BaseNodeProcessor node:
                     {
+                        if (graph.Groups.NodeGroupMap.TryGetValue(node.ID, out var groupProcessor))
+                        {
+                            nodeGroups[node] = groupProcessor;
+                        }
+
                         foreach (var connection in node.Ports.Values.SelectMany(port => port.connections))
                         {
                             if (this.graphElementsSet.Add(connection))
@@ -142,7 +147,7 @@ namespace CZToolKit.GraphProcessor
                         graph.RemoveNode(node);
                         break;
                     }
-                    case StickNoteProcessor stickNote:
+                    case StickyNoteProcessor stickNote:
                     {
                         graph.RemoveNote(stickNote.ID);
                         break;
@@ -164,7 +169,7 @@ namespace CZToolKit.GraphProcessor
                         graph.AddNode(node);
                         break;
                     }
-                    case StickNoteProcessor stickNote:
+                    case StickyNoteProcessor stickNote:
                     {
                         graph.AddNote(stickNote);
                         break;
@@ -180,6 +185,11 @@ namespace CZToolKit.GraphProcessor
                         break;
                     }
                 }
+            }
+
+            foreach (var pair in nodeGroups)
+            {
+                graph.Groups.AddNodeToGroup(pair.Value, pair.Key);
             }
         }
 
@@ -198,7 +208,7 @@ namespace CZToolKit.GraphProcessor
                     return 1;
                 }
                 case BaseNodeProcessor:
-                case StickNoteProcessor:
+                case StickyNoteProcessor:
                 {
                     return 2;
                 }
@@ -207,6 +217,7 @@ namespace CZToolKit.GraphProcessor
             return int.MaxValue;
         }
     }
+
     public class AddNodeCommand : ICommand
     {
         BaseGraphProcessor graph;

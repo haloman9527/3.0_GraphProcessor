@@ -31,6 +31,8 @@ namespace CZToolKit.GraphProcessor.Editors
 {
     public abstract class BaseGraphWindow : BaseEditorWindow
     {
+        public static BindableProperty<bool> MiniMapActive = new BindableProperty<bool>(() => EditorPrefs.GetBool("GraphView.MiniMap.Active", false), v => EditorPrefs.SetBool("GraphView.MiniMap.Active", v));
+
         #region Fields
 
         private VisualElement graphViewContainer;
@@ -130,6 +132,7 @@ namespace CZToolKit.GraphProcessor.Editors
             EditorApplication.playModeStateChanged -= OnPlayModeStateChanged;
             if (Selection.activeObject is ObjectInspector objectInspector && objectInspector.target is GraphElement)
                 Selection.activeObject = null;
+            Clear();
         }
 
         #endregion
@@ -188,8 +191,15 @@ namespace CZToolKit.GraphProcessor.Editors
 
         protected virtual void AfterLoad()
         {
+            MiniMapActive.onValueChanged += OnMiniMapActiveChanged;
+            MiniMapActive.NotifyValueChanged();
         }
 
+        protected void OnMiniMapActiveChanged(bool oldValue, bool newValue)
+        {
+            graphView.MiniMapActive = newValue;
+        }
+        
         #endregion
 
         #region Public Methods
@@ -208,6 +218,7 @@ namespace CZToolKit.GraphProcessor.Editors
             GraphAsset = null;
             GraphOwner = null;
             commandDispatcher = null;
+            MiniMapActive.onValueChanged -= OnMiniMapActiveChanged;
         }
 
         // 重新加载Graph
@@ -234,7 +245,7 @@ namespace CZToolKit.GraphProcessor.Editors
                 AssetDatabase.OpenAsset(this.unityGraphAsset);
             }
         }
-
+        
         // 从GraphOwner加载
         public void LoadFromGraphOwner(IGraphOwner graphOwner)
         {
@@ -342,18 +353,13 @@ namespace CZToolKit.GraphProcessor.Editors
             btnOverview.clicked += () => { GraphView.FrameAll(); };
             ToolbarLeft.Add(btnOverview);
 
-            var minimapActive = new BindableProperty<bool>(() => { return EditorPrefs.GetBool("GraphView.MiniMap.Active", false); }, v =>
-            {
-                EditorPrefs.SetBool("GraphView.MiniMap.Active", v);
-                GraphView.MiniMapActive = v;
-            });
             var togMiniMap = new ToolbarButton()
             {
                 name = "togMiniMap",
                 text = "MiniMap",
                 tooltip = "小地图",
             };
-            togMiniMap.clicked += () => { minimapActive.Value = !minimapActive.Value; };
+            togMiniMap.clicked += () => { MiniMapActive.Value = !MiniMapActive.Value; };
             ToolbarLeft.Add(togMiniMap);
 
             if (graphAsset.UnityAsset != null)

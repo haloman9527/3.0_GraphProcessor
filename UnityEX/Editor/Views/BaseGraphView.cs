@@ -68,6 +68,13 @@ namespace CZToolKit.GraphProcessor.Editors
                     case "Copy":
                     case "Paste":
                     case "Duplicate":
+                        
+                    case "Light Theme":
+                    case "Dark Theme":
+                    case "Small Text Size":
+                    case "Medium Text Size":
+                    case "Large Text Size":
+                    case "Huge Text Size":
                         return true;
                     default:
                         return false;
@@ -76,12 +83,12 @@ namespace CZToolKit.GraphProcessor.Editors
 
             evt.menu.AppendAction("Create Note", delegate
             {
-                var data = new StickNote();
+                var data = new StickyNote();
                 data.id = ViewModel.NewID();
                 data.position = this.GetMousePosition().ToInternalVector2Int();
                 data.title = "title";
                 data.content = "contents";
-                var note = ViewModelFactory.CreateViewModel(data) as StickNoteProcessor;
+                var note = ViewModelFactory.CreateViewModel(data) as StickyNoteProcessor;
                 CommandDispatcher.Do(() => { ViewModel.AddNote(note); }, () => { ViewModel.RemoveNote(note.ID); });
             });
 
@@ -91,7 +98,7 @@ namespace CZToolKit.GraphProcessor.Editors
                 case UnityEditor.Experimental.GraphView.Node:
                 case Group:
                 case Edge:
-                case StickNote:
+                case UnityEditor.Experimental.GraphView.StickyNote:
                 {
                     evt.menu.AppendAction("Delete", delegate { DeleteSelectionCallback(AskUser.DontAskUser); }, (DropdownMenuAction a) => canDeleteSelection ? DropdownMenuAction.Status.Normal : DropdownMenuAction.Status.Hidden);
                     break;

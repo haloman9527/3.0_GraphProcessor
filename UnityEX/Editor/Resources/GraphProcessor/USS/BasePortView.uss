@@ -46,6 +46,14 @@
     border-radius: 4px;
 }
 
+#title-output > .port {
+    --port-color: #00FFFF;
+}
+
+#title-input > .port {
+    --port-color: #00FFFF;
+}
+
 #title-input > .port > #type {
     display: none;
 }

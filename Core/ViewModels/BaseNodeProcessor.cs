@@ -97,9 +97,9 @@ namespace CZToolKit.GraphProcessor
             
             var nodeStaticInfo = GraphProcessorUtil.NodeStaticInfos[ModelType];
             
-            title = nodeStaticInfo.title;
-            tooltip = nodeStaticInfo.tooltip;
-            tooltip = nodeStaticInfo.tooltip;
+            this.title = nodeStaticInfo.title;
+            this.tooltip = nodeStaticInfo.tooltip;
+            this.tooltip = nodeStaticInfo.tooltip;
 
             this.RegisterProperty(ConstValues.NODE_TITLE_NAME, () => ref title);
             this.RegisterProperty(ConstValues.NODE_TOOLTIP_NAME, () => ref tooltip);

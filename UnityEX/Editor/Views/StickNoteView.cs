@@ -6,24 +6,24 @@ using UnityEngine.UIElements;
 
 namespace CZToolKit.GraphProcessor.Editors
 {
-    public class StickNoteView : UnityEditor.Experimental.GraphView.StickyNote, IGraphElementView<StickNoteProcessor>
+    public class StickyNoteView : UnityEditor.Experimental.GraphView.StickyNote, IGraphElementView<StickyNoteProcessor>
     {
         private TextField titleField;
         private TextField contentsField;
 
-        public StickNoteProcessor ViewModel { get; private set; }
+        public StickyNoteProcessor ViewModel { get; private set; }
         public IGraphElementProcessor V => ViewModel;
 
         public BaseGraphView Owner { get; private set; }
 
-        public StickNoteView()
+        public StickyNoteView()
         {
             var contents = this.Q<Label>("contents", (string)null);
             this.titleField = this.Q<TextField>("title-field", (string)null);
             this.contentsField = contents.Q<TextField>("contents-field", (string)null);
         }
 
-        public void SetUp(StickNoteProcessor note, BaseGraphView graphView)
+        public void SetUp(StickyNoteProcessor note, BaseGraphView graphView)
         {
             this.ViewModel = note;
             this.Owner = graphView;
@@ -35,20 +35,20 @@ namespace CZToolKit.GraphProcessor.Editors
 
         public void OnCreate()
         {
-            ViewModel.GetProperty<InternalVector2Int>(nameof(StickNote.position)).RegisterValueChangedEvent(OnPositionChanged);
-            ViewModel.GetProperty<InternalVector2Int>(nameof(StickNote.size)).RegisterValueChangedEvent(OnSizeChanged);
-            ViewModel.GetProperty<string>(nameof(StickNote.title)).RegisterValueChangedEvent(OnTitleChanged);
-            ViewModel.GetProperty<string>(nameof(StickNote.content)).RegisterValueChangedEvent(OnContentsChanged);
+            ViewModel.GetProperty<InternalVector2Int>(nameof(StickyNote.position)).RegisterValueChangedEvent(OnPositionChanged);
+            ViewModel.GetProperty<InternalVector2Int>(nameof(StickyNote.size)).RegisterValueChangedEvent(OnSizeChanged);
+            ViewModel.GetProperty<string>(nameof(StickyNote.title)).RegisterValueChangedEvent(OnTitleChanged);
+            ViewModel.GetProperty<string>(nameof(StickyNote.content)).RegisterValueChangedEvent(OnContentsChanged);
 
             this.RegisterCallback<StickyNoteChangeEvent>(OnChanged);
         }
 
         public void OnDestroy()
         {
-            ViewModel.GetProperty<InternalVector2Int>(nameof(StickNote.position)).UnregisterValueChangedEvent(OnPositionChanged);
-            ViewModel.GetProperty<InternalVector2Int>(nameof(StickNote.size)).UnregisterValueChangedEvent(OnSizeChanged);
-            ViewModel.GetProperty<string>(nameof(StickNote.title)).UnregisterValueChangedEvent(OnTitleChanged);
-            ViewModel.GetProperty<string>(nameof(StickNote.content)).UnregisterValueChangedEvent(OnContentsChanged);
+            ViewModel.GetProperty<InternalVector2Int>(nameof(StickyNote.position)).UnregisterValueChangedEvent(OnPositionChanged);
+            ViewModel.GetProperty<InternalVector2Int>(nameof(StickyNote.size)).UnregisterValueChangedEvent(OnSizeChanged);
+            ViewModel.GetProperty<string>(nameof(StickyNote.title)).UnregisterValueChangedEvent(OnTitleChanged);
+            ViewModel.GetProperty<string>(nameof(StickyNote.content)).UnregisterValueChangedEvent(OnContentsChanged);
 
             this.UnregisterCallback<StickyNoteChangeEvent>(OnChanged);
         }
@@ -60,13 +60,15 @@ namespace CZToolKit.GraphProcessor.Editors
                 case StickyNoteChange.Title:
                 {
                     var oldTitle = ViewModel.Title;
-                    Owner.CommandDispatcher.Do(() => { ViewModel.Title = this.title; }, () => { ViewModel.Title = oldTitle; });
+                    var newTitle = this.title;
+                    Owner.CommandDispatcher.Do(() => { ViewModel.Title = newTitle; }, () => { ViewModel.Title = oldTitle; });
                     break;
                 }
                 case StickyNoteChange.Contents:
                 {
                     var oldContent = ViewModel.Content;
-                    Owner.CommandDispatcher.Do(() => { ViewModel.Content = this.title; }, () => { ViewModel.Content = oldContent; });
+                    var newContent = this.contents;
+                    Owner.CommandDispatcher.Do(() => { ViewModel.Content = newContent; }, () => { ViewModel.Content = oldContent; });
                     break;
                 }
                 case StickyNoteChange.Theme:
@@ -107,12 +109,14 @@ namespace CZToolKit.GraphProcessor.Editors
 
         private void OnContentsChanged(string oldvalue, string newvalue)
         {
-            contentsField.SetValueWithoutNotify(newvalue);
+            this.contents = newvalue;
+            Owner.SetDirty();
         }
 
         private void OnTitleChanged(string oldvalue, string newvalue)
         {
-            titleField.SetValueWithoutNotify(newvalue);
+            this.title = newvalue;
+            Owner.SetDirty();
         }
     }
 }

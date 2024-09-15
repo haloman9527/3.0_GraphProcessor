@@ -41,7 +41,7 @@ public class FloatNodeProcessor : BaseNodeProcessor, IGetPortValue, IGetPortValu
     {
         T_Model = model;
         this.RegisterProperty(nameof(FloatNode.num), () => ref model.num);
-        AddPort(new BasePortProcessor("Flow-Out", BasePort.Orientation.Horizontal, BasePort.Direction.Right, BasePort.Capacity.Multi, typeof(object)));
+        AddPort(new BasePortProcessor(ConstValues.FLOW_OUT_PORT_NAME, BasePort.Orientation.Horizontal, BasePort.Direction.Right, BasePort.Capacity.Multi, typeof(object)));
     }
 
     public object GetValue(string port)

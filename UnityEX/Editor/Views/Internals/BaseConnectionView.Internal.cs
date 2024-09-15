@@ -44,17 +44,29 @@ namespace CZToolKit.GraphProcessor.Editors
 
         public void OnCreate()
         {
+            this.RegisterCallback<ClickEvent>(OnClick);
+            
             BindProperties();
         }
 
         public void OnDestroy()
         {
+            this.UnregisterCallback<ClickEvent>(OnClick);
+
             UnbindProperties();
         }
 
         private void OnMouseEnter(MouseEnterEvent evt)
         {
             this.BringToFront();
+        }
+        
+        private void OnClick(ClickEvent evt)
+        {
+            if (evt.clickCount == 2)
+            {
+                
+            }
         }
     }
 }

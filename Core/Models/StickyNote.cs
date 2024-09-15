@@ -16,7 +16,7 @@
 
 namespace CZToolKit.GraphProcessor
 {
-    public class StickNote
+    public class StickyNote
     {
         public int id;
         public InternalVector2Int position;
