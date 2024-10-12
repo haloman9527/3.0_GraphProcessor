@@ -18,6 +18,7 @@
 
 using CZToolKit;
 using System;
+using System.Collections.Generic;
 
 namespace CZToolKit.GraphProcessor
 {
@@ -116,5 +117,63 @@ namespace CZToolKit.GraphProcessor
         }
 
         #endregion
+    }
+
+    public class ConnectionProcessorHorizontalComparer : IComparer<BaseConnectionProcessor>
+    {
+        public static readonly ConnectionProcessorHorizontalComparer Default = new ConnectionProcessorHorizontalComparer();
+
+        public int Compare(BaseConnectionProcessor x, BaseConnectionProcessor y)
+        {
+            // 若需要重新排序的是input接口，则根据FromNode排序
+            // 若需要重新排序的是output接口，则根据ToNode排序
+            var nodeX = x.FromPort.Direction == BasePort.Direction.Left ? x.FromNode : x.ToNode;
+            var nodeY = x.FromPort.Direction == BasePort.Direction.Left ? y.FromNode : y.ToNode;
+
+            // 则使用y坐标比较排序
+            // 遵循从上到下
+            if (nodeX.Position.y < nodeY.Position.y)
+                return -1;
+            if (nodeX.Position.y > nodeY.Position.y)
+                return 1;
+
+            // 若节点的y坐标相同，则使用x坐标比较排序
+            // 遵循从左到右
+            if (nodeX.Position.x < nodeY.Position.x)
+                return -1;
+            if (nodeX.Position.x > nodeY.Position.x)
+                return 1;
+
+            return 0;
+        }
+    }
+
+    public class ConnectionProcessorVerticalComparer : IComparer<BaseConnectionProcessor>
+    {
+        public static readonly ConnectionProcessorVerticalComparer Default = new ConnectionProcessorVerticalComparer();
+
+        public int Compare(BaseConnectionProcessor x, BaseConnectionProcessor y)
+        {
+            // 若需要重新排序的是input接口，则根据FromNode排序
+            // 若需要重新排序的是output接口，则根据ToNode排序
+            var nodeX = x.FromPort.Direction == BasePort.Direction.Left ? x.FromNode : x.ToNode;
+            var nodeY = y.FromPort.Direction == BasePort.Direction.Left ? y.FromNode : y.ToNode;
+
+            // 则使用x坐标比较排序
+            // 遵循从左到右
+            if (nodeX.Position.x < nodeY.Position.x)
+                return -1;
+            if (nodeX.Position.x > nodeY.Position.x)
+                return 1;
+
+            // 若节点的x坐标相同，则使用y坐标比较排序
+            // 遵循从上到下
+            if (nodeX.Position.y < nodeY.Position.y)
+                return -1;
+            if (nodeX.Position.y > nodeY.Position.y)
+                return 1;
+
+            return 0;
+        }
     }
 }

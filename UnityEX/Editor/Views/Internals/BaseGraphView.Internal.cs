@@ -378,12 +378,7 @@ namespace CZToolKit.GraphProcessor.Editors
         // 标记Dirty
         public void SetDirty()
         {
-            GraphWindow?.SetGraphDirty();
-        }
-
-        public void SetUnDirty()
-        {
-            GraphWindow?.SetGraphUndirty();
+            GraphWindow?.GraphChanged();
         }
 
         #endregion
@@ -557,7 +552,7 @@ namespace CZToolKit.GraphProcessor.Editors
                     // 排序
                     foreach (var port in portsHashset)
                     {
-                        port.Resort();
+                        port.Trim();
                     }
 
                     CommandDispatcher.Do(new MoveElementsCommand(newPos));

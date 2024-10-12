@@ -117,7 +117,7 @@ namespace CZToolKit.GraphProcessor
             foreach (var port in ports.Values)
             {
                 if (port.connections.Count > 1)
-                    port.ResortWithoutNotify();
+                    port.Trim();
             }
 
             OnEnabled();

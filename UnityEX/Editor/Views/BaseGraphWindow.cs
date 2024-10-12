@@ -135,6 +135,11 @@ namespace CZToolKit.GraphProcessor.Editors
             Clear();
         }
 
+        public override void SaveChanges()
+        {
+            this.OnBtnSaveClick();
+        }
+
         #endregion
 
         #region Private Methods
@@ -206,8 +211,6 @@ namespace CZToolKit.GraphProcessor.Editors
 
         public virtual void Clear()
         {
-            SetGraphUndirty();
-
             ToolbarLeft.Clear();
             ToolbarCenter.Clear();
             ToolbarRight.Clear();
@@ -219,6 +222,8 @@ namespace CZToolKit.GraphProcessor.Editors
             GraphOwner = null;
             commandDispatcher = null;
             MiniMapActive.onValueChanged -= OnMiniMapActiveChanged;
+
+            this.hasUnsavedChanges = false;
         }
 
         // 重新加载Graph
@@ -276,20 +281,14 @@ namespace CZToolKit.GraphProcessor.Editors
             Load(ViewModelFactory.CreateViewModel(ViewModelFactory.CreateViewModel(graph) as BaseGraphProcessor) as BaseGraphProcessor, null, null);
         }
 
-        public void SetGraphDirty()
+        public void GraphChanged()
         {
-            if (!titleContent.text.EndsWith(" *"))
-                titleContent.text += " *";
-            if (graphAsset != null && graphAsset.UnityAsset != null)
-                EditorUtility.SetDirty(graphAsset.UnityAsset);
-            if (GraphOwner is UnityObject uobj && uobj != null)
-                EditorUtility.SetDirty(uobj);
+            this.hasUnsavedChanges = true;
         }
 
         public void SetGraphUndirty()
         {
-            if (titleContent.text.EndsWith(" *"))
-                titleContent.text = titleContent.text.Replace(" *", "");
+            this.hasUnsavedChanges = false;
         }
 
         #endregion
@@ -325,7 +324,7 @@ namespace CZToolKit.GraphProcessor.Editors
 
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
-            GraphView.SetUnDirty();
+            this.hasUnsavedChanges = false;
         }
 
         protected virtual void OnKeyDownCallback(KeyDownEvent evt)

@@ -69,7 +69,6 @@ namespace CZToolKit.GraphProcessor
 
         private bool hideLabel;
         internal List<BaseConnectionProcessor> connections;
-        internal Func<BaseConnectionProcessor, BaseConnectionProcessor, int> comparer;
 
         public event Action<BaseConnectionProcessor> onBeforeConnected;
         public event Action<BaseConnectionProcessor> onAfterConnected;
@@ -118,10 +117,6 @@ namespace CZToolKit.GraphProcessor
             this.Model = model;
             this.ModelType = typeof(BasePort);
             this.connections = new List<BaseConnectionProcessor>();
-            if (Model.orientation == BasePort.Orientation.Horizontal)
-                this.comparer = HorizontalComparer;
-            else
-                this.comparer = VerticalComparer;
             this.RegisterProperty(nameof(BasePort.type), () => ref Model.type);
             this.RegisterProperty(nameof(hideLabel), () => ref hideLabel);
         }
@@ -137,10 +132,6 @@ namespace CZToolKit.GraphProcessor
             };
             this.ModelType = typeof(BasePort);
             this.connections = new List<BaseConnectionProcessor>();
-            if (Model.orientation == BasePort.Orientation.Horizontal)
-                this.comparer = HorizontalComparer;
-            else
-                this.comparer = VerticalComparer;
             this.RegisterProperty(nameof(BasePort.type), () => ref Model.type);
             this.RegisterProperty(nameof(hideLabel), () => ref hideLabel);
         }
@@ -156,6 +147,7 @@ namespace CZToolKit.GraphProcessor
         {
             onBeforeConnected?.Invoke(connection);
             connections.Add(connection);
+            connections.QuickSort(Model.orientation == BasePort.Orientation.Horizontal ? ConnectionProcessorHorizontalComparer.Default : ConnectionProcessorVerticalComparer.Default);
             onAfterConnected?.Invoke(connection);
             onConnectionChanged?.Invoke();
         }
@@ -168,18 +160,10 @@ namespace CZToolKit.GraphProcessor
             onConnectionChanged?.Invoke();
         }
 
-        /// <summary> 强制重新排序 </summary>
-        public void Resort()
+        /// <summary> 整理 </summary>
+        public bool Trim()
         {
-            var changed = connections.QuickSort(comparer);
-            if (changed)
-                onConnectionChanged?.Invoke();
-        }
-
-        /// <summary> 强制重新排序，但不触发排序事件 </summary>
-        public void ResortWithoutNotify()
-        {
-            connections.QuickSort(comparer);
+            return connections.QuickSort(Model.orientation == BasePort.Orientation.Horizontal ? ConnectionProcessorHorizontalComparer.Default : ConnectionProcessorVerticalComparer.Default);
         }
 
         /// <summary> 获取连接的第一个接口的值 </summary>
@@ -234,58 +218,6 @@ namespace CZToolKit.GraphProcessor
                         yield return toPort.GetValue(connection.ToPortName);
                 }
             }
-        }
-
-        #endregion
-
-        #region Helper
-
-        private int VerticalComparer(BaseConnectionProcessor x, BaseConnectionProcessor y)
-        {
-            // 若需要重新排序的是input接口，则根据FromNode排序
-            // 若需要重新排序的是output接口，则根据ToNode排序
-            var nodeX = Model.direction == BasePort.Direction.Left ? x.FromNode : x.ToNode;
-            var nodeY = Model.direction == BasePort.Direction.Left ? y.FromNode : y.ToNode;
-
-            // 则使用x坐标比较排序
-            // 遵循从左到右
-            if (nodeX.Position.x < nodeY.Position.x)
-                return -1;
-            if (nodeX.Position.x > nodeY.Position.x)
-                return 1;
-
-            // 若节点的x坐标相同，则使用y坐标比较排序
-            // 遵循从上到下
-            if (nodeX.Position.y < nodeY.Position.y)
-                return -1;
-            if (nodeX.Position.y > nodeY.Position.y)
-                return 1;
-
-            return 0;
-        }
-
-        private int HorizontalComparer(BaseConnectionProcessor x, BaseConnectionProcessor y)
-        {
-            // 若需要重新排序的是input接口，则根据FromNode排序
-            // 若需要重新排序的是output接口，则根据ToNode排序
-            var nodeX = Model.direction == BasePort.Direction.Left ? x.FromNode : x.ToNode;
-            var nodeY = Model.direction == BasePort.Direction.Left ? y.FromNode : y.ToNode;
-
-            // 则使用y坐标比较排序
-            // 遵循从上到下
-            if (nodeX.Position.y < nodeY.Position.y)
-                return -1;
-            if (nodeX.Position.y > nodeY.Position.y)
-                return 1;
-
-            // 若节点的y坐标相同，则使用x坐标比较排序
-            // 遵循从左到右
-            if (nodeX.Position.x < nodeY.Position.x)
-                return -1;
-            if (nodeX.Position.x > nodeY.Position.x)
-                return 1;
-
-            return 0;
         }
 
         #endregion
