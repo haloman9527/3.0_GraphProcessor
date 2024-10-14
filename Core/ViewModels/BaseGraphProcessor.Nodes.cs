@@ -40,7 +40,6 @@ namespace CZToolKit.GraphProcessor
 
         private void BeginInitNodes()
         {
-            
             this.nodes = new Dictionary<int, BaseNodeProcessor>();
             foreach (var pair in Model.nodes)
             {

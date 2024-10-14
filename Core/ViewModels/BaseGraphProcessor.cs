@@ -64,11 +64,10 @@ namespace CZToolKit.GraphProcessor
             this.Events = new Events<string>();
             this.Blackboard = new BlackboardProcessor<string>(new Blackboard<string>(), Events);
 
-
             BeginInitNodes();
             BeginInitConnections();
-            EndInitNodes();
             EndInitConnections();
+            EndInitNodes();
             InitGroups();
             InitNotes();
         }
