@@ -119,16 +119,30 @@ namespace CZToolKit.GraphProcessor
         #endregion
     }
 
+    public enum ConnectionSortMode
+    {
+        FromPort,
+        ToPort
+    }
+
     public class ConnectionProcessorHorizontalComparer : IComparer<BaseConnectionProcessor>
     {
-        public static readonly ConnectionProcessorHorizontalComparer Default = new ConnectionProcessorHorizontalComparer();
+        public static readonly ConnectionProcessorHorizontalComparer FromPortSortDefault = new ConnectionProcessorHorizontalComparer(ConnectionSortMode.FromPort);
+        public static readonly ConnectionProcessorHorizontalComparer ToPortSortDefault = new ConnectionProcessorHorizontalComparer(ConnectionSortMode.ToPort);
+
+        private ConnectionSortMode m_mode;
+
+        public ConnectionProcessorHorizontalComparer(ConnectionSortMode mode)
+        {
+            this.m_mode = mode;
+        }
 
         public int Compare(BaseConnectionProcessor x, BaseConnectionProcessor y)
         {
             // 若需要重新排序的是input接口，则根据FromNode排序
             // 若需要重新排序的是output接口，则根据ToNode排序
-            var nodeX = x.FromPort.Direction == BasePort.Direction.Left ? x.FromNode : x.ToNode;
-            var nodeY = x.FromPort.Direction == BasePort.Direction.Left ? y.FromNode : y.ToNode;
+            var nodeX = m_mode == ConnectionSortMode.FromPort ? x.ToNode : x.FromNode;
+            var nodeY = m_mode == ConnectionSortMode.FromPort ? y.ToNode : y.FromNode;
 
             // 则使用y坐标比较排序
             // 遵循从上到下
@@ -150,14 +164,22 @@ namespace CZToolKit.GraphProcessor
 
     public class ConnectionProcessorVerticalComparer : IComparer<BaseConnectionProcessor>
     {
-        public static readonly ConnectionProcessorVerticalComparer Default = new ConnectionProcessorVerticalComparer();
+        public static readonly ConnectionProcessorVerticalComparer FromPortSortDefault = new ConnectionProcessorVerticalComparer(ConnectionSortMode.FromPort);
+        public static readonly ConnectionProcessorVerticalComparer ToPortSortDefault = new ConnectionProcessorVerticalComparer(ConnectionSortMode.ToPort);
+
+        private ConnectionSortMode m_mode;
+
+        public ConnectionProcessorVerticalComparer(ConnectionSortMode mode)
+        {
+            this.m_mode = mode;
+        }
 
         public int Compare(BaseConnectionProcessor x, BaseConnectionProcessor y)
         {
             // 若需要重新排序的是input接口，则根据FromNode排序
             // 若需要重新排序的是output接口，则根据ToNode排序
-            var nodeX = x.FromPort.Direction == BasePort.Direction.Left ? x.FromNode : x.ToNode;
-            var nodeY = y.FromPort.Direction == BasePort.Direction.Left ? y.FromNode : y.ToNode;
+            var nodeX = m_mode == ConnectionSortMode.FromPort ? x.ToNode : x.FromNode;
+            var nodeY = m_mode == ConnectionSortMode.FromPort ? y.ToNode : y.FromNode;
 
             // 则使用x坐标比较排序
             // 遵循从左到右

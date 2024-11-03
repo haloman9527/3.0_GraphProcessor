@@ -147,7 +147,14 @@ namespace CZToolKit.GraphProcessor
         {
             onBeforeConnected?.Invoke(connection);
             connections.Add(connection);
-            connections.QuickSort(Model.orientation == BasePort.Orientation.Horizontal ? ConnectionProcessorHorizontalComparer.Default : ConnectionProcessorVerticalComparer.Default);
+            if (this == connection.FromPort)
+            {
+                connections.QuickSort(Model.orientation == BasePort.Orientation.Horizontal ? ConnectionProcessorHorizontalComparer.FromPortSortDefault : ConnectionProcessorVerticalComparer.ToPortSortDefault);
+            }
+            else
+            {
+                connections.QuickSort(Model.orientation == BasePort.Orientation.Horizontal ? ConnectionProcessorHorizontalComparer.ToPortSortDefault : ConnectionProcessorVerticalComparer.FromPortSortDefault);
+            }
             onAfterConnected?.Invoke(connection);
             onConnectionChanged?.Invoke();
         }
@@ -163,7 +170,7 @@ namespace CZToolKit.GraphProcessor
         /// <summary> 整理 </summary>
         public bool Trim()
         {
-            return connections.QuickSort(Model.orientation == BasePort.Orientation.Horizontal ? ConnectionProcessorHorizontalComparer.Default : ConnectionProcessorVerticalComparer.Default);
+            return connections.QuickSort(Model.orientation == BasePort.Orientation.Horizontal ? ConnectionProcessorHorizontalComparer.ToPortSortDefault : ConnectionProcessorVerticalComparer.FromPortSortDefault);
         }
 
         /// <summary> 获取连接的第一个接口的值 </summary>
