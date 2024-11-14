@@ -94,18 +94,14 @@ namespace CZToolKit.GraphProcessor
 
         public Type Type
         {
-            get
-            {
-                var t = GetPropertyValue<Type>(nameof(BasePort.type));
-                return t == null ? typeof(object) : t;
-            }
-            set => SetPropertyValue(nameof(BasePort.type), value);
+            get => Model.type == null ? typeof(object) : Model.type;
+            set => SetFieldValue(ref Model.type, value, nameof(BasePort.type));
         }
 
         public bool HideLabel
         {
-            get => GetPropertyValue<bool>(nameof(hideLabel));
-            set => SetPropertyValue(nameof(hideLabel), value);
+            get => hideLabel;
+            set => SetFieldValue(ref hideLabel, value, nameof(hideLabel));
         }
 
         public IReadOnlyList<BaseConnectionProcessor> Connections => connections;
@@ -117,8 +113,6 @@ namespace CZToolKit.GraphProcessor
             this.Model = model;
             this.ModelType = typeof(BasePort);
             this.connections = new List<BaseConnectionProcessor>();
-            this.RegisterProperty(nameof(BasePort.type), () => ref Model.type);
-            this.RegisterProperty(nameof(hideLabel), () => ref hideLabel);
         }
 
         public BasePortProcessor(string name, BasePort.Orientation orientation, BasePort.Direction direction, BasePort.Capacity capacity, Type type = null)
@@ -132,8 +126,6 @@ namespace CZToolKit.GraphProcessor
             };
             this.ModelType = typeof(BasePort);
             this.connections = new List<BaseConnectionProcessor>();
-            this.RegisterProperty(nameof(BasePort.type), () => ref Model.type);
-            this.RegisterProperty(nameof(hideLabel), () => ref hideLabel);
         }
 
         #region API
@@ -155,6 +147,7 @@ namespace CZToolKit.GraphProcessor
             {
                 connections.QuickSort(Model.orientation == BasePort.Orientation.Horizontal ? ConnectionProcessorHorizontalComparer.ToPortSortDefault : ConnectionProcessorVerticalComparer.FromPortSortDefault);
             }
+
             onAfterConnected?.Invoke(connection);
             onConnectionChanged?.Invoke();
         }

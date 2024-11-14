@@ -44,20 +44,20 @@ namespace CZToolKit.GraphProcessor
 
         public string GroupName
         {
-            get => GetPropertyValue<string>(nameof(Model.groupName));
-            set => SetPropertyValue(nameof(Model.groupName), value);
+            get => Model.groupName;
+            set => SetFieldValue(ref Model.groupName, value, nameof(Model.groupName));
         }
 
         public InternalVector2Int Position
         {
-            get => GetPropertyValue<InternalVector2Int>(nameof(Model.position));
-            set => SetPropertyValue(nameof(Model.position), value);
+            get => Model.position;
+            set => SetFieldValue(ref Model.position, value, nameof(Model.position));
         }
 
         public InternalColor BackgroundColor
         {
-            get => GetPropertyValue<InternalColor>(nameof(Model.backgroundColor));
-            set => SetPropertyValue(nameof(Model.backgroundColor), value);
+            get => Model.backgroundColor;
+            set => SetFieldValue(ref Model.backgroundColor, value, nameof(Model.backgroundColor));
         }
 
         #endregion
@@ -67,10 +67,6 @@ namespace CZToolKit.GraphProcessor
             Model = model;
             ModelType = model.GetType();
             Model.position = Model.position == default ? InternalVector2Int.zero : Model.position;
-
-            this.RegisterProperty(nameof(BaseGroup.groupName), () => ref model.groupName);
-            this.RegisterProperty(nameof(BaseGroup.position), () => ref model.position);
-            this.RegisterProperty(nameof(BaseGroup.backgroundColor), () => ref model.backgroundColor);
         }
 
         internal void NotifyNodeAdded(BaseNodeProcessor node)

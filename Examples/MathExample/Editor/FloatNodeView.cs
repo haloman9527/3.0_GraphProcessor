@@ -50,13 +50,13 @@ public class FloatNodeView : BaseNodeView
     protected override void OnBindingProperties()
     {
         base.OnBindingProperties();
-        ViewModel.GetProperty<float>(nameof(FloatNode.num)).RegisterValueChangedEvent(OnFloatNumChanged);
+        ViewModel.RegisterValueChanged<float>(nameof(FloatNode.num), OnFloatNumChanged);
     }
 
     protected override void OnUnBindingProperties()
     {
         base.OnUnBindingProperties();
-        ViewModel.GetProperty<float>(nameof(FloatNode.num)).UnregisterValueChangedEvent(OnFloatNumChanged);
+        ViewModel.UnregisterValueChanged<float>(nameof(FloatNode.num), OnFloatNumChanged);
     }
 
     private void OnFloatNumChanged(float oldValue, float newValue)

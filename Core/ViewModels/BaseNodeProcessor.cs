@@ -3,9 +3,9 @@
 /***
  *
  *  Title:
- *  
+ *
  *  Description:
- *  
+ *
  *  Date:
  *  Version:
  *  Writer: 半只龙虾人
@@ -54,26 +54,26 @@ namespace CZToolKit.GraphProcessor
 
         public virtual InternalVector2Int Position
         {
-            get => GetPropertyValue<InternalVector2Int>(nameof(BaseNode.position));
-            set => SetPropertyValue(nameof(BaseNode.position), value);
+            get => Model.position;
+            set => SetFieldValue(ref Model.position, value, nameof(BaseNode.position));
         }
 
         public virtual string Title
         {
-            get => GetPropertyValue<string>(ConstValues.NODE_TITLE_NAME);
-            set => SetPropertyValue(ConstValues.NODE_TITLE_NAME, value);
+            get => title;
+            set => SetFieldValue(ref title, value, ConstValues.NODE_TITLE_NAME);
         }
 
         public virtual InternalColor TitleColor
         {
-            get => GetPropertyValue<InternalColor>(ConstValues.NODE_TITLE_COLOR_NAME);
-            set => SetPropertyValue(ConstValues.NODE_TITLE_COLOR_NAME, value);
+            get => titleColor;
+            set => SetFieldValue(ref titleColor, value, ConstValues.NODE_TITLE_COLOR_NAME);
         }
 
         public virtual string Tooltip
         {
-            get => GetPropertyValue<string>(ConstValues.NODE_TOOLTIP_NAME);
-            set => SetPropertyValue(ConstValues.NODE_TOOLTIP_NAME, value);
+            get => tooltip;
+            set => SetFieldValue(ref tooltip, value, ConstValues.NODE_TOOLTIP_NAME);
         }
 
         public IReadOnlyList<BasePortProcessor> LeftPorts => leftPorts;
@@ -94,21 +94,16 @@ namespace CZToolKit.GraphProcessor
             leftPorts = new List<BasePortProcessor>();
             rightPorts = new List<BasePortProcessor>();
             ports = new Dictionary<string, BasePortProcessor>();
-            
+
             var nodeStaticInfo = GraphProcessorUtil.NodeStaticInfos[ModelType];
-            
+
             this.title = nodeStaticInfo.title;
             this.tooltip = nodeStaticInfo.tooltip;
             this.tooltip = nodeStaticInfo.tooltip;
 
-            this.RegisterProperty(ConstValues.NODE_TITLE_NAME, () => ref title);
-            this.RegisterProperty(ConstValues.NODE_TOOLTIP_NAME, () => ref tooltip);
-            this.RegisterProperty(nameof(BaseNode.position), () => ref model.position);
-
             if (nodeStaticInfo.customTitleColor.enable)
             {
                 titleColor = nodeStaticInfo.customTitleColor.value;
-                this.RegisterProperty(ConstValues.NODE_TITLE_COLOR_NAME, () => ref titleColor);
             }
         }
 

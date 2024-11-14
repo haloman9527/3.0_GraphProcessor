@@ -108,13 +108,11 @@ namespace CZToolKit.GraphProcessor.Editors
             base.SetPosition(new Rect(ViewModel.Position.ToVector2(), GetPosition().size));
             title = ViewModel.Title;
             tooltip = ViewModel.Tooltip;
-            if (ViewModel.Properties.ContainsKey(ConstValues.NODE_TITLE_COLOR_NAME))
-            {
-                var color = ViewModel.TitleColor.ToColor();
-                var lum = 0.299f * color.r + 0.587f * color.g + 0.114f * color.b;
-                NodeLabel.style.color = lum > 0.5f && ViewModel.TitleColor.a > 0.5f ? Color.black : Color.white * 0.9f;
-                titleContainer.style.backgroundColor = color;
-            }
+            
+            var color = ViewModel.TitleColor.ToColor();
+            var lum = 0.299f * color.r + 0.587f * color.g + 0.114f * color.b;
+            NodeLabel.style.color = lum > 0.5f && ViewModel.TitleColor.a > 0.5f ? Color.black : Color.white * 0.9f;
+            titleContainer.style.backgroundColor = color;
 
             foreach (var port in ViewModel.LeftPorts)
             {

@@ -80,7 +80,7 @@ namespace CZToolKit.GraphProcessor.Editors
                 property.Draw();
                 if (EditorGUI.EndChangeCheck())
                 {
-                    view.ViewModel.NotifyPropertyChanged(property.Name);
+                    // view.ViewModel.NotifyPropertyChanged(property.Name);
                 }
             }
 

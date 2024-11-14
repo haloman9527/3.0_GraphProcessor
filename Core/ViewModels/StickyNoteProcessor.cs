@@ -13,37 +13,32 @@ namespace CZToolKit.GraphProcessor
 
         public InternalVector2Int Position
         {
-            get => GetPropertyValue<InternalVector2Int>(nameof(StickyNote.position));
-            set => SetPropertyValue(nameof(StickyNote.position), value);
+            get => Model.position;
+            set => SetFieldValue(ref Model.position, value, nameof(StickyNote.position));
         }
 
         public InternalVector2Int Size
         {
-            get => GetPropertyValue<InternalVector2Int>(nameof(StickyNote.size));
-            set => SetPropertyValue(nameof(StickyNote.size), value);
+            get => Model.size;
+            set => SetFieldValue(ref Model.size, value, nameof(StickyNote.size));
         }
 
         public string Title
         {
-            get => GetPropertyValue<string>(nameof(StickyNote.title));
-            set => SetPropertyValue(nameof(StickyNote.title), value);
+            get => Model.title;
+            set => SetFieldValue(ref Model.title, value, nameof(StickyNote.title));
         }
 
         public string Content
         {
-            get => GetPropertyValue<string>(nameof(StickyNote.content));
-            set => SetPropertyValue(nameof(StickyNote.content), value);
+            get => Model.content;
+            set => SetFieldValue(ref Model.content, value, nameof(StickyNote.content));
         }
 
         public StickyNoteProcessor(StickyNote model)
         {
             this.Model = model;
             this.ModelType = model.GetType();
-
-            this.RegisterProperty(nameof(StickyNote.title), () => ref model.title);
-            this.RegisterProperty(nameof(StickyNote.content), () => ref model.content);
-            this.RegisterProperty(nameof(StickyNote.position), () => ref model.position);
-            this.RegisterProperty(nameof(StickyNote.size), () => ref model.size);
         }
     }
 }

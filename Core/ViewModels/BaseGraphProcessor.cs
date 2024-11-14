@@ -34,14 +34,14 @@ namespace CZToolKit.GraphProcessor
 
         public InternalVector2Int Pan
         {
-            get => GetPropertyValue<InternalVector2Int>(nameof(BaseGraph.pan));
-            set => SetPropertyValue(nameof(BaseGraph.pan), value);
+            get => Model.pan;
+            set => SetFieldValue(ref Model.pan, value, nameof(BaseGraph.pan));
         }
 
         public float Zoom
         {
-            get => GetPropertyValue<float>(nameof(BaseGraph.zoom));
-            set => SetPropertyValue(nameof(BaseGraph.zoom), value);
+            get => Model.zoom;
+            set => SetFieldValue(ref Model.zoom, value, nameof(BaseGraph.zoom));
         }
 
         public Events<string> Events { get; }
@@ -57,9 +57,6 @@ namespace CZToolKit.GraphProcessor
             Model.pan = Model.pan == default ? InternalVector2Int.zero : Model.pan;
             Model.zoom = Model.zoom == 0 ? 1 : Model.zoom;
             Model.notes = Model.notes == null ? new Dictionary<int, StickyNote>() : Model.notes;
-
-            this.RegisterProperty(nameof(BaseGraph.pan), () => ref Model.pan);
-            this.RegisterProperty(nameof(BaseGraph.zoom), () => ref Model.zoom);
 
             this.Events = new Events<string>();
             this.Blackboard = new BlackboardProcessor<string>(new Blackboard<string>(), Events);

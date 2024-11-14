@@ -1,10 +1,11 @@
 #region 注 释
+
 /***
  *
  *  Title:
- *  
+ *
  *  Description:
- *  
+ *
  *  Date:
  *  Version:
  *  Writer: 半只龙虾人
@@ -12,7 +13,9 @@
  *  Blog: https://www.haloman.net/
  *
  */
+
 #endregion
+
 using CZToolKit;
 using CZToolKit.GraphProcessor;
 
@@ -26,31 +29,27 @@ public class FloatNode : BaseNode
 [ViewModel(typeof(FloatNode))]
 public class FloatNodeProcessor : BaseNodeProcessor, IGetPortValue, IGetPortValue<float>
 {
-    public FloatNode T_Model
-    {
-        get;
-    }
+    public FloatNode TModel { get; }
 
     public float Value
     {
-        get => GetPropertyValue<float>(nameof(FloatNode.num));
-        set => SetPropertyValue(nameof(FloatNode.num), value);
+        get => TModel.num;
+        set => SetFieldValue(ref TModel.num, value, nameof(FloatNode.num));
     }
 
     public FloatNodeProcessor(FloatNode model) : base(model)
     {
-        T_Model = model;
-        this.RegisterProperty(nameof(FloatNode.num), () => ref model.num);
+        TModel = model;
         AddPort(new BasePortProcessor(ConstValues.FLOW_OUT_PORT_NAME, BasePort.Orientation.Horizontal, BasePort.Direction.Right, BasePort.Capacity.Multi, typeof(object)));
     }
 
     public object GetValue(string port)
     {
-        return T_Model.num;
+        return TModel.num;
     }
 
     float IGetPortValue<float>.GetValue(string port)
     {
-        return T_Model.num;
+        return TModel.num;
     }
 }
