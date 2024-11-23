@@ -13,7 +13,7 @@
  *
  */
 #endregion
-using CZToolKit.GraphProcessor;
+using Jiange.GraphProcessor;
 using UnityEngine;
 
 public class SampleGraphTest : GraphAssetOwner<SampleGraphAsset, SampleGraphProcessor>

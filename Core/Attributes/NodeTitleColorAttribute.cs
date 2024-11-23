@@ -15,7 +15,7 @@
 #endregion
 using System;
 
-namespace CZToolKit.GraphProcessor
+namespace Jiange.GraphProcessor
 {
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
     public class NodeTitleColorAttribute : Attribute

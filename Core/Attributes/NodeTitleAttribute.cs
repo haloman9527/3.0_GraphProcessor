@@ -15,7 +15,7 @@
 #endregion
 using System;
 
-namespace CZToolKit.GraphProcessor
+namespace Jiange.GraphProcessor
 {
     /// <summary> 节点标题 </summary>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = true)]

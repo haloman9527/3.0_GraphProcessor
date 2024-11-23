@@ -16,11 +16,11 @@
 
 #endregion
 
-using CZToolKit;
+using Jiange;
 using System;
 using System.Collections.Generic;
 
-namespace CZToolKit.GraphProcessor
+namespace Jiange.GraphProcessor
 {
     [ViewModel(typeof(BaseGroup))]
     public class BaseGroupProcessor : ViewModel, IGraphElementProcessor, IGraphElementProcessor_Scope

@@ -19,10 +19,10 @@
 #if UNITY_EDITOR
 using System;
 using System.Collections.Generic;
-using CZToolKit;
+using Jiange;
 using UnityEditor;
 
-namespace CZToolKit.GraphProcessor.Editors
+namespace Jiange.GraphProcessor.Editors
 {
     public static class GraphProcessorEditorUtil
     {

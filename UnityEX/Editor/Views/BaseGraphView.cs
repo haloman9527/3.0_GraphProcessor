@@ -20,12 +20,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using CZToolKitEditor;
+using JiangeEditor;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine.UIElements;
 
-namespace CZToolKit.GraphProcessor.Editors
+namespace Jiange.GraphProcessor.Editors
 {
     public abstract partial class BaseGraphView
     {

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CZToolKit.GraphProcessor
+namespace Jiange.GraphProcessor
 {
     [ViewModel(typeof(StickyNote))]
     public sealed class StickyNoteProcessor : ViewModel, IGraphElementProcessor, IGraphElementProcessor_Scope

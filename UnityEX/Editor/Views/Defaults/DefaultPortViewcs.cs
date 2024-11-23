@@ -3,7 +3,7 @@
 using System;
 using UnityEditor.Experimental.GraphView;
 
-namespace CZToolKit.GraphProcessor.Editors
+namespace Jiange.GraphProcessor.Editors
 {
     [CustomView(typeof(BasePort))]
     public class DefaultPortView : BasePortView

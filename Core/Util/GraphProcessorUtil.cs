@@ -20,7 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace CZToolKit.GraphProcessor
+namespace Jiange.GraphProcessor
 {
     public struct ToggleValue<T>
     {

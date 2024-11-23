@@ -15,7 +15,7 @@
 #endregion
 
 #if UNITY_EDITOR
-using CZToolKit.GraphProcessor.Editors;
+using Jiange.GraphProcessor.Editors;
 using UnityEditor.Experimental.GraphView;
 
 public class SampleConnectionView : BaseConnectionView

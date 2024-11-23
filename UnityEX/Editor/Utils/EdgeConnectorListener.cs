@@ -17,7 +17,7 @@
 using UnityEngine;
 using UnityEditor.Experimental.GraphView;
 
-namespace CZToolKit.GraphProcessor.Editors
+namespace Jiange.GraphProcessor.Editors
 {
     public class EdgeConnectorListener : IEdgeConnectorListener
     {

@@ -15,12 +15,12 @@
 #endregion
 
 using System;
-using CZToolKit;
+using Jiange;
 using UnityEngine;
 
 using UnityObject = UnityEngine.Object;
 
-namespace CZToolKit.GraphProcessor
+namespace Jiange.GraphProcessor
 {
     public abstract class GraphAssetOwner<TGraphAsset, TGraph> : MonoBehaviour, IGraphAssetOwner
         where TGraphAsset : UnityObject, IGraphAsset

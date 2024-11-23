@@ -15,7 +15,7 @@
 #endregion
 using System.Collections.Generic;
 
-namespace CZToolKit.GraphProcessor
+namespace Jiange.GraphProcessor
 {
     public class BaseGroup
     {

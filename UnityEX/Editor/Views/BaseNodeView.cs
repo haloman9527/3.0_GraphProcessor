@@ -18,13 +18,13 @@
 
 #if UNITY_EDITOR
 using System;
-using CZToolKitEditor;
+using JiangeEditor;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace CZToolKit.GraphProcessor.Editors
+namespace Jiange.GraphProcessor.Editors
 {
     public abstract partial class BaseNodeView
     {

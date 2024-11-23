@@ -2,7 +2,7 @@
 #if UNITY_EDITOR
 using UnityEngine.UIElements;
 
-namespace CZToolKit.GraphProcessor.Editors
+namespace Jiange.GraphProcessor.Editors
 {
     public class BaseVisualElement : VisualElement
     {

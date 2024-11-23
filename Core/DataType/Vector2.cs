@@ -15,7 +15,7 @@
 #endregion
 using System;
 
-namespace CZToolKit.GraphProcessor
+namespace Jiange.GraphProcessor
 {
     [Serializable]
     public struct InternalVector2Int : IEquatable<InternalVector2Int>

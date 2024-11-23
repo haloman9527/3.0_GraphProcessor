@@ -14,7 +14,7 @@
  */
 #endregion
 
-namespace CZToolKit.GraphProcessor
+namespace Jiange.GraphProcessor
 {
     public interface IGraphOwner
     {

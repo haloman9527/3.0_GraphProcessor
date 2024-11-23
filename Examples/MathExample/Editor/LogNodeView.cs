@@ -15,8 +15,8 @@
 #endregion
 
 #if UNITY_EDITOR
-using CZToolKit.GraphProcessor;
-using CZToolKit.GraphProcessor.Editors;
+using Jiange.GraphProcessor;
+using Jiange.GraphProcessor.Editors;
 using UnityEngine.UIElements;
 
 [CustomView(typeof(LogNode))]

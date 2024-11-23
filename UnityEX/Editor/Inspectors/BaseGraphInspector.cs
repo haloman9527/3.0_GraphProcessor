@@ -17,13 +17,13 @@
 #endregion
 
 #if UNITY_EDITOR && ODIN_INSPECTOR
-using CZToolKit;
-using CZToolKitEditor;
+using Jiange;
+using JiangeEditor;
 using UnityEditor;
 using UnityEngine;
 using Sirenix.OdinInspector.Editor;
 
-namespace CZToolKit.GraphProcessor.Editors
+namespace Jiange.GraphProcessor.Editors
 {
     [CustomObjectEditor(typeof(BaseGraphView))]
     public class BaseGraphInspector : ObjectEditor

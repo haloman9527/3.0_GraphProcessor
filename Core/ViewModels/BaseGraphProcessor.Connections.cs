@@ -20,7 +20,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 
-namespace CZToolKit.GraphProcessor
+namespace Jiange.GraphProcessor
 {
     public partial class BaseGraphProcessor
     {

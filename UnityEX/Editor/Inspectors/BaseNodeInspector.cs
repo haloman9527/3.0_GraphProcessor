@@ -19,12 +19,12 @@
 #if UNITY_EDITOR && ODIN_INSPECTOR
 using System;
 using System.Collections.Generic;
-using CZToolKit;
-using CZToolKitEditor;
+using Jiange;
+using JiangeEditor;
 using Sirenix.OdinInspector.Editor;
 using UnityEditor;
 
-namespace CZToolKit.GraphProcessor.Editors
+namespace Jiange.GraphProcessor.Editors
 {
     [CustomObjectEditor(typeof(BaseNodeView))]
     public class BaseNodeInspector : ObjectEditor

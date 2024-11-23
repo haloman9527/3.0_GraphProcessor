@@ -17,7 +17,7 @@
 #if UNITY_EDITOR
 using UnityEngine.UIElements;
 
-namespace CZToolKit.GraphProcessor.Editors
+namespace Jiange.GraphProcessor.Editors
 {
     [CustomView(typeof(BaseGroup))]
     public partial class BaseGroupView

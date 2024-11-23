@@ -19,7 +19,7 @@
 #if UNITY_EDITOR
 using UnityEditor.Experimental.GraphView;
 
-namespace CZToolKit.GraphProcessor.Editors
+namespace Jiange.GraphProcessor.Editors
 {
     public abstract partial class BasePortView
     {

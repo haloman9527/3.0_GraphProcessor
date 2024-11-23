@@ -1,4 +1,4 @@
-﻿namespace CZToolKit.GraphProcessor
+﻿namespace Jiange.GraphProcessor
 {
     public static class ConstValues
     {

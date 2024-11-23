@@ -18,7 +18,7 @@
 
 using System;
 
-namespace CZToolKit.GraphProcessor
+namespace Jiange.GraphProcessor
 {
     [Serializable]
     public abstract class BaseNode

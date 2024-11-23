@@ -16,12 +16,12 @@
 
 #endregion
 
-using CZToolKit.Blackboard;
+using Jiange.Blackboard;
 using System;
 using System.Linq;
 using System.Collections.Generic;
 
-namespace CZToolKit.GraphProcessor
+namespace Jiange.GraphProcessor
 {
     [ViewModel(typeof(BaseGraph))]
     public partial class BaseGraphProcessor : ViewModel

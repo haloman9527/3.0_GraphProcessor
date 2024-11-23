@@ -24,7 +24,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using NodeView = UnityEditor.Experimental.GraphView.Node;
 
-namespace CZToolKit.GraphProcessor.Editors
+namespace Jiange.GraphProcessor.Editors
 {
     public abstract partial class BaseNodeView : NodeView, IGraphElementView<BaseNodeProcessor>
     {

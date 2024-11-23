@@ -14,7 +14,7 @@
  */
 #endregion
 
-namespace CZToolKit.GraphProcessor.Editors
+namespace Jiange.GraphProcessor.Editors
 {
     public interface IGraphElementView
     {

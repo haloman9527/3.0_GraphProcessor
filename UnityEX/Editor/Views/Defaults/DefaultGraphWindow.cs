@@ -1,6 +1,6 @@
 ﻿
 #if UNITY_EDITOR
-namespace CZToolKit.GraphProcessor.Editors
+namespace Jiange.GraphProcessor.Editors
 {
     [CustomView(typeof(BaseGraph))]
     public class DefaultGraphWindow : BaseGraphWindow

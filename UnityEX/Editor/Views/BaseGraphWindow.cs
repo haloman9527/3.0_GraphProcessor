@@ -18,7 +18,7 @@
 
 #if UNITY_EDITOR
 using System;
-using CZToolKitEditor;
+using JiangeEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UnityEditor;
@@ -27,7 +27,7 @@ using UnityEditor.UIElements;
 using UnityEditor.Experimental.GraphView;
 using UnityObject = UnityEngine.Object;
 
-namespace CZToolKit.GraphProcessor.Editors
+namespace Jiange.GraphProcessor.Editors
 {
     public abstract class BaseGraphWindow : BaseEditorWindow
     {
