@@ -26,7 +26,7 @@ using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Jiange.GraphProcessor.Editors
+namespace Moyo.GraphProcessor.Editors
 {
     public partial class BaseGraphView : GraphView
     {

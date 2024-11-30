@@ -1,4 +1,4 @@
-﻿namespace Jiange.GraphProcessor
+﻿namespace Moyo.GraphProcessor
 {
     public static class ConstValues
     {

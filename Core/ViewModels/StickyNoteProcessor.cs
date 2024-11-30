@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Jiange.GraphProcessor
+namespace Moyo.GraphProcessor
 {
     [ViewModel(typeof(StickyNote))]
     public sealed class StickyNoteProcessor : ViewModel, IGraphElementProcessor, IGraphElementProcessor_Scope

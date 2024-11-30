@@ -20,7 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Jiange.GraphProcessor
+namespace Moyo.GraphProcessor
 {
     public class BasePort
     {

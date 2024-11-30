@@ -17,7 +17,7 @@ using System;
 
 using UnityObject = UnityEngine.Object;
 
-namespace Jiange.GraphProcessor
+namespace Moyo.GraphProcessor
 {
     public interface IGraphAssetOwner : IGraphOwner
     {

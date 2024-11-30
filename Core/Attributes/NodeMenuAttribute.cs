@@ -15,7 +15,7 @@
 #endregion
 using System;
 
-namespace Jiange.GraphProcessor
+namespace Moyo.GraphProcessor
 {
     /// <summary> 节点菜单，和自定义节点名 </summary>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]

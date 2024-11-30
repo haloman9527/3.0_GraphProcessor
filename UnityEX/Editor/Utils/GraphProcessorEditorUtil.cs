@@ -19,10 +19,10 @@
 #if UNITY_EDITOR
 using System;
 using System.Collections.Generic;
-using Jiange;
+using Moyo;
 using UnityEditor;
 
-namespace Jiange.GraphProcessor.Editors
+namespace Moyo.GraphProcessor.Editors
 {
     public static class GraphProcessorEditorUtil
     {

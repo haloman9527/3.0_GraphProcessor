@@ -13,7 +13,7 @@
  *
  */
 #endregion
-using Jiange.GraphProcessor;
+using Moyo.GraphProcessor;
 using UnityEngine;
 
 public class SampleGraphTest : GraphAssetOwner<SampleGraphAsset, SampleGraphProcessor>

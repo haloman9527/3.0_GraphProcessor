@@ -16,7 +16,7 @@
 #if UNITY_EDITOR
 using UnityEditor.Experimental.GraphView;
 
-namespace Jiange.GraphProcessor.Editors
+namespace Moyo.GraphProcessor.Editors
 {
     public partial class BaseConnectionView
     {

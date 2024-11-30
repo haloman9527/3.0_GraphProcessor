@@ -18,7 +18,7 @@
 
 using System;
 
-namespace Jiange.GraphProcessor
+namespace Moyo.GraphProcessor
 {
     [Serializable]
     public abstract class BaseNode

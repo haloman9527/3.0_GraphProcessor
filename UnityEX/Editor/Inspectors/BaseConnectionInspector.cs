@@ -14,11 +14,11 @@
  */
 #endregion
 #if UNITY_EDITOR && ODIN_INSPECTOR
-using JiangeEditor;
+using MoyoEditor;
 using Sirenix.OdinInspector.Editor;
 using UnityEditor;
 
-namespace Jiange.GraphProcessor.Editors
+namespace Moyo.GraphProcessor.Editors
 {
     [CustomObjectEditor(typeof(BaseConnectionView))]
     public class BaseConnectionInspector : ObjectEditor

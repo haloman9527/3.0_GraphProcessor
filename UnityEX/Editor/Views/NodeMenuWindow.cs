@@ -23,7 +23,7 @@ using UnityEngine;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine.UIElements;
 
-namespace Jiange.GraphProcessor.Editors
+namespace Moyo.GraphProcessor.Editors
 {
     public class NodeMenuWindow : ScriptableObject, ISearchWindowProvider
     {

@@ -16,11 +16,11 @@
 
 #endregion
 
-using Jiange;
+using Moyo;
 using System;
 using System.Collections.Generic;
 
-namespace Jiange.GraphProcessor
+namespace Moyo.GraphProcessor
 {
     [ViewModel(typeof(BaseNode))]
     public class BaseNodeProcessor : ViewModel, IGraphElementProcessor, IGraphElementProcessor_Scope

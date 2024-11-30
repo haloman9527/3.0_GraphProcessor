@@ -16,7 +16,7 @@
 #if UNITY_EDITOR
 using System;
 
-namespace Jiange.GraphProcessor.Editors
+namespace Moyo.GraphProcessor.Editors
 {
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
     public class CustomViewAttribute : Attribute

@@ -15,8 +15,8 @@
 #endregion
 
 #if UNITY_EDITOR
-using Jiange.GraphProcessor;
-using Jiange.GraphProcessor.Editors;
+using Moyo.GraphProcessor;
+using Moyo.GraphProcessor.Editors;
 using UnityEngine.UIElements;
 
 [CustomView(typeof(LogNode))]

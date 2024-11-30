@@ -15,7 +15,7 @@
 #endregion
 using System;
 
-namespace Jiange.GraphProcessor
+namespace Moyo.GraphProcessor
 {
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
     public class NodeTitleColorAttribute : Attribute

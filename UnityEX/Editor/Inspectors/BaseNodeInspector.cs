@@ -19,12 +19,12 @@
 #if UNITY_EDITOR && ODIN_INSPECTOR
 using System;
 using System.Collections.Generic;
-using Jiange;
-using JiangeEditor;
+using Moyo;
+using MoyoEditor;
 using Sirenix.OdinInspector.Editor;
 using UnityEditor;
 
-namespace Jiange.GraphProcessor.Editors
+namespace Moyo.GraphProcessor.Editors
 {
     [CustomObjectEditor(typeof(BaseNodeView))]
     public class BaseNodeInspector : ObjectEditor

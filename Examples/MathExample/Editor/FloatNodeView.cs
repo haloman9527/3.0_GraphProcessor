@@ -17,8 +17,8 @@
 #endregion
 
 #if UNITY_EDITOR
-using Jiange;
-using Jiange.GraphProcessor.Editors;
+using Moyo;
+using Moyo.GraphProcessor.Editors;
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 

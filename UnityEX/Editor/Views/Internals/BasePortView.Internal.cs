@@ -20,11 +20,11 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using Jiange;
+using Moyo;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine.UIElements;
 
-namespace Jiange.GraphProcessor.Editors
+namespace Moyo.GraphProcessor.Editors
 {
     public abstract partial class BasePortView : Port
     {

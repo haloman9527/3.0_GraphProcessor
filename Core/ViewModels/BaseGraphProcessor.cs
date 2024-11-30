@@ -16,12 +16,12 @@
 
 #endregion
 
-using Jiange.Blackboard;
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using Moyo.Blackboard;
 
-namespace Jiange.GraphProcessor
+namespace Moyo.GraphProcessor
 {
     [ViewModel(typeof(BaseGraph))]
     public partial class BaseGraphProcessor : ViewModel

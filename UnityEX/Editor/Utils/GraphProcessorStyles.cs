@@ -17,7 +17,7 @@
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Jiange.GraphProcessor.Editors
+namespace Moyo.GraphProcessor.Editors
 {
     public static class GraphProcessorStyles
     {

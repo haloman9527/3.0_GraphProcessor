@@ -19,7 +19,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Jiange.GraphProcessor
+namespace Moyo.GraphProcessor
 {
     public partial class BaseGraphProcessor
     {

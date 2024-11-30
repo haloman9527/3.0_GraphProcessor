@@ -16,7 +16,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Jiange.GraphProcessor
+namespace Moyo.GraphProcessor
 {
     [Serializable]
     public class BaseGraph

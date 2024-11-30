@@ -1,6 +1,6 @@
 ﻿
 #if UNITY_EDITOR
-namespace Jiange.GraphProcessor.Editors
+namespace Moyo.GraphProcessor.Editors
 {
     [CustomView(typeof(BaseNode))]
     public class DefaultNodeView : BaseNodeView

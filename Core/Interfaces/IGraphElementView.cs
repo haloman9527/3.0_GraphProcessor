@@ -14,7 +14,7 @@
  */
 #endregion
 
-namespace Jiange.GraphProcessor.Editors
+namespace Moyo.GraphProcessor.Editors
 {
     public interface IGraphElementView
     {

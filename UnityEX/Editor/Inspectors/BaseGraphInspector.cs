@@ -17,13 +17,13 @@
 #endregion
 
 #if UNITY_EDITOR && ODIN_INSPECTOR
-using Jiange;
-using JiangeEditor;
+using Moyo;
+using MoyoEditor;
 using UnityEditor;
 using UnityEngine;
 using Sirenix.OdinInspector.Editor;
 
-namespace Jiange.GraphProcessor.Editors
+namespace Moyo.GraphProcessor.Editors
 {
     [CustomObjectEditor(typeof(BaseGraphView))]
     public class BaseGraphInspector : ObjectEditor

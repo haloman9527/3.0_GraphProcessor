@@ -16,7 +16,7 @@
 #if UNITY_EDITOR
 using UnityEngine.UIElements;
 
-namespace Jiange.GraphProcessor.Editors
+namespace Moyo.GraphProcessor.Editors
 {
     public abstract class BaseSimpleNodeView<M> : BaseNodeView<M> where M : BaseNodeProcessor
     {

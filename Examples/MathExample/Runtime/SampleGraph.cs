@@ -13,8 +13,8 @@
  *
  */
 #endregion
-using Jiange;
-using Jiange.GraphProcessor;
+using Moyo;
+using Moyo.GraphProcessor;
 using System;
 
 [Serializable]

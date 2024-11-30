@@ -16,7 +16,7 @@
 
 #endregion
 
-namespace Jiange.GraphProcessor
+namespace Moyo.GraphProcessor
 {
     public interface IGraphElementProcessor
     {

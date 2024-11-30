@@ -15,7 +15,7 @@
 #endregion
 using System.Collections.Generic;
 
-namespace Jiange.GraphProcessor
+namespace Moyo.GraphProcessor
 {
     public class BaseGroup
     {
