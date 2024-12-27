@@ -40,10 +40,7 @@ namespace Moyo.GraphProcessor
 
         private void InitNotes()
         {
-            if (Model.notes == null)
-                Model.notes = new Dictionary<int, StickyNote>();
             this.notes = new Dictionary<int, StickyNoteProcessor>(System.Math.Min(Model.connections.Count, 4));
-
             foreach (var pair in Model.notes)
             {
                 var note = (StickyNoteProcessor)ViewModelFactory.CreateViewModel(pair.Value);

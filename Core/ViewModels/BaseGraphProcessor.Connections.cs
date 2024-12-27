@@ -35,7 +35,7 @@ namespace Moyo.GraphProcessor
 
         #region Properties
 
-        public IReadOnlyList<BaseConnectionProcessor> Connections => connections;
+        public IReadOnlyList<BaseConnectionProcessor> Connections => connections != null ? connections : Array.Empty<BaseConnectionProcessor>();
 
         #endregion
 

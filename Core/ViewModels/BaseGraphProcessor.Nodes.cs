@@ -33,7 +33,7 @@ namespace Moyo.GraphProcessor
         #endregion
 
         #region Properties
-
+        
         public IReadOnlyDictionary<int, BaseNodeProcessor> Nodes => nodes;
 
         #endregion
