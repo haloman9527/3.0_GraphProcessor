@@ -59,9 +59,9 @@ public class FloatNodeView : BaseNodeView
         ViewModel.UnregisterValueChanged<float>(nameof(FloatNode.num), OnFloatNumChanged);
     }
 
-    private void OnFloatNumChanged(float oldValue, float newValue)
+    private void OnFloatNumChanged(ViewModel.ValueChangedArg<float> arg)
     {
-        valueField.SetValueWithoutNotify(newValue);
+        valueField.SetValueWithoutNotify(arg.newValue);
     }
 }
 #endif

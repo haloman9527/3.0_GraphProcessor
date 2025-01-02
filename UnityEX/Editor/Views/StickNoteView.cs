@@ -95,27 +95,27 @@ namespace Moyo.GraphProcessor.Editors
             }
         }
 
-        void OnPositionChanged(InternalVector2Int oldPosition, InternalVector2Int newPosition)
+        void OnPositionChanged(ViewModel.ValueChangedArg<InternalVector2Int> arg)
         {
-            base.SetPosition(new Rect(newPosition.ToVector2(), GetPosition().size));
+            base.SetPosition(new Rect(arg.newValue.ToVector2(), GetPosition().size));
             Owner.SetDirty();
         }
 
-        void OnSizeChanged(InternalVector2Int oldSize, InternalVector2Int newSize)
+        void OnSizeChanged(ViewModel.ValueChangedArg<InternalVector2Int> arg)
         {
-            base.SetPosition(new Rect(GetPosition().position, newSize.ToVector2()));
+            base.SetPosition(new Rect(GetPosition().position, arg.newValue.ToVector2()));
             Owner.SetDirty();
         }
 
-        private void OnContentsChanged(string oldvalue, string newvalue)
+        private void OnContentsChanged(ViewModel.ValueChangedArg<string> arg)
         {
-            this.contents = newvalue;
+            this.contents = arg.newValue;
             Owner.SetDirty();
         }
 
-        private void OnTitleChanged(string oldvalue, string newvalue)
+        private void OnTitleChanged(ViewModel.ValueChangedArg<string> arg)
         {
-            this.title = newvalue;
+            this.title = arg.newValue;
             Owner.SetDirty();
         }
     }

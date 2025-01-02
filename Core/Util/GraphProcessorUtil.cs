@@ -63,7 +63,7 @@ namespace Moyo.GraphProcessor
             else
                 s_NodeStaticInfos.Clear();
 
-            foreach (var t in Util_TypeCache.GetTypesDerivedFrom<BaseNode>())
+            foreach (var t in TypesCache.GetTypesDerivedFrom<BaseNode>())
             {
                 if (t.IsAbstract)
                     continue;

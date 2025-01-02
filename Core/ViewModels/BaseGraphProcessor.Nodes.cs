@@ -63,7 +63,7 @@ namespace Moyo.GraphProcessor
 
         public BaseNodeProcessor AddNode<T>(InternalVector2Int position) where T : BaseNode, new()
         {
-            return AddNode(typeof(T), position);
+            return AddNode(TypeCache<T>.TYPE, position);
         }
 
         public BaseNodeProcessor AddNode(Type nodeType, InternalVector2Int position)
