@@ -20,7 +20,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using Moyo;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine.UIElements;
 
@@ -40,7 +39,7 @@ namespace Moyo.GraphProcessor.Editors
 
         protected BasePortView(Orientation orientation, Direction direction, Capacity capacity, Type type, IEdgeConnectorListener connectorListener) : base(orientation, direction, capacity, type)
         {
-            styleSheets.Add(GraphProcessorStyles.BasePortViewStyle);
+            styleSheets.Add(GraphProcessorEditorStyles.BasePortViewStyle);
 
             visualClass = "port-" + portType.Name;
             this.AddToClassList("capacity-" + capacity.ToString());
@@ -111,9 +110,9 @@ namespace Moyo.GraphProcessor.Editors
             var port = sender as BasePortProcessor;
             switch (e.PropertyName)
             {
-                case nameof(BasePort.type):
+                case nameof(BasePort.portType):
                 {
-                    this.portType = port.Type;
+                    this.portType = port.portType;
                     break;
                 }
                 case "hideLabel":

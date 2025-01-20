@@ -77,19 +77,23 @@ namespace Moyo.GraphProcessor.Editors
                     break;
                 case StickyNoteChange.Position:
                 {
-                    var newPosition = GetPosition().position.ToInternalVector2Int();
-                    var newSize = GetPosition().size.ToInternalVector2Int();
                     var oldPosition = ViewModel.Position;
                     var oldSize = ViewModel.Size;
-                    Owner.CommandDispatcher.Do(() =>
+                    this.schedule.Execute(() =>
                     {
-                        ViewModel.Position = newPosition;
-                        ViewModel.Size = newSize;
-                    }, () =>
-                    {
-                        ViewModel.Position = oldPosition;
-                        ViewModel.Size = oldSize;
-                    });
+                        var newPosition = GetPosition().position.ToInternalVector2Int();
+                        var newSize = GetPosition().size.ToInternalVector2Int();
+                        Owner.CommandDispatcher.Do(() =>
+                        {
+                            ViewModel.Position = newPosition;
+                            ViewModel.Size = newSize;
+                        }, () =>
+                        {
+                            ViewModel.Position = oldPosition;
+                            ViewModel.Size = oldSize;
+                        });
+                    }).ExecuteLater(20);
+                    
                     break;
                 }
             }

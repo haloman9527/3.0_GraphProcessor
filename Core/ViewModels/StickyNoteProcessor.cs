@@ -5,8 +5,15 @@ namespace Moyo.GraphProcessor
     [ViewModel(typeof(StickyNote))]
     public sealed class StickyNoteProcessor : ViewModel, IGraphElementProcessor, IGraphElementProcessor_Scope
     {
-        public StickyNote Model { get; }
-        public Type ModelType { get; }
+        private StickyNote model;
+        private Type modelType;
+
+        public StickyNote Model => model;
+        public Type ModelType => modelType;
+
+        object IGraphElementProcessor.Model => model;
+
+        Type IGraphElementProcessor.ModelType => modelType;
 
         /// <summary> 唯一标识 </summary>
         public int ID => Model.id;
@@ -37,8 +44,8 @@ namespace Moyo.GraphProcessor
 
         public StickyNoteProcessor(StickyNote model)
         {
-            this.Model = model;
-            this.ModelType = model.GetType();
+            this.model = model;
+            this.modelType = model.GetType();
         }
     }
 }

@@ -22,16 +22,15 @@ using UnityEngine.UIElements;
 
 namespace Moyo.GraphProcessor.Editors
 {
-    [CustomView(typeof(BaseConnection))]
     public partial class BaseConnectionView : Edge, IGraphElementView<BaseConnectionProcessor>
     {
         public BaseConnectionProcessor ViewModel { get; private set; }
         public IGraphElementProcessor V => ViewModel;
         protected BaseGraphView Owner { get; private set; }
 
-        public BaseConnectionView() : base()
+        public BaseConnectionView()
         {
-            styleSheets.Add(GraphProcessorStyles.BaseConnectionViewStyle);
+            styleSheets.Add(GraphProcessorEditorStyles.BaseConnectionViewStyle);
             this.RegisterCallback<MouseEnterEvent>(OnMouseEnter);
         }
 

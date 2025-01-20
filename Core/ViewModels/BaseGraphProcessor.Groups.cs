@@ -26,8 +26,8 @@ namespace Moyo.GraphProcessor
         #region Fields
         private Groups groups;
         
-        public event Action<BaseGroupProcessor> OnGroupAdded;
-        public event Action<BaseGroupProcessor> OnGroupRemoved;
+        public event Action<GroupProcessor> OnGroupAdded;
+        public event Action<GroupProcessor> OnGroupRemoved;
 
         #endregion
 
@@ -56,7 +56,7 @@ namespace Moyo.GraphProcessor
                         group.nodes.RemoveAt(j);
                 }
 
-                var groupVM = (BaseGroupProcessor)ViewModelFactory.CreateViewModel(group);
+                var groupVM = (GroupProcessor)ViewModelFactory.CreateViewModel(group);
                 groupVM.Owner = this;
                 groups.AddGroup(groupVM);
             }
@@ -64,7 +64,7 @@ namespace Moyo.GraphProcessor
 
         #region API
 
-        public void AddGroup(BaseGroupProcessor group)
+        public void AddGroup(GroupProcessor group)
         {
             groups.AddGroup(group);
             Model.groups.Add(group.Model);
@@ -72,21 +72,21 @@ namespace Moyo.GraphProcessor
             OnGroupAdded?.Invoke(group);
         }
 
-        public void RemoveGroup(BaseGroupProcessor group)
+        public void RemoveGroup(GroupProcessor group)
         {
             groups.RemoveGroup(group);
             Model.groups.Remove(group.Model);
             OnGroupRemoved?.Invoke(group);
         }
 
-        public virtual BaseGroupProcessor NewGroup(string groupName)
+        public virtual GroupProcessor NewGroup(string groupName)
         {
-            var group = new BaseGroup()
+            var group = new Group()
             {
                 id = NewID(),
                 groupName = groupName
             };
-            return ViewModelFactory.CreateViewModel(group) as BaseGroupProcessor;
+            return ViewModelFactory.CreateViewModel(group) as GroupProcessor;
         }
 
         #endregion
@@ -94,24 +94,22 @@ namespace Moyo.GraphProcessor
 
     public class Groups
     {
-        private Dictionary<int, BaseGroupProcessor> groupMap = new Dictionary<int, BaseGroupProcessor>();
-        private Dictionary<int, BaseGroupProcessor> nodeGroupMap = new Dictionary<int, BaseGroupProcessor>();
+        private Dictionary<int, GroupProcessor> groupMap = new Dictionary<int, GroupProcessor>();
+        private Dictionary<int, GroupProcessor> nodeGroupMap = new Dictionary<int, GroupProcessor>();
 
-        public IReadOnlyDictionary<int, BaseGroupProcessor> GroupMap
+        public IReadOnlyDictionary<int, GroupProcessor> GroupMap
         {
             get { return groupMap; }
         }
 
-        public IReadOnlyDictionary<int, BaseGroupProcessor> NodeGroupMap
+        public IReadOnlyDictionary<int, GroupProcessor> NodeGroupMap
         {
             get { return nodeGroupMap; }
         }
 
-        public void AddNodeToGroup(BaseGroupProcessor group, BaseNodeProcessor node)
+        public void AddNodeToGroup(GroupProcessor group, BaseNodeProcessor node)
         {
-            if (node.Owner != group.Owner)
-                return;
-
+            var nodes = new BaseNodeProcessor[] { node };
             if (nodeGroupMap.TryGetValue(node.ID, out var _group))
             {
                 if (_group == group)
@@ -121,13 +119,13 @@ namespace Moyo.GraphProcessor
                 else
                 {
                     _group.Model.nodes.Remove(node.ID);
-                    _group.NotifyNodeRemoved(node);
+                    _group.NotifyNodeRemoved(nodes);
                 }
             }
 
             nodeGroupMap[node.ID] = group;
             group.Model.nodes.Add(node.ID);
-            group.NotifyNodeAdded(node);
+            group.NotifyNodeAdded(nodes);
         }
 
         public void RemoveNodeFromGroup(BaseNodeProcessor node)
@@ -135,15 +133,13 @@ namespace Moyo.GraphProcessor
             if (!nodeGroupMap.TryGetValue(node.ID, out var group))
                 return;
 
-            if (node.Owner != group.Owner)
-                return;
-
+            var nodes = new BaseNodeProcessor[] { node };
             nodeGroupMap.Remove(node.ID);
             group.Model.nodes.Remove(node.ID);
-            group.NotifyNodeRemoved(node);
+            group.NotifyNodeRemoved(nodes);
         }
 
-        public void AddGroup(BaseGroupProcessor group)
+        public void AddGroup(GroupProcessor group)
         {
             this.groupMap.Add(group.ID, group);
             foreach (var pair in groupMap)
@@ -155,7 +151,7 @@ namespace Moyo.GraphProcessor
             }
         }
 
-        public void RemoveGroup(BaseGroupProcessor group)
+        public void RemoveGroup(GroupProcessor group)
         {
             foreach (var nodeID in group.Nodes)
             {

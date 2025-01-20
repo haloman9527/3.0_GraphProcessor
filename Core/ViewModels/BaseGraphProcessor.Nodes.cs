@@ -40,14 +40,14 @@ namespace Moyo.GraphProcessor
 
         private void BeginInitNodes()
         {
-            this.nodes = new Dictionary<int, BaseNodeProcessor>();
-            foreach (var pair in Model.nodes)
+            this.nodes = new Dictionary<int, BaseNodeProcessor>(Model.nodes.Count);
+            foreach (var node in Model.nodes)
             {
-                if (pair.Value == null)
+                if (node == null)
                     continue;
-                var nodeProcessor = (BaseNodeProcessor)ViewModelFactory.CreateViewModel(pair.Value);
+                var nodeProcessor = (BaseNodeProcessor)ViewModelFactory.CreateViewModel(node);
                 nodeProcessor.Owner = this;
-                nodes.Add(pair.Key, nodeProcessor);
+                nodes.Add(node.id, nodeProcessor);
             }
         }
 
@@ -83,7 +83,7 @@ namespace Moyo.GraphProcessor
         public void AddNode(BaseNodeProcessor node)
         {
             nodes.Add(node.ID, node);
-            Model.nodes.Add(node.ID, node.Model);
+            Model.nodes.Add(node.Model);
             node.Owner = this;
             node.Enable();
             OnNodeAdded?.Invoke(node);
@@ -104,7 +104,7 @@ namespace Moyo.GraphProcessor
 
             Disconnect(node);
             nodes.Remove(node.ID);
-            Model.nodes.Remove(node.ID);
+            Model.nodes.Remove(node.Model);
             node.Disable();
             OnNodeRemoved?.Invoke(node);
         }

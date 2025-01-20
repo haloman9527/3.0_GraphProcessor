@@ -19,6 +19,7 @@
 #if UNITY_EDITOR
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -41,12 +42,30 @@ namespace Moyo.GraphProcessor.Editors
         public readonly VisualElement horizontalDivider;
         public readonly VisualElement verticalDivider;
 
-        List<IconBadge> badges = new List<IconBadge>();
-        Dictionary<string, BasePortView> portViews = new Dictionary<string, BasePortView>();
+        private List<IconBadge> badges = new List<IconBadge>();
+        private Dictionary<string, BasePortView> portViews = new Dictionary<string, BasePortView>();
 
         #endregion
 
         #region 属性
+
+        public bool Selectable
+        {
+            get => (capabilities & Capabilities.Selectable) == Capabilities.Selectable;
+            set => capabilities = value ? (capabilities | Capabilities.Selectable) : (capabilities & ~Capabilities.Selectable);
+        }
+
+        public bool Deletable
+        {
+            get => (capabilities & Capabilities.Deletable) == Capabilities.Deletable;
+            set => capabilities = value ? (capabilities | Capabilities.Deletable) : (capabilities & ~Capabilities.Deletable);
+        }
+
+        public bool Movable
+        {
+            get => (capabilities & Capabilities.Movable) == Capabilities.Movable;
+            set => capabilities = value ? (capabilities | Capabilities.Movable) : (capabilities & ~Capabilities.Movable);
+        }
 
         public Label NodeLabel => nodeLabel;
 
@@ -60,10 +79,9 @@ namespace Moyo.GraphProcessor.Editors
 
         #endregion
 
-
         public BaseNodeView()
         {
-            styleSheets.Add(GraphProcessorStyles.BaseNodeViewStyle);
+            styleSheets.Add(GraphProcessorEditorStyles.BaseNodeViewStyle);
 
             var contents = mainContainer.Q("contents");
 
@@ -95,6 +113,7 @@ namespace Moyo.GraphProcessor.Editors
             titleOutputPortContainer.BringToFront();
 
             controls.RegisterCallback<BaseVisualElement.ChildChangedEvent>(OnChildChanged);
+            this.RegisterCallback<PointerDownEvent>(OnPointerDown);
         }
 
         #region Initialize
@@ -108,13 +127,13 @@ namespace Moyo.GraphProcessor.Editors
             base.SetPosition(new Rect(ViewModel.Position.ToVector2(), GetPosition().size));
             title = ViewModel.Title;
             tooltip = ViewModel.Tooltip;
-            
+
             var color = ViewModel.TitleColor.ToColor();
             var lum = 0.299f * color.r + 0.587f * color.g + 0.114f * color.b;
             NodeLabel.style.color = lum > 0.5f && ViewModel.TitleColor.a > 0.5f ? Color.black : Color.white * 0.9f;
             titleContainer.style.backgroundColor = color;
 
-            foreach (var port in ViewModel.LeftPorts)
+            foreach (var port in ViewModel.InPorts)
             {
                 var portView = NewPortView(port);
                 portView.SetUp(port, Owner);
@@ -125,14 +144,14 @@ namespace Moyo.GraphProcessor.Editors
                 }
                 else
                 {
-                    switch (port.Orientation)
+                    switch (port.Direction)
                     {
-                        case BasePort.Orientation.Horizontal:
+                        case BasePort.Direction.Left:
                         {
                             inputContainer.Add(portView);
                             break;
                         }
-                        case BasePort.Orientation.Vertical:
+                        case BasePort.Direction.Top:
                         {
                             topPortContainer.Add(portView);
                             break;
@@ -141,7 +160,7 @@ namespace Moyo.GraphProcessor.Editors
                 }
             }
 
-            foreach (var port in ViewModel.RightPorts)
+            foreach (var port in ViewModel.OutPorts)
             {
                 var portView = NewPortView(port);
                 portView.SetUp(port, Owner);
@@ -153,14 +172,14 @@ namespace Moyo.GraphProcessor.Editors
                 }
                 else
                 {
-                    switch (port.Orientation)
+                    switch (port.Direction)
                     {
-                        case BasePort.Orientation.Horizontal:
+                        case BasePort.Direction.Right:
                         {
                             outputContainer.Add(portView);
                             break;
                         }
-                        case BasePort.Orientation.Vertical:
+                        case BasePort.Direction.Bottom:
                         {
                             bottomPortContainer.Add(portView);
                             break;
@@ -181,6 +200,39 @@ namespace Moyo.GraphProcessor.Editors
         {
             RefreshControls();
             RefreshContentsHorizontalDivider();
+        }
+
+        private void OnPointerDown(PointerDownEvent evt)
+        {
+            if (evt.shiftKey)
+            {
+                var hashSet = new HashSet<BaseNodeView>();
+                var queue = new Queue<BaseNodeView>();
+                queue.Enqueue(this);
+                while (queue.Count > 0)
+                {
+                    var n = queue.Dequeue();
+                    if (hashSet.Contains(n))
+                    {
+                        continue;
+                    }
+
+                    hashSet.Add(n);
+                    foreach (var p in n.ViewModel.OutPorts)
+                    {
+                        foreach (var c in p.Connections)
+                        {
+                            if (Owner.NodeViews.TryGetValue(c.ToNodeID, out var nv))
+                            {
+                                queue.Enqueue(nv);
+                            }
+                        }
+                    }
+                }
+
+                Owner.AddToSelection(hashSet.Where(n => n.Selectable));
+                evt.StopPropagation();
+            }
         }
 
         public void OnCreate()
@@ -266,30 +318,6 @@ namespace Moyo.GraphProcessor.Editors
 
         #endregion
 
-        public void SetDeletable(bool deletable)
-        {
-            if (deletable)
-                capabilities |= Capabilities.Deletable;
-            else
-                capabilities &= ~Capabilities.Deletable;
-        }
-
-        public void SetMovable(bool movable)
-        {
-            if (movable)
-                capabilities = capabilities | Capabilities.Movable;
-            else
-                capabilities = capabilities & (~Capabilities.Movable);
-        }
-
-        public void SetSelectable(bool selectable)
-        {
-            if (selectable)
-                capabilities |= Capabilities.Selectable;
-            else
-                capabilities &= ~Capabilities.Selectable;
-        }
-
         protected void PortChanged()
         {
             RefreshPorts();
@@ -297,7 +325,7 @@ namespace Moyo.GraphProcessor.Editors
             RefreshContentsHorizontalDivider();
         }
 
-        void AddPortView(BasePortProcessor port)
+        private void AddPortView(BasePortProcessor port)
         {
             BasePortView portView = NewPortView(port);
             portView.SetUp(port, Owner);
@@ -320,16 +348,16 @@ namespace Moyo.GraphProcessor.Editors
             }
         }
 
-        void RemovePortView(BasePortProcessor port)
+        private void RemovePortView(BasePortProcessor port)
         {
             portViews[port.Name].RemoveFromHierarchy();
             portViews[port.Name].OnDestroy();
             portViews.Remove(port.Name);
         }
 
-        void RefreshContentsHorizontalDivider()
+        private void RefreshContentsHorizontalDivider()
         {
-            if (inputContainer.childCount > 0 || outputContainer.childCount > 0 || controls.childCount > 0)
+            if (inputContainer.childCount > 0 || outputContainer.childCount > 0 || DrawingControls())
                 horizontalDivider.RemoveFromClassList("hidden");
             else
                 horizontalDivider.AddToClassList("hidden");
@@ -340,7 +368,7 @@ namespace Moyo.GraphProcessor.Editors
                 verticalDivider.AddToClassList("hidden");
         }
 
-        void RefreshPortContainer()
+        private void RefreshPortContainer()
         {
             if (topPortContainer.childCount > 0)
                 topPortContainer.RemoveFromClassList("hidden");
@@ -363,9 +391,9 @@ namespace Moyo.GraphProcessor.Editors
                 titleOutputPortContainer.AddToClassList("hidden");
         }
 
-        void RefreshControls()
+        private void RefreshControls()
         {
-            if (controls.childCount > 0)
+            if (DrawingControls())
                 controls.RemoveFromClassList("hidden");
             else
                 controls.AddToClassList("hidden");

@@ -30,7 +30,7 @@ public class FlowGraphWindow : BaseGraphWindow
 {
     protected override BaseGraphView NewGraphView()
     {
-        return new FlowGraphView(Graph, this, new CommandDispatcher());
+        return new FlowGraphView();
     }
 
     protected override void OnKeyDownCallback(KeyDownEvent evt)
@@ -55,7 +55,7 @@ public class FlowGraphWindow : BaseGraphWindow
         // 收集所有节点，连线
         Dictionary<int, BaseNode> nodes = new Dictionary<int, BaseNode>();
         List<BaseConnection> connections = new List<BaseConnection>();
-        List<BaseGroup> groups = new List<BaseGroup>();
+        List<Group> groups = new List<Group>();
         foreach (var item in GraphView.selection)
         {
             switch (item)
@@ -80,7 +80,7 @@ public class FlowGraphWindow : BaseGraphWindow
 
         nodes = Sirenix.Serialization.SerializationUtility.DeserializeValue<Dictionary<int, BaseNode>>(nodesStr, DataFormat.Binary);
         connections = Sirenix.Serialization.SerializationUtility.DeserializeValue<List<BaseConnection>>(connectionsStr, DataFormat.Binary);
-        groups = Sirenix.Serialization.SerializationUtility.DeserializeValue<List<BaseGroup>>(groupsStr, DataFormat.Binary);
+        groups = Sirenix.Serialization.SerializationUtility.DeserializeValue<List<Group>>(groupsStr, DataFormat.Binary);
 
         var graph = GraphView.ViewModel;
         var nodeMaps = new Dictionary<int, BaseNodeProcessor>();

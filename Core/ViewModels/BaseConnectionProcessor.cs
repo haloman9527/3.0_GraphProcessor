@@ -27,70 +27,47 @@ namespace Moyo.GraphProcessor
     {
         #region Fields
 
-        [NonSerialized] BasePortProcessor from;
-        [NonSerialized] BasePortProcessor to;
+        private BaseConnection model;
+        private Type modelType;
+        [NonSerialized] private BasePortProcessor from;
+        [NonSerialized] private BasePortProcessor to;
 
         #endregion
 
         #region Properties
 
-        public BaseConnection Model { get; }
+        public BaseConnection Model => model;
 
-        public Type ModelType { get; }
+        public Type ModelType => modelType;
+        
+        object IGraphElementProcessor.Model => model;
+        
+        Type IGraphElementProcessor.ModelType => modelType;
+
+        public int FromNodeID => Model.fromNode;
+
+        public int ToNodeID => Model.toNode;
+
+        public string FromPortName => Model.fromPort;
+
+        public string ToPortName => Model.toPort;
+
+        public BaseNodeProcessor FromNode => from.Owner;
+
+        public BasePortProcessor FromPort => from;
+
+        public BaseNodeProcessor ToNode => to.Owner;
+
+        public BasePortProcessor ToPort => to;
 
         public BaseGraphProcessor Owner { get; internal set; }
-
-        public int FromNodeID
-        {
-            get { return Model.fromNode; }
-        }
-
-        public int ToNodeID
-        {
-            get { return Model.toNode; }
-        }
-
-        public string FromPortName
-        {
-            get { return Model.fromPort; }
-        }
-
-        public string ToPortName
-        {
-            get { return Model.toPort; }
-        }
-
-        public BaseNodeProcessor FromNode
-        {
-            get { return from.Owner; }
-        }
-
-        public BasePortProcessor FromPort
-        {
-            get { return from; }
-        }
-
-        public BaseNodeProcessor ToNode
-        {
-            get { return to.Owner; }
-        }
-
-        public BasePortProcessor ToPort
-        {
-            get { return to; }
-        }
 
         #endregion
 
         public BaseConnectionProcessor(BaseConnection model)
         {
-            Model = model;
-            ModelType = model.GetType();
-        }
-
-        public T ModelAs<T>() where T : BaseConnection
-        {
-            return Model as T;
+            this.model = model;
+            this.modelType = model.GetType();
         }
 
         internal void Enable()
@@ -121,14 +98,24 @@ namespace Moyo.GraphProcessor
 
     public enum ConnectionSortMode
     {
-        FromPort,
-        ToPort
+        InPort,
+        OutPort,
+    }
+
+    public static class ConnectionProcessorComparer
+    {
+        public static Predicate<BaseConnectionProcessor> EmptyComparer = EmptyComparerFunc;
+
+        private static bool EmptyComparerFunc(BaseConnectionProcessor obj)
+        {
+            return obj == null;
+        }
     }
 
     public class ConnectionProcessorHorizontalComparer : IComparer<BaseConnectionProcessor>
     {
-        public static readonly ConnectionProcessorHorizontalComparer FromPortSortDefault = new ConnectionProcessorHorizontalComparer(ConnectionSortMode.FromPort);
-        public static readonly ConnectionProcessorHorizontalComparer ToPortSortDefault = new ConnectionProcessorHorizontalComparer(ConnectionSortMode.ToPort);
+        public static readonly ConnectionProcessorHorizontalComparer FromPortSortDefault = new ConnectionProcessorHorizontalComparer(ConnectionSortMode.OutPort);
+        public static readonly ConnectionProcessorHorizontalComparer ToPortSortDefault = new ConnectionProcessorHorizontalComparer(ConnectionSortMode.InPort);
 
         private ConnectionSortMode m_mode;
 
@@ -141,8 +128,8 @@ namespace Moyo.GraphProcessor
         {
             // 若需要重新排序的是input接口，则根据FromNode排序
             // 若需要重新排序的是output接口，则根据ToNode排序
-            var nodeX = m_mode == ConnectionSortMode.FromPort ? x.ToNode : x.FromNode;
-            var nodeY = m_mode == ConnectionSortMode.FromPort ? y.ToNode : y.FromNode;
+            var nodeX = m_mode == ConnectionSortMode.InPort ? x.FromNode : x.ToNode;
+            var nodeY = m_mode == ConnectionSortMode.InPort ? y.FromNode : y.ToNode;
 
             // 则使用y坐标比较排序
             // 遵循从上到下
@@ -164,8 +151,8 @@ namespace Moyo.GraphProcessor
 
     public class ConnectionProcessorVerticalComparer : IComparer<BaseConnectionProcessor>
     {
-        public static readonly ConnectionProcessorVerticalComparer FromPortSortDefault = new ConnectionProcessorVerticalComparer(ConnectionSortMode.FromPort);
-        public static readonly ConnectionProcessorVerticalComparer ToPortSortDefault = new ConnectionProcessorVerticalComparer(ConnectionSortMode.ToPort);
+        public static readonly ConnectionProcessorVerticalComparer InPortSortDefault = new ConnectionProcessorVerticalComparer(ConnectionSortMode.InPort);
+        public static readonly ConnectionProcessorVerticalComparer OutPortSortDefault = new ConnectionProcessorVerticalComparer(ConnectionSortMode.OutPort);
 
         private ConnectionSortMode m_mode;
 
@@ -178,8 +165,8 @@ namespace Moyo.GraphProcessor
         {
             // 若需要重新排序的是input接口，则根据FromNode排序
             // 若需要重新排序的是output接口，则根据ToNode排序
-            var nodeX = m_mode == ConnectionSortMode.FromPort ? x.ToNode : x.FromNode;
-            var nodeY = m_mode == ConnectionSortMode.FromPort ? y.ToNode : y.FromNode;
+            var nodeX = m_mode == ConnectionSortMode.InPort ? x.FromNode : x.ToNode;
+            var nodeY = m_mode == ConnectionSortMode.InPort ? y.FromNode : y.ToNode;
 
             // 则使用x坐标比较排序
             // 遵循从左到右

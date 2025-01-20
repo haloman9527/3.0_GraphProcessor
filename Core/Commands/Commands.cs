@@ -19,14 +19,15 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using Moyo.GraphProcessor.Editors;
 using UnityEngine;
 
 namespace Moyo.GraphProcessor
 {
     public class MoveElementsCommand : ICommand
     {
-        Dictionary<IGraphElementProcessor_Scope, Rect> oldPos;
-        Dictionary<IGraphElementProcessor_Scope, Rect> newPos;
+        private Dictionary<IGraphElementProcessor_Scope, Rect> oldPos;
+        private Dictionary<IGraphElementProcessor_Scope, Rect> newPos;
 
         public MoveElementsCommand(Dictionary<IGraphElementProcessor_Scope, Rect> newPos)
         {
@@ -42,18 +43,23 @@ namespace Moyo.GraphProcessor
 
             foreach (var pair in newPos)
             {
-                if (pair.Key is StickyNoteProcessor note)
+                switch (pair.Key)
                 {
-                    var rect = new Rect(pair.Key.Position.ToVector2(), pair.Key.Position.ToVector2());
-                    oldPos[pair.Key] = rect;
-                    note.Position = pair.Value.position.ToInternalVector2Int();
-                    note.Size = pair.Value.size.ToInternalVector2Int();
-                }
-                else
-                {
-                    var rect = new Rect(pair.Key.Position.ToVector2(), Vector2.zero);
-                    oldPos[pair.Key] = rect;
-                    pair.Key.Position = pair.Value.position.ToInternalVector2Int();
+                    case StickyNoteProcessor note:
+                    {
+                        var rect = new Rect(note.Position.ToVector2(), note.Size.ToVector2());
+                        oldPos[pair.Key] = rect;
+                        note.Position = pair.Value.position.ToInternalVector2Int();
+                        note.Size = pair.Value.size.ToInternalVector2Int();
+                        break;
+                    }
+                    default:
+                    {
+                        var rect = new Rect(pair.Key.Position.ToVector2(), Vector2.zero);
+                        oldPos[pair.Key] = rect;
+                        pair.Key.Position = pair.Value.position.ToInternalVector2Int();
+                        break;
+                    }
                 }
             }
         }
@@ -67,14 +73,19 @@ namespace Moyo.GraphProcessor
         {
             foreach (var pair in oldPos)
             {
-                if (pair.Key is StickyNoteProcessor note)
+                switch (pair.Key)
                 {
-                    note.Position = pair.Value.position.ToInternalVector2Int();
-                    note.Size = pair.Value.size.ToInternalVector2Int();
-                }
-                else
-                {
-                    pair.Key.Position = pair.Value.position.ToInternalVector2Int();
+                    case StickyNoteProcessor note:
+                    {
+                        note.Position = pair.Value.position.ToInternalVector2Int();
+                        note.Size = pair.Value.size.ToInternalVector2Int();
+                        break;
+                    }
+                    default:
+                    {
+                        pair.Key.Position = pair.Value.position.ToInternalVector2Int();
+                        break;
+                    }
                 }
             }
         }
@@ -85,7 +96,7 @@ namespace Moyo.GraphProcessor
         private BaseGraphProcessor graph;
         private List<IGraphElementProcessor> graphElements;
         private HashSet<IGraphElementProcessor> graphElementsSet = new HashSet<IGraphElementProcessor>();
-        private Dictionary<BaseNodeProcessor, BaseGroupProcessor> nodeGroups = new Dictionary<BaseNodeProcessor, BaseGroupProcessor>();
+        private Dictionary<BaseNodeProcessor, GroupProcessor> nodeGroups = new Dictionary<BaseNodeProcessor, GroupProcessor>();
 
         public RemoveElementsCommand(BaseGraphProcessor graph, IGraphElementProcessor[] graphElements)
         {
@@ -137,7 +148,7 @@ namespace Moyo.GraphProcessor
                         graph.Disconnect(connection);
                         break;
                     }
-                    case BaseGroupProcessor group:
+                    case GroupProcessor group:
                     {
                         graph.RemoveGroup(group);
                         break;
@@ -179,7 +190,7 @@ namespace Moyo.GraphProcessor
                         graph.RevertDisconnect(connection);
                         break;
                     }
-                    case BaseGroupProcessor group:
+                    case GroupProcessor group:
                     {
                         graph.AddGroup(group);
                         break;
@@ -203,7 +214,7 @@ namespace Moyo.GraphProcessor
             switch (graphElement)
             {
                 case BaseConnectionProcessor:
-                case BaseGroupProcessor:
+                case GroupProcessor:
                 {
                     return 1;
                 }
@@ -260,18 +271,18 @@ namespace Moyo.GraphProcessor
     public class AddGroupCommand : ICommand
     {
         public BaseGraphProcessor graph;
-        public BaseGroupProcessor group;
+        public GroupProcessor group;
 
-        public AddGroupCommand(BaseGraphProcessor graph, BaseGroupProcessor group)
+        public AddGroupCommand(BaseGraphProcessor graph, GroupProcessor group)
         {
             this.graph = graph;
             this.group = group;
         }
 
-        public AddGroupCommand(BaseGraphProcessor graph, BaseGroup group)
+        public AddGroupCommand(BaseGraphProcessor graph, Group group)
         {
             this.graph = graph;
-            this.group = ViewModelFactory.CreateViewModel(group) as BaseGroupProcessor;
+            this.group = ViewModelFactory.CreateViewModel(group) as GroupProcessor;
         }
 
         public void Do()
@@ -293,10 +304,10 @@ namespace Moyo.GraphProcessor
     public class AddToGroupCommand : ICommand
     {
         private BaseGraphProcessor graph;
-        private BaseGroupProcessor group;
+        private GroupProcessor group;
         private BaseNodeProcessor[] nodes;
 
-        public AddToGroupCommand(BaseGraphProcessor graph, BaseGroupProcessor group, BaseNodeProcessor[] nodes)
+        public AddToGroupCommand(BaseGraphProcessor graph, GroupProcessor group, BaseNodeProcessor[] nodes)
         {
             this.graph = graph;
             this.group = group;
@@ -328,10 +339,10 @@ namespace Moyo.GraphProcessor
     public class RemoveFromGroupCommand : ICommand
     {
         private BaseGraphProcessor graph;
-        private BaseGroupProcessor group;
+        private GroupProcessor group;
         private BaseNodeProcessor[] nodes;
 
-        public RemoveFromGroupCommand(BaseGraphProcessor graph, BaseGroupProcessor group, BaseNodeProcessor[] nodes)
+        public RemoveFromGroupCommand(BaseGraphProcessor graph, GroupProcessor group, BaseNodeProcessor[] nodes)
         {
             this.graph = graph;
             this.group = group;
@@ -362,11 +373,11 @@ namespace Moyo.GraphProcessor
 
     public class RenameGroupCommand : ICommand
     {
-        public BaseGroupProcessor group;
+        public GroupProcessor group;
         public string oldName;
         public string newName;
 
-        public RenameGroupCommand(BaseGroupProcessor group, string newName)
+        public RenameGroupCommand(GroupProcessor group, string newName)
         {
             this.group = group;
             this.oldName = group.GroupName;
@@ -395,10 +406,10 @@ namespace Moyo.GraphProcessor
         BasePortProcessor port;
         bool successed = false;
 
-        public AddPortCommand(BaseNodeProcessor node, string name, BasePort.Orientation orientation, BasePort.Direction direction, BasePort.Capacity capacity, Type type = null)
+        public AddPortCommand(BaseNodeProcessor node, string name, BasePort.Direction direction, BasePort.Capacity capacity, Type type = null)
         {
             this.node = node;
-            port = new BasePortProcessor(name, orientation, direction, capacity, type);
+            port = new BasePortProcessor(name, direction, capacity, type);
         }
 
         public void Do()

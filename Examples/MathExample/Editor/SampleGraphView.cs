@@ -27,10 +27,6 @@ using UnityEngine;
 
 public class SampleGraphView : BaseGraphView
 {
-    public SampleGraphView(BaseGraphProcessor graph, BaseGraphWindow window, CommandDispatcher commandDispatcher) : base(graph, window, commandDispatcher)
-    {
-    }
-
     protected override void BuildNodeMenu(NodeMenuWindow nodeMenu)
     {
         foreach (var nodeType in GetNodeTypes())

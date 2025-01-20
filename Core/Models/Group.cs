@@ -13,11 +13,14 @@
  *
  */
 #endregion
+
+using System;
 using System.Collections.Generic;
 
 namespace Moyo.GraphProcessor
 {
-    public class BaseGroup
+    [Serializable]
+    public sealed class Group
     {
         public int id;
         public string groupName;

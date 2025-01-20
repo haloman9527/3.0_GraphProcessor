@@ -29,20 +29,20 @@ using GroupView = UnityEditor.Experimental.GraphView.Group;
 
 namespace Moyo.GraphProcessor.Editors
 {
-    public partial class BaseGroupView : GroupView, IGraphElementView<BaseGroupProcessor>
+    public partial class BaseGroupView : GroupView, IGraphElementView<GroupProcessor>
     {
         bool WithoutNotify { get; set; }
         public TextField TitleField { get; private set; }
         public ColorField BackgroudColorField { get; private set; }
         public Label TitleLabel { get; private set; }
-        public BaseGroupProcessor ViewModel { get; protected set; }
+        public GroupProcessor ViewModel { get; protected set; }
         public IGraphElementProcessor V => ViewModel;
         public BaseGraphView Owner { get; private set; }
 
 
         public BaseGroupView()
         {
-            this.styleSheets.Add(GraphProcessorStyles.BaseGroupViewStyle);
+            this.styleSheets.Add(GraphProcessorEditorStyles.BaseGroupViewStyle);
 
             TitleLabel = headerContainer.Q<Label>();
             TitleField = headerContainer.Q<TextField>();
@@ -55,7 +55,7 @@ namespace Moyo.GraphProcessor.Editors
             TitleField.RegisterCallback<FocusOutEvent>(evt => { Input.imeCompositionMode = IMECompositionMode.Auto; });
         }
 
-        public void SetUp(BaseGroupProcessor group, BaseGraphView graphView)
+        public void SetUp(GroupProcessor group, BaseGraphView graphView)
         {
             this.ViewModel = group;
             this.Owner = graphView;
@@ -89,15 +89,15 @@ namespace Moyo.GraphProcessor.Editors
 
         private void OnViewModelChanged(object sender, PropertyChangedEventArgs e)
         {
-            var group = sender as BaseGroupProcessor;
+            var group = sender as GroupProcessor;
             switch (e.PropertyName)
             {
-                case nameof(BaseGroup.position):
+                case nameof(Group.position):
                 {
                     base.SetPosition(new Rect(group.Position.ToVector2(), GetPosition().size));
                     break;
                 }
-                case nameof(BaseGroup.groupName):
+                case nameof(Group.groupName):
                 {
                     if (string.IsNullOrEmpty(group.GroupName))
                         return;
@@ -105,7 +105,7 @@ namespace Moyo.GraphProcessor.Editors
                     Owner.SetDirty();
                     break;
                 }
-                case nameof(BaseGroup.backgroundColor):
+                case nameof(Group.backgroundColor):
                 {
                     this.BackgroudColorField.SetValueWithoutNotify(group.BackgroundColor.ToColor());
                     this.style.backgroundColor = group.BackgroundColor.ToColor();
@@ -116,18 +116,42 @@ namespace Moyo.GraphProcessor.Editors
             }
         }
 
-        private void OnNodesAdded(BaseNodeProcessor node)
+        private void OnNodesAdded(BaseNodeProcessor[] nodes)
         {
             if (WithoutNotify)
+            {
                 return;
-            base.AddElements(new BaseNodeView[] { Owner.NodeViews[node.ID] });
+            }
+            
+            var tmp = WithoutNotify;
+            try
+            {
+                WithoutNotify = false;
+                base.AddElements(nodes.Select(node => Owner.NodeViews[node.ID]));
+            }
+            finally
+            {
+                WithoutNotify = tmp;
+            }
         }
 
-        private void OnNodesRemoved(BaseNodeProcessor node)
+        private void OnNodesRemoved(BaseNodeProcessor[] nodes)
         {
             if (WithoutNotify)
+            {
                 return;
-            base.RemoveElementsWithoutNotification(new BaseNodeView[] { Owner.NodeViews[node.ID] });
+            }
+            
+            var tmp = WithoutNotify;
+            try
+            {
+                WithoutNotify = false;
+                base.RemoveElementsWithoutNotification(nodes.Select(node => Owner.NodeViews[node.ID]));
+            }
+            finally
+            {
+                WithoutNotify = tmp;
+            }
         }
 
         #endregion
@@ -160,52 +184,57 @@ namespace Moyo.GraphProcessor.Editors
             if (WithoutNotify)
                 return;
 
-            var temp = WithoutNotify;
+            var tmp = WithoutNotify;
             WithoutNotify = true;
-            foreach (var element in elements)
-            {
-                switch (element)
-                {
-                    case BaseNodeView nodeView:
-                    {
-                        try
-                        {
-                            Owner.ViewModel.Groups.AddNodeToGroup(ViewModel, nodeView.ViewModel);
-                        }
-                        catch
-                        {
-                            // ignored
-                        }
-
-                        break;
-                    }
-                }
-            }
-
-            WithoutNotify = temp;
+            var nodes = elements.Where(item => item is BaseNodeView).Select(item => (item as BaseNodeView).ViewModel).ToArray();
+            Owner.CommandDispatcher.Do(new AddToGroupCommand(Owner.ViewModel, this.ViewModel, nodes));
+            // foreach (var element in elements)
+            // {
+            //     switch (element)
+            //     {
+            //         case BaseNodeView nodeView:
+            //         {
+            //             try
+            //             {
+            //                 Owner.ViewModel.Groups.AddNodeToGroup(ViewModel, nodeView.ViewModel);
+            //             }
+            //             catch
+            //             {
+            //                 // ignored
+            //             }
+            //
+            //             break;
+            //         }
+            //     }
+            // }
 
             Owner.SetDirty();
+            WithoutNotify = tmp;
         }
 
         protected override void OnElementsRemoved(IEnumerable<GraphElement> elements)
         {
             if (WithoutNotify)
                 return;
-
-            foreach (var element in elements)
-            {
-                var nodeView = (BaseNodeView)element;
-                try
-                {
-                    Owner.ViewModel.Groups.RemoveNodeFromGroup(nodeView.ViewModel);
-                }
-                catch
-                {
-                    // ignored
-                }
-            }
+            var tmp = WithoutNotify;
+            WithoutNotify = true;
+            var nodes = elements.Where(item => item is BaseNodeView).Select(item => (item as BaseNodeView).ViewModel).ToArray();
+            Owner.CommandDispatcher.Do(new RemoveFromGroupCommand(Owner.ViewModel, this.ViewModel, nodes));
+            // foreach (var element in elements)
+            // {
+            //     var nodeView = (BaseNodeView)element;
+            //     try
+            //     {
+            //         Owner.ViewModel.Groups.RemoveNodeFromGroup(nodeView.ViewModel);
+            //     }
+            //     catch
+            //     {
+            //         // ignored
+            //     }
+            // }
 
             Owner.SetDirty();
+            WithoutNotify = tmp;
         }
 
         public override void OnSelected()

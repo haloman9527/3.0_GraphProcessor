@@ -19,7 +19,7 @@ using UnityEngine.UIElements;
 
 namespace Moyo.GraphProcessor.Editors
 {
-    [CustomView(typeof(BaseGroup))]
+    [CustomView(typeof(Group))]
     public partial class BaseGroupView
     {
         protected void BuildContextualMenu(ContextualMenuPopulateEvent obj) { }

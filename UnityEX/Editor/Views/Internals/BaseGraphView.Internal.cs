@@ -22,6 +22,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using ThirdParty.Moyo.Moyo.GraphProcessor.UnityEX.Editor;
+using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -30,17 +32,25 @@ namespace Moyo.GraphProcessor.Editors
 {
     public partial class BaseGraphView : GraphView
     {
+        #region Fields
+
+        private BaseGraphProcessor viewModel;
+        private GraphViewContext context;
+        private MiniMap miniMap;
+
+        #endregion
+
         #region Properties
 
-        private MiniMap MiniMap { get; set; }
+        public BaseGraphProcessor ViewModel => viewModel;
 
-        public BaseGraphWindow GraphWindow { get; }
+        private GraphViewContext Context => context;
 
-        public CommandDispatcher CommandDispatcher { get; }
+        public BaseGraphWindow GraphWindow => Context.window;
+
+        public CommandDispatcher CommandDispatcher => Context.commandDispatcher;
 
         public IGraphAsset GraphAsset => GraphWindow.GraphAsset;
-
-        public BaseGraphProcessor ViewModel { get; }
 
         public Dictionary<int, BaseNodeView> NodeViews { get; } = new Dictionary<int, BaseNodeView>();
 
@@ -52,23 +62,23 @@ namespace Moyo.GraphProcessor.Editors
 
         public bool MiniMapActive
         {
-            get => MiniMap != null;
+            get => miniMap != null;
             set
             {
-                if (value == false && MiniMap != null)
+                if (value == false && miniMap != null)
                 {
-                    Remove(MiniMap);
-                    MiniMap = null;
+                    Remove(miniMap);
+                    miniMap = null;
                 }
 
-                if (value == true && MiniMap == null)
+                if (value == true && miniMap == null)
                 {
-                    MiniMap = new MiniMap()
+                    miniMap = new MiniMap()
                     {
                         anchored = true,
                     };
-                    MiniMap.SetPosition(new Rect(15, 15, 200, 200));
-                    Add(MiniMap);
+                    miniMap.SetPosition(new Rect(15, 15, 200, 200));
+                    Add(miniMap);
                 }
             }
         }
@@ -84,9 +94,9 @@ namespace Moyo.GraphProcessor.Editors
 
         #endregion
 
-        public BaseGraphView(BaseGraphProcessor graph, BaseGraphWindow window, CommandDispatcher commandDispatcher)
+        public BaseGraphView()
         {
-            styleSheets.Add(GraphProcessorStyles.BaseGraphViewStyle);
+            styleSheets.Add(GraphProcessorEditorStyles.BaseGraphViewStyle);
 
             Insert(0, new GridBackground());
 
@@ -95,13 +105,15 @@ namespace Moyo.GraphProcessor.Editors
             this.AddManipulator(new SelectionDragger());
             this.AddManipulator(new RectangleSelector());
             this.StretchToParentSize();
-
-            this.ViewModel = graph;
-            this.GraphWindow = window;
-            this.CommandDispatcher = commandDispatcher;
         }
 
         #region Initialize
+
+        public void SetUp(BaseGraphProcessor graph, GraphViewContext context)
+        {
+            this.viewModel = graph;
+            this.context = context;
+        }
 
         public void Init()
         {
@@ -121,7 +133,7 @@ namespace Moyo.GraphProcessor.Editors
                 viewTransformChanged = OnViewTransformChanged;
 
                 yield return GraphWindow.StartCoroutine(GenerateNodeViews());
-                yield return GraphWindow.StartCoroutine(LinkNodeViews());
+                yield return GraphWindow.StartCoroutine(GenerateConnectionViews());
                 yield return GraphWindow.StartCoroutine(GenerateGroupViews());
                 yield return GraphWindow.StartCoroutine(GenerateNoteViews());
 
@@ -146,29 +158,28 @@ namespace Moyo.GraphProcessor.Editors
         /// <summary> 生成所有NodeView </summary>
         private IEnumerator GenerateNodeViews()
         {
-            int step = 0;
-            foreach (var node in ViewModel.Nodes.Values)
+            for (int index = 0; index < ViewModel.Model.nodes.Count; index++)
             {
+                var node = ViewModel.Model.nodes[index];
                 if (node == null) continue;
-                AddNodeView(node);
-                step++;
-                if (step % 10 == 0)
+                var nodeProcessor = ViewModel.Nodes[node.id];
+                AddNodeView(nodeProcessor);
+                if (index > 0 && index % 10 == 0)
                     yield return null;
             }
         }
 
         /// <summary> 连接节点 </summary>
-        private IEnumerator LinkNodeViews()
+        private IEnumerator GenerateConnectionViews()
         {
-            int step = 0;
-            foreach (var connection in ViewModel.Connections)
+            for (var index = 0; index < ViewModel.Connections.Count; index++)
             {
+                var connection = ViewModel.Connections[index];
                 if (connection == null) continue;
                 if (!NodeViews.TryGetValue(connection.FromNodeID, out var fromNodeView)) throw new NullReferenceException($"找不到From节点{connection.FromNodeID}");
                 if (!NodeViews.TryGetValue(connection.ToNodeID, out var toNodeView)) throw new NullReferenceException($"找不到To节点{connection.ToNodeID}");
                 ConnectView(fromNodeView, toNodeView, connection);
-                step++;
-                if (step % 10 == 0)
+                if (index > 0 && index % 10 == 0)
                     yield return null;
             }
         }
@@ -177,6 +188,7 @@ namespace Moyo.GraphProcessor.Editors
         private IEnumerator GenerateGroupViews()
         {
             int step = 0;
+
             foreach (var group in ViewModel.Groups.GroupMap.Values)
             {
                 if (group == null) continue;
@@ -189,21 +201,20 @@ namespace Moyo.GraphProcessor.Editors
 
         private IEnumerator GenerateNoteViews()
         {
-            int step = 0;
-            foreach (var pair in ViewModel.Notes)
+            for (int index = 0; index < ViewModel.Model.notes.Count; index++)
             {
-                if (pair.Value == null) continue;
-                AddNoteView(pair.Value);
-                step++;
-                if (step % 10 == 0)
+                var note = ViewModel.Model.notes[index];
+                if (note == null) continue;
+                var noteProcessor = ViewModel.Notes[note.id];
+                if (noteProcessor == null) continue;
+                AddNoteView(noteProcessor);
+                if (index > 0 && index % 10 == 0)
                     yield return null;
             }
         }
 
         private void BindEvents()
         {
-            RegisterCallback<KeyDownEvent>(KeyDownCallback);
-
             ViewModel.PropertyChanged += OnViewModelChanged;
 
             ViewModel.OnNodeAdded += OnNodeAdded;
@@ -221,8 +232,6 @@ namespace Moyo.GraphProcessor.Editors
 
         private void UnbindEvents()
         {
-            UnregisterCallback<KeyDownEvent>(KeyDownCallback);
-
             ViewModel.PropertyChanged -= OnViewModelChanged;
 
             ViewModel.OnNodeAdded -= OnNodeAdded;
@@ -242,13 +251,13 @@ namespace Moyo.GraphProcessor.Editors
 
         #region API
 
-        public BaseNodeView AddNodeView(BaseNodeProcessor node)
+        public BaseNodeView AddNodeView(BaseNodeProcessor nodeProcessor)
         {
-            var nodeView = NewNodeView(node);
-            nodeView.AddToClassList(node.ModelType.Name);
-            nodeView.SetUp(node, this);
+            var nodeView = NewNodeView(nodeProcessor);
+            nodeView.AddToClassList(nodeProcessor.ModelType.Name);
+            nodeView.SetUp(nodeProcessor, this);
             nodeView.OnCreate();
-            NodeViews[node.ID] = nodeView;
+            NodeViews[nodeProcessor.ID] = nodeView;
             AddElement(nodeView);
             return nodeView;
         }
@@ -260,7 +269,7 @@ namespace Moyo.GraphProcessor.Editors
             NodeViews.Remove(nodeView.ViewModel.ID);
         }
 
-        public BaseGroupView AddGroupView(BaseGroupProcessor group)
+        public BaseGroupView AddGroupView(GroupProcessor group)
         {
             var groupView = NewGroupView(group);
             groupView.SetUp(group, this);
@@ -378,7 +387,7 @@ namespace Moyo.GraphProcessor.Editors
         // 标记Dirty
         public void SetDirty()
         {
-            GraphWindow?.GraphChanged();
+            GraphWindow?.SetHasUnsavedChanges(true);
         }
 
         #endregion
@@ -429,13 +438,13 @@ namespace Moyo.GraphProcessor.Editors
             SetDirty();
         }
 
-        private void OnGroupAdded(BaseGroupProcessor group)
+        private void OnGroupAdded(GroupProcessor group)
         {
             AddGroupView(group);
             SetDirty();
         }
 
-        private void OnGroupRemoved(BaseGroupProcessor group)
+        private void OnGroupRemoved(GroupProcessor group)
         {
             RemoveGroupView(GroupViews[group.ID]);
             SetDirty();
@@ -457,26 +466,6 @@ namespace Moyo.GraphProcessor.Editors
                 DisconnectView(edge as BaseConnectionView);
             });
             SetDirty();
-        }
-
-        private void KeyDownCallback(KeyDownEvent evt)
-        {
-            if (evt.commandKey || evt.ctrlKey)
-            {
-                switch (evt.keyCode)
-                {
-                    case KeyCode.Z:
-                        CommandDispatcher.Undo();
-                        evt.StopPropagation();
-                        break;
-                    case KeyCode.Y:
-                        CommandDispatcher.Redo();
-                        evt.StopPropagation();
-                        break;
-                    default:
-                        break;
-                }
-            }
         }
 
         private void NodeCreationRequest(NodeCreationContext c)
@@ -513,18 +502,26 @@ namespace Moyo.GraphProcessor.Editors
                 {
                     switch (element)
                     {
+                        // case StickyNoteView stickyNoteView:
+                        // {
+                        //     newPos[stickyNoteView.ViewModel] = stickyNoteView.GetPosition();
+                        //     return true;
+                        // }
                         case BaseNodeView nodeView:
                         {
-                            newPos[nodeView.ViewModel] = nodeView.GetPosition();
-                            // 记录需要重新排序的接口
-                            foreach (var port in nodeView.ViewModel.Ports.Values)
+                            if (nodeView.Movable)
                             {
-                                foreach (var connection in port.Connections)
+                                newPos[nodeView.ViewModel] = nodeView.GetPosition();
+                                // 记录需要重新排序的接口
+                                foreach (var port in nodeView.ViewModel.Ports.Values)
                                 {
-                                    if (port.Direction == BasePort.Direction.Left)
-                                        portsHashset.Add(connection.FromNode.Ports[connection.FromPortName]);
-                                    else
-                                        portsHashset.Add(connection.ToNode.Ports[connection.ToPortName]);
+                                    foreach (var connection in port.Connections)
+                                    {
+                                        if (port.Direction == BasePort.Direction.Left)
+                                            portsHashset.Add(connection.FromNode.Ports[connection.FromPortName]);
+                                        else
+                                            portsHashset.Add(connection.ToNode.Ports[connection.ToPortName]);
+                                    }
                                 }
                             }
 
@@ -533,11 +530,14 @@ namespace Moyo.GraphProcessor.Editors
                         case BaseGroupView groupView:
                         {
                             newPos[groupView.ViewModel] = groupView.GetPosition();
-                            foreach (var nodeGUID in groupView.ViewModel.Nodes)
+                            foreach (var nodeId in groupView.ViewModel.Nodes)
                             {
-                                var node = ViewModel.Nodes[nodeGUID];
-                                var nodeView = NodeViews[nodeGUID];
-                                newPos[node] = nodeView.GetPosition();
+                                var node = ViewModel.Nodes[nodeId];
+                                var nodeView = NodeViews[nodeId];
+                                if (nodeView.Movable)
+                                {
+                                    newPos[node] = nodeView.GetPosition();
+                                }
                             }
 
                             return true;

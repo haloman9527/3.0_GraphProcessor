@@ -23,9 +23,18 @@ namespace Moyo.GraphProcessor
     {
         public float zoom = 1;
         public InternalVector2Int pan = new InternalVector2Int(0, 0);
-        public Dictionary<int, BaseNode> nodes = new Dictionary<int, BaseNode>();
+        
+        
+#if UNITY_5_3_OR_NEWER
+        [UnityEngine.SerializeReference] public List<BaseNode> nodes = new List<BaseNode>();
+        [UnityEngine.SerializeReference] public List<BaseConnection> connections = new List<BaseConnection>();
+        public List<Group> groups = new List<Group>();
+        public List<StickyNote> notes = new List<StickyNote>();
+#else
+        public List<BaseNode> nodes = new List<BaseNode>();
         public List<BaseConnection> connections = new List<BaseConnection>();
-        public List<BaseGroup> groups = new List<BaseGroup>();
-        public Dictionary<int, StickyNote> notes = new Dictionary<int, StickyNote>();
+        public List<Group> groups = new List<Group>();
+        public List<StickyNote> notes = new List<StickyNote>();
+#endif
     }
 }

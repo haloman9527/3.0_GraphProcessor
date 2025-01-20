@@ -13,10 +13,9 @@
  *
  */
 #endregion
-#if UNITY_EDITOR && ODIN_INSPECTOR
+#if UNITY_EDITOR
 using MoyoEditor;
 using Sirenix.OdinInspector.Editor;
-using UnityEditor;
 
 namespace Moyo.GraphProcessor.Editors
 {
@@ -50,12 +49,7 @@ namespace Moyo.GraphProcessor.Editors
                     case nameof(BaseConnection.toPort):
                         continue;
                 }
-                EditorGUI.BeginChangeCheck();
                 property.Draw();
-                if (EditorGUI.EndChangeCheck())
-                {
-                    // view.ViewModel.NotifyValueChanged(property.Name);
-                }
             }
             propertyTree.EndDraw();
             SourceEditor.Repaint();

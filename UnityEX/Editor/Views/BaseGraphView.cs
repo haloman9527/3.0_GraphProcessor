@@ -96,7 +96,7 @@ namespace Moyo.GraphProcessor.Editors
             {
                 case GraphView:
                 case UnityEditor.Experimental.GraphView.Node:
-                case Group:
+                case UnityEditor.Experimental.GraphView.Group:
                 case Edge:
                 case UnityEditor.Experimental.GraphView.StickyNote:
                 {
@@ -148,7 +148,7 @@ namespace Moyo.GraphProcessor.Editors
             return Activator.CreateInstance(GraphProcessorEditorUtil.GetViewType(nodeVM.ModelType)) as BaseNodeView;
         }
 
-        protected virtual BaseGroupView NewGroupView(BaseGroupProcessor groupVM)
+        protected virtual BaseGroupView NewGroupView(GroupProcessor groupVM)
         {
             return Activator.CreateInstance(GraphProcessorEditorUtil.GetViewType(groupVM.ModelType)) as BaseGroupView;
         }
@@ -171,6 +171,7 @@ namespace Moyo.GraphProcessor.Editors
 
             if (Selection.activeGameObject != null && Selection.activeGameObject.GetComponent<IGraphAssetOwner>() != null)
                 return;
+            
             ObjectInspector.Show(this);
         }
 
@@ -179,7 +180,7 @@ namespace Moyo.GraphProcessor.Editors
             if (toPortView.direction == fromPortView.direction)
                 return false;
             // 类型兼容查询
-            if (!toPortView.ViewModel.Type.IsAssignableFrom(fromPortView.ViewModel.Type) && !fromPortView.ViewModel.Type.IsAssignableFrom(toPortView.ViewModel.Type))
+            if (!toPortView.ViewModel.portType.IsAssignableFrom(fromPortView.ViewModel.portType) && !fromPortView.ViewModel.portType.IsAssignableFrom(toPortView.ViewModel.portType))
                 return false;
             return true;
         }

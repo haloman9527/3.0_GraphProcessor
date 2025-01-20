@@ -42,9 +42,7 @@ namespace Moyo.GraphProcessor.Editors
 
         protected virtual BasePortView NewPortView(BasePortProcessor port)
         {
-            var portView = Activator.CreateInstance(GraphProcessorEditorUtil.GetViewType(port.ModelType), port, new EdgeConnectorListener()) as BasePortView;
-            portView.AddToClassList("lr");
-            return portView;
+            return Activator.CreateInstance(GraphProcessorEditorUtil.GetViewType(port.ModelType), port, new EdgeConnectorListener()) as BasePortView;
         }
 
         public override void BuildContextualMenu(ContextualMenuPopulateEvent evt)
@@ -68,6 +66,11 @@ namespace Moyo.GraphProcessor.Editors
             BringToFront();
         }
 
+        public virtual bool DrawingControls()
+        {
+            return controls.childCount > 0;
+        }
+
         public void HighlightOn()
         {
             nodeBorder.AddToClassList("highlight");
@@ -83,21 +86,6 @@ namespace Moyo.GraphProcessor.Editors
             HighlightOn();
             schedule.Execute(_ => { HighlightOff(); }).ExecuteLater(2000);
         }
-
-        //public override void SetPosition(Rect newPos)
-        //{
-        //    if (GridSnap > 0)
-        //    {
-        //        var x = newPos.x % GridSnap;
-        //        x = x < 0 ? GridSnap + x : x;
-        //        newPos.x = newPos.x - x + (int)(x / GridSnap * 2) * GridSnap;
-
-        //        var y = newPos.y % GridSnap;
-        //        y = y < 0 ? GridSnap + y : y;
-        //        newPos.y = newPos.y - y + (int)(y / GridSnap * 2) * GridSnap;
-        //    }
-        //    base.SetPosition(newPos);
-        //}
 
         public void AddBadge(IconBadge badge)
         {

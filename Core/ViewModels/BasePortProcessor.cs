@@ -29,13 +29,9 @@ namespace Moyo.GraphProcessor
         public enum Direction
         {
             Left,
-            Right
-        }
-
-        public enum Orientation
-        {
-            Horizontal,
-            Vertical
+            Right,
+            Top,
+            Bottom,
         }
 
         public enum Capacity
@@ -47,28 +43,28 @@ namespace Moyo.GraphProcessor
         #endregion
 
         public string name;
-        public Orientation orientation;
         public Direction direction;
         public Capacity capacity;
-        public Type type;
+        public Type portType;
 
-        public BasePort(string name, BasePort.Orientation orientation, BasePort.Direction direction, BasePort.Capacity capacity, Type type = null)
+        public BasePort(string name, BasePort.Direction direction, BasePort.Capacity capacity, Type type = null)
         {
             this.name = name;
-            this.orientation = orientation;
             this.direction = direction;
             this.capacity = capacity;
-            this.type = type;
+            this.portType = type;
         }
     }
 
     [ViewModel(typeof(BasePort))]
-    public class BasePortProcessor : ViewModel
+    public class BasePortProcessor : ViewModel, IGraphElementProcessor
     {
         #region Fields
 
+        private BasePort model;
+        private Type modelType;
+        internal List<BaseConnectionProcessor> connections = new List<BaseConnectionProcessor>();
         private bool hideLabel;
-        internal List<BaseConnectionProcessor> connections;
 
         public event Action<BaseConnectionProcessor> onBeforeConnected;
         public event Action<BaseConnectionProcessor> onAfterConnected;
@@ -80,22 +76,23 @@ namespace Moyo.GraphProcessor
 
         #region Properties
 
-        public BasePort Model { get; }
-        public Type ModelType { get; }
-        public BaseNodeProcessor Owner { get; internal set; }
+        public BasePort Model => model;
+        public Type ModelType => modelType;
 
-        public string Name => Model.name;
+        object IGraphElementProcessor.Model => model;
 
-        public BasePort.Direction Direction => Model.direction;
+        Type IGraphElementProcessor.ModelType => modelType;
 
-        public BasePort.Orientation Orientation => Model.orientation;
+        public string Name => model.name;
 
-        public BasePort.Capacity Capacity => Model.capacity;
+        public BasePort.Direction Direction => model.direction;
 
-        public Type Type
+        public BasePort.Capacity Capacity => model.capacity;
+
+        public Type portType
         {
-            get => Model.type == null ? typeof(object) : Model.type;
-            set => SetFieldValue(ref Model.type, value, nameof(BasePort.type));
+            get => model.portType == null ? typeof(object) : model.portType;
+            set => SetFieldValue(ref model.portType, value, nameof(BasePort.portType));
         }
 
         public bool HideLabel
@@ -105,47 +102,56 @@ namespace Moyo.GraphProcessor
         }
 
         public IReadOnlyList<BaseConnectionProcessor> Connections => connections;
+        
+        public BaseNodeProcessor Owner { get; internal set; }
 
         #endregion
 
         public BasePortProcessor(BasePort model)
         {
-            this.Model = model;
-            this.ModelType = typeof(BasePort);
-            this.connections = new List<BaseConnectionProcessor>();
+            this.model = model;
+            this.modelType = typeof(BasePort);
         }
 
-        public BasePortProcessor(string name, BasePort.Orientation orientation, BasePort.Direction direction, BasePort.Capacity capacity, Type type = null)
+        public BasePortProcessor(string name, BasePort.Direction direction, BasePort.Capacity capacity, Type type = null)
         {
-            this.Model = new BasePort(name, orientation, direction, capacity, type)
+            this.model = new BasePort(name, direction, capacity, type)
             {
                 name = name,
-                orientation = orientation,
                 direction = direction,
                 capacity = capacity
             };
-            this.ModelType = typeof(BasePort);
-            this.connections = new List<BaseConnectionProcessor>();
+            this.modelType = typeof(BasePort);
         }
 
         #region API
-
-        public T ModelAs<T>() where T : BasePort
-        {
-            return Model as T;
-        }
-
         public void ConnectTo(BaseConnectionProcessor connection)
         {
             onBeforeConnected?.Invoke(connection);
             connections.Add(connection);
-            if (this == connection.FromPort)
+
+            switch (this.Direction)
             {
-                connections.QuickSort(Model.orientation == BasePort.Orientation.Horizontal ? ConnectionProcessorHorizontalComparer.FromPortSortDefault : ConnectionProcessorVerticalComparer.ToPortSortDefault);
-            }
-            else
-            {
-                connections.QuickSort(Model.orientation == BasePort.Orientation.Horizontal ? ConnectionProcessorHorizontalComparer.ToPortSortDefault : ConnectionProcessorVerticalComparer.FromPortSortDefault);
+                case BasePort.Direction.Left:
+                {
+                    connections.QuickSort(ConnectionProcessorHorizontalComparer.ToPortSortDefault);
+                    break;
+                }
+                case BasePort.Direction.Right:
+                {
+                    connections.QuickSort(ConnectionProcessorHorizontalComparer.FromPortSortDefault);
+                    break;
+                }
+                case BasePort.Direction.Top:
+                {
+                    connections.QuickSort(ConnectionProcessorVerticalComparer.InPortSortDefault);
+                    break;
+                }
+                case BasePort.Direction.Bottom:
+                {
+                    connections.QuickSort(ConnectionProcessorVerticalComparer.OutPortSortDefault);
+                    break;
+                }
             }
 
             onAfterConnected?.Invoke(connection);
@@ -163,7 +169,21 @@ namespace Moyo.GraphProcessor
         /// <summary> 整理 </summary>
         public bool Trim()
         {
-            return connections.QuickSort(Model.orientation == BasePort.Orientation.Horizontal ? ConnectionProcessorHorizontalComparer.ToPortSortDefault : ConnectionProcessorVerticalComparer.FromPortSortDefault);
+            var removeNum = connections.RemoveAll(ConnectionProcessorComparer.EmptyComparer);
+
+            switch (Direction)
+            {
+                case BasePort.Direction.Left:
+                    return removeNum != 0 && connections.QuickSort(ConnectionProcessorHorizontalComparer.ToPortSortDefault);
+                case BasePort.Direction.Right:
+                    return removeNum != 0 && connections.QuickSort(ConnectionProcessorHorizontalComparer.FromPortSortDefault);
+                case BasePort.Direction.Top:
+                    return removeNum != 0 && connections.QuickSort(ConnectionProcessorVerticalComparer.InPortSortDefault);
+                case BasePort.Direction.Bottom:
+                    return removeNum != 0 && connections.QuickSort(ConnectionProcessorVerticalComparer.OutPortSortDefault);
+            }
+
+            return removeNum != 0;
         }
 
         /// <summary> 获取连接的第一个接口的值 </summary>

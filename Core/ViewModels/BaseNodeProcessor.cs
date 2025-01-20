@@ -16,7 +16,6 @@
 
 #endregion
 
-using Moyo;
 using System;
 using System.Collections.Generic;
 
@@ -27,14 +26,15 @@ namespace Moyo.GraphProcessor
     {
         #region Fields
 
+        private BaseNode model;
+        private Type modelType;
         private string title;
         private string tooltip;
         private InternalColor titleColor;
 
-
-        private List<BasePortProcessor> leftPorts;
-        private List<BasePortProcessor> rightPorts;
-        private Dictionary<string, BasePortProcessor> ports;
+        private readonly List<BasePortProcessor> inPorts = new List<BasePortProcessor>();
+        private readonly List<BasePortProcessor> outPorts = new List<BasePortProcessor>();
+        private readonly Dictionary<string, BasePortProcessor> ports = new Dictionary<string, BasePortProcessor>();
 
         public event Action<BasePortProcessor> onPortAdded;
         public event Action<BasePortProcessor> onPortRemoved;
@@ -43,14 +43,15 @@ namespace Moyo.GraphProcessor
 
         #region Properties
 
-        public BaseNode Model { get; }
-        public Type ModelType { get; }
+        public BaseNode Model => model;
+        public Type ModelType => modelType;
+
+        object IGraphElementProcessor.Model => model;
+
+        Type IGraphElementProcessor.ModelType => modelType;
 
         /// <summary> 唯一标识 </summary>
-        public int ID
-        {
-            get { return Model.id; }
-        }
+        public int ID => Model.id;
 
         public virtual InternalVector2Int Position
         {
@@ -76,9 +77,9 @@ namespace Moyo.GraphProcessor
             set => SetFieldValue(ref tooltip, value, ConstValues.NODE_TOOLTIP_NAME);
         }
 
-        public IReadOnlyList<BasePortProcessor> LeftPorts => leftPorts;
+        public IReadOnlyList<BasePortProcessor> InPorts => inPorts;
 
-        public IReadOnlyList<BasePortProcessor> RightPorts => rightPorts;
+        public IReadOnlyList<BasePortProcessor> OutPorts => outPorts;
 
         public IReadOnlyDictionary<string, BasePortProcessor> Ports => ports;
 
@@ -88,23 +89,15 @@ namespace Moyo.GraphProcessor
 
         public BaseNodeProcessor(BaseNode model)
         {
-            Model = model;
-            ModelType = model.GetType();
-            Model.position = Model.position == default ? InternalVector2Int.zero : Model.position;
-            leftPorts = new List<BasePortProcessor>();
-            rightPorts = new List<BasePortProcessor>();
-            ports = new Dictionary<string, BasePortProcessor>();
+            this.model = model;
+            this.model.position = model.position == default ? InternalVector2Int.zero : model.position;
+            this.modelType = model.GetType();
 
-            var nodeStaticInfo = GraphProcessorUtil.NodeStaticInfos[ModelType];
+            var nodeStaticInfo = GraphProcessorUtil.NodeStaticInfos[this.modelType];
 
             this.title = nodeStaticInfo.title;
             this.tooltip = nodeStaticInfo.tooltip;
-            this.tooltip = nodeStaticInfo.tooltip;
-
-            if (nodeStaticInfo.customTitleColor.enable)
-            {
-                titleColor = nodeStaticInfo.customTitleColor.value;
-            }
+            this.titleColor = nodeStaticInfo.customTitleColor.enable ? nodeStaticInfo.customTitleColor.value : this.titleColor;
         }
 
         internal void Enable()
@@ -124,29 +117,14 @@ namespace Moyo.GraphProcessor
         }
 
         #region API
-
-        public T ModelAs<T>() where T : BaseNode
-        {
-            return Model as T;
-        }
-
         public IEnumerable<BaseNodeProcessor> GetConnections(string portName)
         {
             if (!Ports.TryGetValue(portName, out var port))
                 yield break;
-            if (port.Direction == BasePort.Direction.Left)
+
+            foreach (var connection in port.Connections)
             {
-                foreach (var connection in port.Connections)
-                {
-                    yield return connection.FromNode;
-                }
-            }
-            else
-            {
-                foreach (var connection in port.Connections)
-                {
-                    yield return connection.ToNode;
-                }
+                yield return port.Direction == BasePort.Direction.Left ? connection.FromNode : connection.ToNode;
             }
         }
 
@@ -163,19 +141,29 @@ namespace Moyo.GraphProcessor
             switch (port.Direction)
             {
                 case BasePort.Direction.Left:
+                case BasePort.Direction.Top:
                 {
-                    leftPorts.Add(port);
+                    inPorts.Add(port);
                     break;
                 }
                 case BasePort.Direction.Right:
+                case BasePort.Direction.Bottom:
                 {
-                    rightPorts.Add(port);
+                    outPorts.Add(port);
                     break;
                 }
             }
 
             port.Owner = this;
             onPortAdded?.Invoke(port);
+        }
+
+        public void RemovePort(string portName)
+        {
+            if (!ports.TryGetValue(portName, out var port))
+                return;
+
+            RemovePort(port);
         }
 
         public void RemovePort(BasePortProcessor port)
@@ -189,12 +177,12 @@ namespace Moyo.GraphProcessor
             {
                 case BasePort.Direction.Left:
                 {
-                    leftPorts.Remove(port);
+                    inPorts.Remove(port);
                     break;
                 }
                 case BasePort.Direction.Right:
                 {
-                    rightPorts.Remove(port);
+                    outPorts.Remove(port);
                     break;
                 }
             }
@@ -202,15 +190,10 @@ namespace Moyo.GraphProcessor
             onPortRemoved?.Invoke(port);
         }
 
-        public void RemovePort(string portName)
-        {
-            RemovePort(ports[portName]);
-        }
-
         public void SortPort(Func<BasePortProcessor, BasePortProcessor, int> comparer)
         {
-            leftPorts.QuickSort(comparer);
-            rightPorts.QuickSort(comparer);
+            inPorts.QuickSort(comparer);
+            outPorts.QuickSort(comparer);
         }
 
         #endregion

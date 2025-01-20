@@ -19,6 +19,7 @@
 #if UNITY_EDITOR
 using System;
 using MoyoEditor;
+using ThirdParty.Moyo.Moyo.GraphProcessor.UnityEX.Editor;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UnityEditor;
@@ -31,21 +32,19 @@ namespace Moyo.GraphProcessor.Editors
 {
     public abstract class BaseGraphWindow : BaseEditorWindow
     {
-        public static BindableProperty<bool> MiniMapActive = new BindableProperty<bool>(() => EditorPrefs.GetBool("GraphView.MiniMap.Active", false), v => EditorPrefs.SetBool("GraphView.MiniMap.Active", v));
-
         #region Fields
 
-        private VisualElement graphViewContainer;
         private Toolbar toolbarLeft;
         private Toolbar toolbarCenter;
         private Toolbar toolbarRight;
-
+        private VisualElement graphViewContainer;
+        private VisualElement inspectorView;
 
         [SerializeField] private UnityObject unityGraphOwner;
         [SerializeField] private UnityObject unityGraphAsset;
         private IGraphOwner graphOwner;
         private IGraphAsset graphAsset;
-        private BaseGraphProcessor graph;
+        private BaseGraphProcessor graphProcessor;
         private BaseGraphView graphView;
         private CommandDispatcher commandDispatcher;
 
@@ -53,25 +52,14 @@ namespace Moyo.GraphProcessor.Editors
 
         #region Properties
 
-        private VisualElement GraphViewContainer
-        {
-            get { return graphViewContainer; }
-        }
+        private VisualElement GraphViewContainer => graphViewContainer;
+        private VisualElement InspectorView => inspectorView;
 
-        public Toolbar ToolbarLeft
-        {
-            get { return toolbarLeft; }
-        }
+        public Toolbar ToolbarLeft => toolbarLeft;
 
-        public Toolbar ToolbarCenter
-        {
-            get { return toolbarCenter; }
-        }
+        public Toolbar ToolbarCenter => toolbarCenter;
 
-        public Toolbar ToolbarRight
-        {
-            get { return toolbarRight; }
-        }
+        public Toolbar ToolbarRight => toolbarRight;
 
         public IGraphOwner GraphOwner
         {
@@ -99,20 +87,11 @@ namespace Moyo.GraphProcessor.Editors
             }
         }
 
-        public BaseGraphProcessor Graph
-        {
-            get { return graph; }
-        }
+        public BaseGraphProcessor GraphProcessor => graphProcessor;
+        
+        public CommandDispatcher CommandDispatcher => commandDispatcher;
 
-        public BaseGraphView GraphView
-        {
-            get { return graphView; }
-        }
-
-        public CommandDispatcher CommandDispatcher
-        {
-            get { return commandDispatcher; }
-        }
+        public BaseGraphView GraphView => graphView;
 
         #endregion
 
@@ -122,9 +101,9 @@ namespace Moyo.GraphProcessor.Editors
         {
             titleContent = new GUIContent("Graph Processor");
             InitRootVisualElement();
+            EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
 
             Reload();
-            EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
         }
 
         protected virtual void OnDestroy()
@@ -146,15 +125,17 @@ namespace Moyo.GraphProcessor.Editors
 
         protected virtual void InitRootVisualElement()
         {
-            var tree = Resources.Load<VisualTreeAsset>(GraphProcessorStyles.GraphWindowUXMLFile);
+            var tree = Resources.Load<VisualTreeAsset>(GraphProcessorEditorStyles.GraphWindowUXMLFile);
             tree.CloneTree(rootVisualElement);
             rootVisualElement.name = "rootVisualContainer";
-            rootVisualElement.styleSheets.Add(GraphProcessorStyles.BasicStyle);
+            rootVisualElement.RegisterCallback<KeyDownEvent>(OnKeyDownCallback, TrickleDown.TrickleDown);
+            rootVisualElement.styleSheets.Add(GraphProcessorEditorStyles.BasicStyle);
 
             toolbarLeft = rootVisualElement.Q<Toolbar>("ToolbarLeft", "unity-toolbar");
             toolbarCenter = rootVisualElement.Q<Toolbar>("ToolbarCenter", "unity-toolbar");
             toolbarRight = rootVisualElement.Q<Toolbar>("ToolbarRight", "unity-toolbar");
             graphViewContainer = rootVisualElement.Q("GraphViewContainer");
+            inspectorView = rootVisualElement.Q("InspectorView");
         }
 
         protected virtual void BeforeLoad(BaseGraphProcessor graph, IGraphOwner graphOwner, IGraphAsset graphAsset)
@@ -164,18 +145,19 @@ namespace Moyo.GraphProcessor.Editors
         protected void Load(BaseGraphProcessor graph, IGraphOwner graphOwner, IGraphAsset graphAsset)
         {
             Clear();
+
             BeforeLoad(graph, graphOwner, graphAsset);
 
             this.commandDispatcher = new CommandDispatcher();
-            this.graph = graph;
+            this.graphProcessor = graph;
             this.GraphOwner = graphOwner;
             this.GraphAsset = graphAsset;
 
             this.graphView = NewGraphView();
+            this.graphView.SetUp(GraphProcessor, new GraphViewContext() { window = this, commandDispatcher = commandDispatcher });
             this.graphView.Init();
-            this.graphViewContainer.Add(graphView);
+            this.GraphViewContainer.Add(graphView);
 
-            graphView.RegisterCallback<KeyDownEvent>(OnKeyDownCallback);
             graphView.schedule.Execute(() =>
             {
                 foreach (var pair in graphView.NodeViews)
@@ -191,20 +173,22 @@ namespace Moyo.GraphProcessor.Editors
                 }
             }).Every(50);
             BuildToolBar();
+
+            GraphProcessorEditorSettings.OnMiniMapActiveChanged += OnMiniMapActiveChanged;
+            OnMiniMapActiveChanged(GraphProcessorEditorSettings.MiniMapActive);
+
             AfterLoad();
         }
 
         protected virtual void AfterLoad()
         {
-            MiniMapActive.onValueChanged += OnMiniMapActiveChanged;
-            MiniMapActive.NotifyValueChanged();
         }
 
-        protected void OnMiniMapActiveChanged(bool oldValue, bool newValue)
+        protected void OnMiniMapActiveChanged(bool newValue)
         {
             graphView.MiniMapActive = newValue;
         }
-        
+
         #endregion
 
         #region Public Methods
@@ -216,14 +200,15 @@ namespace Moyo.GraphProcessor.Editors
             ToolbarRight.Clear();
             GraphViewContainer.Clear();
 
-            graph = null;
+            graphProcessor = null;
             graphView = null;
             GraphAsset = null;
             GraphOwner = null;
             commandDispatcher = null;
-            MiniMapActive.onValueChanged -= OnMiniMapActiveChanged;
 
-            this.hasUnsavedChanges = false;
+            GraphProcessorEditorSettings.OnMiniMapActiveChanged -= OnMiniMapActiveChanged;
+
+            this.SetHasUnsavedChanges(false);
         }
 
         // 重新加载Graph
@@ -241,7 +226,7 @@ namespace Moyo.GraphProcessor.Editors
             {
                 LoadFromGraphAsset(graphAsset);
             }
-            else if (Graph is BaseGraphProcessor graphVM)
+            else if (GraphProcessor is BaseGraphProcessor graphVM)
             {
                 LoadFromGraphVM(graphVM);
             }
@@ -250,7 +235,7 @@ namespace Moyo.GraphProcessor.Editors
                 AssetDatabase.OpenAsset(this.unityGraphAsset);
             }
         }
-        
+
         // 从GraphOwner加载
         public void LoadFromGraphOwner(IGraphOwner graphOwner)
         {
@@ -278,17 +263,12 @@ namespace Moyo.GraphProcessor.Editors
         // 直接加载Graph对象
         public void LoadFromGraph(BaseGraph graph)
         {
-            Load(ViewModelFactory.CreateViewModel(ViewModelFactory.CreateViewModel(graph) as BaseGraphProcessor) as BaseGraphProcessor, null, null);
+            Load(ViewModelFactory.CreateViewModel(graph) as BaseGraphProcessor, null, null);
         }
 
-        public void GraphChanged()
+        public void SetHasUnsavedChanges(bool value)
         {
-            this.hasUnsavedChanges = true;
-        }
-
-        public void SetGraphUndirty()
-        {
-            this.hasUnsavedChanges = false;
+            this.hasUnsavedChanges = value;
         }
 
         #endregion
@@ -311,13 +291,13 @@ namespace Moyo.GraphProcessor.Editors
 
         protected virtual BaseGraphView NewGraphView()
         {
-            return new DefaultGraphView(Graph, this, new CommandDispatcher());
+            return new DefaultGraphView();
         }
 
         protected virtual void OnBtnSaveClick()
         {
             if (GraphAsset is IGraphAsset graphSerialization)
-                graphSerialization.SaveGraph(Graph.Model);
+                graphSerialization.SaveGraph(GraphProcessor.Model);
 
             if (GraphAsset is UnityObject uo)
                 EditorUtility.SetDirty(uo);
@@ -333,6 +313,14 @@ namespace Moyo.GraphProcessor.Editors
             {
                 switch (evt.keyCode)
                 {
+                    case KeyCode.Z:
+                        CommandDispatcher.Undo();
+                        evt.StopPropagation();
+                        break;
+                    case KeyCode.Y:
+                        CommandDispatcher.Redo();
+                        evt.StopPropagation();
+                        break;
                     case KeyCode.S:
                         OnBtnSaveClick();
                         evt.StopImmediatePropagation();
@@ -358,10 +346,10 @@ namespace Moyo.GraphProcessor.Editors
                 text = "MiniMap",
                 tooltip = "小地图",
             };
-            togMiniMap.clicked += () => { MiniMapActive.Value = !MiniMapActive.Value; };
+            togMiniMap.clicked += () => { GraphProcessorEditorSettings.MiniMapActive = !GraphProcessorEditorSettings.MiniMapActive; };
             ToolbarLeft.Add(togMiniMap);
 
-            if (graphAsset.UnityAsset != null)
+            if (graphAsset != null && graphAsset.UnityAsset != null)
             {
                 IMGUIContainer drawName = new IMGUIContainer(() =>
                 {

@@ -16,13 +16,11 @@
 
 #endregion
 
-#if UNITY_EDITOR && ODIN_INSPECTOR
+#if UNITY_EDITOR
 using System;
 using System.Collections.Generic;
-using Moyo;
 using MoyoEditor;
 using Sirenix.OdinInspector.Editor;
-using UnityEditor;
 
 namespace Moyo.GraphProcessor.Editors
 {
@@ -58,7 +56,7 @@ namespace Moyo.GraphProcessor.Editors
             propertyTree.DrawMonoScriptObjectField = true;
         }
 
-        public override void OnInspectorGUI()
+        public override sealed void OnInspectorGUI()
         {
             var view = Target as BaseNodeView;
             if (view == null || view.ViewModel == null)
@@ -76,12 +74,7 @@ namespace Moyo.GraphProcessor.Editors
                         continue;
                 }
 
-                EditorGUI.BeginChangeCheck();
                 property.Draw();
-                if (EditorGUI.EndChangeCheck())
-                {
-                    // view.ViewModel.NotifyPropertyChanged(property.Name);
-                }
             }
 
             propertyTree.EndDraw();

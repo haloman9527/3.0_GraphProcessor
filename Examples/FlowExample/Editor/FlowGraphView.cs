@@ -27,10 +27,6 @@ using UnityEngine;
 
 public class FlowGraphView : BaseGraphView
 {
-    public FlowGraphView(BaseGraphProcessor graph, BaseGraphWindow window, CommandDispatcher commandDispatcher) : base(graph, window, commandDispatcher)
-    {
-    }
-
     protected override void BuildNodeMenu(NodeMenuWindow nodeMenu)
     {
         foreach (var pair in GraphProcessorUtil.NodeStaticInfos)

@@ -19,7 +19,7 @@ using UnityEngine.UIElements;
 
 namespace Moyo.GraphProcessor.Editors
 {
-    public static class GraphProcessorStyles
+    public static class GraphProcessorEditorStyles
     {
         public const string GraphWindowUXMLFile = "GraphProcessor/UXML/GraphWindow";
         public const string BassicStyleFile = "GraphProcessor/USS/BasicStyle";

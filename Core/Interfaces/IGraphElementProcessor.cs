@@ -16,9 +16,18 @@
 
 #endregion
 
+using System;
+
 namespace Moyo.GraphProcessor
 {
     public interface IGraphElementProcessor
+    {
+        object Model { get; }
+        
+        Type ModelType { get; }
+    }
+    
+    public interface IGraphElementProcessor<T> : IGraphElementProcessor
     {
         
     }

@@ -22,25 +22,32 @@ using System.Collections.Generic;
 
 namespace Moyo.GraphProcessor
 {
-    [ViewModel(typeof(BaseGroup))]
-    public class BaseGroupProcessor : ViewModel, IGraphElementProcessor, IGraphElementProcessor_Scope
+    [ViewModel(typeof(Group))]
+    public class GroupProcessor : ViewModel, IGraphElementProcessor, IGraphElementProcessor_Scope
     {
         #region Fileds
 
-        public event Action<BaseNodeProcessor> onNodeAdded;
-        public event Action<BaseNodeProcessor> onNodeRemoved;
+        private Group model;
+        private Type modelType;
+        public event Action<BaseNodeProcessor[]> onNodeAdded;
+        public event Action<BaseNodeProcessor[]> onNodeRemoved;
 
         #endregion
 
         #region Property
 
-        public BaseGroup Model { get; }
-        public Type ModelType { get; }
-        public BaseGraphProcessor Owner { get; internal set; }
+        public Group Model => model;
+        public Type ModelType => modelType;
+
+        object IGraphElementProcessor.Model => model;
+
+        Type IGraphElementProcessor.ModelType => modelType;
 
         public int ID => Model.id;
 
         public IReadOnlyList<int> Nodes => Model.nodes;
+
+        public BaseGraphProcessor Owner { get; internal set; }
 
         public string GroupName
         {
@@ -62,19 +69,19 @@ namespace Moyo.GraphProcessor
 
         #endregion
 
-        public BaseGroupProcessor(BaseGroup model)
+        public GroupProcessor(Group model)
         {
-            Model = model;
-            ModelType = model.GetType();
-            Model.position = Model.position == default ? InternalVector2Int.zero : Model.position;
+            this.model = model;
+            this.modelType = model.GetType();
+            this.model.position = model.position == default ? InternalVector2Int.zero : model.position;
         }
 
-        internal void NotifyNodeAdded(BaseNodeProcessor node)
+        internal void NotifyNodeAdded(BaseNodeProcessor[] node)
         {
             onNodeAdded?.Invoke(node);
         }
 
-        internal void NotifyNodeRemoved(BaseNodeProcessor node)
+        internal void NotifyNodeRemoved(BaseNodeProcessor[] node)
         {
             onNodeRemoved?.Invoke(node);
         }

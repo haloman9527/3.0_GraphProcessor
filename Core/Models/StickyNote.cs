@@ -14,9 +14,12 @@
  */
 #endregion
 
+using System;
+
 namespace Moyo.GraphProcessor
 {
-    public class StickyNote
+    [Serializable]
+    public sealed class StickyNote
     {
         public int id;
         public InternalVector2Int position;

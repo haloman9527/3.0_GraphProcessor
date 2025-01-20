@@ -24,10 +24,10 @@ namespace Moyo.GraphProcessor.Editors
     public abstract partial class BasePortView
     {
         public BasePortView(BasePortProcessor port, IEdgeConnectorListener connectorListener) : this(
-            orientation: port.Orientation == BasePort.Orientation.Horizontal ? Orientation.Horizontal : Orientation.Vertical,
-            direction: port.Direction == BasePort.Direction.Left ? Direction.Input : Direction.Output,
+            orientation: (port.Direction == BasePort.Direction.Left || port.Direction == BasePort.Direction.Right) ? Orientation.Horizontal : Orientation.Vertical,
+            direction: (port.Direction == BasePort.Direction.Left || port.Direction == BasePort.Direction.Top) ? Direction.Input : Direction.Output,
             capacity: port.Capacity == BasePort.Capacity.Single ? Capacity.Single : Capacity.Multi,
-            port.Type, connectorListener)
+            port.portType, connectorListener)
         {
         }
     }

@@ -3,9 +3,9 @@
 /***
  *
  *  Title:
- *  
+ *
  *  Description:
- *  
+ *
  *  Date:
  *  Version:
  *  Writer: 半只龙虾人
@@ -19,6 +19,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 
 namespace Moyo.GraphProcessor
 {
@@ -116,6 +117,17 @@ namespace Moyo.GraphProcessor
             }
 
             s_Initialized = true;
+        }
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static T ModelAs<T>(this IGraphElementProcessor graphElement) where T : class
+        {
+            return graphElement.Model as T;
+        }
+
+        public static T Model<T>(this IGraphElementProcessor<T> graphElement) where T : class
+        {
+            return graphElement.Model as T;
         }
     }
 }
