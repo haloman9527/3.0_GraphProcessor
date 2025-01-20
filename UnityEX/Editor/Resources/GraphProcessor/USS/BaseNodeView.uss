@@ -91,6 +91,7 @@
 #node-border > #contents > #controls {
     padding-top: 1px;
     padding-bottom: 2px;
+    flex-grow: 1;
 }
 
 #node-border > #top-input {

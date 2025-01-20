@@ -1,0 +1,58 @@
+#node-border {
+    min-width: 200;
+    min-height: 200;
+    background-color: #FCD76E;
+    padding: 2px;
+}
+
+#node-border > #title {
+    display: none;
+}
+
+#contents > #divider {
+    display: none;
+}
+
+.unity-text-element {
+    -unity-font-style: normal;
+}
+
+
+#contents > #controls > #titleLabel {
+    flex-grow: 0;
+    height: 30px;
+    border-width: 1px;
+    border-color: #44C0FF;
+    font-size: 18px;
+    -unity-text-align: middle-center;
+    color: #3C3C3C;
+}
+
+#contents > #controls > #title {
+    flex-grow: 0;
+    height: 30px;
+    display: none;
+}
+
+#contents > #controls > #title > #unity-text-input > .unity-text-element {
+    font-size: 18px;
+    -unity-text-align: middle-center;
+}
+
+#contents > #controls > #contentsLabel {
+    flex-grow: 1;
+    border-width: 1px;
+    border-color: #44C0FF;
+    border-top-width: 0;
+    font-size: 15px;
+    color: #3C3C3C;
+}
+
+#contents > #controls > #contents {
+    flex-grow: 1;
+    display: none;
+}
+
+#contents > #controls > #contents > #unity-text-input > VisualElement > .unity-text-element {
+    font-size: 15px;
+}

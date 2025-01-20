@@ -174,6 +174,8 @@ namespace Moyo.GraphProcessor.Editors
             {
                 case BaseNodeView:
                     return true;
+                case StickyNoteView:
+                    return true;
             }
 
             return false;
@@ -188,26 +190,7 @@ namespace Moyo.GraphProcessor.Editors
             WithoutNotify = true;
             var nodes = elements.Where(item => item is BaseNodeView).Select(item => (item as BaseNodeView).ViewModel).ToArray();
             Owner.CommandDispatcher.Do(new AddToGroupCommand(Owner.ViewModel, this.ViewModel, nodes));
-            // foreach (var element in elements)
-            // {
-            //     switch (element)
-            //     {
-            //         case BaseNodeView nodeView:
-            //         {
-            //             try
-            //             {
-            //                 Owner.ViewModel.Groups.AddNodeToGroup(ViewModel, nodeView.ViewModel);
-            //             }
-            //             catch
-            //             {
-            //                 // ignored
-            //             }
-            //
-            //             break;
-            //         }
-            //     }
-            // }
-
+            
             Owner.SetDirty();
             WithoutNotify = tmp;
         }
@@ -220,18 +203,6 @@ namespace Moyo.GraphProcessor.Editors
             WithoutNotify = true;
             var nodes = elements.Where(item => item is BaseNodeView).Select(item => (item as BaseNodeView).ViewModel).ToArray();
             Owner.CommandDispatcher.Do(new RemoveFromGroupCommand(Owner.ViewModel, this.ViewModel, nodes));
-            // foreach (var element in elements)
-            // {
-            //     var nodeView = (BaseNodeView)element;
-            //     try
-            //     {
-            //         Owner.ViewModel.Groups.RemoveNodeFromGroup(nodeView.ViewModel);
-            //     }
-            //     catch
-            //     {
-            //         // ignored
-            //     }
-            // }
 
             Owner.SetDirty();
             WithoutNotify = tmp;

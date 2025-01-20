@@ -41,6 +41,8 @@ namespace Moyo.GraphProcessor.Editors
 
         public override void BuildContextualMenu(ContextualMenuPopulateEvent evt)
         {
+            var mousePosition = evt.mousePosition;
+            var localMousePosition = contentViewContainer.WorldToLocal(mousePosition);
             evt.menu.AppendAction("Create Group", delegate
             {
                 var group = ViewModel.NewGroup("New Group");
@@ -83,9 +85,19 @@ namespace Moyo.GraphProcessor.Editors
 
             evt.menu.AppendAction("Create Note", delegate
             {
+                var data = new StickyNode();
+                data.id = viewModel.NewID();
+                data.position = localMousePosition.ToInternalVector2Int();
+                data.title = "title";
+                data.contents = "contents";
+                CommandDispatcher.Do(new AddNodeCommand(this.ViewModel, data));
+            });
+
+            evt.menu.AppendAction("Create Note1", delegate
+            {
                 var data = new StickyNote();
                 data.id = ViewModel.NewID();
-                data.position = this.GetMousePosition().ToInternalVector2Int();
+                data.position = localMousePosition.ToInternalVector2Int();
                 data.title = "title";
                 data.content = "contents";
                 var note = ViewModelFactory.CreateViewModel(data) as StickyNoteProcessor;

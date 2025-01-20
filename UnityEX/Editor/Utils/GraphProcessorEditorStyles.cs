@@ -29,6 +29,7 @@ namespace Moyo.GraphProcessor.Editors
         public const string BasePortViewStyleFile = "GraphProcessor/USS/BasePortView";
         public const string BaseEdgeStyleFile = "GraphProcessor/USS/BaseEdgeView";
         public const string BaseGroupStyleFile = "GraphProcessor/USS/BaseGroupView";
+        public const string StickyNodeStyleFile = "GraphProcessor/USS/StickyNodeView";
 
         public static StyleSheet BasicStyle { get; } = Resources.Load<StyleSheet>(BassicStyleFile);
         public static StyleSheet BaseGraphViewStyle { get; } = Resources.Load<StyleSheet>(BaseGraphViewStyleFile);
@@ -37,6 +38,7 @@ namespace Moyo.GraphProcessor.Editors
         public static StyleSheet BasePortViewStyle { get; } = Resources.Load<StyleSheet>(BasePortViewStyleFile);
         public static StyleSheet BaseConnectionViewStyle { get; } = Resources.Load<StyleSheet>(BaseEdgeStyleFile);
         public static StyleSheet BaseGroupViewStyle { get; } = Resources.Load<StyleSheet>(BaseGroupStyleFile);
+        public static StyleSheet StickyNodeStyle { get; } = Resources.Load<StyleSheet>(StickyNodeStyleFile);
     }
 }
 #endif
