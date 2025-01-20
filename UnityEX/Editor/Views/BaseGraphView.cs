@@ -93,16 +93,16 @@ namespace Moyo.GraphProcessor.Editors
                 CommandDispatcher.Do(new AddNodeCommand(this.ViewModel, data));
             });
 
-            evt.menu.AppendAction("Create Note1", delegate
-            {
-                var data = new StickyNote();
-                data.id = ViewModel.NewID();
-                data.position = localMousePosition.ToInternalVector2Int();
-                data.title = "title";
-                data.content = "contents";
-                var note = ViewModelFactory.CreateViewModel(data) as StickyNoteProcessor;
-                CommandDispatcher.Do(() => { ViewModel.AddNote(note); }, () => { ViewModel.RemoveNote(note.ID); });
-            });
+            // evt.menu.AppendAction("Create Note1", delegate
+            // {
+            //     var data = new StickyNote();
+            //     data.id = ViewModel.NewID();
+            //     data.position = localMousePosition.ToInternalVector2Int();
+            //     data.title = "title";
+            //     data.content = "contents";
+            //     var note = ViewModelFactory.CreateViewModel(data) as StickyNoteProcessor;
+            //     CommandDispatcher.Do(() => { ViewModel.AddNote(note); }, () => { ViewModel.RemoveNote(note.ID); });
+            // });
 
             switch (evt.target)
             {
