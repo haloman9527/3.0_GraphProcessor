@@ -63,6 +63,7 @@ namespace Moyo.GraphProcessor
             this.modelType = model.GetType();
             this.model.pan = Model.pan == default ? InternalVector2Int.zero : Model.pan;
             this.model.zoom = Model.zoom == 0 ? 1 : Model.zoom;
+            this.model.notes = Model.notes == null ? new List<StickyNote>() : Model.notes;
 
             this.Events = new Events<string>();
             this.Blackboard = new BlackboardProcessor<string>(new Blackboard<string>(), Events);
@@ -72,6 +73,7 @@ namespace Moyo.GraphProcessor
             EndInitConnections();
             EndInitNodes();
             InitGroups();
+            InitNotes();
         }
 
         #region API
@@ -82,7 +84,7 @@ namespace Moyo.GraphProcessor
             do
             {
                 id++;
-            } while (nodes.ContainsKey(id) || groups.GroupMap.ContainsKey(id) || id == 0);
+            } while (nodes.ContainsKey(id) || groups.GroupMap.ContainsKey(id) || notes.ContainsKey(id) || id == 0);
 
             return id;
         }

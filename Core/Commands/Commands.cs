@@ -45,6 +45,14 @@ namespace Moyo.GraphProcessor
             {
                 switch (pair.Key)
                 {
+                    case StickyNoteProcessor note:
+                    {
+                        var rect = new Rect(note.Position.ToVector2(), note.Size.ToVector2());
+                        oldPos[pair.Key] = rect;
+                        note.Position = pair.Value.position.ToInternalVector2Int();
+                        note.Size = pair.Value.size.ToInternalVector2Int();
+                        break;
+                    }
                     default:
                     {
                         var rect = new Rect(pair.Key.Position.ToVector2(), Vector2.zero);
@@ -67,6 +75,12 @@ namespace Moyo.GraphProcessor
             {
                 switch (pair.Key)
                 {
+                    case StickyNoteProcessor note:
+                    {
+                        note.Position = pair.Value.position.ToInternalVector2Int();
+                        note.Size = pair.Value.size.ToInternalVector2Int();
+                        break;
+                    }
                     default:
                     {
                         pair.Key.Position = pair.Value.position.ToInternalVector2Int();
@@ -144,6 +158,11 @@ namespace Moyo.GraphProcessor
                         graph.RemoveNode(node);
                         break;
                     }
+                    case StickyNoteProcessor stickNote:
+                    {
+                        graph.RemoveNote(stickNote.ID);
+                        break;
+                    }
                 }
             }
         }
@@ -159,6 +178,11 @@ namespace Moyo.GraphProcessor
                     case BaseNodeProcessor node:
                     {
                         graph.AddNode(node);
+                        break;
+                    }
+                    case StickyNoteProcessor stickNote:
+                    {
+                        graph.AddNote(stickNote);
                         break;
                     }
                     case BaseConnectionProcessor connection:
@@ -195,6 +219,7 @@ namespace Moyo.GraphProcessor
                     return 1;
                 }
                 case BaseNodeProcessor:
+                case StickyNoteProcessor:
                 {
                     return 2;
                 }

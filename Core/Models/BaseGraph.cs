@@ -29,10 +29,12 @@ namespace Moyo.GraphProcessor
         [UnityEngine.SerializeReference] public List<BaseNode> nodes = new List<BaseNode>();
         [UnityEngine.SerializeReference] public List<BaseConnection> connections = new List<BaseConnection>();
         public List<Group> groups = new List<Group>();
+        public List<StickyNote> notes = new List<StickyNote>();
 #else
         public List<BaseNode> nodes = new List<BaseNode>();
         public List<BaseConnection> connections = new List<BaseConnection>();
         public List<Group> groups = new List<Group>();
+        public List<StickyNote> notes = new List<StickyNote>();
 #endif
     }
 }

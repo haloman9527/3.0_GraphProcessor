@@ -54,6 +54,8 @@ namespace Moyo.GraphProcessor.Editors
 
         public Dictionary<int, BaseNodeView> NodeViews { get; } = new Dictionary<int, BaseNodeView>();
 
+        public Dictionary<int, StickyNoteView> NoteViews { get; } = new Dictionary<int, StickyNoteView>();
+
         public Dictionary<int, BaseGroupView> GroupViews { get; } = new Dictionary<int, BaseGroupView>();
 
         public Dictionary<BaseConnectionProcessor, BaseConnectionView> ConnectionViews { get; } = new Dictionary<BaseConnectionProcessor, BaseConnectionView>();
@@ -133,6 +135,7 @@ namespace Moyo.GraphProcessor.Editors
                 yield return GraphWindow.StartCoroutine(GenerateNodeViews());
                 yield return GraphWindow.StartCoroutine(GenerateConnectionViews());
                 yield return GraphWindow.StartCoroutine(GenerateGroupViews());
+                yield return GraphWindow.StartCoroutine(GenerateNoteViews());
 
                 BindEvents();
                 OnInitialized();
@@ -196,6 +199,20 @@ namespace Moyo.GraphProcessor.Editors
             }
         }
 
+        private IEnumerator GenerateNoteViews()
+        {
+            for (int index = 0; index < ViewModel.Model.notes.Count; index++)
+            {
+                var note = ViewModel.Model.notes[index];
+                if (note == null) continue;
+                var noteProcessor = ViewModel.Notes[note.id];
+                if (noteProcessor == null) continue;
+                AddNoteView(noteProcessor);
+                if (index > 0 && index % 10 == 0)
+                    yield return null;
+            }
+        }
+
         private void BindEvents()
         {
             ViewModel.PropertyChanged += OnViewModelChanged;
@@ -208,6 +225,9 @@ namespace Moyo.GraphProcessor.Editors
 
             ViewModel.OnConnected += OnConnected;
             ViewModel.OnDisconnected += OnDisconnected;
+
+            ViewModel.OnNoteAdded += OnNoteAdded;
+            ViewModel.OnNoteRemoved += OnNoteRemoved;
         }
 
         private void UnbindEvents()
@@ -222,6 +242,9 @@ namespace Moyo.GraphProcessor.Editors
 
             ViewModel.OnConnected -= OnConnected;
             ViewModel.OnDisconnected -= OnDisconnected;
+
+            ViewModel.OnNoteAdded -= OnNoteAdded;
+            ViewModel.OnNoteRemoved -= OnNoteRemoved;
         }
 
         #endregion
@@ -295,6 +318,24 @@ namespace Moyo.GraphProcessor.Editors
             connectionView.OnDestroy();
             RemoveElement(connectionView);
             ConnectionViews.Remove(connectionView.ViewModel);
+        }
+
+
+        private void AddNoteView(StickyNoteProcessor note)
+        {
+            var noteView = new StickyNoteView();
+            noteView.SetUp(note, this);
+            noteView.OnCreate();
+            NoteViews[note.ID] = noteView;
+            AddElement(noteView);
+        }
+
+        private void RemoveNoteView(StickyNoteProcessor note)
+        {
+            var noteView = NoteViews[note.ID];
+            noteView.OnDestroy();
+            RemoveElement(noteView);
+            NoteViews.Remove(noteView.ViewModel.ID);
         }
 
         /// <summary> 获取鼠标在GraphView中的坐标，如果鼠标不在GraphView内，则返回当前GraphView显示的中心点 </summary>
@@ -382,6 +423,18 @@ namespace Moyo.GraphProcessor.Editors
         private void OnNodeRemoved(BaseNodeProcessor node)
         {
             RemoveNodeView(NodeViews[node.ID]);
+            SetDirty();
+        }
+
+        private void OnNoteAdded(StickyNoteProcessor note)
+        {
+            AddNoteView(note);
+            SetDirty();
+        }
+
+        private void OnNoteRemoved(StickyNoteProcessor note)
+        {
+            RemoveNoteView(note);
             SetDirty();
         }
 

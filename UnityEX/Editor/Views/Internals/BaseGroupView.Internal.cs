@@ -174,6 +174,8 @@ namespace Moyo.GraphProcessor.Editors
             {
                 case BaseNodeView:
                     return true;
+                case StickyNoteView:
+                    return true;
             }
 
             return false;
