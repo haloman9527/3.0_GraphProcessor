@@ -1,16 +1,11 @@
 ﻿#if UNITY_EDITOR
-using System;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 namespace Moyo.GraphProcessor.Editors
 {
     public class StickyNoteView : UnityEditor.Experimental.GraphView.StickyNote, IGraphElementView<StickyNoteProcessor>
     {
-        private TextField titleField;
-        private TextField contentsField;
-
         public StickyNoteProcessor ViewModel { get; private set; }
         public IGraphElementProcessor V => ViewModel;
 
@@ -18,9 +13,6 @@ namespace Moyo.GraphProcessor.Editors
 
         public StickyNoteView()
         {
-            var contents = this.Q<Label>("contents", (string)null);
-            this.titleField = this.Q<TextField>("title-field", (string)null);
-            this.contentsField = contents.Q<TextField>("contents-field", (string)null);
         }
 
         public void SetUp(StickyNoteProcessor note, BaseGraphView graphView)

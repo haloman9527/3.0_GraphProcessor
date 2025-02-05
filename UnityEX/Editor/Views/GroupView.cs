@@ -1,10 +1,11 @@
-#region 注 释
+﻿#region 注 释
+
 /***
  *
  *  Title:
- *  
+ *
  *  Description:
- *  
+ *
  *  Date:
  *  Version:
  *  Writer: 半只龙虾人
@@ -12,17 +13,16 @@
  *  Blog: https://www.haloman.net/
  *
  */
+
 #endregion
 
 #if UNITY_EDITOR
-using UnityEngine.UIElements;
 
 namespace Moyo.GraphProcessor.Editors
 {
     [CustomView(typeof(Group))]
-    public partial class BaseGroupView
+    public sealed partial class GroupView
     {
-        protected void BuildContextualMenu(ContextualMenuPopulateEvent obj) { }
     }
 }
 #endif

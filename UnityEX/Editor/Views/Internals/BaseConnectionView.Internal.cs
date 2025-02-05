@@ -30,7 +30,7 @@ namespace Moyo.GraphProcessor.Editors
 
         public BaseConnectionView()
         {
-            styleSheets.Add(GraphProcessorEditorStyles.BaseConnectionViewStyle);
+            styleSheets.Add(GraphProcessorEditorStyles.DefaultStyles.BaseConnectionViewStyle);
             this.RegisterCallback<MouseEnterEvent>(OnMouseEnter);
         }
 

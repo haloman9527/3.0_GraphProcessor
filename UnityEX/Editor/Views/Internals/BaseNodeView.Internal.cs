@@ -81,7 +81,7 @@ namespace Moyo.GraphProcessor.Editors
 
         public BaseNodeView()
         {
-            styleSheets.Add(GraphProcessorEditorStyles.BaseNodeViewStyle);
+            styleSheets.Add(GraphProcessorEditorStyles.DefaultStyles.BaseNodeViewStyle);
 
             var contents = mainContainer.Q("contents");
 

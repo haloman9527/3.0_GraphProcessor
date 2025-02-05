@@ -19,7 +19,7 @@
 #if UNITY_EDITOR
 using System;
 using System.Collections.Generic;
-using MoyoEditor;
+using Moyo.UnityEditors;
 using Sirenix.OdinInspector.Editor;
 
 namespace Moyo.GraphProcessor.Editors

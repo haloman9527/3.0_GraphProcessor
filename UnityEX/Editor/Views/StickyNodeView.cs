@@ -15,7 +15,7 @@ namespace Moyo.GraphProcessor.Editors
 
         public StickyNodeView()
         {
-            styleSheets.Add(GraphProcessorEditorStyles.StickyNodeStyle);
+            styleSheets.Add(GraphProcessorEditorStyles.DefaultStyles.StickyNodeStyle);
 
             title = new TextField() { name = "title" };
             titleLabel = new Label() { name = "titleLabel" };

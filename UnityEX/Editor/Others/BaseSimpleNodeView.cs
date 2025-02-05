@@ -23,7 +23,7 @@ namespace Moyo.GraphProcessor.Editors
         protected BaseSimpleNodeView() : base()
         {
             this.AddToClassList("simple-node-view");
-            styleSheets.Add(GraphProcessorEditorStyles.SimpleNodeViewStyle);
+            styleSheets.Add(GraphProcessorEditorStyles.DefaultStyles.BaseSimpleNodeViewStyle);
             m_CollapseButton.style.display = DisplayStyle.None;
         }
     }

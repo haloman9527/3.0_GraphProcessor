@@ -68,7 +68,7 @@ public class SampleGraphWindow : BaseGraphWindow
                 case BaseConnectionView connectionView:
                     connections.Add(connectionView.ViewModel.Model);
                     break;
-                case BaseGroupView groupView:
+                case GroupView groupView:
                     groups.Add(groupView.ViewModel.Model);
                     break;
             }

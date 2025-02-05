@@ -39,7 +39,7 @@ namespace Moyo.GraphProcessor.Editors
 
         protected BasePortView(Orientation orientation, Direction direction, Capacity capacity, Type type, IEdgeConnectorListener connectorListener) : base(orientation, direction, capacity, type)
         {
-            styleSheets.Add(GraphProcessorEditorStyles.BasePortViewStyle);
+            styleSheets.Add(GraphProcessorEditorStyles.DefaultStyles.BasePortViewStyle);
 
             visualClass = "port-" + portType.Name;
             this.AddToClassList("capacity-" + capacity.ToString());

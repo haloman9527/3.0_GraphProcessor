@@ -56,7 +56,7 @@ namespace Moyo.GraphProcessor.Editors
 
         public Dictionary<int, StickyNoteView> NoteViews { get; } = new Dictionary<int, StickyNoteView>();
 
-        public Dictionary<int, BaseGroupView> GroupViews { get; } = new Dictionary<int, BaseGroupView>();
+        public Dictionary<int, GroupView> GroupViews { get; } = new Dictionary<int, GroupView>();
 
         public Dictionary<BaseConnectionProcessor, BaseConnectionView> ConnectionViews { get; } = new Dictionary<BaseConnectionProcessor, BaseConnectionView>();
 
@@ -96,7 +96,7 @@ namespace Moyo.GraphProcessor.Editors
 
         public BaseGraphView()
         {
-            styleSheets.Add(GraphProcessorEditorStyles.BaseGraphViewStyle);
+            styleSheets.Add(GraphProcessorEditorStyles.DefaultStyles.BaseGraphViewStyle);
 
             Insert(0, new GridBackground());
 
@@ -269,7 +269,7 @@ namespace Moyo.GraphProcessor.Editors
             NodeViews.Remove(nodeView.ViewModel.ID);
         }
 
-        public BaseGroupView AddGroupView(GroupProcessor group)
+        public GroupView AddGroupView(GroupProcessor group)
         {
             var groupView = NewGroupView(group);
             groupView.SetUp(group, this);
@@ -279,7 +279,7 @@ namespace Moyo.GraphProcessor.Editors
             return groupView;
         }
 
-        public void RemoveGroupView(BaseGroupView groupView)
+        public void RemoveGroupView(GroupView groupView)
         {
             groupView.OnDestroy();
             groupView.RemoveElementsWithoutNotification(groupView.containedElements.ToArray());
@@ -527,7 +527,7 @@ namespace Moyo.GraphProcessor.Editors
 
                             return true;
                         }
-                        case BaseGroupView groupView:
+                        case GroupView groupView:
                         {
                             newPos[groupView.ViewModel] = groupView.GetPosition();
                             foreach (var nodeId in groupView.ViewModel.Nodes)

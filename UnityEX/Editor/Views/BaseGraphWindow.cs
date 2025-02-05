@@ -18,8 +18,7 @@
 
 #if UNITY_EDITOR
 using System;
-using MoyoEditor;
-using ThirdParty.Moyo.Moyo.GraphProcessor.UnityEX.Editor;
+using Moyo.UnityEditors;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UnityEditor;
@@ -125,11 +124,10 @@ namespace Moyo.GraphProcessor.Editors
 
         protected virtual void InitRootVisualElement()
         {
-            var tree = Resources.Load<VisualTreeAsset>(GraphProcessorEditorStyles.GraphWindowUXMLFile);
-            tree.CloneTree(rootVisualElement);
+            GraphProcessorEditorStyles.DefaultStyles.GraphWindowTree.CloneTree(rootVisualElement);
             rootVisualElement.name = "rootVisualContainer";
             rootVisualElement.RegisterCallback<KeyDownEvent>(OnKeyDownCallback, TrickleDown.TrickleDown);
-            rootVisualElement.styleSheets.Add(GraphProcessorEditorStyles.BasicStyle);
+            rootVisualElement.styleSheets.Add(GraphProcessorEditorStyles.DefaultStyles.BasicStyle);
 
             toolbarLeft = rootVisualElement.Q<Toolbar>("ToolbarLeft", "unity-toolbar");
             toolbarCenter = rootVisualElement.Q<Toolbar>("ToolbarCenter", "unity-toolbar");

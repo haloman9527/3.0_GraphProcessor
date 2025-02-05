@@ -20,7 +20,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using MoyoEditor;
+using Moyo.UnityEditors;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine.UIElements;
@@ -83,21 +83,22 @@ namespace Moyo.GraphProcessor.Editors
                 }
             });
 
-            evt.menu.AppendAction("Create Note", delegate
-            {
-                var data = new StickyNode();
-                data.id = viewModel.NewID();
-                data.position = localMousePosition.ToInternalVector2Int();
-                data.title = "title";
-                data.contents = "contents";
-                CommandDispatcher.Do(new AddNodeCommand(this.ViewModel, data));
-            });
+            // evt.menu.AppendAction("Create Note", delegate
+            // {
+            //     var data = new StickyNode();
+            //     data.id = viewModel.NewID();
+            //     data.position = localMousePosition.ToInternalVector2Int();
+            //     data.title = "title";
+            //     data.contents = "contents";
+            //     CommandDispatcher.Do(new AddNodeCommand(this.ViewModel, data));
+            // });
 
-            evt.menu.AppendAction("Create Note1", delegate
+            evt.menu.AppendAction("Create Note", delegate
             {
                 var data = new StickyNote();
                 data.id = ViewModel.NewID();
                 data.position = localMousePosition.ToInternalVector2Int();
+                data.size = new InternalVector2Int(300, 200);
                 data.title = "title";
                 data.content = "contents";
                 var note = ViewModelFactory.CreateViewModel(data) as StickyNoteProcessor;
@@ -160,9 +161,9 @@ namespace Moyo.GraphProcessor.Editors
             return Activator.CreateInstance(GraphProcessorEditorUtil.GetViewType(nodeVM.ModelType)) as BaseNodeView;
         }
 
-        protected virtual BaseGroupView NewGroupView(GroupProcessor groupVM)
+        protected virtual GroupView NewGroupView(GroupProcessor groupVM)
         {
-            return Activator.CreateInstance(GraphProcessorEditorUtil.GetViewType(groupVM.ModelType)) as BaseGroupView;
+            return Activator.CreateInstance(GraphProcessorEditorUtil.GetViewType(groupVM.ModelType)) as GroupView;
         }
 
         protected virtual BaseConnectionView NewConnectionView(BaseConnectionProcessor connectionVM)
