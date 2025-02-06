@@ -172,8 +172,8 @@ namespace Moyo.GraphProcessor.Editors
             }).Every(50);
             BuildToolBar();
 
-            GraphProcessorEditorSettings.OnMiniMapActiveChanged += OnMiniMapActiveChanged;
-            OnMiniMapActiveChanged(GraphProcessorEditorSettings.MiniMapActive);
+            GraphProcessorEditorSettings.MiniMapActive.onValueChanged += OnMiniMapActiveChanged;
+            OnMiniMapActiveChanged(GraphProcessorEditorSettings.MiniMapActive.Value);
 
             AfterLoad();
         }
@@ -204,7 +204,7 @@ namespace Moyo.GraphProcessor.Editors
             GraphOwner = null;
             commandDispatcher = null;
 
-            GraphProcessorEditorSettings.OnMiniMapActiveChanged -= OnMiniMapActiveChanged;
+            GraphProcessorEditorSettings.MiniMapActive.onValueChanged -= OnMiniMapActiveChanged;
 
             this.SetHasUnsavedChanges(false);
         }
@@ -344,7 +344,7 @@ namespace Moyo.GraphProcessor.Editors
                 text = "MiniMap",
                 tooltip = "小地图",
             };
-            togMiniMap.clicked += () => { GraphProcessorEditorSettings.MiniMapActive = !GraphProcessorEditorSettings.MiniMapActive; };
+            togMiniMap.clicked += () => { GraphProcessorEditorSettings.MiniMapActive.Value = !GraphProcessorEditorSettings.MiniMapActive.Value; };
             ToolbarLeft.Add(togMiniMap);
 
             if (graphAsset != null && graphAsset is UnityObject)
