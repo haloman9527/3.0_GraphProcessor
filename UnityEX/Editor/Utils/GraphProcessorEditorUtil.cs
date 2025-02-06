@@ -61,6 +61,13 @@ namespace Moyo.GraphProcessor.Editors
 
             return viewType;
         }
+
+        public static BaseGraph Clone(this BaseGraph graph)
+        {
+            var cloneGraph = Activator.CreateInstance(graph.GetType()) as BaseGraph;
+            EditorUtility.CopySerializedManagedFieldsOnly(graph, cloneGraph);
+            return cloneGraph;
+        }
     }
 }
 #endif

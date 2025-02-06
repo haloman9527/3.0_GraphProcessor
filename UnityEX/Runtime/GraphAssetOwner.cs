@@ -55,7 +55,7 @@ namespace Moyo.GraphProcessor
             { 
                 if (graph == null && graphAsset != null)
                 {
-                    var graphData = graphAsset.DeserializeGraph();
+                    var graphData = graphAsset.LoadGraph();
                     graph = ViewModelFactory.CreateViewModel(graphData) as TGraph;
                 }
                 

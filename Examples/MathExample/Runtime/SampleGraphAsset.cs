@@ -1,10 +1,11 @@
 #region 注 释
+
 /***
  *
  *  Title:
- *  
+ *
  *  Description:
- *  
+ *
  *  Date:
  *  Version:
  *  Writer: 半只龙虾人
@@ -12,49 +13,25 @@
  *  Blog: https://www.haloman.net/
  *
  */
+
 #endregion
+
 using Moyo.GraphProcessor;
-using Sirenix.Serialization;
 using System;
-using System.Collections.Generic;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
-using UnityObject = UnityEngine.Object;
-
 [CreateAssetMenu]
-public class SampleGraphAsset : ScriptableObject, IGraphAsset, IGraphAsset<SampleGraph>
+public class SampleGraphAsset : ScriptableObject, IGraphAsset
 {
-    [HideInInspector]
-    public byte[] serializedGraph;
-    [HideInInspector]
-    public List<UnityObject> graphUnityReferences = new List<UnityObject>();
-
-    public Type GraphType => typeof(SampleGraph);
+    [SerializeField]
+    private SampleGraph data;
     
-    public UnityObject UnityAsset => this;
+    public Type GraphType => typeof(SampleGraph);
 
-    public void SaveGraph(BaseGraph graph)
-    {
-        serializedGraph = SerializationUtility.SerializeValue(graph, DataFormat.Binary, out graphUnityReferences);
-    }
+    public void SaveGraph(BaseGraph graph) => this.data = (SampleGraph)graph;
 
-    public BaseGraph DeserializeGraph()
-    {
-        return DeserializeTGraph();
-    }
-
-    public SampleGraph DeserializeTGraph()
-    {
-        SampleGraph graph = null;
-        if (serializedGraph != null && serializedGraph.Length > 0)
-            graph = SerializationUtility.DeserializeValue<SampleGraph>(serializedGraph, DataFormat.Binary, graphUnityReferences);
-        if (graph == null)
-        {
-            graph = new SampleGraph();
-        }
-        return graph;
-    }
+    public BaseGraph LoadGraph() => data;
 
     [Button]
     public void Reset()

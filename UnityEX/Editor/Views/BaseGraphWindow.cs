@@ -82,7 +82,7 @@ namespace Moyo.GraphProcessor.Editors
             protected set
             {
                 graphAsset = value;
-                unityGraphAsset = graphAsset?.UnityAsset;
+                unityGraphAsset = graphAsset as UnityObject;
             }
         }
 
@@ -249,7 +249,7 @@ namespace Moyo.GraphProcessor.Editors
         // 从Graph资源加载
         public void LoadFromGraphAsset(IGraphAsset graphAsset)
         {
-            Load(ViewModelFactory.CreateViewModel(graphAsset.DeserializeGraph()) as BaseGraphProcessor, null, graphAsset);
+            Load(ViewModelFactory.CreateViewModel(graphAsset.LoadGraph().Clone()) as BaseGraphProcessor, null, graphAsset);
         }
 
         // 直接加载GraphVM对象
@@ -295,7 +295,7 @@ namespace Moyo.GraphProcessor.Editors
         protected virtual void OnBtnSaveClick()
         {
             if (GraphAsset is IGraphAsset graphSerialization)
-                graphSerialization.SaveGraph(GraphProcessor.Model);
+                graphSerialization.SaveGraph(GraphProcessor.Model.Clone());
 
             if (GraphAsset is UnityObject uo)
                 EditorUtility.SetDirty(uo);
@@ -347,7 +347,7 @@ namespace Moyo.GraphProcessor.Editors
             togMiniMap.clicked += () => { GraphProcessorEditorSettings.MiniMapActive = !GraphProcessorEditorSettings.MiniMapActive; };
             ToolbarLeft.Add(togMiniMap);
 
-            if (graphAsset != null && graphAsset.UnityAsset != null)
+            if (graphAsset != null && graphAsset is UnityObject)
             {
                 IMGUIContainer drawName = new IMGUIContainer(() =>
                 {

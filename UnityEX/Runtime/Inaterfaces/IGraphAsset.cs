@@ -15,23 +15,14 @@
 #endregion
 using System;
 
-using UnityObject = UnityEngine.Object;
-
 namespace Moyo.GraphProcessor
 {
     public interface IGraphAsset
     {
-        UnityObject UnityAsset { get; }
-        
         Type GraphType { get; }
         
         void SaveGraph(BaseGraph graph);
         
-        BaseGraph DeserializeGraph();
-    }
-
-    public interface IGraphAsset<T> where T : BaseGraph, new()
-    {
-        T DeserializeTGraph();
+        BaseGraph LoadGraph();
     }
 }
