@@ -51,7 +51,7 @@ namespace Moyo.GraphProcessor
             set => SetFieldValue(ref Model.zoom, value, nameof(BaseGraph.zoom));
         }
 
-        public Events<string> Events { get; }
+        public EventService<string> Events { get; }
 
         public BlackboardProcessor<string> Blackboard { get; }
 
@@ -65,7 +65,7 @@ namespace Moyo.GraphProcessor
             this.model.zoom = Model.zoom == 0 ? 1 : Model.zoom;
             this.model.notes = Model.notes == null ? new List<StickyNote>() : Model.notes;
 
-            this.Events = new Events<string>();
+            this.Events = new EventService<string>();
             this.Blackboard = new BlackboardProcessor<string>(new Blackboard<string>(), Events);
 
             BeginInitNodes();
