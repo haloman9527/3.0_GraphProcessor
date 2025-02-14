@@ -91,7 +91,7 @@ public class FlowGraphWindow : BaseGraphWindow
         {
             pair.Value.id = graph.NewID();
             pair.Value.position += new InternalVector2Int(50, 50);
-            var vm = ViewModelFactory.CreateViewModel(pair.Value) as BaseNodeProcessor;
+            var vm = ViewModelFactory.ProduceViewModel(pair.Value) as BaseNodeProcessor;
             GraphView.CommandDispatcher.Do(new AddNodeCommand(graph, vm));
             nodeMaps[pair.Key] = vm;
             GraphView.AddToSelection(GraphView.NodeViews[vm.ID]);
@@ -105,7 +105,7 @@ public class FlowGraphWindow : BaseGraphWindow
             if (nodeMaps.TryGetValue(connection.toNode, out var to))
                 connection.toNode = to.ID;
 
-            var vm = ViewModelFactory.CreateViewModel(connection) as BaseConnectionProcessor;
+            var vm = ViewModelFactory.ProduceViewModel(connection) as BaseConnectionProcessor;
             GraphView.CommandDispatcher.Do(new ConnectCommand(graph, vm));
             GraphView.AddToSelection(GraphView.ConnectionViews[vm]);
         }

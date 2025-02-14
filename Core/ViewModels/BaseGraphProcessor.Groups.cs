@@ -56,7 +56,7 @@ namespace Moyo.GraphProcessor
                         group.nodes.RemoveAt(j);
                 }
 
-                var groupVM = (GroupProcessor)ViewModelFactory.CreateViewModel(group);
+                var groupVM = (GroupProcessor)ViewModelFactory.ProduceViewModel(group);
                 groupVM.Owner = this;
                 groups.AddGroup(groupVM);
             }
@@ -86,7 +86,7 @@ namespace Moyo.GraphProcessor
                 id = NewID(),
                 groupName = groupName
             };
-            return ViewModelFactory.CreateViewModel(group) as GroupProcessor;
+            return ViewModelFactory.ProduceViewModel(group) as GroupProcessor;
         }
 
         #endregion

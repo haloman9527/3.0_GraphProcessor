@@ -59,7 +59,7 @@ namespace Moyo.GraphProcessor
                     continue;
                 }
 
-                var connectionVM = (BaseConnectionProcessor)ViewModelFactory.CreateViewModel(connection);
+                var connectionVM = (BaseConnectionProcessor)ViewModelFactory.ProduceViewModel(connection);
                 connectionVM.Owner = this;
                 fromPort.connections.Add(connectionVM);
                 toPort.connections.Add(connectionVM);
@@ -202,7 +202,7 @@ namespace Moyo.GraphProcessor
                 toNode = to.Owner.ID,
                 toPort = to.Name
             };
-            return ViewModelFactory.CreateViewModel(connection) as BaseConnectionProcessor;
+            return ViewModelFactory.ProduceViewModel(connection) as BaseConnectionProcessor;
         }
 
         #endregion

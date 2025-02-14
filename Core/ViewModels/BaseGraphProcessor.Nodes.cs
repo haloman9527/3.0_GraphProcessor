@@ -45,7 +45,7 @@ namespace Moyo.GraphProcessor
             {
                 if (node == null)
                     continue;
-                var nodeProcessor = (BaseNodeProcessor)ViewModelFactory.CreateViewModel(node);
+                var nodeProcessor = (BaseNodeProcessor)ViewModelFactory.ProduceViewModel(node);
                 nodeProcessor.Owner = this;
                 nodes.Add(node.id, nodeProcessor);
             }
@@ -75,7 +75,7 @@ namespace Moyo.GraphProcessor
 
         public BaseNodeProcessor AddNode(BaseNode node)
         {
-            var nodeVM = ViewModelFactory.CreateViewModel(node) as BaseNodeProcessor;
+            var nodeVM = ViewModelFactory.ProduceViewModel(node) as BaseNodeProcessor;
             AddNode(nodeVM);
             return nodeVM;
         }
@@ -114,7 +114,7 @@ namespace Moyo.GraphProcessor
             var node = Activator.CreateInstance(nodeType) as BaseNode;
             node.id = NewID();
             node.position = position;
-            return ViewModelFactory.CreateViewModel(node) as BaseNodeProcessor;
+            return ViewModelFactory.ProduceViewModel(node) as BaseNodeProcessor;
         }
 
         public virtual BaseNodeProcessor NewNode<TNode>(InternalVector2Int position) where TNode : BaseNode, new()
@@ -124,7 +124,7 @@ namespace Moyo.GraphProcessor
                 id = NewID(),
                 position = position
             };
-            return ViewModelFactory.CreateViewModel(node) as BaseNodeProcessor;
+            return ViewModelFactory.ProduceViewModel(node) as BaseNodeProcessor;
         }
 
         #endregion

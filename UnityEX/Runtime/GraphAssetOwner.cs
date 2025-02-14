@@ -56,7 +56,7 @@ namespace Moyo.GraphProcessor
                 if (graph == null && graphAsset != null)
                 {
                     var graphData = graphAsset.LoadGraph();
-                    graph = ViewModelFactory.CreateViewModel(graphData) as TGraph;
+                    graph = ViewModelFactory.ProduceViewModel(graphData) as TGraph;
                 }
                 
                 return graph;

@@ -43,7 +43,7 @@ namespace Moyo.GraphProcessor
             this.notes = new Dictionary<int, StickyNoteProcessor>(System.Math.Min(Model.connections.Count, 4));
             foreach (var note in model.notes)
             {
-                notes.Add(note.id, (StickyNoteProcessor)ViewModelFactory.CreateViewModel(note));
+                notes.Add(note.id, (StickyNoteProcessor)ViewModelFactory.ProduceViewModel(note));
             }
         }
 
@@ -56,7 +56,7 @@ namespace Moyo.GraphProcessor
             note.position = position;
             note.title = title;
             note.content = content;
-            var noteVm = ViewModelFactory.CreateViewModel(note) as StickyNoteProcessor;
+            var noteVm = ViewModelFactory.ProduceViewModel(note) as StickyNoteProcessor;
 
             AddNote(noteVm);
         }

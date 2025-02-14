@@ -249,7 +249,7 @@ namespace Moyo.GraphProcessor.Editors
         // 从Graph资源加载
         public void LoadFromGraphAsset(IGraphAsset graphAsset)
         {
-            Load(ViewModelFactory.CreateViewModel(graphAsset.LoadGraph().Clone()) as BaseGraphProcessor, null, graphAsset);
+            Load(ViewModelFactory.ProduceViewModel(graphAsset.LoadGraph().Clone()) as BaseGraphProcessor, null, graphAsset);
         }
 
         // 直接加载GraphVM对象
@@ -261,7 +261,7 @@ namespace Moyo.GraphProcessor.Editors
         // 直接加载Graph对象
         public void LoadFromGraph(BaseGraph graph)
         {
-            Load(ViewModelFactory.CreateViewModel(graph) as BaseGraphProcessor, null, null);
+            Load(ViewModelFactory.ProduceViewModel(graph) as BaseGraphProcessor, null, null);
         }
 
         public void SetHasUnsavedChanges(bool value)

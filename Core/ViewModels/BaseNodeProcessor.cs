@@ -130,7 +130,7 @@ namespace Moyo.GraphProcessor
 
         public BasePortProcessor AddPort(BasePort port)
         {
-            var portVM = ViewModelFactory.CreateViewModel(port) as BasePortProcessor;
+            var portVM = ViewModelFactory.ProduceViewModel(port) as BasePortProcessor;
             AddPort(portVM);
             return portVM;
         }

@@ -101,7 +101,7 @@ namespace Moyo.GraphProcessor.Editors
                 data.size = new InternalVector2Int(300, 200);
                 data.title = "title";
                 data.content = "contents";
-                var note = ViewModelFactory.CreateViewModel(data) as StickyNoteProcessor;
+                var note = ViewModelFactory.ProduceViewModel(data) as StickyNoteProcessor;
                 CommandDispatcher.Do(() => { ViewModel.AddNote(note); }, () => { ViewModel.RemoveNote(note.ID); });
             });
 

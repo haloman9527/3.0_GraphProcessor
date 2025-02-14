@@ -243,7 +243,7 @@ namespace Moyo.GraphProcessor
         public AddNodeCommand(BaseGraphProcessor graph, BaseNode node)
         {
             this.graph = graph;
-            this.nodeVM = ViewModelFactory.CreateViewModel(node) as BaseNodeProcessor;
+            this.nodeVM = ViewModelFactory.ProduceViewModel(node) as BaseNodeProcessor;
         }
 
         public AddNodeCommand(BaseGraphProcessor graph, BaseNodeProcessor node)
@@ -282,7 +282,7 @@ namespace Moyo.GraphProcessor
         public AddGroupCommand(BaseGraphProcessor graph, Group group)
         {
             this.graph = graph;
-            this.group = ViewModelFactory.CreateViewModel(group) as GroupProcessor;
+            this.group = ViewModelFactory.ProduceViewModel(group) as GroupProcessor;
         }
 
         public void Do()
