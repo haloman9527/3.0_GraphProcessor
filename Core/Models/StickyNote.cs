@@ -16,7 +16,7 @@
 
 using System;
 
-namespace Moyo.GraphProcessor
+namespace Atom.GraphProcessor
 {
     [Serializable]
     public sealed class StickyNote

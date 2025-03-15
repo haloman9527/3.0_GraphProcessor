@@ -15,7 +15,7 @@
 #endregion
 using System;
 
-namespace Moyo.GraphProcessor
+namespace Atom.GraphProcessor
 {
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
     public class NodeTooltipAttribute : Attribute

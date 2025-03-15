@@ -16,11 +16,11 @@
 
 #endregion
 
-using Moyo;
+using Atom;
 using System;
 using System.Collections.Generic;
 
-namespace Moyo.GraphProcessor
+namespace Atom.GraphProcessor
 {
     [ViewModel(typeof(Group))]
     public class GroupProcessor : ViewModel, IGraphElementProcessor, IGraphElementProcessor_Scope

@@ -1,4 +1,4 @@
-﻿namespace Moyo.GraphProcessor.Editors
+﻿namespace Atom.GraphProcessor.Editors
 {
     public class GraphViewContext
     {

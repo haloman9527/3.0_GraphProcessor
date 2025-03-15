@@ -21,7 +21,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
-namespace Moyo.GraphProcessor
+namespace Atom.GraphProcessor
 {
     public struct ToggleValue<T>
     {

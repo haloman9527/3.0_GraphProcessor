@@ -18,7 +18,7 @@
 
 using System;
 
-namespace Moyo.GraphProcessor
+namespace Atom.GraphProcessor
 {
     [Serializable]
     public abstract class BaseNode

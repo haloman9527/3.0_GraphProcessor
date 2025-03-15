@@ -20,7 +20,7 @@
 using UnityEditor.Experimental.GraphView;
 using UnityEngine.UIElements;
 
-namespace Moyo.GraphProcessor.Editors
+namespace Atom.GraphProcessor.Editors
 {
     public partial class BaseConnectionView : Edge, IGraphElementView<BaseConnectionProcessor>
     {

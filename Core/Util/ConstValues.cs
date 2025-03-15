@@ -1,4 +1,4 @@
-﻿namespace Moyo.GraphProcessor
+﻿namespace Atom.GraphProcessor
 {
     public static class ConstValues
     {

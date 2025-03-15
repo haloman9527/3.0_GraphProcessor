@@ -32,7 +32,7 @@ MonoBehaviour:
     version: 2
     RefIds:
     - rid: 1085762372946362627
-      type: {class: FloatNode, ns: , asm: Moyo.GraphProcessor}
+      type: {class: FloatNode, ns: , asm: Atom.GraphProcessor}
       data:
         id: 1
         position:
@@ -40,7 +40,7 @@ MonoBehaviour:
           y: 238
         num: 1
     - rid: 1085762372946362628
-      type: {class: FloatNode, ns: , asm: Moyo.GraphProcessor}
+      type: {class: FloatNode, ns: , asm: Atom.GraphProcessor}
       data:
         id: 2
         position:
@@ -48,35 +48,35 @@ MonoBehaviour:
           y: 306
         num: 2
     - rid: 1085762372946362629
-      type: {class: AddNode, ns: , asm: Moyo.GraphProcessor}
+      type: {class: AddNode, ns: , asm: Atom.GraphProcessor}
       data:
         id: 3
         position:
           x: 539
           y: 244
     - rid: 1085762372946362630
-      type: {class: LogNode, ns: , asm: Moyo.GraphProcessor}
+      type: {class: LogNode, ns: , asm: Atom.GraphProcessor}
       data:
         id: 4
         position:
           x: 692
           y: 264
     - rid: 1085762372946362631
-      type: {class: BaseConnection, ns: Moyo.GraphProcessor, asm: Moyo.GraphProcessor}
+      type: {class: BaseConnection, ns: Atom.GraphProcessor, asm: Atom.GraphProcessor}
       data:
         fromNode: 1
         fromPort: Flow-Out
         toNode: 3
         toPort: InputA
     - rid: 1085762372946362632
-      type: {class: BaseConnection, ns: Moyo.GraphProcessor, asm: Moyo.GraphProcessor}
+      type: {class: BaseConnection, ns: Atom.GraphProcessor, asm: Atom.GraphProcessor}
       data:
         fromNode: 2
         fromPort: Flow-Out
         toNode: 3
         toPort: InputB
     - rid: 1085762372946362633
-      type: {class: BaseConnection, ns: Moyo.GraphProcessor, asm: Moyo.GraphProcessor}
+      type: {class: BaseConnection, ns: Atom.GraphProcessor, asm: Atom.GraphProcessor}
       data:
         fromNode: 3
         fromPort: Flow-Out

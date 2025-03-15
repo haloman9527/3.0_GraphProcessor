@@ -22,13 +22,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using ThirdParty.Moyo.Moyo.GraphProcessor.UnityEX.Editor;
-using UnityEditor;
+using Atom.GraphProcessor.UnityEX.Editor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Moyo.GraphProcessor.Editors
+namespace Atom.GraphProcessor.Editors
 {
     public partial class BaseGraphView : GraphView
     {

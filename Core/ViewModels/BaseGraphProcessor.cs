@@ -18,9 +18,9 @@
 
 using System;
 using System.Collections.Generic;
-using Moyo;
+using Atom;
 
-namespace Moyo.GraphProcessor
+namespace Atom.GraphProcessor
 {
     [ViewModel(typeof(BaseGraph))]
     public partial class BaseGraphProcessor : ViewModel

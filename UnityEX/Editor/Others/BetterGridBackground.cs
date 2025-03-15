@@ -24,7 +24,7 @@ using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Moyo.GraphProcessor.Editors
+namespace Atom.GraphProcessor.Editors
 {
     public class BetterGridBackground : GridBackground
     {

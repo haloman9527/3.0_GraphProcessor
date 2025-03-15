@@ -16,11 +16,11 @@
 
 #endregion
 
-using Moyo;
+using Atom;
 using System;
 using System.Collections.Generic;
 
-namespace Moyo.GraphProcessor
+namespace Atom.GraphProcessor
 {
     [ViewModel(typeof(BaseConnection))]
     public class BaseConnectionProcessor : ViewModel, IGraphElementProcessor

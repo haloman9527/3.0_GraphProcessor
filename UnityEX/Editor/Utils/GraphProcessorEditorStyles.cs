@@ -20,7 +20,7 @@
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Moyo.GraphProcessor.Editors
+namespace Atom.GraphProcessor.Editors
 {
     public static class GraphProcessorEditorStyles
     {

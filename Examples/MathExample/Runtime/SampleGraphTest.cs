@@ -13,7 +13,7 @@
  *
  */
 #endregion
-using Moyo.GraphProcessor;
+using Atom.GraphProcessor;
 using UnityEngine;
 
 public class SampleGraphTest : GraphAssetOwner<SampleGraphAsset, SampleGraphProcessor>

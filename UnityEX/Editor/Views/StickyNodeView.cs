@@ -3,7 +3,7 @@ using UnityEngine.UIElements;
 
 #if UNITY_EDITOR
 
-namespace Moyo.GraphProcessor.Editors
+namespace Atom.GraphProcessor.Editors
 {
     [CustomView(typeof(StickyNode))]
     public sealed class StickyNodeView : BaseNodeView

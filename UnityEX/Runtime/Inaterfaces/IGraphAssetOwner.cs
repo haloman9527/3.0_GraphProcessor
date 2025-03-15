@@ -17,7 +17,7 @@ using System;
 
 using UnityObject = UnityEngine.Object;
 
-namespace Moyo.GraphProcessor
+namespace Atom.GraphProcessor
 {
     public interface IGraphAssetOwner : IGraphOwner
     {

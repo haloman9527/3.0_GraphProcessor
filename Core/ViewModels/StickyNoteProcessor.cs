@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Moyo.GraphProcessor
+namespace Atom.GraphProcessor
 {
     [ViewModel(typeof(StickyNote))]
     public sealed class StickyNoteProcessor : ViewModel, IGraphElementProcessor, IGraphElementProcessor_Scope

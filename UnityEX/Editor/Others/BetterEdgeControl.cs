@@ -23,7 +23,7 @@ using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using PortViewOrientation = UnityEditor.Experimental.GraphView.Orientation;
 
-namespace Moyo.GraphProcessor.Editors
+namespace Atom.GraphProcessor.Editors
 {
     public class BetterEdgeControl : EdgeControl
     {

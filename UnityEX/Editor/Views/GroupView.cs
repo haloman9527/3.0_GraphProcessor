@@ -18,7 +18,7 @@
 
 #if UNITY_EDITOR
 
-namespace Moyo.GraphProcessor.Editors
+namespace Atom.GraphProcessor.Editors
 {
     [CustomView(typeof(Group))]
     public sealed partial class GroupView

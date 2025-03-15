@@ -15,7 +15,7 @@
 #endregion
 using System;
 
-namespace Moyo.GraphProcessor
+namespace Atom.GraphProcessor
 {
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
     public class NodeTitleColorAttribute : Attribute

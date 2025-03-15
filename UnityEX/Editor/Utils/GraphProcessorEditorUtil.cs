@@ -19,10 +19,10 @@
 #if UNITY_EDITOR
 using System;
 using System.Collections.Generic;
-using Moyo;
+using Atom;
 using UnityEditor;
 
-namespace Moyo.GraphProcessor.Editors
+namespace Atom.GraphProcessor.Editors
 {
     public static class GraphProcessorEditorUtil
     {

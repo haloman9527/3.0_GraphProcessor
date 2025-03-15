@@ -14,7 +14,7 @@
  */
 #endregion
 
-namespace Moyo.GraphProcessor
+namespace Atom.GraphProcessor
 {
     public interface IGetPortValue
     {

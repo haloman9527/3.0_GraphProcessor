@@ -1,7 +1,6 @@
-﻿using Moyo.GraphProcessor;
-using UnityEngine;
+﻿using UnityEngine;
 
-namespace ThirdParty.Moyo.Moyo.GraphProcessor.UnityEX.Editor
+namespace Atom.GraphProcessor.UnityEX.Editor
 {
     public class InspectObject : ScriptableObject
     {

@@ -16,7 +16,7 @@
 #if UNITY_EDITOR
 using System;
 
-namespace Moyo.GraphProcessor.Editors
+namespace Atom.GraphProcessor.Editors
 {
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
     public class CustomViewAttribute : Attribute

@@ -56,14 +56,14 @@ MonoBehaviour:
     version: 2
     RefIds:
     - rid: 1085762372946362538
-      type: {class: StartNode, ns: , asm: Moyo.GraphProcessor}
+      type: {class: StartNode, ns: , asm: Atom.GraphProcessor}
       data:
         id: 0
         position:
           x: 100
           y: 100
     - rid: 1085762372946362539
-      type: {class: SVNUpdateNode, ns: , asm: Moyo.GraphProcessor}
+      type: {class: SVNUpdateNode, ns: , asm: Atom.GraphProcessor}
       data:
         id: 1
         position:
@@ -71,21 +71,21 @@ MonoBehaviour:
           y: 100
         folders: []
     - rid: 1085762372946362540
-      type: {class: RefreshWwiseNode, ns: , asm: Moyo.GraphProcessor}
+      type: {class: RefreshWwiseNode, ns: , asm: Atom.GraphProcessor}
       data:
         id: 2
         position:
           x: 228
           y: 100
     - rid: 1085762372946362541
-      type: {class: BaseConnection, ns: Moyo.GraphProcessor, asm: Moyo.GraphProcessor}
+      type: {class: BaseConnection, ns: Atom.GraphProcessor, asm: Atom.GraphProcessor}
       data:
         fromNode: 0
         fromPort: Flow-Out
         toNode: 2
         toPort: Flow-In
     - rid: 1085762372946362542
-      type: {class: BaseConnection, ns: Moyo.GraphProcessor, asm: Moyo.GraphProcessor}
+      type: {class: BaseConnection, ns: Atom.GraphProcessor, asm: Atom.GraphProcessor}
       data:
         fromNode: 2
         fromPort: Flow-Out

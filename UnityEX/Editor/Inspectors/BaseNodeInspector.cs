@@ -19,10 +19,10 @@
 #if UNITY_EDITOR
 using System;
 using System.Collections.Generic;
-using Moyo.UnityEditors;
+using Atom.UnityEditors;
 using Sirenix.OdinInspector.Editor;
 
-namespace Moyo.GraphProcessor.Editors
+namespace Atom.GraphProcessor.Editors
 {
     [CustomObjectEditor(typeof(BaseNodeView))]
     public class BaseNodeInspector : ObjectEditor

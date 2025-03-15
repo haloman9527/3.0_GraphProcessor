@@ -17,11 +17,11 @@
 #endregion
 
 #if UNITY_EDITOR
-using Moyo.UnityEditors;
+using Atom.UnityEditors;
 using UnityEngine;
 using Sirenix.OdinInspector.Editor;
 
-namespace Moyo.GraphProcessor.Editors
+namespace Atom.GraphProcessor.Editors
 {
     [CustomObjectEditor(typeof(BaseGraphView))]
     public class BaseGraphInspector : ObjectEditor

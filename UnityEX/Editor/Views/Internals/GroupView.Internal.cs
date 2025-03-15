@@ -27,7 +27,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using GroupView = UnityEditor.Experimental.GraphView.Group;
 
-namespace Moyo.GraphProcessor.Editors
+namespace Atom.GraphProcessor.Editors
 {
     public sealed partial class GroupView : UnityEditor.Experimental.GraphView.Group, IGraphElementView<GroupProcessor>
     {

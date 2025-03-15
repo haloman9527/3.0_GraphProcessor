@@ -15,7 +15,7 @@
 #endregion
 
 #if UNITY_EDITOR
-using Moyo.GraphProcessor.Editors;
+using Atom.GraphProcessor.Editors;
 using UnityEditor.Experimental.GraphView;
 
 public class SampleConnectionView : BaseConnectionView

@@ -17,7 +17,7 @@
 using UnityEngine;
 using UnityEditor.Experimental.GraphView;
 
-namespace Moyo.GraphProcessor.Editors
+namespace Atom.GraphProcessor.Editors
 {
     public class EdgeConnectorListener : IEdgeConnectorListener
     {

@@ -15,12 +15,12 @@
 #endregion
 
 using System;
-using Moyo;
+using Atom;
 using UnityEngine;
 
 using UnityObject = UnityEngine.Object;
 
-namespace Moyo.GraphProcessor
+namespace Atom.GraphProcessor
 {
     public abstract class GraphAssetOwner<TGraphAsset, TGraph> : MonoBehaviour, IGraphAssetOwner
         where TGraphAsset : UnityObject, IGraphAsset
