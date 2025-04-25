@@ -79,15 +79,15 @@ namespace Atom.GraphProcessor
 
         public BaseConnectionProcessor Connect(BasePortProcessor fromPort, BasePortProcessor toPort)
         {
-            var tmpConnection = fromPort.Connections.FirstOrDefault(tmp => tmp.FromNode == fromPort.Owner && tmp.ToPortName == toPort.Name);
-            if (tmpConnection != null)
-                return tmpConnection;
+            var connection = fromPort.Connections.FirstOrDefault(tmp => tmp.FromPort == fromPort && tmp.ToPort == toPort);
+            if (connection != null)
+                return connection;
 
             if (fromPort.Capacity == BasePort.Capacity.Single)
                 Disconnect(fromPort);
             if (toPort.Capacity == BasePort.Capacity.Single)
                 Disconnect(toPort);
-            var connection = NewConnection(fromPort, toPort);
+            connection = NewConnection(fromPort, toPort);
             connection.Owner = this;
             connection.Enable();
             connections.Add(connection);
