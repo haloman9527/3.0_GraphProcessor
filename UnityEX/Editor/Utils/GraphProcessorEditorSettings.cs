@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿#if UNITY_EDITOR
+using System.Runtime.CompilerServices;
 using Atom.UnityEditors;
 
 namespace Atom.GraphProcessor.Editors
@@ -13,3 +14,4 @@ namespace Atom.GraphProcessor.Editors
         }
     }
 }
+#endif

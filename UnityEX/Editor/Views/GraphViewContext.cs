@@ -1,4 +1,5 @@
-﻿namespace Atom.GraphProcessor.Editors
+﻿#if UNITY_EDITOR
+namespace Atom.GraphProcessor.Editors
 {
     public class GraphViewContext
     {
@@ -7,3 +8,4 @@
         public CommandDispatcher commandDispatcher;
     }
 }
+#endif
