@@ -31,7 +31,7 @@ namespace Atom.GraphProcessor.Editors
     {
         List<Port> compatiblePorts = new List<Port>();
 
-        protected virtual void OnInitialized()
+        protected virtual void OnCreated()
         {
         }
 
@@ -47,7 +47,7 @@ namespace Atom.GraphProcessor.Editors
             {
                 var group = ViewModel.NewGroup("New Group");
                 group.Model.nodes.AddRange(selection.Where(select => select is BaseNodeView).Select(select => (select as BaseNodeView).ViewModel.ID));
-                CommandDispatcher.Do(new AddGroupCommand(ViewModel, group));
+                this.Context.Do(new AddGroupCommand(ViewModel, group));
             }, (DropdownMenuAction a) => canDeleteSelection && selection.Find(s => s is BaseNodeView) != null ? DropdownMenuAction.Status.Normal : DropdownMenuAction.Status.Hidden);
 
             base.BuildContextualMenu(evt);
@@ -102,7 +102,7 @@ namespace Atom.GraphProcessor.Editors
                 data.title = "title";
                 data.content = "contents";
                 var note = ViewModelFactory.ProduceViewModel(data) as StickyNoteProcessor;
-                CommandDispatcher.Do(() => { ViewModel.AddNote(note); }, () => { ViewModel.RemoveNote(note.ID); });
+                this.Context.Do(() => { ViewModel.AddNote(note); }, () => { ViewModel.RemoveNote(note.ID); });
             });
 
             switch (evt.target)

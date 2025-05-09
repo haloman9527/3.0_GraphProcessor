@@ -20,9 +20,9 @@ namespace Atom.GraphProcessor.Editors
     {
         IGraphElementProcessor V { get; }
         
-        void OnCreate();
+        void Init();
         
-        void OnDestroy();
+        void UnInit();
     }
 
     public interface IGraphElementView<T> : IGraphElementView where T: IGraphElementProcessor

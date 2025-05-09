@@ -17,6 +17,7 @@
 #endregion
 
 #if UNITY_EDITOR
+using System.Collections.ObjectModel;
 using Atom;
 using Atom.GraphProcessor.Editors;
 using UnityEditor.UIElements;
@@ -27,36 +28,35 @@ public class FloatNodeView : BaseNodeView
 {
     public FloatField valueField;
 
-    protected override void OnInitialized()
+    public FloatNodeView()
     {
-        base.OnInitialized();
-        var vm = ViewModel as FloatNodeProcessor;
-
         valueField = new FloatField();
         valueField.style.marginLeft = 3;
         valueField.style.marginRight = 3;
-        // valueField.style.minWidth = 50;
-        valueField.SetValueWithoutNotify(vm.Value);
-        valueField.RegisterValueChangedCallback(OnEditedValue);
+        valueField.RegisterValueChangedCallback(OnFloatFieldChanged);
         controls.Add(valueField);
     }
 
-    private void OnEditedValue(ChangeEvent<float> evt)
+    protected override void DoInit()
     {
-        var vm = ViewModel as FloatNodeProcessor;
-        vm.Value = evt.newValue;
+        base.DoInit();
+        var v = ViewModel as FloatNodeProcessor;
+        this.valueField.SetValueWithoutNotify(v.Value);
+        this.ViewModel.RegisterValueChanged<float>(nameof(FloatNode.num), OnFloatNumChanged);
     }
 
-    protected override void OnBindingProperties()
+    protected override void DoUnInit()
     {
-        base.OnBindingProperties();
-        ViewModel.RegisterValueChanged<float>(nameof(FloatNode.num), OnFloatNumChanged);
+        ObservableCollection<int> a = new ObservableCollection<int>();
+        a.Add(0);
+        this.ViewModel.UnregisterValueChanged<float>(nameof(FloatNode.num), OnFloatNumChanged);
+        base.DoUnInit();
     }
 
-    protected override void OnUnBindingProperties()
+    private void OnFloatFieldChanged(ChangeEvent<float> evt)
     {
-        base.OnUnBindingProperties();
-        ViewModel.UnregisterValueChanged<float>(nameof(FloatNode.num), OnFloatNumChanged);
+        var v = ViewModel as FloatNodeProcessor;
+        v.Value = evt.newValue;
     }
 
     private void OnFloatNumChanged(ViewModel.ValueChangedArg<float> arg)

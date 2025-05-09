@@ -22,11 +22,5 @@ using UnityEngine.UIElements;
 
 public abstract class ExampleNodeView : BaseNodeView
 {
-    protected override void OnInitialized()
-    {
-        base.OnInitialized();
-        
-        
-    }
 }
 #endif

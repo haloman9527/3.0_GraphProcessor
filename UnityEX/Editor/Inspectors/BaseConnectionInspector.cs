@@ -16,6 +16,8 @@
 #if UNITY_EDITOR
 using Atom.UnityEditors;
 using Sirenix.OdinInspector.Editor;
+using UnityEditor;
+using UnityEngine;
 
 namespace Atom.GraphProcessor.Editors
 {
@@ -26,33 +28,57 @@ namespace Atom.GraphProcessor.Editors
 
         public override void OnEnable()
         {
-            var view = Target as BaseConnectionView;
-            if (view.ViewModel != null)
+            var view = Target as BaseNodeView;
+            if (view == null || view.ViewModel == null)
+                return;
+            if (view.BindingProperty != null)
+            {
+            }
+            else
+            {
                 propertyTree = PropertyTree.Create(view.ViewModel.Model);
+                propertyTree.DrawMonoScriptObjectField = true;
+            }
         }
 
-        public override void OnInspectorGUI()
+        public override sealed void OnInspectorGUI()
         {
             var view = Target as BaseConnectionView;
             if (view == null || view.ViewModel == null)
                 return;
-            if (propertyTree == null)
-                return;
-            propertyTree.BeginDraw(false);
-            foreach (var property in propertyTree.EnumerateTree(false, true))
+
+            if (false && view.BindingProperty != null)
             {
-                switch (property.Name)
+                view.BindingProperty.serializedObject.Update();
+                EditorGUILayout.PropertyField(view.BindingProperty, GUIContent.none, true);
+                if (view.BindingProperty.serializedObject.hasModifiedProperties)
                 {
-                    case nameof(BaseConnection.fromNode):
-                    case nameof(BaseConnection.fromPort):
-                    case nameof(BaseConnection.toNode):
-                    case nameof(BaseConnection.toPort):
-                        continue;
+                    view.BindingProperty.serializedObject.ApplyModifiedProperties();
                 }
-                property.Draw();
+
+                SourceEditor?.Repaint();
             }
-            propertyTree.EndDraw();
-            SourceEditor.Repaint();
+            else
+            {
+                if (propertyTree != null)
+                {
+                    propertyTree.BeginDraw(false);
+                    foreach (var property in propertyTree.EnumerateTree(false, true))
+                    {
+                        switch (property.Name)
+                        {
+                            case nameof(BaseConnection.fromNode):
+                            case nameof(BaseConnection.fromPort):
+                            case nameof(BaseConnection.toNode):
+                            case nameof(BaseConnection.toPort):
+                                continue;
+                        }
+                        property.Draw();
+                    }
+                    propertyTree.EndDraw();
+                    SourceEditor.Repaint();
+                }
+            }
         }
 
         public override void OnDisable()

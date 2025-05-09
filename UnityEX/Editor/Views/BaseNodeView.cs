@@ -28,18 +28,6 @@ namespace Atom.GraphProcessor.Editors
 {
     public abstract partial class BaseNodeView
     {
-        protected virtual void OnInitialized()
-        {
-        }
-
-        protected virtual void OnBindingProperties()
-        {
-        }
-
-        protected virtual void OnUnBindingProperties()
-        {
-        }
-
         protected virtual BasePortView NewPortView(BasePortProcessor port)
         {
             return Activator.CreateInstance(GraphProcessorEditorUtil.GetViewType(port.ModelType), port, new EdgeConnectorListener()) as BasePortView;
@@ -66,9 +54,17 @@ namespace Atom.GraphProcessor.Editors
             BringToFront();
         }
 
-        public virtual bool DrawingControls()
+        public virtual bool CheckDrawControls()
         {
             return controls.childCount > 0;
+        }
+
+        protected virtual void DoInit()
+        {
+        }
+
+        protected virtual void DoUnInit()
+        {
         }
 
         public void HighlightOn()

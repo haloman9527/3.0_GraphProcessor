@@ -26,7 +26,9 @@ namespace Atom.GraphProcessor
     {
         #region Fields
 
+        private BaseGraphProcessor owner;
         private BaseNode model;
+        private int index;
         private Type modelType;
         private string title;
         private string tooltip;
@@ -38,6 +40,7 @@ namespace Atom.GraphProcessor
 
         public event Action<BasePortProcessor> onPortAdded;
         public event Action<BasePortProcessor> onPortRemoved;
+        public event Action<int, int> onIndexChanged;
 
         #endregion
 
@@ -83,7 +86,25 @@ namespace Atom.GraphProcessor
 
         public IReadOnlyDictionary<string, BasePortProcessor> Ports => ports;
 
-        public BaseGraphProcessor Owner { get; internal set; }
+        public BaseGraphProcessor Owner
+        {
+            get => owner;
+            internal set => owner = value;
+        }
+
+        public int Index
+        {
+            get => index;
+            set
+            {
+                if (index == value)
+                    return;
+
+                var oldIndex = index;
+                index = value;
+                onIndexChanged?.Invoke(oldIndex, index);
+            }
+        }
 
         #endregion
 
@@ -117,6 +138,7 @@ namespace Atom.GraphProcessor
         }
 
         #region API
+
         public IEnumerable<BaseNodeProcessor> GetConnections(string portName)
         {
             if (!Ports.TryGetValue(portName, out var port))

@@ -3,9 +3,9 @@
 /***
  *
  *  Title:
- *  
+ *
  *  Description:
- *  
+ *
  *  Date:
  *  Version:
  *  Writer: 半只龙虾人
@@ -75,33 +75,33 @@ namespace Atom.GraphProcessor.Editors
             this.AddManipulator(m_EdgeConnector);
         }
 
+        #region Initialize
+
         public void SetUp(BasePortProcessor port, BaseGraphView graphView)
         {
             ViewModel = port;
             GraphView = graphView;
+        }
 
-            portName = ViewModel.Name;
-            tooltip = ViewModel.Name;
+        public void Init()
+        {
+            this.portName = ViewModel.Name;
+            this.tooltip = ViewModel.Name;
 
             if (ViewModel.HideLabel)
-                PortLabel.AddToClassList("hidden");
+                this.PortLabel.AddToClassList("hidden");
 
-            OnInitialized();
-        }
-
-        public void OnCreate()
-        {
             ViewModel.PropertyChanged += OnViewModelChanged;
-
-            OnBindingProperties();
+            this.DoInit();
         }
 
-        public void OnDestroy()
+        public void UnInit()
         {
             ViewModel.PropertyChanged -= OnViewModelChanged;
-
-            OnUnBindingProperties();
+            this.DoUnInit();
         }
+
+        #endregion
 
         #region Callback
 
@@ -144,18 +144,6 @@ namespace Atom.GraphProcessor.Editors
             {
                 ConnectionViews.Remove(connectionView.ViewModel);
             }
-        }
-
-        protected virtual void OnInitialized()
-        {
-        }
-
-        protected virtual void OnBindingProperties()
-        {
-        }
-
-        protected virtual void OnUnBindingProperties()
-        {
         }
 
         #region 不建议使用

@@ -7,19 +7,30 @@ using UnityEngine.UIElements;
 [CustomView(typeof(SVNUpdateNode))]
 public class SVNUpdateNodeView : BaseNodeView
 {
-    protected override void OnInitialized()
+    private Editor editor;
+
+    public SVNUpdateNodeView()
     {
-        var editor = ObjectInspectorEditor.CreateEditor(this);
-        controls.Add(new IMGUIContainer(() =>
-        {
-            var wideMode = EditorGUIUtility.wideMode;
-            EditorGUIUtility.wideMode = true;
-            EditorGUI.BeginChangeCheck();
-            editor.OnInspectorGUI();
-            if (EditorGUI.EndChangeCheck())
-                this.MarkDirtyRepaint();
-            EditorGUIUtility.wideMode = wideMode;
-        }));
+        controls.Add(new IMGUIContainer(DrawEditor));
+    }
+    
+    protected override void DoInit()
+    {
+        editor = ObjectInspectorEditor.CreateEditor(this);
+    }
+
+    private void DrawEditor()
+    {
+        if (editor == null)
+            return;
+        
+        var wideMode = EditorGUIUtility.wideMode;
+        EditorGUIUtility.wideMode = true;
+        EditorGUI.BeginChangeCheck();
+        editor.OnInspectorGUI();
+        if (EditorGUI.EndChangeCheck())
+            this.MarkDirtyRepaint();
+        EditorGUIUtility.wideMode = wideMode;
     }
 }
 #endif

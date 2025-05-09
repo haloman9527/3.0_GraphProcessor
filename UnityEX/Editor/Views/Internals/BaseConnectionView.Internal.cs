@@ -17,6 +17,7 @@
 #endregion
 
 #if UNITY_EDITOR
+using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine.UIElements;
 
@@ -26,7 +27,8 @@ namespace Atom.GraphProcessor.Editors
     {
         public BaseConnectionProcessor ViewModel { get; private set; }
         public IGraphElementProcessor V => ViewModel;
-        protected BaseGraphView Owner { get; private set; }
+        public BaseGraphView Owner { get; private set; }
+        public SerializedProperty BindingProperty { get; private set; }
 
         public BaseConnectionView()
         {
@@ -34,39 +36,62 @@ namespace Atom.GraphProcessor.Editors
             this.RegisterCallback<MouseEnterEvent>(OnMouseEnter);
         }
 
+        #region Initialize
+
         public void SetUp(BaseConnectionProcessor connection, BaseGraphView graphView)
         {
             ViewModel = connection;
             Owner = graphView;
-            OnInitialized();
         }
 
-        public void OnCreate()
+        public void Init()
         {
+            this.OnIndexChanged(-1, ViewModel.Index);
+            this.ViewModel.onIndexChanged += OnIndexChanged;
             this.RegisterCallback<ClickEvent>(OnClick);
-            
-            BindProperties();
+            this.DoInit();
         }
 
-        public void OnDestroy()
+        public void UnInit()
         {
             this.UnregisterCallback<ClickEvent>(OnClick);
+            this.DoUnInit();
+        }
 
-            UnbindProperties();
+        protected virtual void DoInit()
+        {
+        }
+
+        protected virtual void DoUnInit()
+        {
+        }
+
+        #endregion
+
+        #region Callbacks
+
+        private void OnIndexChanged(int oldIndex, int newIndex)
+        {
+            if (this.Owner.Context.graphWindow.UnityGraphAssetSO != null)
+            {
+                this.Owner.Context.graphWindow.UnityGraphAssetSO.Update();
+                this.BindingProperty = this.Owner.Context.graphWindow.UnityGraphAssetSO.FindProperty($"data.nodes.Array.data[{newIndex}]");
+            }
         }
 
         private void OnMouseEnter(MouseEnterEvent evt)
         {
             this.BringToFront();
         }
-        
+
         private void OnClick(ClickEvent evt)
         {
             if (evt.clickCount == 2)
             {
-                
             }
         }
+
+        #endregion
     }
 }
 #endif

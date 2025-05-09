@@ -73,14 +73,14 @@ namespace Atom.GraphProcessor.Editors
             BackgroudColorField.RegisterValueChangedCallback(OnGroupColorChanged);
         }
 
-        public void OnCreate()
+        public void Init()
         {
             ViewModel.PropertyChanged += OnViewModelChanged;
             ViewModel.onNodeAdded += OnNodesAdded;
             ViewModel.onNodeRemoved += OnNodesRemoved;
         }
 
-        public void OnDestroy()
+        public void UnInit()
         {
             ViewModel.PropertyChanged -= OnViewModelChanged;
             ViewModel.onNodeAdded -= OnNodesAdded;
@@ -160,7 +160,7 @@ namespace Atom.GraphProcessor.Editors
 
         protected override void OnGroupRenamed(string oldName, string newName)
         {
-            Owner.CommandDispatcher.Do(new RenameGroupCommand(ViewModel, newName));
+            Owner.Context.Do(new RenameGroupCommand(ViewModel, newName));
         }
 
         private void OnGroupColorChanged(ChangeEvent<Color> evt)
@@ -191,7 +191,7 @@ namespace Atom.GraphProcessor.Editors
             var tmp = WithoutNotify;
             WithoutNotify = true;
             var nodes = elements.Where(item => item is BaseNodeView).Select(item => (item as BaseNodeView).ViewModel).ToArray();
-            Owner.CommandDispatcher.Do(new AddToGroupCommand(Owner.ViewModel, this.ViewModel, nodes));
+            Owner.Context.Do(new AddToGroupCommand(Owner.ViewModel, this.ViewModel, nodes));
 
             Owner.SetDirty();
             WithoutNotify = tmp;
@@ -204,7 +204,7 @@ namespace Atom.GraphProcessor.Editors
             var tmp = WithoutNotify;
             WithoutNotify = true;
             var nodes = elements.Where(item => item is BaseNodeView).Select(item => (item as BaseNodeView).ViewModel).ToArray();
-            Owner.CommandDispatcher.Do(new RemoveFromGroupCommand(Owner.ViewModel, this.ViewModel, nodes));
+            Owner.Context.Do(new RemoveFromGroupCommand(Owner.ViewModel, this.ViewModel, nodes));
 
             Owner.SetDirty();
             WithoutNotify = tmp;

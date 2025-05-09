@@ -18,6 +18,7 @@
 
 using Atom;
 using Atom.GraphProcessor;
+using UnityEngine;
 
 [NodeTooltip("浮点数节点")]
 [NodeMenu("Float")]

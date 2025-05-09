@@ -63,7 +63,7 @@ namespace Atom.GraphProcessor.Editors
 
             public void CreateNode(BaseGraphView graphView, InternalVector2Int position)
             {
-                graphView.CommandDispatcher.Do(new AddNodeCommand(graphView.ViewModel, nodeType, position));
+                graphView.Context.Do(new AddNodeCommand(graphView.ViewModel, nodeType, position));
             }
         }
         #endregion
@@ -80,14 +80,14 @@ namespace Atom.GraphProcessor.Editors
 
         public bool OnSelectEntry(SearchTreeEntry searchTreeEntry, SearchWindowContext context)
         {
-            var windowRoot = graphView.GraphWindow.rootVisualElement;
-            var windowMousePosition = windowRoot.ChangeCoordinatesTo(windowRoot.parent, context.screenMousePosition - graphView.GraphWindow.position.position);
+            var windowRoot = graphView.Context.graphWindow.rootVisualElement;
+            var windowMousePosition = windowRoot.ChangeCoordinatesTo(windowRoot.parent, context.screenMousePosition - graphView.Context.graphWindow.position.position);
             var graphMousePosition = graphView.contentViewContainer.WorldToLocal(windowMousePosition);
 
             var nodeEntry = searchTreeEntry.userData as INodeEntry;
             nodeEntry.CreateNode(graphView, graphMousePosition.ToInternalVector2Int());
             
-            graphView.GraphWindow.Focus();
+            graphView.Context.graphWindow.Focus();
             return true;
         }
 

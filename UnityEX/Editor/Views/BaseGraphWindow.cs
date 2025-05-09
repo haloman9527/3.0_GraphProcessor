@@ -29,6 +29,7 @@ using UnityObject = UnityEngine.Object;
 
 namespace Atom.GraphProcessor.Editors
 {
+    [EditorWindowTitle(title = "Graph Processor")]
     public abstract class BaseGraphWindow : BaseEditorWindow
     {
         #region Fields
@@ -41,11 +42,11 @@ namespace Atom.GraphProcessor.Editors
 
         [SerializeField] private UnityObject unityGraphOwner;
         [SerializeField] private UnityObject unityGraphAsset;
-        private IGraphOwner graphOwner;
+        private SerializedObject unityGraphAssetSO;
         private IGraphAsset graphAsset;
         private BaseGraphProcessor graphProcessor;
         private BaseGraphView graphView;
-        private CommandDispatcher commandDispatcher;
+        private GraphViewContext context;
 
         #endregion
 
@@ -60,35 +61,15 @@ namespace Atom.GraphProcessor.Editors
 
         public Toolbar ToolbarRight => toolbarRight;
 
-        public IGraphOwner GraphOwner
-        {
-            get
-            {
-                if (graphOwner == null)
-                    graphOwner = unityGraphOwner as IGraphOwner;
-                return unityGraphOwner as IGraphOwner;
-            }
-            protected set
-            {
-                graphOwner = value;
-                unityGraphOwner = value as UnityObject;
-            }
-        }
+        public IGraphOwner GraphOwner => unityGraphOwner as IGraphOwner;
 
+        public IGraphAsset GraphAsset => graphAsset;
 
-        public IGraphAsset GraphAsset
-        {
-            get { return graphAsset; }
-            protected set
-            {
-                graphAsset = value;
-                unityGraphAsset = graphAsset as UnityObject;
-            }
-        }
+        public UnityObject UnityGraphAsset => unityGraphAsset;
+
+        public SerializedObject UnityGraphAssetSO => unityGraphAssetSO;
 
         public BaseGraphProcessor GraphProcessor => graphProcessor;
-        
-        public CommandDispatcher CommandDispatcher => commandDispatcher;
 
         public BaseGraphView GraphView => graphView;
 
@@ -98,11 +79,10 @@ namespace Atom.GraphProcessor.Editors
 
         protected virtual void OnEnable()
         {
-            titleContent = new GUIContent("Graph Processor");
             InitRootVisualElement();
-            EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
-
             Reload();
+
+            EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
         }
 
         protected virtual void OnDestroy()
@@ -113,9 +93,15 @@ namespace Atom.GraphProcessor.Editors
             Clear();
         }
 
+        protected virtual void OnGUI()
+        {
+            if (this.GraphView != null && this.GraphView.Context != null)
+                this.GraphView.Context.FrameEnd();
+        }
+
         public override void SaveChanges()
         {
-            this.OnBtnSaveClick();
+            this.Save();
         }
 
         #endregion
@@ -146,30 +132,27 @@ namespace Atom.GraphProcessor.Editors
 
             BeforeLoad(graph, graphOwner, graphAsset);
 
-            this.commandDispatcher = new CommandDispatcher();
+            this.context = new GraphViewContext() { graphWindow = this, commandDispatcher = new CommandDispatcher() };
             this.graphProcessor = graph;
-            this.GraphOwner = graphOwner;
-            this.GraphAsset = graphAsset;
+            this.unityGraphOwner = graphOwner as UnityObject;
+            this.graphAsset = graphAsset;
+            this.unityGraphAsset = graphAsset as UnityObject;
+
+            if (unityGraphAsset)
+            {
+                if (this.unityGraphAssetSO?.targetObject != unityGraphAsset)
+                    this.unityGraphAssetSO = new SerializedObject(unityGraphAsset);
+            }
+            else
+            {
+                this.unityGraphAssetSO = null;
+            }
 
             this.graphView = NewGraphView();
-            this.graphView.SetUp(GraphProcessor, new GraphViewContext() { window = this, commandDispatcher = commandDispatcher });
+            this.graphView.SetUp(GraphProcessor, this.context);
             this.graphView.Init();
             this.GraphViewContainer.Add(graphView);
 
-            graphView.schedule.Execute(() =>
-            {
-                foreach (var pair in graphView.NodeViews)
-                {
-                    if (!graphView.worldBound.Overlaps(pair.Value.worldBound))
-                    {
-                        pair.Value.controls.visible = false;
-                    }
-                    else
-                    {
-                        pair.Value.controls.visible = true;
-                    }
-                }
-            }).Every(50);
             BuildToolBar();
 
             GraphProcessorEditorSettings.MiniMapActive.onValueChanged += OnMiniMapActiveChanged;
@@ -200,9 +183,12 @@ namespace Atom.GraphProcessor.Editors
 
             graphProcessor = null;
             graphView = null;
-            GraphAsset = null;
-            GraphOwner = null;
-            commandDispatcher = null;
+            unityGraphOwner = null;
+            graphAsset = null;
+            unityGraphAsset = null;
+            context = null;
+
+            this.rootVisualElement.Unbind();
 
             GraphProcessorEditorSettings.MiniMapActive.onValueChanged -= OnMiniMapActiveChanged;
 
@@ -273,7 +259,18 @@ namespace Atom.GraphProcessor.Editors
 
         #region Callbacks
 
-        void OnPlayModeStateChanged(PlayModeStateChange obj)
+        protected virtual void Save()
+        {
+            GraphAsset?.SaveGraph(GraphProcessor.Model.Clone());
+            if (UnityGraphAsset)
+                EditorUtility.SetDirty(UnityGraphAsset);
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+
+            this.hasUnsavedChanges = false;
+        }
+
+        private void OnPlayModeStateChanged(PlayModeStateChange obj)
         {
             switch (obj)
             {
@@ -292,19 +289,6 @@ namespace Atom.GraphProcessor.Editors
             return new DefaultGraphView();
         }
 
-        protected virtual void OnBtnSaveClick()
-        {
-            if (GraphAsset is IGraphAsset graphSerialization)
-                graphSerialization.SaveGraph(GraphProcessor.Model.Clone());
-
-            if (GraphAsset is UnityObject uo)
-                EditorUtility.SetDirty(uo);
-
-            AssetDatabase.SaveAssets();
-            AssetDatabase.Refresh();
-            this.hasUnsavedChanges = false;
-        }
-
         protected virtual void OnKeyDownCallback(KeyDownEvent evt)
         {
             if (evt.commandKey || evt.ctrlKey)
@@ -312,17 +296,19 @@ namespace Atom.GraphProcessor.Editors
                 switch (evt.keyCode)
                 {
                     case KeyCode.Z:
-                        CommandDispatcher.Undo();
+                        context.commandDispatcher.Undo();
                         evt.StopPropagation();
                         break;
                     case KeyCode.Y:
-                        CommandDispatcher.Redo();
+                        context.commandDispatcher.Redo();
                         evt.StopPropagation();
                         break;
                     case KeyCode.S:
-                        OnBtnSaveClick();
+                    {
+                        Save();
                         evt.StopImmediatePropagation();
                         break;
+                    }
                 }
             }
         }
@@ -395,7 +381,7 @@ namespace Atom.GraphProcessor.Editors
                     // backgroundImage = EditorGUIUtility.FindTexture("SaveActive"),
                 }
             };
-            btnSave.clicked += OnBtnSaveClick;
+            btnSave.clicked += Save;
             ToolbarRight.Add(btnSave);
         }
 

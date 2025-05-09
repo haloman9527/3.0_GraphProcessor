@@ -29,8 +29,13 @@ namespace Atom.GraphProcessor
 
         private BaseConnection model;
         private Type modelType;
+
+        private BaseGraphProcessor owner;
+        private int index = -1;
         [NonSerialized] private BasePortProcessor from;
         [NonSerialized] private BasePortProcessor to;
+
+        public event Action<int, int> onIndexChanged;
 
         #endregion
 
@@ -39,9 +44,9 @@ namespace Atom.GraphProcessor
         public BaseConnection Model => model;
 
         public Type ModelType => modelType;
-        
+
         object IGraphElementProcessor.Model => model;
-        
+
         Type IGraphElementProcessor.ModelType => modelType;
 
         public int FromNodeID => Model.fromNode;
@@ -60,7 +65,25 @@ namespace Atom.GraphProcessor
 
         public BasePortProcessor ToPort => to;
 
-        public BaseGraphProcessor Owner { get; internal set; }
+        public BaseGraphProcessor Owner
+        {
+            get => owner;
+            internal set => owner = value;
+        }
+
+        public int Index
+        {
+            get => index;
+            set
+            {
+                if (index == value)
+                    return;
+
+                var oldIndex = index;
+                index = value;
+                onIndexChanged?.Invoke(oldIndex, value);
+            }
+        }
 
         #endregion
 

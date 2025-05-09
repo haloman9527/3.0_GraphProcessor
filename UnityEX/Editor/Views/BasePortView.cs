@@ -30,6 +30,14 @@ namespace Atom.GraphProcessor.Editors
             port.portType, connectorListener)
         {
         }
+
+        protected virtual void DoInit()
+        {
+        }
+
+        protected virtual void DoUnInit()
+        {
+        }
     }
 }
 #endif

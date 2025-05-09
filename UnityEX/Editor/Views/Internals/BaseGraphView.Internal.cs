@@ -43,13 +43,9 @@ namespace Atom.GraphProcessor.Editors
 
         public BaseGraphProcessor ViewModel => viewModel;
 
-        private GraphViewContext Context => context;
+        public GraphViewContext Context => context;
 
-        public BaseGraphWindow GraphWindow => Context.window;
-
-        public CommandDispatcher CommandDispatcher => Context.commandDispatcher;
-
-        public IGraphAsset GraphAsset => GraphWindow.GraphAsset;
+        public IGraphAsset GraphAsset => Context.graphWindow.GraphAsset;
 
         public Dictionary<int, BaseNodeView> NodeViews { get; } = new Dictionary<int, BaseNodeView>();
 
@@ -104,6 +100,20 @@ namespace Atom.GraphProcessor.Editors
             this.AddManipulator(new SelectionDragger());
             this.AddManipulator(new RectangleSelector());
             this.StretchToParentSize();
+            this.schedule.Execute(() =>
+            {
+                foreach (var pair in this.NodeViews)
+                {
+                    if (!this.worldBound.Overlaps(pair.Value.worldBound))
+                    {
+                        pair.Value.controls.visible = false;
+                    }
+                    else
+                    {
+                        pair.Value.controls.visible = true;
+                    }
+                }
+            }).Every(50);
         }
 
         #region Initialize
@@ -116,9 +126,12 @@ namespace Atom.GraphProcessor.Editors
 
         public void Init()
         {
-            var coroutine = GraphWindow.StartCoroutine(InitCoroutine());
-            this.RegisterCallback<DetachFromPanelEvent>(evt => { GraphWindow.StopCoroutine(coroutine); });
-            this.RegisterCallback<DetachFromPanelEvent>(evt => { Uninit(); });
+            var coroutine = Context.graphWindow.StartCoroutine(InitCoroutine());
+            this.RegisterCallback<DetachFromPanelEvent>(evt =>
+            {
+                Context.graphWindow.StopCoroutine(coroutine);
+                Uninit();
+            });
 
             IEnumerator InitCoroutine()
             {
@@ -131,13 +144,26 @@ namespace Atom.GraphProcessor.Editors
                 graphViewChanged = OnGraphViewChangedCallback;
                 viewTransformChanged = OnViewTransformChanged;
 
-                yield return GraphWindow.StartCoroutine(GenerateNodeViews());
-                yield return GraphWindow.StartCoroutine(GenerateConnectionViews());
-                yield return GraphWindow.StartCoroutine(GenerateGroupViews());
-                yield return GraphWindow.StartCoroutine(GenerateNoteViews());
+                yield return Context.graphWindow.StartCoroutine(GenerateNodeViews());
+                yield return Context.graphWindow.StartCoroutine(GenerateConnectionViews());
+                yield return Context.graphWindow.StartCoroutine(GenerateGroupViews());
+                yield return Context.graphWindow.StartCoroutine(GenerateNoteViews());
 
-                BindEvents();
-                OnInitialized();
+                ViewModel.PropertyChanged += OnViewModelChanged;
+
+                ViewModel.OnNodeAdded += OnNodeAdded;
+                ViewModel.OnNodeRemoved += OnNodeRemoved;
+
+                ViewModel.OnGroupAdded += OnGroupAdded;
+                ViewModel.OnGroupRemoved += OnGroupRemoved;
+
+                ViewModel.OnConnected += OnConnected;
+                ViewModel.OnDisconnected += OnDisconnected;
+
+                ViewModel.OnNoteAdded += OnNoteAdded;
+                ViewModel.OnNoteRemoved += OnNoteRemoved;
+                
+                OnCreated();
             }
         }
 
@@ -147,10 +173,24 @@ namespace Atom.GraphProcessor.Editors
             {
                 if (element is IGraphElementView bindableView)
                 {
-                    bindableView.OnDestroy();
+                    bindableView.UnInit();
                 }
             });
-            UnbindEvents();
+            
+            ViewModel.PropertyChanged -= OnViewModelChanged;
+
+            ViewModel.OnNodeAdded -= OnNodeAdded;
+            ViewModel.OnNodeRemoved -= OnNodeRemoved;
+
+            ViewModel.OnGroupAdded -= OnGroupAdded;
+            ViewModel.OnGroupRemoved -= OnGroupRemoved;
+
+            ViewModel.OnConnected -= OnConnected;
+            ViewModel.OnDisconnected -= OnDisconnected;
+
+            ViewModel.OnNoteAdded -= OnNoteAdded;
+            ViewModel.OnNoteRemoved -= OnNoteRemoved;
+            
             OnDestroyed();
         }
 
@@ -212,40 +252,6 @@ namespace Atom.GraphProcessor.Editors
             }
         }
 
-        private void BindEvents()
-        {
-            ViewModel.PropertyChanged += OnViewModelChanged;
-
-            ViewModel.OnNodeAdded += OnNodeAdded;
-            ViewModel.OnNodeRemoved += OnNodeRemoved;
-
-            ViewModel.OnGroupAdded += OnGroupAdded;
-            ViewModel.OnGroupRemoved += OnGroupRemoved;
-
-            ViewModel.OnConnected += OnConnected;
-            ViewModel.OnDisconnected += OnDisconnected;
-
-            ViewModel.OnNoteAdded += OnNoteAdded;
-            ViewModel.OnNoteRemoved += OnNoteRemoved;
-        }
-
-        private void UnbindEvents()
-        {
-            ViewModel.PropertyChanged -= OnViewModelChanged;
-
-            ViewModel.OnNodeAdded -= OnNodeAdded;
-            ViewModel.OnNodeRemoved -= OnNodeRemoved;
-
-            ViewModel.OnGroupAdded -= OnGroupAdded;
-            ViewModel.OnGroupRemoved -= OnGroupRemoved;
-
-            ViewModel.OnConnected -= OnConnected;
-            ViewModel.OnDisconnected -= OnDisconnected;
-
-            ViewModel.OnNoteAdded -= OnNoteAdded;
-            ViewModel.OnNoteRemoved -= OnNoteRemoved;
-        }
-
         #endregion
 
         #region API
@@ -253,44 +259,44 @@ namespace Atom.GraphProcessor.Editors
         public BaseNodeView AddNodeView(BaseNodeProcessor nodeProcessor)
         {
             var nodeView = NewNodeView(nodeProcessor);
+            this.AddElement(nodeView);
+            this.NodeViews[nodeProcessor.ID] = nodeView;
             nodeView.AddToClassList(nodeProcessor.ModelType.Name);
             nodeView.SetUp(nodeProcessor, this);
-            nodeView.OnCreate();
-            NodeViews[nodeProcessor.ID] = nodeView;
-            AddElement(nodeView);
+            nodeView.Init();
             return nodeView;
         }
 
         public void RemoveNodeView(BaseNodeView nodeView)
         {
-            nodeView.OnDestroy();
-            RemoveElement(nodeView);
-            NodeViews.Remove(nodeView.ViewModel.ID);
+            nodeView.UnInit();
+            this.RemoveElement(nodeView);
+            this.NodeViews.Remove(nodeView.ViewModel.ID);
         }
 
         public GroupView AddGroupView(GroupProcessor group)
         {
             var groupView = NewGroupView(group);
+            this.AddElement(groupView);
+            this.GroupViews[group.ID] = groupView;
             groupView.SetUp(group, this);
-            groupView.OnCreate();
-            GroupViews[group.ID] = groupView;
-            AddElement(groupView);
+            groupView.Init();
             return groupView;
         }
 
         public void RemoveGroupView(GroupView groupView)
         {
-            groupView.OnDestroy();
+            groupView.UnInit();
             groupView.RemoveElementsWithoutNotification(groupView.containedElements.ToArray());
-            RemoveElement(groupView);
-            GroupViews.Remove(groupView.ViewModel.ID);
+            this.RemoveElement(groupView);
+            this.GroupViews.Remove(groupView.ViewModel.ID);
         }
 
         public BaseConnectionView ConnectView(BaseNodeView from, BaseNodeView to, BaseConnectionProcessor connection)
         {
             var connectionView = NewConnectionView(connection);
             connectionView.SetUp(connection, this);
-            connectionView.OnCreate();
+            connectionView.Init();
             connectionView.userData = connection;
             connectionView.output = from.PortViews[connection.FromPortName];
             connectionView.input = to.PortViews[connection.ToPortName];
@@ -314,7 +320,7 @@ namespace Atom.GraphProcessor.Editors
             inputNodeView.RefreshPorts();
             outputNodeView.RefreshPorts();
 
-            connectionView.OnDestroy();
+            connectionView.UnInit();
             RemoveElement(connectionView);
             ConnectionViews.Remove(connectionView.ViewModel);
         }
@@ -324,7 +330,7 @@ namespace Atom.GraphProcessor.Editors
         {
             var noteView = new StickyNoteView();
             noteView.SetUp(note, this);
-            noteView.OnCreate();
+            noteView.Init();
             NoteViews[note.ID] = noteView;
             AddElement(noteView);
         }
@@ -332,7 +338,7 @@ namespace Atom.GraphProcessor.Editors
         private void RemoveNoteView(StickyNoteProcessor note)
         {
             var noteView = NoteViews[note.ID];
-            noteView.OnDestroy();
+            noteView.UnInit();
             RemoveElement(noteView);
             NoteViews.Remove(noteView.ViewModel.ID);
         }
@@ -386,7 +392,7 @@ namespace Atom.GraphProcessor.Editors
         // 标记Dirty
         public void SetDirty()
         {
-            GraphWindow?.SetHasUnsavedChanges(true);
+            this.Context.graphWindow?.SetHasUnsavedChanges(true);
         }
 
         #endregion
@@ -554,7 +560,7 @@ namespace Atom.GraphProcessor.Editors
                         port.Trim();
                     }
 
-                    CommandDispatcher.Do(new MoveElementsCommand(newPos));
+                    this.Context.Do(new MoveElementsCommand(newPos));
                 }
             }
 
@@ -564,7 +570,7 @@ namespace Atom.GraphProcessor.Editors
                     .Where(item => item.selected && item is IGraphElementView)
                     .Select(item => ((IGraphElementView)item).V).ToArray();
                 changes.elementsToRemove.RemoveAll(item => item is IGraphElementView);
-                CommandDispatcher.Do(new RemoveElementsCommand(ViewModel, graphElements));
+                this.Context.Do(new RemoveElementsCommand(ViewModel, graphElements));
             }
 
             UpdateInspector();

@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Atom.GraphProcessor.Editors
 {
-    public class StickyNoteView : UnityEditor.Experimental.GraphView.StickyNote, IGraphElementView<StickyNoteProcessor>
+    public sealed class StickyNoteView : UnityEditor.Experimental.GraphView.StickyNote, IGraphElementView<StickyNoteProcessor>
     {
         public StickyNoteProcessor ViewModel { get; private set; }
         public IGraphElementProcessor V => ViewModel;
@@ -25,7 +25,7 @@ namespace Atom.GraphProcessor.Editors
             this.contents = note.Content;
         }
 
-        public void OnCreate()
+        public void Init()
         {
             ViewModel.RegisterValueChanged<InternalVector2Int>(nameof(StickyNote.position), OnPositionChanged);
             ViewModel.RegisterValueChanged<InternalVector2Int>(nameof(StickyNote.size), OnSizeChanged);
@@ -35,7 +35,7 @@ namespace Atom.GraphProcessor.Editors
             this.RegisterCallback<StickyNoteChangeEvent>(OnChanged);
         }
 
-        public void OnDestroy()
+        public void UnInit()
         {
             ViewModel.UnregisterValueChanged<InternalVector2Int>(nameof(StickyNote.position), OnPositionChanged);
             ViewModel.UnregisterValueChanged<InternalVector2Int>(nameof(StickyNote.size), OnSizeChanged);
@@ -53,14 +53,14 @@ namespace Atom.GraphProcessor.Editors
                 {
                     var oldTitle = ViewModel.Title;
                     var newTitle = this.title;
-                    Owner.CommandDispatcher.Do(() => { ViewModel.Title = newTitle; }, () => { ViewModel.Title = oldTitle; });
+                    Owner.Context.Do(() => { ViewModel.Title = newTitle; }, () => { ViewModel.Title = oldTitle; });
                     break;
                 }
                 case StickyNoteChange.Contents:
                 {
                     var oldContent = ViewModel.Content;
                     var newContent = this.contents;
-                    Owner.CommandDispatcher.Do(() => { ViewModel.Content = newContent; }, () => { ViewModel.Content = oldContent; });
+                    Owner.Context.Do(() => { ViewModel.Content = newContent; }, () => { ViewModel.Content = oldContent; });
                     break;
                 }
                 case StickyNoteChange.Theme:
@@ -75,7 +75,7 @@ namespace Atom.GraphProcessor.Editors
                     {
                         var newPosition = GetPosition().position.ToInternalVector2Int();
                         var newSize = GetPosition().size.ToInternalVector2Int();
-                        Owner.CommandDispatcher.Do(() =>
+                        Owner.Context.Do(() =>
                         {
                             ViewModel.Position = newPosition;
                             ViewModel.Size = newSize;

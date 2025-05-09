@@ -20,6 +20,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -73,6 +74,8 @@ namespace Atom.GraphProcessor.Editors
 
         public BaseGraphView Owner { get; private set; }
         public BaseNodeProcessor ViewModel { get; protected set; }
+
+        public SerializedProperty BindingProperty { get; private set; }
         public IGraphElementProcessor V => ViewModel;
 
         public IReadOnlyDictionary<string, BasePortView> PortViews => portViews;
@@ -120,81 +123,68 @@ namespace Atom.GraphProcessor.Editors
 
         public void SetUp(BaseNodeProcessor node, BaseGraphView graphView)
         {
-            ViewModel = node;
             Owner = graphView;
-
+            ViewModel = node;
+        }
+        
+        public void Init()
+        {
             // 初始化
             base.SetPosition(new Rect(ViewModel.Position.ToVector2(), GetPosition().size));
-            title = ViewModel.Title;
-            tooltip = ViewModel.Tooltip;
+            this.title = ViewModel.Title;
+            this.tooltip = ViewModel.Tooltip;
 
             var color = ViewModel.TitleColor.ToColor();
             var lum = 0.299f * color.r + 0.587f * color.g + 0.114f * color.b;
-            NodeLabel.style.color = lum > 0.5f && ViewModel.TitleColor.a > 0.5f ? Color.black : Color.white * 0.9f;
-            titleContainer.style.backgroundColor = color;
+            this.nodeLabel.style.color = lum > 0.5f && ViewModel.TitleColor.a > 0.5f ? Color.black : Color.white * 0.9f;
+            this.titleContainer.style.backgroundColor = color;
 
+            OnIndexChanged(-1, ViewModel.Index);
+            
             foreach (var port in ViewModel.InPorts)
             {
-                var portView = NewPortView(port);
-                portView.SetUp(port, Owner);
-                portViews[port.Name] = portView;
-                if (port.Name == ConstValues.FLOW_IN_PORT_NAME)
-                {
-                    titleInputPortContainer.Add(portView);
-                }
-                else
-                {
-                    switch (port.Direction)
-                    {
-                        case BasePort.Direction.Left:
-                        {
-                            inputContainer.Add(portView);
-                            break;
-                        }
-                        case BasePort.Direction.Top:
-                        {
-                            topPortContainer.Add(portView);
-                            break;
-                        }
-                    }
-                }
+                AddPortView(port);
             }
 
             foreach (var port in ViewModel.OutPorts)
             {
-                var portView = NewPortView(port);
-                portView.SetUp(port, Owner);
-                portViews[port.Name] = portView;
-
-                if (port.Name == ConstValues.FLOW_OUT_PORT_NAME)
-                {
-                    titleOutputPortContainer.Add(portView);
-                }
-                else
-                {
-                    switch (port.Direction)
-                    {
-                        case BasePort.Direction.Right:
-                        {
-                            outputContainer.Add(portView);
-                            break;
-                        }
-                        case BasePort.Direction.Bottom:
-                        {
-                            bottomPortContainer.Add(portView);
-                            break;
-                        }
-                    }
-                }
+                AddPortView(port);
             }
 
-            OnInitialized();
+            foreach (var portView in portViews.Values)
+            {
+                portView.Init();
+            }
 
             RefreshPorts();
             RefreshPortContainer();
             RefreshControls();
             RefreshContentsHorizontalDivider();
+            
+            ViewModel.PropertyChanged += OnViewModelChanged;
+            ViewModel.onPortAdded += OnPortAdded;
+            ViewModel.onPortRemoved += OnPortRemoved;
+            ViewModel.onIndexChanged += OnIndexChanged;
+            
+            this.DoInit();
         }
+
+        public void UnInit()
+        {
+            foreach (var portView in portViews.Values)
+            {
+                portView.UnInit();
+            }
+            
+            ViewModel.PropertyChanged -= OnViewModelChanged;
+            ViewModel.onPortAdded -= OnPortAdded;
+            ViewModel.onPortRemoved -= OnPortRemoved;
+            this.DoUnInit();
+        }
+
+        #endregion
+
+        #region Callbacks
 
         private void OnChildChanged(BaseVisualElement.ChildChangedEvent evt)
         {
@@ -205,7 +195,7 @@ namespace Atom.GraphProcessor.Editors
         private void OnPointerDown(PointerDownEvent evt)
         {
             if (evt.shiftKey)
-            {
+            { 
                 var hashSet = new HashSet<BaseNodeView>();
                 var queue = new Queue<BaseNodeView>();
                 queue.Enqueue(this);
@@ -235,41 +225,16 @@ namespace Atom.GraphProcessor.Editors
             }
         }
 
-        public void OnCreate()
+        private void OnIndexChanged(int oldIndex, int newIndex)
         {
-            ViewModel.PropertyChanged += OnViewModelChanged;
-
-            ViewModel.onPortAdded += OnPortAdded;
-            ViewModel.onPortRemoved += OnPortRemoved;
-
-            foreach (var portView in portViews.Values)
+            if (this.Owner.Context.graphWindow.UnityGraphAssetSO != null)
             {
-                portView.OnCreate();
+                this.Owner.Context.graphWindow.UnityGraphAssetSO.Update();
+                this.BindingProperty = this.Owner.Context.graphWindow.UnityGraphAssetSO.FindProperty($"data.nodes.Array.data[{newIndex}]");
             }
-
-            OnBindingProperties();
         }
 
-        public void OnDestroy()
-        {
-            ViewModel.PropertyChanged -= OnViewModelChanged;
-
-            ViewModel.onPortAdded -= OnPortAdded;
-            ViewModel.onPortRemoved -= OnPortRemoved;
-
-            foreach (var portView in portViews.Values)
-            {
-                portView.OnDestroy();
-            }
-
-            OnUnBindingProperties();
-        }
-
-        #endregion
-
-        #region Callbacks
-
-        void OnPortAdded(BasePortProcessor port)
+        private void OnPortAdded(BasePortProcessor port)
         {
             AddPortView(port);
             RefreshPorts();
@@ -277,7 +242,7 @@ namespace Atom.GraphProcessor.Editors
             RefreshPortContainer();
         }
 
-        void OnPortRemoved(BasePortProcessor port)
+        private void OnPortRemoved(BasePortProcessor port)
         {
             RemovePortView(port);
             RefreshPorts();
@@ -317,47 +282,66 @@ namespace Atom.GraphProcessor.Editors
         }
 
         #endregion
-
+        
         protected void PortChanged()
         {
             RefreshPorts();
             RefreshPortContainer();
+            RefreshControls();
             RefreshContentsHorizontalDivider();
         }
 
         private void AddPortView(BasePortProcessor port)
         {
-            BasePortView portView = NewPortView(port);
-            portView.SetUp(port, Owner);
-            portView.OnCreate();
-            portViews[port.Name] = portView;
-
-            if (portView.orientation == Orientation.Horizontal)
+            var portView = NewPortView(port);
+            if (port.Name == ConstValues.FLOW_IN_PORT_NAME)
             {
-                if (portView.direction == Direction.Input)
-                    inputContainer.Add(portView);
-                else
-                    outputContainer.Add(portView);
+                titleInputPortContainer.Add(portView);
+            }
+            else if (port.Name == ConstValues.FLOW_OUT_PORT_NAME)
+            {
+                titleOutputPortContainer.Add(portView);
             }
             else
             {
-                if (portView.direction == Direction.Input)
-                    topPortContainer.Add(portView);
-                else
-                    bottomPortContainer.Add(portView);
+                switch (port.Direction)
+                {
+                    case BasePort.Direction.Left:
+                    {
+                        inputContainer.Add(portView);
+                        break;
+                    }
+                    case BasePort.Direction.Top:
+                    {
+                        topPortContainer.Add(portView);
+                        break;
+                    }
+                    case BasePort.Direction.Right:
+                    {
+                        outputContainer.Add(portView);
+                        break;
+                    }
+                    case BasePort.Direction.Bottom:
+                    {
+                        bottomPortContainer.Add(portView);
+                        break;
+                    }
+                }
             }
+            portView.SetUp(port, Owner);
+            portViews[port.Name] = portView;
         }
 
         private void RemovePortView(BasePortProcessor port)
         {
+            portViews[port.Name].UnInit();
             portViews[port.Name].RemoveFromHierarchy();
-            portViews[port.Name].OnDestroy();
             portViews.Remove(port.Name);
         }
 
         private void RefreshContentsHorizontalDivider()
         {
-            if (inputContainer.childCount > 0 || outputContainer.childCount > 0 || DrawingControls())
+            if (inputContainer.childCount > 0 || outputContainer.childCount > 0 || CheckDrawControls())
                 horizontalDivider.RemoveFromClassList("hidden");
             else
                 horizontalDivider.AddToClassList("hidden");
@@ -393,7 +377,7 @@ namespace Atom.GraphProcessor.Editors
 
         private void RefreshControls()
         {
-            if (DrawingControls())
+            if (CheckDrawControls())
                 controls.RemoveFromClassList("hidden");
             else
                 controls.AddToClassList("hidden");

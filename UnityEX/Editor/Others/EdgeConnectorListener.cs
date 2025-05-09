@@ -30,9 +30,9 @@ namespace Atom.GraphProcessor.Editors
             BasePortProcessor to = (edge.input as BasePortView).ViewModel;
             // 如果连线不是一个新建的连线就重定向
             if (edge.userData is BaseConnectionProcessor)
-                tempGraphView.CommandDispatcher.Do(new ConnectCommand(tempGraphView.ViewModel, from, to));
+                tempGraphView.Context.Do(new ConnectCommand(tempGraphView.ViewModel, from, to));
             else
-                tempGraphView.CommandDispatcher.Do(new ConnectCommand(tempGraphView.ViewModel, from, to));
+                tempGraphView.Context.Do(new ConnectCommand(tempGraphView.ViewModel, from, to));
         }
 
         /// <summary> 拖到空白松开时触发 </summary>

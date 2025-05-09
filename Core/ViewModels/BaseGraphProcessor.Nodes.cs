@@ -41,12 +41,14 @@ namespace Atom.GraphProcessor
         private void BeginInitNodes()
         {
             this.nodes = new Dictionary<int, BaseNodeProcessor>(Model.nodes.Count);
-            foreach (var node in Model.nodes)
+            for (var index = 0; index < Model.nodes.Count; index++)
             {
+                var node = Model.nodes[index];
                 if (node == null)
                     continue;
                 var nodeProcessor = (BaseNodeProcessor)ViewModelFactory.ProduceViewModel(node);
                 nodeProcessor.Owner = this;
+                nodeProcessor.Index = index;
                 nodes.Add(node.id, nodeProcessor);
             }
         }
@@ -73,9 +75,9 @@ namespace Atom.GraphProcessor
             return nodeVM;
         }
 
-        public BaseNodeProcessor AddNode(BaseNode node)
+        public BaseNodeProcessor AddNode(BaseNode nodeData)
         {
-            var nodeVM = ViewModelFactory.ProduceViewModel(node) as BaseNodeProcessor;
+            var nodeVM = ViewModelFactory.ProduceViewModel(nodeData) as BaseNodeProcessor;
             AddNode(nodeVM);
             return nodeVM;
         }
@@ -83,8 +85,9 @@ namespace Atom.GraphProcessor
         public void AddNode(BaseNodeProcessor node)
         {
             nodes.Add(node.ID, node);
-            Model.nodes.Add(node.Model);
+            model.nodes.Add(node.Model);
             node.Owner = this;
+            node.Index = model.nodes.Count - 1;
             node.Enable();
             OnNodeAdded?.Invoke(node);
         }
@@ -104,8 +107,13 @@ namespace Atom.GraphProcessor
 
             Disconnect(node);
             nodes.Remove(node.ID);
-            Model.nodes.Remove(node.Model);
+            model.nodes.Remove(node.Model);
             node.Disable();
+            for (int index = 0; index < model.nodes.Count; index++)
+            {
+                var nodeData = model.nodes[index];
+                nodes[nodeData.id].Index = index;
+            }
             OnNodeRemoved?.Invoke(node);
         }
 

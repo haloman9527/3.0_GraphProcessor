@@ -74,8 +74,6 @@ public class SampleGraphWindow : BaseGraphWindow
             }
         }
 
-        GraphView.CommandDispatcher.BeginGroup();
-
         var nodesStr = Sirenix.Serialization.SerializationUtility.SerializeValue(nodes, DataFormat.Binary);
         var connectionsStr = Sirenix.Serialization.SerializationUtility.SerializeValue(connections, DataFormat.Binary);
         var groupsStr = Sirenix.Serialization.SerializationUtility.SerializeValue(groups, DataFormat.Binary);
@@ -94,7 +92,7 @@ public class SampleGraphWindow : BaseGraphWindow
             pair.Value.id = graph.NewID();
             pair.Value.position += new InternalVector2Int(50, 50);
             var vm = ViewModelFactory.ProduceViewModel(pair.Value) as BaseNodeProcessor;
-            GraphView.CommandDispatcher.Do(new AddNodeCommand(graph, vm));
+            GraphView.Context.Do(new AddNodeCommand(graph, vm));
             nodeMaps[pair.Key] = vm;
             GraphView.AddToSelection(GraphView.NodeViews[vm.ID]);
         }
@@ -108,7 +106,7 @@ public class SampleGraphWindow : BaseGraphWindow
                 connection.toNode = to.ID;
 
             var vm = ViewModelFactory.ProduceViewModel(connection) as BaseConnectionProcessor;
-            GraphView.CommandDispatcher.Do(new ConnectCommand(graph, vm));
+            GraphView.Context.Do(new ConnectCommand(graph, vm));
             GraphView.AddToSelection(GraphView.ConnectionViews[vm]);
         }
 
@@ -123,11 +121,9 @@ public class SampleGraphWindow : BaseGraphWindow
             }
 
             group.id = graph.NewID();
-            GraphView.CommandDispatcher.Do(new AddGroupCommand(graph, group));
+            GraphView.Context.Do(new AddGroupCommand(graph, group));
             GraphView.AddToSelection(GraphView.GroupViews[group.id]);
         }
-
-        GraphView.CommandDispatcher.EndGroup();
     }
 }
 #endif

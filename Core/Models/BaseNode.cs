@@ -20,10 +20,19 @@ using System;
 
 namespace Atom.GraphProcessor
 {
+#if UNITY_5_4_OR_NEWER
+    [Serializable]
+    public abstract class BaseNode
+    {
+        [UnityEngine.HideInInspector] public int id;
+        [UnityEngine.HideInInspector] public InternalVector2Int position;
+    }
+#else
     [Serializable]
     public abstract class BaseNode
     {
         public int id;
         public InternalVector2Int position;
     }
+#endif
 }
