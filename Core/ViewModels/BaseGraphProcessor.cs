@@ -51,7 +51,7 @@ namespace Atom.GraphProcessor
             set => SetFieldValue(ref Model.zoom, value, nameof(BaseGraph.zoom));
         }
 
-        public EventService<string> Events { get; }
+        public EventStation<string> Events { get; }
 
         public BlackboardProcessor<string> Blackboard { get; }
 
@@ -65,7 +65,7 @@ namespace Atom.GraphProcessor
             this.model.zoom = Model.zoom == 0 ? 1 : Model.zoom;
             this.model.notes = Model.notes == null ? new List<StickyNote>() : Model.notes;
 
-            this.Events = new EventService<string>();
+            this.Events = new EventStation<string>();
             this.Blackboard = new BlackboardProcessor<string>(new Blackboard<string>(), Events);
 
             BeginInitNodes();
