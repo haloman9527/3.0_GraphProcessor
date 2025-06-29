@@ -54,7 +54,7 @@ namespace Atom.GraphProcessor
         Type IGraphElementProcessor.ModelType => modelType;
 
         /// <summary> 唯一标识 </summary>
-        public int ID => Model.id;
+        public long ID => Model.id;
 
         public virtual InternalVector2Int Position
         {

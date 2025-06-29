@@ -26,7 +26,7 @@ public class FlowGraphAsset : ScriptableObject, IGraphAsset
 [Serializable]
 public class FlowGraph : BaseGraph
 {
-    public int startNodeID;
+    public long startNodeID;
 }
 
 [ViewModel(typeof(FlowGraph))]

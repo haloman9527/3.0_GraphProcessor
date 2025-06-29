@@ -25,7 +25,7 @@ namespace Atom.GraphProcessor
     {
         #region Fields
 
-        private Dictionary<int, StickyNoteProcessor> notes;
+        private Dictionary<long, StickyNoteProcessor> notes;
 
         public event Action<StickyNoteProcessor> OnNoteAdded;
         public event Action<StickyNoteProcessor> OnNoteRemoved;
@@ -34,13 +34,13 @@ namespace Atom.GraphProcessor
 
         #region Properties
 
-        public IReadOnlyDictionary<int, StickyNoteProcessor> Notes => notes;
+        public IReadOnlyDictionary<long, StickyNoteProcessor> Notes => notes;
 
         #endregion
 
         private void InitNotes()
         {
-            this.notes = new Dictionary<int, StickyNoteProcessor>(System.Math.Min(Model.connections.Count, 4));
+            this.notes = new Dictionary<long, StickyNoteProcessor>(System.Math.Min(Model.connections.Count, 4));
             foreach (var note in model.notes)
             {
                 notes.Add(note.id, (StickyNoteProcessor)ViewModelFactory.ProduceViewModel(note));
@@ -52,7 +52,7 @@ namespace Atom.GraphProcessor
         public void AddNote(string title, string content, InternalVector2Int position)
         {
             var note = new StickyNote();
-            note.id = NewID();
+            note.id = GraphProcessorUtil.GenerateId();
             note.position = position;
             note.title = title;
             note.content = content;
@@ -68,7 +68,7 @@ namespace Atom.GraphProcessor
             OnNoteAdded?.Invoke(note);
         }
 
-        public void RemoveNote(int id)
+        public void RemoveNote(long id)
         {
             if (!notes.TryGetValue(id, out var note))
                 return;

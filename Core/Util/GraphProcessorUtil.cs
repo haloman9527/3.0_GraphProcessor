@@ -43,6 +43,7 @@ namespace Atom.GraphProcessor
     {
         private static bool s_Initialized;
         private static Dictionary<Type, NodeStaticInfo> s_NodeStaticInfos = new Dictionary<Type, NodeStaticInfo>();
+        private static Snowflake s_IDGenerator = new Snowflake(0, new Snowflake.UtcMSDateTimeProvider(2020, 1, 1));
 
         public static Dictionary<Type, NodeStaticInfo> NodeStaticInfos
         {
@@ -128,6 +129,11 @@ namespace Atom.GraphProcessor
         public static T Model<T>(this IGraphElementProcessor<T> graphElement) where T : class
         {
             return graphElement.Model as T;
+        }
+
+        public static long GenerateId()
+        {
+            return s_IDGenerator.GenerateId();
         }
     }
 }

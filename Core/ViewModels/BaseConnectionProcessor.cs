@@ -49,9 +49,9 @@ namespace Atom.GraphProcessor
 
         Type IGraphElementProcessor.ModelType => modelType;
 
-        public int FromNodeID => Model.fromNode;
+        public long FromNodeID => Model.fromNode;
 
-        public int ToNodeID => Model.toNode;
+        public long ToNodeID => Model.toNode;
 
         public string FromPortName => Model.fromPort;
 

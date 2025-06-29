@@ -25,7 +25,7 @@ namespace Atom.GraphProcessor
     {
         #region Fields
 
-        private Dictionary<int, BaseNodeProcessor> nodes;
+        private Dictionary<long, BaseNodeProcessor> nodes;
 
         public event Action<BaseNodeProcessor> OnNodeAdded;
         public event Action<BaseNodeProcessor> OnNodeRemoved;
@@ -34,13 +34,13 @@ namespace Atom.GraphProcessor
 
         #region Properties
         
-        public IReadOnlyDictionary<int, BaseNodeProcessor> Nodes => nodes;
+        public IReadOnlyDictionary<long, BaseNodeProcessor> Nodes => nodes;
 
         #endregion
 
         private void BeginInitNodes()
         {
-            this.nodes = new Dictionary<int, BaseNodeProcessor>(Model.nodes.Count);
+            this.nodes = new Dictionary<long, BaseNodeProcessor>(Model.nodes.Count);
             for (var index = 0; index < Model.nodes.Count; index++)
             {
                 var node = Model.nodes[index];
@@ -120,7 +120,7 @@ namespace Atom.GraphProcessor
         public virtual BaseNodeProcessor NewNode(Type nodeType, InternalVector2Int position)
         {
             var node = Activator.CreateInstance(nodeType) as BaseNode;
-            node.id = NewID();
+            node.id = GraphProcessorUtil.GenerateId();
             node.position = position;
             return ViewModelFactory.ProduceViewModel(node) as BaseNodeProcessor;
         }
@@ -129,7 +129,7 @@ namespace Atom.GraphProcessor
         {
             var node = new TNode()
             {
-                id = NewID(),
+                id = GraphProcessorUtil.GenerateId(),
                 position = position
             };
             return ViewModelFactory.ProduceViewModel(node) as BaseNodeProcessor;

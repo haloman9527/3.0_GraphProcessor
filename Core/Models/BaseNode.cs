@@ -24,14 +24,14 @@ namespace Atom.GraphProcessor
     [Serializable]
     public abstract class BaseNode
     {
-        [UnityEngine.HideInInspector] public int id;
+        [UnityEngine.HideInInspector] public long id;
         [UnityEngine.HideInInspector] public InternalVector2Int position;
     }
 #else
     [Serializable]
     public abstract class BaseNode
     {
-        public int id;
+        public long id;
         public InternalVector2Int position;
     }
 #endif

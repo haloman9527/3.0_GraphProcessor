@@ -43,9 +43,9 @@ namespace Atom.GraphProcessor
 
         Type IGraphElementProcessor.ModelType => modelType;
 
-        public int ID => Model.id;
+        public long ID => Model.id;
 
-        public IReadOnlyList<int> Nodes => Model.nodes;
+        public IReadOnlyList<long> Nodes => Model.nodes;
 
         public BaseGraphProcessor Owner { get; internal set; }
 

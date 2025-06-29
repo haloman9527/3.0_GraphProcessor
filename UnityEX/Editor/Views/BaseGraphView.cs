@@ -83,20 +83,10 @@ namespace Atom.GraphProcessor.Editors
                 }
             });
 
-            // evt.menu.AppendAction("Create Note", delegate
-            // {
-            //     var data = new StickyNode();
-            //     data.id = viewModel.NewID();
-            //     data.position = localMousePosition.ToInternalVector2Int();
-            //     data.title = "title";
-            //     data.contents = "contents";
-            //     CommandDispatcher.Do(new AddNodeCommand(this.ViewModel, data));
-            // });
-
             evt.menu.AppendAction("Create Note", delegate
             {
                 var data = new StickyNote();
-                data.id = ViewModel.NewID();
+                data.id = GraphProcessorUtil.GenerateId();
                 data.position = localMousePosition.ToInternalVector2Int();
                 data.size = new InternalVector2Int(300, 200);
                 data.title = "title";

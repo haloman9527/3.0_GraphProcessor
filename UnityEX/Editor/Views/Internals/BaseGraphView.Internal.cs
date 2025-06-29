@@ -47,11 +47,11 @@ namespace Atom.GraphProcessor.Editors
 
         public IGraphAsset GraphAsset => Context.graphWindow.GraphAsset;
 
-        public Dictionary<int, BaseNodeView> NodeViews { get; } = new Dictionary<int, BaseNodeView>();
+        public Dictionary<long, BaseNodeView> NodeViews { get; } = new Dictionary<long, BaseNodeView>();
 
-        public Dictionary<int, StickyNoteView> NoteViews { get; } = new Dictionary<int, StickyNoteView>();
+        public Dictionary<long, StickyNoteView> NoteViews { get; } = new Dictionary<long, StickyNoteView>();
 
-        public Dictionary<int, GroupView> GroupViews { get; } = new Dictionary<int, GroupView>();
+        public Dictionary<long, GroupView> GroupViews { get; } = new Dictionary<long, GroupView>();
 
         public Dictionary<BaseConnectionProcessor, BaseConnectionView> ConnectionViews { get; } = new Dictionary<BaseConnectionProcessor, BaseConnectionView>();
 

@@ -22,11 +22,11 @@ namespace Atom.GraphProcessor
     [Serializable]
     public sealed class Group
     {
-        public int id;
+        public long id;
         public string groupName;
         public InternalVector2Int position;
         public InternalVector2Int size;
         public InternalColor backgroundColor = new InternalColor(0.3f, 0.3f, 0.3f, 0.3f);
-        public List<int> nodes = new List<int>();
+        public List<long> nodes = new List<long>();
     }
 }

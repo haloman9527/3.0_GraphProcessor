@@ -53,7 +53,7 @@ public class FlowGraphWindow : BaseGraphWindow
         if (GraphView == null)
             return;
         // 收集所有节点，连线
-        Dictionary<int, BaseNode> nodes = new Dictionary<int, BaseNode>();
+        Dictionary<long, BaseNode> nodes = new Dictionary<long, BaseNode>();
         List<BaseConnection> connections = new List<BaseConnection>();
         List<Group> groups = new List<Group>();
         foreach (var item in GraphView.selection)
@@ -76,18 +76,18 @@ public class FlowGraphWindow : BaseGraphWindow
         var connectionsStr = Sirenix.Serialization.SerializationUtility.SerializeValue(connections, DataFormat.Binary);
         var groupsStr = Sirenix.Serialization.SerializationUtility.SerializeValue(groups, DataFormat.Binary);
 
-        nodes = Sirenix.Serialization.SerializationUtility.DeserializeValue<Dictionary<int, BaseNode>>(nodesStr, DataFormat.Binary);
+        nodes = Sirenix.Serialization.SerializationUtility.DeserializeValue<Dictionary<long, BaseNode>>(nodesStr, DataFormat.Binary);
         connections = Sirenix.Serialization.SerializationUtility.DeserializeValue<List<BaseConnection>>(connectionsStr, DataFormat.Binary);
         groups = Sirenix.Serialization.SerializationUtility.DeserializeValue<List<Group>>(groupsStr, DataFormat.Binary);
 
         var graph = GraphView.ViewModel;
-        var nodeMaps = new Dictionary<int, BaseNodeProcessor>();
+        var nodeMaps = new Dictionary<long, BaseNodeProcessor>();
 
         GraphView.ClearSelection();
 
         foreach (var pair in nodes)
         {
-            pair.Value.id = graph.NewID();
+            pair.Value.id = GraphProcessorUtil.GenerateId();
             pair.Value.position += new InternalVector2Int(50, 50);
             var vm = ViewModelFactory.ProduceViewModel(pair.Value) as BaseNodeProcessor;
             GraphView.Context.Do(new AddNodeCommand(graph, vm));
@@ -117,7 +117,7 @@ public class FlowGraphWindow : BaseGraphWindow
                     group.nodes.RemoveAt(i);
             }
 
-            group.id = graph.NewID();
+            group.id = GraphProcessorUtil.GenerateId();
             GraphView.Context.Do(new AddGroupCommand(graph, group));
             GraphView.AddToSelection(GraphView.GroupViews[group.id]);
         }

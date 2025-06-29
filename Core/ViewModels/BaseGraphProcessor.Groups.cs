@@ -83,7 +83,7 @@ namespace Atom.GraphProcessor
         {
             var group = new Group()
             {
-                id = NewID(),
+                id = GraphProcessorUtil.GenerateId(),
                 groupName = groupName
             };
             return ViewModelFactory.ProduceViewModel(group) as GroupProcessor;
@@ -94,15 +94,15 @@ namespace Atom.GraphProcessor
 
     public class Groups
     {
-        private Dictionary<int, GroupProcessor> groupMap = new Dictionary<int, GroupProcessor>();
-        private Dictionary<int, GroupProcessor> nodeGroupMap = new Dictionary<int, GroupProcessor>();
+        private Dictionary<long, GroupProcessor> groupMap = new Dictionary<long, GroupProcessor>();
+        private Dictionary<long, GroupProcessor> nodeGroupMap = new Dictionary<long, GroupProcessor>();
 
-        public IReadOnlyDictionary<int, GroupProcessor> GroupMap
+        public IReadOnlyDictionary<long, GroupProcessor> GroupMap
         {
             get { return groupMap; }
         }
 
-        public IReadOnlyDictionary<int, GroupProcessor> NodeGroupMap
+        public IReadOnlyDictionary<long, GroupProcessor> NodeGroupMap
         {
             get { return nodeGroupMap; }
         }

@@ -24,18 +24,18 @@ namespace Atom.GraphProcessor
     [Serializable]
     public class BaseConnection
     {
-        [UnityEngine.HideInInspector] public int fromNode;
+        [UnityEngine.HideInInspector] public long fromNode;
         [UnityEngine.HideInInspector] public string fromPort;
-        [UnityEngine.HideInInspector] public int toNode;
+        [UnityEngine.HideInInspector] public long toNode;
         [UnityEngine.HideInInspector] public string toPort;
     }
 #else
     [Serializable]
     public class BaseConnection
     {
-        public int fromNode;
+        public long fromNode;
         public string fromPort;
-        public int toNode;
+        public long toNode;
         public string toPort;
     }
 #endif

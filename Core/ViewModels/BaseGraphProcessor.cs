@@ -32,7 +32,6 @@ namespace Atom.GraphProcessor
 
         #endregion
 
-
         #region Properties
 
         public BaseGraph Model => model;
@@ -75,20 +74,5 @@ namespace Atom.GraphProcessor
             InitGroups();
             InitNotes();
         }
-
-        #region API
-
-        public int NewID()
-        {
-            var id = 0;
-            do
-            {
-                id++;
-            } while (nodes.ContainsKey(id) || groups.GroupMap.ContainsKey(id) || notes.ContainsKey(id) || id == 0);
-
-            return id;
-        }
-
-        #endregion
     }
 }
