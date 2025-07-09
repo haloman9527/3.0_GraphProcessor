@@ -5,18 +5,35 @@ namespace Atom.GraphProcessor
     [ViewModel(typeof(StickyNote))]
     public sealed class StickyNoteProcessor : ViewModel, IGraphElementProcessor, IGraphElementProcessor_Scope
     {
-        private StickyNote model;
-        private Type modelType;
+        private StickyNote m_Model;
+        private Type m_ModelType;
 
-        public StickyNote Model => model;
-        public Type ModelType => modelType;
+        public StickyNoteProcessor(StickyNote model)
+        {
+            this.m_Model = model;
+            this.m_ModelType = model.GetType();
+        }
 
-        object IGraphElementProcessor.Model => model;
+        public StickyNote Model
+        {
+            get { return m_Model; }
+        }
 
-        Type IGraphElementProcessor.ModelType => modelType;
+        public Type ModelType
+        {
+            get { return m_ModelType; }
+        }
+
+        object IGraphElementProcessor.Model
+        {
+            get { return m_Model; }
+        }
 
         /// <summary> 唯一标识 </summary>
-        public long ID => Model.id;
+        public long ID
+        {
+            get { return Model.id; }
+        }
 
         public InternalVector2Int Position
         {
@@ -40,12 +57,6 @@ namespace Atom.GraphProcessor
         {
             get => Model.content;
             set => SetFieldValue(ref Model.content, value, nameof(StickyNote.content));
-        }
-
-        public StickyNoteProcessor(StickyNote model)
-        {
-            this.model = model;
-            this.modelType = model.GetType();
         }
     }
 }

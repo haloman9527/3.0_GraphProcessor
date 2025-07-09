@@ -34,7 +34,7 @@ namespace Atom.GraphProcessor.Editors
         public VisualElement Connector { get; }
         public VisualElement ConnectorCap { get; }
         public BaseGraphView GraphView { get; private set; }
-        public BasePortProcessor ViewModel { get; private set; }
+        public PortProcessor ViewModel { get; private set; }
         public Dictionary<BaseConnectionProcessor, BaseConnectionView> ConnectionViews { get; private set; }
 
         protected BasePortView(Orientation orientation, Direction direction, Capacity capacity, Type type, IEdgeConnectorListener connectorListener) : base(orientation, direction, capacity, type)
@@ -77,7 +77,7 @@ namespace Atom.GraphProcessor.Editors
 
         #region Initialize
 
-        public void SetUp(BasePortProcessor port, BaseGraphView graphView)
+        public void SetUp(PortProcessor port, BaseGraphView graphView)
         {
             ViewModel = port;
             GraphView = graphView;
@@ -107,12 +107,12 @@ namespace Atom.GraphProcessor.Editors
 
         private void OnViewModelChanged(object sender, PropertyChangedEventArgs e)
         {
-            var port = sender as BasePortProcessor;
+            var port = sender as PortProcessor;
             switch (e.PropertyName)
             {
                 case nameof(BasePort.portType):
                 {
-                    this.portType = port.portType;
+                    this.portType = port.PortType;
                     break;
                 }
                 case "hideLabel":

@@ -18,25 +18,66 @@
 
 using System;
 using System.Collections.Generic;
-using Atom;
 
 namespace Atom.GraphProcessor
 {
     [ViewModel(typeof(BaseGraph))]
     public partial class BaseGraphProcessor : ViewModel
     {
-        #region Fields
+        /// <summary>
+        /// Graph数据
+        /// </summary>
+        private BaseGraph m_Model;
+        
+        /// <summary>
+        /// Graph数据Type
+        /// </summary>
+        private Type m_ModelType;
+        
+        /// <summary>
+        /// Graph的操作事件
+        /// </summary>
+        private GraphEvents m_GraphEvents;
 
-        private BaseGraph model;
-        private Type modelType;
+        /// <summary>
+        /// 自定义事件
+        /// </summary>
+        private EventStation<string> m_Events;
+        
+        /// <summary>
+        /// 黑板
+        /// </summary>
+        private BlackboardProcessor<string> m_Blackboard;
 
-        #endregion
+        public BaseGraphProcessor(BaseGraph model)
+        {
+            m_Model = model;
+            m_ModelType = model.GetType();
+            m_Model.pan = m_Model.pan == default ? InternalVector2Int.zero : Model.pan;
+            m_Model.zoom = m_Model.zoom == 0 ? 1 : Model.zoom;
+            m_Model.notes = m_Model.notes == null ? new List<StickyNote>() : Model.notes;
 
-        #region Properties
+            m_GraphEvents = new GraphEvents();
+            m_Events = new EventStation<string>();
+            m_Blackboard = new BlackboardProcessor<string>(new Blackboard<string>(), new EventStation<string>());
 
-        public BaseGraph Model => model;
+            BeginInitNodes();
+            BeginInitConnections();
+            EndInitConnections();
+            EndInitNodes();
+            InitGroups();
+            InitNotes();
+        }
+        
+        public BaseGraph Model
+        {
+            get { return m_Model; }
+        }
 
-        public Type ModelType => modelType;
+        public Type ModelType
+        {
+            get { return m_ModelType; }
+        }
 
         public InternalVector2Int Pan
         {
@@ -50,29 +91,19 @@ namespace Atom.GraphProcessor
             set => SetFieldValue(ref Model.zoom, value, nameof(BaseGraph.zoom));
         }
 
-        public EventStation<string> Events { get; }
-
-        public BlackboardProcessor<string> Blackboard { get; }
-
-        #endregion
-
-        public BaseGraphProcessor(BaseGraph model)
+        public GraphEvents GraphEvents
         {
-            this.model = model;
-            this.modelType = model.GetType();
-            this.model.pan = Model.pan == default ? InternalVector2Int.zero : Model.pan;
-            this.model.zoom = Model.zoom == 0 ? 1 : Model.zoom;
-            this.model.notes = Model.notes == null ? new List<StickyNote>() : Model.notes;
+            get { return m_GraphEvents; }
+        }
 
-            this.Events = new EventStation<string>();
-            this.Blackboard = new BlackboardProcessor<string>(new Blackboard<string>(), Events);
+        public EventStation<string> Events
+        {
+            get { return m_Events; }
+        }
 
-            BeginInitNodes();
-            BeginInitConnections();
-            EndInitConnections();
-            EndInitNodes();
-            InitGroups();
-            InitNotes();
+        public BlackboardProcessor<string> Blackboard
+        {
+            get { return m_Blackboard; }
         }
     }
 }

@@ -76,15 +76,11 @@ namespace Atom.GraphProcessor.Editors
         public void Init()
         {
             ViewModel.PropertyChanged += OnViewModelChanged;
-            ViewModel.onNodeAdded += OnNodesAdded;
-            ViewModel.onNodeRemoved += OnNodesRemoved;
         }
 
         public void UnInit()
         {
             ViewModel.PropertyChanged -= OnViewModelChanged;
-            ViewModel.onNodeAdded -= OnNodesAdded;
-            ViewModel.onNodeRemoved -= OnNodesRemoved;
         }
 
         #region Callbacks
@@ -118,7 +114,7 @@ namespace Atom.GraphProcessor.Editors
             }
         }
 
-        private void OnNodesAdded(BaseNodeProcessor[] nodes)
+        public void OnNodesAdded(BaseNodeProcessor[] nodes)
         {
             if (WithoutNotify)
             {
@@ -137,7 +133,7 @@ namespace Atom.GraphProcessor.Editors
             }
         }
 
-        private void OnNodesRemoved(BaseNodeProcessor[] nodes)
+        public void OnNodesRemoved(BaseNodeProcessor[] nodes)
         {
             if (WithoutNotify)
             {
@@ -156,8 +152,6 @@ namespace Atom.GraphProcessor.Editors
             }
         }
 
-        #endregion
-
         protected override void OnGroupRenamed(string oldName, string newName)
         {
             Owner.Context.Do(new RenameGroupCommand(ViewModel, newName));
@@ -165,8 +159,10 @@ namespace Atom.GraphProcessor.Editors
 
         private void OnGroupColorChanged(ChangeEvent<Color> evt)
         {
-            ViewModel.BackgroundColor = evt.newValue.ToInternalColor();
+            Owner.Context.Do(new ChangeGroupColorCommand(ViewModel, evt.newValue.ToInternalColor()));
         }
+
+        #endregion
 
         public override bool AcceptsElement(GraphElement element, ref string reasonWhyNotAccepted)
         {

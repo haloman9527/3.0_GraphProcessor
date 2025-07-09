@@ -25,98 +25,113 @@ namespace Atom.GraphProcessor
     [ViewModel(typeof(BaseConnection))]
     public class BaseConnectionProcessor : ViewModel, IGraphElementProcessor
     {
-        #region Fields
+        /// <summary>
+        /// 数据
+        /// </summary>
+        private BaseConnection m_Model; 
+        
+        /// <summary>
+        /// 数据类型
+        /// </summary>
+        private Type m_ModelType;
 
-        private BaseConnection model;
-        private Type modelType;
-
-        private BaseGraphProcessor owner;
-        private int index = -1;
-        [NonSerialized] private BasePortProcessor from;
-        [NonSerialized] private BasePortProcessor to;
-
-        public event Action<int, int> onIndexChanged;
-
-        #endregion
-
-        #region Properties
-
-        public BaseConnection Model => model;
-
-        public Type ModelType => modelType;
-
-        object IGraphElementProcessor.Model => model;
-
-        Type IGraphElementProcessor.ModelType => modelType;
-
-        public long FromNodeID => Model.fromNode;
-
-        public long ToNodeID => Model.toNode;
-
-        public string FromPortName => Model.fromPort;
-
-        public string ToPortName => Model.toPort;
-
-        public BaseNodeProcessor FromNode => from.Owner;
-
-        public BasePortProcessor FromPort => from;
-
-        public BaseNodeProcessor ToNode => to.Owner;
-
-        public BasePortProcessor ToPort => to;
-
-        public BaseGraphProcessor Owner
-        {
-            get => owner;
-            internal set => owner = value;
-        }
-
-        public int Index
-        {
-            get => index;
-            set
-            {
-                if (index == value)
-                    return;
-
-                var oldIndex = index;
-                index = value;
-                onIndexChanged?.Invoke(oldIndex, value);
-            }
-        }
-
-        #endregion
+        /// <summary>
+        /// 所在Graph
+        /// </summary>
+        private BaseGraphProcessor m_Owner;
+        
+        /// <summary>
+        /// 起点Port
+        /// </summary>
+        private PortProcessor m_From;
+        
+        /// <summary>
+        /// 终点Port
+        /// </summary>
+        private PortProcessor m_To;
 
         public BaseConnectionProcessor(BaseConnection model)
         {
-            this.model = model;
-            this.modelType = model.GetType();
+            this.m_Model = model;
+            this.m_ModelType = model.GetType();
+        }
+
+        public BaseConnection Model
+        {
+            get { return m_Model; }
+        }
+
+        public Type ModelType
+        {
+            get { return m_ModelType; }
+        }
+
+        object IGraphElementProcessor.Model
+        {
+            get { return m_Model; }
+        }
+
+        Type IGraphElementProcessor.ModelType
+        {
+            get { return m_ModelType; }
+        }
+
+        public long FromNodeID
+        {
+            get { return Model.fromNode; }
+        }
+
+        public long ToNodeID
+        {
+            get { return Model.toNode; }
+        }
+
+        public string FromPortName
+        {
+            get { return Model.fromPort; }
+        }
+
+        public string ToPortName
+        {
+            get { return Model.toPort; }
+        }
+
+        public BaseNodeProcessor FromNode
+        {
+            get { return m_From.Owner; }
+        }
+
+        public PortProcessor FromPort
+        {
+            get { return m_From; }
+        }
+
+        public BaseNodeProcessor ToNode
+        {
+            get { return m_To.Owner; }
+        }
+
+        public PortProcessor ToPort
+        {
+            get { return m_To; }
+        }
+
+        public BaseGraphProcessor Owner
+        {
+            get => m_Owner;
+            internal set => m_Owner = value;
         }
 
         internal void Enable()
         {
-            this.from = Owner.Nodes[Model.fromNode].Ports[Model.fromPort];
-            this.to = Owner.Nodes[Model.toNode].Ports[Model.toPort];
+            this.m_From = Owner.Nodes[Model.fromNode].Ports[Model.fromPort];
+            this.m_To = Owner.Nodes[Model.toNode].Ports[Model.toPort];
             OnEnabled();
         }
-
-        /// <summary> 重定向 </summary>
-        internal void Redirect(BasePortProcessor from, BasePortProcessor to)
-        {
-            Model.fromNode = from.Owner.ID;
-            Model.fromPort = from.Name;
-            Model.toNode = to.Owner.ID;
-            Model.toPort = to.Name;
-            Enable();
-        }
-
-        #region Virtual
-
+        
         protected virtual void OnEnabled()
         {
         }
-
-        #endregion
     }
 
     public enum ConnectionSortMode

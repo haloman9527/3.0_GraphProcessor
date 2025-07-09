@@ -29,9 +29,9 @@ public class SubNodeProcessor : BaseNodeProcessor, IGetPortValue, IGetPortValue<
 {
     public SubNodeProcessor(BaseNode model) : base(model)
     {
-        AddPort(new BasePortProcessor("InputA", BasePort.Direction.Left, BasePort.Capacity.Single, typeof(float)));
-        AddPort(new BasePortProcessor("InputB", BasePort.Direction.Left, BasePort.Capacity.Single, typeof(float)));
-        AddPort(new BasePortProcessor(ConstValues.FLOW_OUT_PORT_NAME, BasePort.Direction.Right, BasePort.Capacity.Multi, typeof(float))
+        AddPort(new PortProcessor("InputA", BasePort.Direction.Left, BasePort.Capacity.Single, typeof(float)));
+        AddPort(new PortProcessor("InputB", BasePort.Direction.Left, BasePort.Capacity.Single, typeof(float)));
+        AddPort(new PortProcessor(ConstValues.FLOW_OUT_PORT_NAME, BasePort.Direction.Right, BasePort.Capacity.Multi, typeof(float))
         {
             HideLabel = true
         });

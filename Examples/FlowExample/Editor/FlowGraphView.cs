@@ -29,17 +29,17 @@ public class FlowGraphView : BaseGraphView
 {
     protected override void BuildNodeMenu(NodeMenuWindow nodeMenu)
     {
-        foreach (var pair in GraphProcessorUtil.NodeStaticInfos)
+        foreach (var nodeInfo in GraphProcessorUtil.GetNodeStaticInfos())
         {
-            if (!typeof(FlowNode).IsAssignableFrom(pair.Key))
-                continue;
-            var nodeStaticInfo = pair.Value;
-            if (nodeStaticInfo.hidden)
+            if (nodeInfo.Hidden)
                 continue;
             
-            var path = nodeStaticInfo.path;
-            var menu = nodeStaticInfo.menu;
-            nodeMenu.entries.Add(new NodeMenuWindow.NodeEntry(path, menu, pair.Key));
+            if (!typeof(FlowNode).IsAssignableFrom(nodeInfo.NodeType))
+                continue;
+            
+            var path = nodeInfo.Path;
+            var menu = nodeInfo.Menu;
+            nodeMenu.entries.Add(new NodeMenuWindow.NodeEntry(path, menu, nodeInfo.NodeType));
         }
     }
     

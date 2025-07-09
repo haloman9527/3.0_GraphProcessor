@@ -27,27 +27,50 @@ namespace Atom.GraphProcessor
     {
         #region Fileds
 
-        private Group model;
-        private Type modelType;
-        public event Action<BaseNodeProcessor[]> onNodeAdded;
-        public event Action<BaseNodeProcessor[]> onNodeRemoved;
+        private Group m_Model;
+        private Type m_ModelType;
+
+        private BaseGraphProcessor m_Owner;
 
         #endregion
 
         #region Property
 
-        public Group Model => model;
-        public Type ModelType => modelType;
+        public Group Model
+        {
+            get { return m_Model; }
+        }
 
-        object IGraphElementProcessor.Model => model;
+        object IGraphElementProcessor.Model
+        {
+            get { return m_Model; }
+        }
 
-        Type IGraphElementProcessor.ModelType => modelType;
+        public Type ModelType
+        {
+            get { return m_ModelType; }
+        }
 
-        public long ID => Model.id;
+        Type IGraphElementProcessor.ModelType
+        {
+            get { return m_ModelType; }
+        }
 
-        public IReadOnlyList<long> Nodes => Model.nodes;
+        public long ID
+        {
+            get { return Model.id; }
+        }
 
-        public BaseGraphProcessor Owner { get; internal set; }
+        public IReadOnlyList<long> Nodes
+        {
+            get { return Model.nodes; }
+        }
+
+        public BaseGraphProcessor Owner
+        {
+            get { return m_Owner; }
+            internal set { m_Owner = value; }
+        }
 
         public string GroupName
         {
@@ -71,19 +94,19 @@ namespace Atom.GraphProcessor
 
         public GroupProcessor(Group model)
         {
-            this.model = model;
-            this.modelType = model.GetType();
-            this.model.position = model.position == default ? InternalVector2Int.zero : model.position;
+            this.m_Model = model;
+            this.m_ModelType = model.GetType();
+            this.m_Model.position = model.position == default ? InternalVector2Int.zero : model.position;
         }
 
-        internal void NotifyNodeAdded(BaseNodeProcessor[] node)
+        internal void NotifyNodeAdded(BaseNodeProcessor[] nodes)
         {
-            onNodeAdded?.Invoke(node);
+            Owner.GraphEvents.Publish(new AddNodesToGroupEventArgs(this, nodes));
         }
 
-        internal void NotifyNodeRemoved(BaseNodeProcessor[] node)
+        internal void NotifyNodeRemoved(BaseNodeProcessor[] nodes)
         {
-            onNodeRemoved?.Invoke(node);
+            Owner.GraphEvents.Publish(new RemoveNodesFromGroupEventArgs(this, nodes));
         }
     }
 }

@@ -24,37 +24,59 @@ namespace Atom.GraphProcessor
     [ViewModel(typeof(BaseNode))]
     public class BaseNodeProcessor : ViewModel, IGraphElementProcessor, IGraphElementProcessor_Scope
     {
-        #region Fields
+        private BaseNode m_Data;
+        private Type m_DataType;
+        private string m_Title;
+        private string m_Tooltip;
+        private InternalColor m_TitleColor;
 
-        private BaseGraphProcessor owner;
-        private BaseNode model;
-        private int index;
-        private Type modelType;
-        private string title;
-        private string tooltip;
-        private InternalColor titleColor;
+        private readonly List<PortProcessor> m_InPorts;
+        private readonly List<PortProcessor> m_OutPorts;
+        private readonly Dictionary<string, PortProcessor> m_Ports;
 
-        private readonly List<BasePortProcessor> inPorts = new List<BasePortProcessor>();
-        private readonly List<BasePortProcessor> outPorts = new List<BasePortProcessor>();
-        private readonly Dictionary<string, BasePortProcessor> ports = new Dictionary<string, BasePortProcessor>();
+        private BaseGraphProcessor m_Owner;
+        private int m_Index;
+        
+        public BaseNodeProcessor(BaseNode model)
+        {
+            m_Data = model;
+            m_Data.position = model.position == default ? InternalVector2Int.zero : model.position;
+            m_DataType = model.GetType();
+            
+            m_InPorts = new List<PortProcessor>();
+            m_OutPorts = new List<PortProcessor>();
+            m_Ports = new Dictionary<string, PortProcessor>();
 
-        public event Action<BasePortProcessor> onPortAdded;
-        public event Action<BasePortProcessor> onPortRemoved;
+            var nodeStaticInfo = GraphProcessorUtil.GetNodeStaticInfo(m_DataType);
+            m_Title = nodeStaticInfo.Title;
+            m_Tooltip = nodeStaticInfo.Tooltip;
+            m_TitleColor = nodeStaticInfo.CustomTitleColor.Active ? nodeStaticInfo.CustomTitleColor.Value : this.m_TitleColor;
+        }
+        
+        public event Action<PortProcessor> onPortAdded;
+        public event Action<PortProcessor> onPortRemoved;
         public event Action<int, int> onIndexChanged;
 
-        #endregion
+        public BaseNode Model
+        {
+            get { return m_Data; }
+        }
 
-        #region Properties
+        public Type ModelType
+        {
+            get { return m_DataType; }
+        }
 
-        public BaseNode Model => model;
-        public Type ModelType => modelType;
-
-        object IGraphElementProcessor.Model => model;
-
-        Type IGraphElementProcessor.ModelType => modelType;
-
+        object IGraphElementProcessor.Model
+        {
+            get { return m_Data; }
+        }
+        
         /// <summary> 唯一标识 </summary>
-        public long ID => Model.id;
+        public long ID
+        {
+            get { return Model.id; }
+        }
 
         public virtual InternalVector2Int Position
         {
@@ -64,68 +86,62 @@ namespace Atom.GraphProcessor
 
         public virtual string Title
         {
-            get => title;
-            set => SetFieldValue(ref title, value, ConstValues.NODE_TITLE_NAME);
+            get => m_Title;
+            set => SetFieldValue(ref m_Title, value, ConstValues.NODE_TITLE_NAME);
         }
 
         public virtual InternalColor TitleColor
         {
-            get => titleColor;
-            set => SetFieldValue(ref titleColor, value, ConstValues.NODE_TITLE_COLOR_NAME);
+            get => m_TitleColor;
+            set => SetFieldValue(ref m_TitleColor, value, ConstValues.NODE_TITLE_COLOR_NAME);
         }
 
         public virtual string Tooltip
         {
-            get => tooltip;
-            set => SetFieldValue(ref tooltip, value, ConstValues.NODE_TOOLTIP_NAME);
+            get => m_Tooltip;
+            set => SetFieldValue(ref m_Tooltip, value, ConstValues.NODE_TOOLTIP_NAME);
         }
 
-        public IReadOnlyList<BasePortProcessor> InPorts => inPorts;
+        public IReadOnlyList<PortProcessor> InPorts
+        {
+            get { return m_InPorts; }
+        }
 
-        public IReadOnlyList<BasePortProcessor> OutPorts => outPorts;
+        public IReadOnlyList<PortProcessor> OutPorts
+        {
+            get { return m_OutPorts; }
+        }
 
-        public IReadOnlyDictionary<string, BasePortProcessor> Ports => ports;
+        public IReadOnlyDictionary<string, PortProcessor> Ports
+        {
+            get { return m_Ports; }
+        }
 
         public BaseGraphProcessor Owner
         {
-            get => owner;
-            internal set => owner = value;
+            get => m_Owner;
+            internal set => m_Owner = value;
         }
 
         public int Index
         {
-            get => index;
+            get => m_Index;
             set
             {
-                if (index == value)
+                if (m_Index == value)
                     return;
 
-                var oldIndex = index;
-                index = value;
-                onIndexChanged?.Invoke(oldIndex, index);
+                var oldIndex = m_Index;
+                m_Index = value;
+                onIndexChanged?.Invoke(oldIndex, m_Index);
             }
-        }
-
-        #endregion
-
-        public BaseNodeProcessor(BaseNode model)
-        {
-            this.model = model;
-            this.model.position = model.position == default ? InternalVector2Int.zero : model.position;
-            this.modelType = model.GetType();
-
-            var nodeStaticInfo = GraphProcessorUtil.NodeStaticInfos[this.modelType];
-
-            this.title = nodeStaticInfo.title;
-            this.tooltip = nodeStaticInfo.tooltip;
-            this.titleColor = nodeStaticInfo.customTitleColor.enable ? nodeStaticInfo.customTitleColor.value : this.titleColor;
         }
 
         internal void Enable()
         {
-            foreach (var port in ports.Values)
+            foreach (var port in m_Ports.Values)
             {
-                if (port.connections.Count > 1)
+                if (port.m_Connections.Count > 1)
                     port.Trim();
             }
 
@@ -139,10 +155,18 @@ namespace Atom.GraphProcessor
 
         #region API
 
-        public IEnumerable<BaseNodeProcessor> GetConnections(string portName)
+        public PortProcessor GetPort(string portName)
         {
-            if (!Ports.TryGetValue(portName, out var port))
+            return m_Ports.GetValueOrDefault(portName);
+        }
+
+        public IEnumerable<BaseNodeProcessor> GetPortConnections(string portName)
+        {
+            var port = GetPort(portName);
+            if (port == null)
+            {
                 yield break;
+            }
 
             foreach (var connection in port.Connections)
             {
@@ -150,28 +174,28 @@ namespace Atom.GraphProcessor
             }
         }
 
-        public BasePortProcessor AddPort(BasePort port)
+        public PortProcessor AddPort(BasePort port)
         {
-            var portVM = ViewModelFactory.ProduceViewModel(port) as BasePortProcessor;
+            var portVM = ViewModelFactory.ProduceViewModel(port) as PortProcessor;
             AddPort(portVM);
             return portVM;
         }
 
-        public void AddPort(BasePortProcessor port)
+        public void AddPort(PortProcessor port)
         {
-            ports.Add(port.Name, port);
+            m_Ports.Add(port.Name, port);
             switch (port.Direction)
             {
                 case BasePort.Direction.Left:
                 case BasePort.Direction.Top:
                 {
-                    inPorts.Add(port);
+                    m_InPorts.Add(port);
                     break;
                 }
                 case BasePort.Direction.Right:
                 case BasePort.Direction.Bottom:
                 {
-                    outPorts.Add(port);
+                    m_OutPorts.Add(port);
                     break;
                 }
             }
@@ -182,29 +206,29 @@ namespace Atom.GraphProcessor
 
         public void RemovePort(string portName)
         {
-            if (!ports.TryGetValue(portName, out var port))
+            if (!m_Ports.TryGetValue(portName, out var port))
                 return;
 
             RemovePort(port);
         }
 
-        public void RemovePort(BasePortProcessor port)
+        public void RemovePort(PortProcessor port)
         {
             if (port.Owner != this)
                 return;
             if (Owner != null)
                 Owner.Disconnect(port);
-            ports.Remove(port.Name);
+            m_Ports.Remove(port.Name);
             switch (port.Direction)
             {
                 case BasePort.Direction.Left:
                 {
-                    inPorts.Remove(port);
+                    m_InPorts.Remove(port);
                     break;
                 }
                 case BasePort.Direction.Right:
                 {
-                    outPorts.Remove(port);
+                    m_OutPorts.Remove(port);
                     break;
                 }
             }
@@ -212,10 +236,10 @@ namespace Atom.GraphProcessor
             onPortRemoved?.Invoke(port);
         }
 
-        public void SortPort(Func<BasePortProcessor, BasePortProcessor, int> comparer)
+        public void SortPort(Func<PortProcessor, PortProcessor, int> comparer)
         {
-            inPorts.QuickSort(comparer);
-            outPorts.QuickSort(comparer);
+            m_InPorts.QuickSort(comparer);
+            m_OutPorts.QuickSort(comparer);
         }
 
         #endregion

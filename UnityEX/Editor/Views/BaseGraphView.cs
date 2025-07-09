@@ -133,16 +133,14 @@ namespace Atom.GraphProcessor.Editors
 
         protected virtual void BuildNodeMenu(NodeMenuWindow nodeMenu)
         {
-            foreach (var pair in GraphProcessorUtil.NodeStaticInfos)
+            foreach (var nodeInfo in GraphProcessorUtil.GetNodeStaticInfos())
             {
-                var nodeType = pair.Key;
-                var nodeStaticInfo = pair.Value;
-                if (nodeStaticInfo.hidden)
+                if (nodeInfo.Hidden)
                     continue;
 
-                var path = nodeStaticInfo.path;
-                var menu = nodeStaticInfo.menu;
-                nodeMenu.entries.Add(new NodeMenuWindow.NodeEntry(path, menu, nodeType));
+                var path = nodeInfo.Path;
+                var menu = nodeInfo.Menu;
+                nodeMenu.entries.Add(new NodeMenuWindow.NodeEntry(path, menu, nodeInfo.NodeType));
             }
         }
 
@@ -183,7 +181,7 @@ namespace Atom.GraphProcessor.Editors
             if (toPortView.direction == fromPortView.direction)
                 return false;
             // 类型兼容查询
-            if (!toPortView.ViewModel.portType.IsAssignableFrom(fromPortView.ViewModel.portType) && !fromPortView.ViewModel.portType.IsAssignableFrom(toPortView.ViewModel.portType))
+            if (!toPortView.ViewModel.PortType.IsAssignableFrom(fromPortView.ViewModel.PortType) && !fromPortView.ViewModel.PortType.IsAssignableFrom(toPortView.ViewModel.PortType))
                 return false;
             return true;
         }

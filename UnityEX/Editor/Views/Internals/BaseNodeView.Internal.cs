@@ -234,7 +234,7 @@ namespace Atom.GraphProcessor.Editors
             }
         }
 
-        private void OnPortAdded(BasePortProcessor port)
+        private void OnPortAdded(PortProcessor port)
         {
             AddPortView(port);
             RefreshPorts();
@@ -242,7 +242,7 @@ namespace Atom.GraphProcessor.Editors
             RefreshPortContainer();
         }
 
-        private void OnPortRemoved(BasePortProcessor port)
+        private void OnPortRemoved(PortProcessor port)
         {
             RemovePortView(port);
             RefreshPorts();
@@ -291,7 +291,7 @@ namespace Atom.GraphProcessor.Editors
             RefreshContentsHorizontalDivider();
         }
 
-        private void AddPortView(BasePortProcessor port)
+        private void AddPortView(PortProcessor port)
         {
             var portView = NewPortView(port);
             if (port.Name == ConstValues.FLOW_IN_PORT_NAME)
@@ -332,7 +332,7 @@ namespace Atom.GraphProcessor.Editors
             portViews[port.Name] = portView;
         }
 
-        private void RemovePortView(BasePortProcessor port)
+        private void RemovePortView(PortProcessor port)
         {
             portViews[port.Name].UnInit();
             portViews[port.Name].RemoveFromHierarchy();

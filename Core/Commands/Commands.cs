@@ -119,7 +119,7 @@ namespace Atom.GraphProcessor
                             nodeGroups[node] = groupProcessor;
                         }
 
-                        foreach (var connection in node.Ports.Values.SelectMany(port => port.connections))
+                        foreach (var connection in node.Ports.Values.SelectMany(port => port.m_Connections))
                         {
                             if (this.graphElementsSet.Add(connection))
                             {
@@ -400,16 +400,45 @@ namespace Atom.GraphProcessor
         }
     }
 
+    public class ChangeGroupColorCommand : ICommand
+    {
+        public GroupProcessor group;
+        public InternalColor oldColor;
+        public InternalColor newColor;
+        
+        public ChangeGroupColorCommand(GroupProcessor group, InternalColor newColor)
+        {
+            this.group = group;
+            this.oldColor = group.BackgroundColor;
+            this.newColor = newColor;
+        }
+
+        public void Do()
+        {
+            group.BackgroundColor = newColor;
+        }
+
+        public void Redo()
+        {
+            Do();
+        }
+
+        public void Undo()
+        {
+            group.BackgroundColor = oldColor;
+        }
+    }
+
     public class AddPortCommand : ICommand
     {
         BaseNodeProcessor node;
-        BasePortProcessor port;
+        PortProcessor port;
         bool successed = false;
 
         public AddPortCommand(BaseNodeProcessor node, string name, BasePort.Direction direction, BasePort.Capacity capacity, Type type = null)
         {
             this.node = node;
-            port = new BasePortProcessor(name, direction, capacity, type);
+            port = new PortProcessor(name, direction, capacity, type);
         }
 
         public void Do()
@@ -441,10 +470,10 @@ namespace Atom.GraphProcessor
     public class RemovePortCommand : ICommand
     {
         BaseNodeProcessor node;
-        BasePortProcessor port;
+        PortProcessor port;
         bool successed = false;
 
-        public RemovePortCommand(BaseNodeProcessor node, BasePortProcessor port)
+        public RemovePortCommand(BaseNodeProcessor node, PortProcessor port)
         {
             this.node = node;
             this.port = port;
@@ -486,12 +515,12 @@ namespace Atom.GraphProcessor
     {
         private readonly BaseGraphProcessor graph;
 
-        BasePortProcessor from;
-        BasePortProcessor to;
+        PortProcessor from;
+        PortProcessor to;
         BaseConnectionProcessor connectionVM;
         HashSet<BaseConnectionProcessor> replacedConnections = new HashSet<BaseConnectionProcessor>();
 
-        public ConnectCommand(BaseGraphProcessor graph, BasePortProcessor from, BasePortProcessor to)
+        public ConnectCommand(BaseGraphProcessor graph, PortProcessor from, PortProcessor to)
         {
             this.graph = graph;
             this.connectionVM = graph.NewConnection(from, to);

@@ -29,20 +29,20 @@ public class SampleGraphView : BaseGraphView
 {
     protected override void BuildNodeMenu(NodeMenuWindow nodeMenu)
     {
-        foreach (var nodeType in GetNodeTypes())
+        foreach (var nodeDataType in GetNodeDataTypes())
         {
-            if (nodeType.IsAbstract) 
+            if (nodeDataType.IsAbstract) 
                 continue;
-            var nodeStaticInfo = GraphProcessorUtil.NodeStaticInfos[nodeType];
-            if (nodeStaticInfo.hidden)
+            var nodeStaticInfo = GraphProcessorUtil.GetNodeStaticInfo(nodeDataType);
+            if (nodeStaticInfo.Hidden)
                 continue;
             
-            var path = nodeStaticInfo.path;
-            var menu = nodeStaticInfo.menu;
-            nodeMenu.entries.Add(new NodeMenuWindow.NodeEntry(path, menu, nodeType));
+            var path = nodeStaticInfo.Path;
+            var menu = nodeStaticInfo.Menu;
+            nodeMenu.entries.Add(new NodeMenuWindow.NodeEntry(path, menu, nodeDataType));
         }
     }
-    private IEnumerable<Type> GetNodeTypes()
+    private IEnumerable<Type> GetNodeDataTypes()
     {
         yield return typeof(FloatNode);
         yield return typeof(AddNode);

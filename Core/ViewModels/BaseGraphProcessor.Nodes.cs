@@ -25,22 +25,22 @@ namespace Atom.GraphProcessor
     {
         #region Fields
 
-        private Dictionary<long, BaseNodeProcessor> nodes;
-
-        public event Action<BaseNodeProcessor> OnNodeAdded;
-        public event Action<BaseNodeProcessor> OnNodeRemoved;
+        private Dictionary<long, BaseNodeProcessor> m_Nodes;
 
         #endregion
 
         #region Properties
         
-        public IReadOnlyDictionary<long, BaseNodeProcessor> Nodes => nodes;
+        public IReadOnlyDictionary<long, BaseNodeProcessor> Nodes
+        {
+            get { return m_Nodes; }
+        }
 
         #endregion
 
         private void BeginInitNodes()
         {
-            this.nodes = new Dictionary<long, BaseNodeProcessor>(Model.nodes.Count);
+            this.m_Nodes = new Dictionary<long, BaseNodeProcessor>(Model.nodes.Count);
             for (var index = 0; index < Model.nodes.Count; index++)
             {
                 var node = Model.nodes[index];
@@ -49,13 +49,13 @@ namespace Atom.GraphProcessor
                 var nodeProcessor = (BaseNodeProcessor)ViewModelFactory.ProduceViewModel(node);
                 nodeProcessor.Owner = this;
                 nodeProcessor.Index = index;
-                nodes.Add(node.id, nodeProcessor);
+                m_Nodes.Add(node.id, nodeProcessor);
             }
         }
 
         private void EndInitNodes()
         {
-            foreach (var node in nodes.Values)
+            foreach (var node in m_Nodes.Values)
             {
                 node.Enable();
             }
@@ -84,17 +84,17 @@ namespace Atom.GraphProcessor
 
         public void AddNode(BaseNodeProcessor node)
         {
-            nodes.Add(node.ID, node);
-            model.nodes.Add(node.Model);
+            m_Nodes.Add(node.ID, node);
+            m_Model.nodes.Add(node.Model);
             node.Owner = this;
-            node.Index = model.nodes.Count - 1;
+            node.Index = m_Model.nodes.Count - 1;
             node.Enable();
-            OnNodeAdded?.Invoke(node);
+            m_GraphEvents.Publish(new AddNodeEventArgs(node));
         }
 
-        public void RemoveNodeByID(int id)
+        public void RemoveNode(int nodeId)
         {
-            RemoveNode(Nodes[id]);
+            RemoveNode(Nodes[nodeId]);
         }
 
         public void RemoveNode(BaseNodeProcessor node)
@@ -102,19 +102,19 @@ namespace Atom.GraphProcessor
             if (node.Owner != this)
                 throw new NullReferenceException("节点不是此Graph中");
 
-            if (groups.NodeGroupMap.TryGetValue(node.ID, out var group))
-                groups.RemoveNodeFromGroup(node);
+            if (m_Groups.NodeGroupMap.TryGetValue(node.ID, out var group))
+                m_Groups.RemoveNodeFromGroup(node);
 
             Disconnect(node);
-            nodes.Remove(node.ID);
-            model.nodes.Remove(node.Model);
+            m_Nodes.Remove(node.ID);
+            m_Model.nodes.Remove(node.Model);
             node.Disable();
-            for (int index = 0; index < model.nodes.Count; index++)
+            for (int index = 0; index < m_Model.nodes.Count; index++)
             {
-                var nodeData = model.nodes[index];
-                nodes[nodeData.id].Index = index;
+                var nodeData = m_Model.nodes[index];
+                m_Nodes[nodeData.id].Index = index;
             }
-            OnNodeRemoved?.Invoke(node);
+            m_GraphEvents.Publish(new RemoveNodeEventArgs(node));
         }
 
         public virtual BaseNodeProcessor NewNode(Type nodeType, InternalVector2Int position)

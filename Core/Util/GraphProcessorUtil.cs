@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
@@ -25,18 +26,19 @@ namespace Atom.GraphProcessor
 {
     public struct ToggleValue<T>
     {
-        public bool enable;
-        public T value;
+        public bool Active;
+        public T Value;
     }
 
-    public class NodeStaticInfo
+    public struct NodeStaticInfo
     {
-        public string path;
-        public string[] menu;
-        public bool hidden;
-        public string title;
-        public string tooltip;
-        public ToggleValue<InternalColor> customTitleColor;
+        public Type NodeType;
+        public bool Hidden;
+        public string Path;
+        public string[] Menu;
+        public string Title;
+        public string Tooltip;
+        public ToggleValue<InternalColor> CustomTitleColor;
     }
 
     public static class GraphProcessorUtil
@@ -44,11 +46,6 @@ namespace Atom.GraphProcessor
         private static bool s_Initialized;
         private static Dictionary<Type, NodeStaticInfo> s_NodeStaticInfos = new Dictionary<Type, NodeStaticInfo>();
         private static Snowflake s_IDGenerator = new Snowflake(0, new Snowflake.UtcMSDateTimeProvider(2020, 1, 1));
-
-        public static Dictionary<Type, NodeStaticInfo> NodeStaticInfos
-        {
-            get { return s_NodeStaticInfos; }
-        }
 
         static GraphProcessorUtil()
         {
@@ -65,59 +62,70 @@ namespace Atom.GraphProcessor
             else
                 s_NodeStaticInfos.Clear();
 
-            foreach (var t in TypesCache.GetTypesDerivedFrom<BaseNode>())
+            foreach (var nodeType in TypesCache.GetTypesDerivedFrom<BaseNode>())
             {
-                if (t.IsAbstract)
+                if (nodeType.IsAbstract)
                     continue;
 
                 var nodeStaticInfo = new NodeStaticInfo();
-                nodeStaticInfo.title = t.Name;
-                nodeStaticInfo.tooltip = string.Empty;
-                nodeStaticInfo.customTitleColor = new ToggleValue<InternalColor>();
-                NodeStaticInfos.Add(t, nodeStaticInfo);
-                var nodeMenuAttribute = t.GetCustomAttribute(typeof(NodeMenuAttribute)) as NodeMenuAttribute;
+                nodeStaticInfo.NodeType = nodeType;
+                nodeStaticInfo.Title = nodeType.Name;
+                nodeStaticInfo.Tooltip = string.Empty;
+                nodeStaticInfo.CustomTitleColor = new ToggleValue<InternalColor>();
+                s_NodeStaticInfos.Add(nodeType, nodeStaticInfo);
+                var nodeMenuAttribute = nodeType.GetCustomAttribute(typeof(NodeMenuAttribute)) as NodeMenuAttribute;
                 if (nodeMenuAttribute != null)
                 {
                     if (!string.IsNullOrEmpty(nodeMenuAttribute.path))
                     {
-                        nodeStaticInfo.path = nodeMenuAttribute.path;
-                        nodeStaticInfo.menu = nodeMenuAttribute.path.Split('/');
-                        nodeStaticInfo.title = nodeStaticInfo.menu[nodeStaticInfo.menu.Length - 1];
+                        nodeStaticInfo.Path = nodeMenuAttribute.path;
+                        nodeStaticInfo.Menu = nodeMenuAttribute.path.Split('/');
+                        nodeStaticInfo.Title = nodeStaticInfo.Menu[nodeStaticInfo.Menu.Length - 1];
                     }
                     else
                     {
-                        nodeStaticInfo.path = t.Name;
-                        nodeStaticInfo.menu = new string[] { t.Name };
-                        nodeStaticInfo.title = t.Name;
+                        nodeStaticInfo.Path = nodeType.Name;
+                        nodeStaticInfo.Menu = new string[] { nodeType.Name };
+                        nodeStaticInfo.Title = nodeType.Name;
                     }
 
-                    nodeStaticInfo.hidden = nodeMenuAttribute.hidden;
+                    nodeStaticInfo.Hidden = nodeMenuAttribute.hidden;
                 }
                 else
                 {
-                    nodeStaticInfo.path = t.Name;
-                    nodeStaticInfo.menu = new string[] { t.Name };
-                    nodeStaticInfo.title = t.Name;
-                    nodeStaticInfo.hidden = false;
+                    nodeStaticInfo.Path = nodeType.Name;
+                    nodeStaticInfo.Menu = new string[] { nodeType.Name };
+                    nodeStaticInfo.Title = nodeType.Name;
+                    nodeStaticInfo.Hidden = false;
                 }
 
-                var titleAttribute = t.GetCustomAttribute(typeof(NodeTitleAttribute)) as NodeTitleAttribute;
+                var titleAttribute = nodeType.GetCustomAttribute(typeof(NodeTitleAttribute)) as NodeTitleAttribute;
                 if (titleAttribute != null && !string.IsNullOrEmpty(titleAttribute.title))
-                    nodeStaticInfo.title = titleAttribute.title;
+                    nodeStaticInfo.Title = titleAttribute.title;
 
-                var tooltipAttribute = t.GetCustomAttribute(typeof(NodeTooltipAttribute)) as NodeTooltipAttribute;
+                var tooltipAttribute = nodeType.GetCustomAttribute(typeof(NodeTooltipAttribute)) as NodeTooltipAttribute;
                 if (tooltipAttribute != null)
-                    nodeStaticInfo.tooltip = tooltipAttribute.Tooltip;
+                    nodeStaticInfo.Tooltip = tooltipAttribute.Tooltip;
 
-                var titleColorAttribute = t.GetCustomAttribute(typeof(NodeTitleColorAttribute)) as NodeTitleColorAttribute;
+                var titleColorAttribute = nodeType.GetCustomAttribute(typeof(NodeTitleColorAttribute)) as NodeTitleColorAttribute;
                 if (titleColorAttribute != null)
                 {
-                    nodeStaticInfo.customTitleColor.enable = true;
-                    nodeStaticInfo.customTitleColor.value = titleColorAttribute.color;
+                    nodeStaticInfo.CustomTitleColor.Active = true;
+                    nodeStaticInfo.CustomTitleColor.Value = titleColorAttribute.color;
                 }
             }
 
             s_Initialized = true;
+        }
+
+        public static NodeStaticInfo GetNodeStaticInfo(Type nodeDataType)
+        {
+            return s_NodeStaticInfos.GetValueOrDefault(nodeDataType);
+        }
+        
+        public static IEnumerable<NodeStaticInfo> GetNodeStaticInfos()
+        {
+            return s_NodeStaticInfos.Values;
         }
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

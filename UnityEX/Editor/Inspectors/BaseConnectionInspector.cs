@@ -47,37 +47,23 @@ namespace Atom.GraphProcessor.Editors
             if (view == null || view.ViewModel == null)
                 return;
 
-            if (false && view.BindingProperty != null)
+            if (propertyTree != null)
             {
-                view.BindingProperty.serializedObject.Update();
-                EditorGUILayout.PropertyField(view.BindingProperty, GUIContent.none, true);
-                if (view.BindingProperty.serializedObject.hasModifiedProperties)
+                propertyTree.BeginDraw(false);
+                foreach (var property in propertyTree.EnumerateTree(false, true))
                 {
-                    view.BindingProperty.serializedObject.ApplyModifiedProperties();
-                }
-
-                SourceEditor?.Repaint();
-            }
-            else
-            {
-                if (propertyTree != null)
-                {
-                    propertyTree.BeginDraw(false);
-                    foreach (var property in propertyTree.EnumerateTree(false, true))
+                    switch (property.Name)
                     {
-                        switch (property.Name)
-                        {
-                            case nameof(BaseConnection.fromNode):
-                            case nameof(BaseConnection.fromPort):
-                            case nameof(BaseConnection.toNode):
-                            case nameof(BaseConnection.toPort):
-                                continue;
-                        }
-                        property.Draw();
+                        case nameof(BaseConnection.fromNode):
+                        case nameof(BaseConnection.fromPort):
+                        case nameof(BaseConnection.toNode):
+                        case nameof(BaseConnection.toPort):
+                            continue;
                     }
-                    propertyTree.EndDraw();
-                    SourceEditor.Repaint();
+                    property.Draw();
                 }
+                propertyTree.EndDraw();
+                SourceEditor.Repaint();
             }
         }
 

@@ -28,7 +28,6 @@ namespace Atom.GraphProcessor.Editors
         public BaseConnectionProcessor ViewModel { get; private set; }
         public IGraphElementProcessor V => ViewModel;
         public BaseGraphView Owner { get; private set; }
-        public SerializedProperty BindingProperty { get; private set; }
 
         public BaseConnectionView()
         {
@@ -46,8 +45,6 @@ namespace Atom.GraphProcessor.Editors
 
         public void Init()
         {
-            this.OnIndexChanged(-1, ViewModel.Index);
-            this.ViewModel.onIndexChanged += OnIndexChanged;
             this.RegisterCallback<ClickEvent>(OnClick);
             this.DoInit();
         }
@@ -69,15 +66,6 @@ namespace Atom.GraphProcessor.Editors
         #endregion
 
         #region Callbacks
-
-        private void OnIndexChanged(int oldIndex, int newIndex)
-        {
-            if (this.Owner.Context.graphWindow.UnityGraphAssetSO != null)
-            {
-                this.Owner.Context.graphWindow.UnityGraphAssetSO.Update();
-                this.BindingProperty = this.Owner.Context.graphWindow.UnityGraphAssetSO.FindProperty($"data.nodes.Array.data[{newIndex}]");
-            }
-        }
 
         private void OnMouseEnter(MouseEnterEvent evt)
         {

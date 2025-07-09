@@ -25,25 +25,25 @@ namespace Atom.GraphProcessor
     {
         #region Fields
 
-        private Dictionary<long, StickyNoteProcessor> notes;
-
-        public event Action<StickyNoteProcessor> OnNoteAdded;
-        public event Action<StickyNoteProcessor> OnNoteRemoved;
+        private Dictionary<long, StickyNoteProcessor> m_Notes;
 
         #endregion
 
         #region Properties
 
-        public IReadOnlyDictionary<long, StickyNoteProcessor> Notes => notes;
+        public IReadOnlyDictionary<long, StickyNoteProcessor> Notes
+        {
+            get { return m_Notes; }
+        }
 
         #endregion
 
         private void InitNotes()
         {
-            this.notes = new Dictionary<long, StickyNoteProcessor>(System.Math.Min(Model.connections.Count, 4));
-            foreach (var note in model.notes)
+            this.m_Notes = new Dictionary<long, StickyNoteProcessor>(System.Math.Min(Model.connections.Count, 4));
+            foreach (var note in m_Model.notes)
             {
-                notes.Add(note.id, (StickyNoteProcessor)ViewModelFactory.ProduceViewModel(note));
+                m_Notes.Add(note.id, (StickyNoteProcessor)ViewModelFactory.ProduceViewModel(note));
             }
         }
 
@@ -56,25 +56,23 @@ namespace Atom.GraphProcessor
             note.position = position;
             note.title = title;
             note.content = content;
-            var noteVm = ViewModelFactory.ProduceViewModel(note) as StickyNoteProcessor;
-
-            AddNote(noteVm);
+            AddNote(ViewModelFactory.ProduceViewModel(note) as StickyNoteProcessor);
         }
 
         public void AddNote(StickyNoteProcessor note)
         {
-            notes.Add(note.ID, note);
-            Model.notes.Add(note.Model);
-            OnNoteAdded?.Invoke(note);
+            m_Notes.Add(note.ID, note);
+            m_Model.notes.Add(note.Model);
+            m_GraphEvents.Publish(new AddNoteEventArgs(note));
         }
 
         public void RemoveNote(long id)
         {
-            if (!notes.TryGetValue(id, out var note))
+            if (!m_Notes.TryGetValue(id, out var note))
                 return;
-            notes.Remove(note.ID);
-            Model.notes.Remove(note.Model);
-            OnNoteRemoved?.Invoke(note);
+            m_Notes.Remove(note.ID);
+            m_Model.notes.Remove(note.Model);
+            m_GraphEvents.Publish(new RemoveNoteEventArgs(note));
         }
 
         #endregion

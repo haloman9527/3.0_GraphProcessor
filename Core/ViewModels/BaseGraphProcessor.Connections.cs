@@ -26,34 +26,34 @@ namespace Atom.GraphProcessor
     {
         #region Fields
 
-        private List<BaseConnectionProcessor> connections;
-
-        public event Action<BaseConnectionProcessor> OnConnected;
-        public event Action<BaseConnectionProcessor> OnDisconnected;
+        private List<BaseConnectionProcessor> m_Connections;
 
         #endregion
 
         #region Properties
 
-        public IReadOnlyList<BaseConnectionProcessor> Connections => connections != null ? connections : Array.Empty<BaseConnectionProcessor>();
+        public IReadOnlyList<BaseConnectionProcessor> Connections
+        {
+            get { return m_Connections; }
+        }
 
         #endregion
 
         private void BeginInitConnections()
         {
-            this.connections = new List<BaseConnectionProcessor>(Model.connections.Count);
+            this.m_Connections = new List<BaseConnectionProcessor>(Model.connections.Count);
 
             for (int i = 0; i < Model.connections.Count; i++)
             {
                 var connection = Model.connections[i];
 
-                if (!nodes.TryGetValue(connection.fromNode, out var fromNode) || !fromNode.Ports.TryGetValue(connection.fromPort, out var fromPort))
+                if (!m_Nodes.TryGetValue(connection.fromNode, out var fromNode) || !fromNode.Ports.TryGetValue(connection.fromPort, out var fromPort))
                 {
                     Model.connections.RemoveAt(i--);
                     continue;
                 }
 
-                if (!nodes.TryGetValue(connection.toNode, out var toNode) || !toNode.Ports.TryGetValue(connection.toPort, out var toPort))
+                if (!m_Nodes.TryGetValue(connection.toNode, out var toNode) || !toNode.Ports.TryGetValue(connection.toPort, out var toPort))
                 {
                     Model.connections.RemoveAt(i--);
                     continue;
@@ -61,15 +61,15 @@ namespace Atom.GraphProcessor
 
                 var connectionVM = (BaseConnectionProcessor)ViewModelFactory.ProduceViewModel(connection);
                 connectionVM.Owner = this;
-                fromPort.connections.Add(connectionVM);
-                toPort.connections.Add(connectionVM);
-                connections.Add(connectionVM);
+                fromPort.m_Connections.Add(connectionVM);
+                toPort.m_Connections.Add(connectionVM);
+                m_Connections.Add(connectionVM);
             }
         }
 
         private void EndInitConnections()
         {
-            foreach (var connection in connections)
+            foreach (var connection in m_Connections)
             {
                 connection.Enable();
             }
@@ -77,7 +77,7 @@ namespace Atom.GraphProcessor
 
         #region API
 
-        public BaseConnectionProcessor Connect(BasePortProcessor fromPort, BasePortProcessor toPort)
+        public BaseConnectionProcessor Connect(PortProcessor fromPort, PortProcessor toPort)
         {
             var connection = fromPort.Connections.FirstOrDefault(tmp => tmp.FromPort == fromPort && tmp.ToPort == toPort);
             if (connection != null)
@@ -90,13 +90,13 @@ namespace Atom.GraphProcessor
             connection = NewConnection(fromPort, toPort);
             connection.Owner = this;
             connection.Enable();
-            connections.Add(connection);
-            Model.connections.Add(connection.Model);
+            m_Connections.Add(connection);
+            m_Model.connections.Add(connection.Model);
 
             fromPort.ConnectTo(connection);
             toPort.ConnectTo(connection);
 
-            OnConnected?.Invoke(connection);
+            m_GraphEvents.Publish(new AddConnectionEventArgs(connection));
             return connection;
         }
 
@@ -117,38 +117,38 @@ namespace Atom.GraphProcessor
 
             connection.Owner = this;
             connection.Enable();
-            connections.Add(connection);
+            m_Connections.Add(connection);
             Model.connections.Add(connection.Model);
 
             fromPort.ConnectTo(connection);
             toPort.ConnectTo(connection);
 
-            OnConnected?.Invoke(connection);
+            m_GraphEvents.Publish(new AddConnectionEventArgs(connection));
         }
 
         public void Disconnect(BaseConnectionProcessor connection)
         {
-            if (connection.FromNode.Ports.TryGetValue(connection.FromPortName, out BasePortProcessor fromPort))
+            if (connection.FromNode.Ports.TryGetValue(connection.FromPortName, out PortProcessor fromPort))
             {
                 fromPort.DisconnectTo(connection);
             }
 
-            if (connection.ToNode.Ports.TryGetValue(connection.ToPortName, out BasePortProcessor toPort))
+            if (connection.ToNode.Ports.TryGetValue(connection.ToPortName, out PortProcessor toPort))
             {
                 toPort.DisconnectTo(connection);
             }
 
-            connections.Remove(connection);
+            m_Connections.Remove(connection);
             Model.connections.Remove(connection.Model);
             connection.Owner = null;
-            OnDisconnected?.Invoke(connection);
+            m_GraphEvents.Publish(new RemoveConnectionEventArgs(connection));
         }
 
         public void Disconnect(BaseNodeProcessor node)
         {
-            for (int i = 0; i < connections.Count; i++)
+            for (int i = 0; i < m_Connections.Count; i++)
             {
-                var connection = connections[i];
+                var connection = m_Connections[i];
                 if (connection.FromNodeID == node.ID || connection.ToNodeID == node.ID)
                 {
                     Disconnect(connection);
@@ -157,20 +157,20 @@ namespace Atom.GraphProcessor
             }
         }
 
-        public void Disconnect(BasePortProcessor port)
+        public void Disconnect(PortProcessor port)
         {
-            for (int i = 0; i < port.connections.Count; i++)
+            for (int i = 0; i < port.m_Connections.Count; i++)
             {
-                Disconnect(port.connections[i--]);
+                Disconnect(port.m_Connections[i--]);
             }
         }
 
         public void RevertDisconnect(BaseConnectionProcessor connection)
         {
-            var fromNode = nodes[connection.FromNodeID];
+            var fromNode = m_Nodes[connection.FromNodeID];
             var fromPort = fromNode.Ports[connection.FromPortName];
 
-            var toNode = nodes[connection.ToNodeID];
+            var toNode = m_Nodes[connection.ToNodeID];
             var toPort = toNode.Ports[connection.ToPortName];
 
             var tmpConnection = fromPort.Connections.FirstOrDefault(tmp => tmp.ToNodeID == connection.ToNodeID && tmp.ToPortName == connection.ToPortName);
@@ -184,16 +184,16 @@ namespace Atom.GraphProcessor
 
             connection.Owner = this;
             connection.Enable();
-            connections.Add(connection);
+            m_Connections.Add(connection);
             Model.connections.Add(connection.Model);
 
             fromPort.ConnectTo(connection);
             toPort.ConnectTo(connection);
 
-            OnConnected?.Invoke(connection);
+            m_GraphEvents.Publish(new AddConnectionEventArgs(connection));
         }
 
-        public virtual BaseConnectionProcessor NewConnection(BasePortProcessor from, BasePortProcessor to)
+        public virtual BaseConnectionProcessor NewConnection(PortProcessor from, PortProcessor to)
         {
             var connection = new BaseConnection()
             {

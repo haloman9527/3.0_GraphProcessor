@@ -26,8 +26,8 @@ namespace Atom.GraphProcessor.Editors
         {
             BaseGraphView tempGraphView = graphView as BaseGraphView;
 
-            BasePortProcessor from = (edge.output as BasePortView).ViewModel;
-            BasePortProcessor to = (edge.input as BasePortView).ViewModel;
+            PortProcessor from = (edge.output as BasePortView).ViewModel;
+            PortProcessor to = (edge.input as BasePortView).ViewModel;
             // 如果连线不是一个新建的连线就重定向
             if (edge.userData is BaseConnectionProcessor)
                 tempGraphView.Context.Do(new ConnectCommand(tempGraphView.ViewModel, from, to));

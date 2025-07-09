@@ -12,7 +12,7 @@ namespace Atom.GraphProcessor.Editors
         {
         }
 
-        public DefaultPortView(BasePortProcessor port, IEdgeConnectorListener connectorListener) : base(port, connectorListener)
+        public DefaultPortView(PortProcessor port, IEdgeConnectorListener connectorListener) : base(port, connectorListener)
         {
         }
     }

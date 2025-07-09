@@ -151,17 +151,19 @@ namespace Atom.GraphProcessor.Editors
 
                 ViewModel.PropertyChanged += OnViewModelChanged;
 
-                ViewModel.OnNodeAdded += OnNodeAdded;
-                ViewModel.OnNodeRemoved += OnNodeRemoved;
+                ViewModel.GraphEvents.Subscribe<AddNodeEventArgs>(OnNodeAdded);
+                ViewModel.GraphEvents.Subscribe<RemoveNodeEventArgs>(OnNodeRemoved);
 
-                ViewModel.OnGroupAdded += OnGroupAdded;
-                ViewModel.OnGroupRemoved += OnGroupRemoved;
+                ViewModel.GraphEvents.Subscribe<AddConnectionEventArgs>(OnConnected);
+                ViewModel.GraphEvents.Subscribe<RemoveConnectionEventArgs>(OnDisconnected);
 
-                ViewModel.OnConnected += OnConnected;
-                ViewModel.OnDisconnected += OnDisconnected;
+                ViewModel.GraphEvents.Subscribe<AddGroupEventArgs>(OnGroupAdded);
+                ViewModel.GraphEvents.Subscribe<RemoveGroupEventArgs>(OnGroupRemoved);
+                ViewModel.GraphEvents.Subscribe<AddNodesToGroupEventArgs>(OnGroupAddNodes);
+                ViewModel.GraphEvents.Subscribe<RemoveNodesFromGroupEventArgs>(OnGroupRemoveNodes);
 
-                ViewModel.OnNoteAdded += OnNoteAdded;
-                ViewModel.OnNoteRemoved += OnNoteRemoved;
+                ViewModel.GraphEvents.Subscribe<AddNoteEventArgs>(OnNoteAdded);
+                ViewModel.GraphEvents.Subscribe<RemoveNoteEventArgs>(OnNoteRemoved);
                 
                 OnCreated();
             }
@@ -179,17 +181,19 @@ namespace Atom.GraphProcessor.Editors
             
             ViewModel.PropertyChanged -= OnViewModelChanged;
 
-            ViewModel.OnNodeAdded -= OnNodeAdded;
-            ViewModel.OnNodeRemoved -= OnNodeRemoved;
+            ViewModel.GraphEvents.Unsubscribe<AddNodeEventArgs>(OnNodeAdded);
+            ViewModel.GraphEvents.Unsubscribe<RemoveNodeEventArgs>(OnNodeRemoved);
 
-            ViewModel.OnGroupAdded -= OnGroupAdded;
-            ViewModel.OnGroupRemoved -= OnGroupRemoved;
+            ViewModel.GraphEvents.Unsubscribe<AddConnectionEventArgs>(OnConnected);
+            ViewModel.GraphEvents.Unsubscribe<RemoveConnectionEventArgs>(OnDisconnected);
 
-            ViewModel.OnConnected -= OnConnected;
-            ViewModel.OnDisconnected -= OnDisconnected;
+            ViewModel.GraphEvents.Unsubscribe<AddGroupEventArgs>(OnGroupAdded);
+            ViewModel.GraphEvents.Unsubscribe<RemoveGroupEventArgs>(OnGroupRemoved);
+            ViewModel.GraphEvents.Unsubscribe<AddNodesToGroupEventArgs>(OnGroupAddNodes);
+            ViewModel.GraphEvents.Unsubscribe<RemoveNodesFromGroupEventArgs>(OnGroupRemoveNodes);
 
-            ViewModel.OnNoteAdded -= OnNoteAdded;
-            ViewModel.OnNoteRemoved -= OnNoteRemoved;
+            ViewModel.GraphEvents.Unsubscribe<AddNoteEventArgs>(OnNoteAdded);
+            ViewModel.GraphEvents.Unsubscribe<RemoveNoteEventArgs>(OnNoteRemoved);
             
             OnDestroyed();
         }
@@ -255,6 +259,16 @@ namespace Atom.GraphProcessor.Editors
         #endregion
 
         #region API
+
+        public BaseNodeView GetNodeView(long id)
+        {
+            return NodeViews.GetValueOrDefault(id);
+        }
+        
+        public GroupView GetGroupView(long id)
+        {
+            return GroupViews.GetValueOrDefault(id);
+        }
 
         public BaseNodeView AddNodeView(BaseNodeProcessor nodeProcessor)
         {
@@ -419,55 +433,67 @@ namespace Atom.GraphProcessor.Editors
             }
         }
 
-        private void OnNodeAdded(BaseNodeProcessor node)
+        private void OnNodeAdded(AddNodeEventArgs args)
         {
-            AddNodeView(node);
+            AddNodeView(args.Node);
             SetDirty();
         }
 
-        private void OnNodeRemoved(BaseNodeProcessor node)
+        private void OnNodeRemoved(RemoveNodeEventArgs args)
         {
-            RemoveNodeView(NodeViews[node.ID]);
+            RemoveNodeView(NodeViews[args.Node.ID]);
             SetDirty();
         }
 
-        private void OnNoteAdded(StickyNoteProcessor note)
+        private void OnNoteAdded(AddNoteEventArgs args)
         {
-            AddNoteView(note);
+            AddNoteView(args.Note);
             SetDirty();
         }
 
-        private void OnNoteRemoved(StickyNoteProcessor note)
+        private void OnNoteRemoved(RemoveNoteEventArgs args)
         {
-            RemoveNoteView(note);
+            RemoveNoteView(args.Note);
             SetDirty();
         }
 
-        private void OnGroupAdded(GroupProcessor group)
+        private void OnGroupAdded(AddGroupEventArgs args)
         {
-            AddGroupView(group);
+            AddGroupView(args.Group);
             SetDirty();
         }
 
-        private void OnGroupRemoved(GroupProcessor group)
+        private void OnGroupRemoved(RemoveGroupEventArgs args)
         {
-            RemoveGroupView(GroupViews[group.ID]);
+            RemoveGroupView(GroupViews[args.Group.ID]);
             SetDirty();
         }
 
-        private void OnConnected(BaseConnectionProcessor connection)
+        private void OnGroupAddNodes(AddNodesToGroupEventArgs args)
         {
-            var from = NodeViews[connection.FromNodeID];
-            var to = NodeViews[connection.ToNodeID];
-            ConnectView(from, to, connection);
+            var groupView = GetGroupView(args.Group.ID);
+            groupView.OnNodesAdded(args.Nodes);
+        }
+
+        private void OnGroupRemoveNodes(RemoveNodesFromGroupEventArgs args)
+        {
+            var groupView = GetGroupView(args.Group.ID);
+            groupView.OnNodesRemoved(args.Nodes);
+        }
+
+        private void OnConnected(AddConnectionEventArgs args)
+        {
+            var from = NodeViews[args.Connection.FromNodeID];
+            var to = NodeViews[args.Connection.ToNodeID];
+            ConnectView(from, to, args.Connection);
             SetDirty();
         }
 
-        private void OnDisconnected(BaseConnectionProcessor connection)
+        private void OnDisconnected(RemoveConnectionEventArgs args)
         {
             edges.ForEach(edge =>
             {
-                if (edge.userData != connection) return;
+                if (edge.userData != args.Connection) return;
                 DisconnectView(edge as BaseConnectionView);
             });
             SetDirty();
@@ -501,7 +527,7 @@ namespace Atom.GraphProcessor.Editors
             {
                 // 当节点移动之后，与之连接的接口重新排序
                 var newPos = new Dictionary<IGraphElementProcessor_Scope, Rect>();
-                var portsHashset = new HashSet<BasePortProcessor>();
+                var portsHashset = new HashSet<PortProcessor>();
 
                 changes.movedElements.RemoveAll(element =>
                 {

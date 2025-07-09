@@ -28,7 +28,7 @@ namespace Atom.GraphProcessor.Editors
 {
     public abstract partial class BaseNodeView
     {
-        protected virtual BasePortView NewPortView(BasePortProcessor port)
+        protected virtual BasePortView NewPortView(PortProcessor port)
         {
             return Activator.CreateInstance(GraphProcessorEditorUtil.GetViewType(port.ModelType), port, new EdgeConnectorListener()) as BasePortView;
         }
