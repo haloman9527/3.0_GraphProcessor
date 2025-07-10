@@ -18,8 +18,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 
 namespace Atom.GraphProcessor
@@ -68,19 +66,44 @@ namespace Atom.GraphProcessor
                     continue;
 
                 var nodeStaticInfo = new NodeStaticInfo();
+                s_NodeStaticInfos.Add(nodeType, nodeStaticInfo);
                 nodeStaticInfo.NodeType = nodeType;
                 nodeStaticInfo.Title = nodeType.Name;
                 nodeStaticInfo.Tooltip = string.Empty;
                 nodeStaticInfo.CustomTitleColor = new ToggleValue<InternalColor>();
-                s_NodeStaticInfos.Add(nodeType, nodeStaticInfo);
-                var nodeMenuAttribute = nodeType.GetCustomAttribute(typeof(NodeMenuAttribute)) as NodeMenuAttribute;
+                // 一次性获取所有特性，避免多次反射调用
+                var attributes = nodeType.GetCustomAttributes(false);
+                var nodeMenuAttribute = (NodeMenuAttribute)null;
+                var titleAttribute = (NodeTitleAttribute)null;
+                var tooltipAttribute = (NodeTooltipAttribute)null;
+                var titleColorAttribute = (NodeTitleColorAttribute)null;
+                
+                foreach (var attr in attributes)
+                {
+                    switch (attr)
+                    {
+                        case NodeMenuAttribute menu:
+                            nodeMenuAttribute = menu;
+                            break;
+                        case NodeTitleAttribute title:
+                            titleAttribute = title;
+                            break;
+                        case NodeTooltipAttribute tooltip:
+                            tooltipAttribute = tooltip;
+                            break;
+                        case NodeTitleColorAttribute color:
+                            titleColorAttribute = color;
+                            break;
+                    }
+                }
+                
                 if (nodeMenuAttribute != null)
                 {
                     if (!string.IsNullOrEmpty(nodeMenuAttribute.path))
                     {
                         nodeStaticInfo.Path = nodeMenuAttribute.path;
                         nodeStaticInfo.Menu = nodeMenuAttribute.path.Split('/');
-                        nodeStaticInfo.Title = nodeStaticInfo.Menu[nodeStaticInfo.Menu.Length - 1];
+                        nodeStaticInfo.Title = nodeStaticInfo.Menu[^1];
                     }
                     else
                     {
@@ -99,15 +122,12 @@ namespace Atom.GraphProcessor
                     nodeStaticInfo.Hidden = false;
                 }
 
-                var titleAttribute = nodeType.GetCustomAttribute(typeof(NodeTitleAttribute)) as NodeTitleAttribute;
                 if (titleAttribute != null && !string.IsNullOrEmpty(titleAttribute.title))
                     nodeStaticInfo.Title = titleAttribute.title;
 
-                var tooltipAttribute = nodeType.GetCustomAttribute(typeof(NodeTooltipAttribute)) as NodeTooltipAttribute;
                 if (tooltipAttribute != null)
                     nodeStaticInfo.Tooltip = tooltipAttribute.Tooltip;
 
-                var titleColorAttribute = nodeType.GetCustomAttribute(typeof(NodeTitleColorAttribute)) as NodeTitleColorAttribute;
                 if (titleColorAttribute != null)
                 {
                     nodeStaticInfo.CustomTitleColor.Active = true;

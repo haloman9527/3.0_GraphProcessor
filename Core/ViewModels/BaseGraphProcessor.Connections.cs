@@ -47,13 +47,25 @@ namespace Atom.GraphProcessor
             {
                 var connection = Model.connections[i];
 
-                if (!m_Nodes.TryGetValue(connection.fromNode, out var fromNode) || !fromNode.Ports.TryGetValue(connection.fromPort, out var fromPort))
+                if (!m_Nodes.TryGetValue(connection.fromNode, out var fromNode))
+                {
+                    Model.connections.RemoveAt(i--);
+                    continue;
+                }
+                
+                if (!fromNode.Ports.TryGetValue(connection.fromPort, out var fromPort))
                 {
                     Model.connections.RemoveAt(i--);
                     continue;
                 }
 
-                if (!m_Nodes.TryGetValue(connection.toNode, out var toNode) || !toNode.Ports.TryGetValue(connection.toPort, out var toPort))
+                if (!m_Nodes.TryGetValue(connection.toNode, out var toNode))
+                {
+                    Model.connections.RemoveAt(i--);
+                    continue;
+                }
+                
+                if (!toNode.Ports.TryGetValue(connection.toPort, out var toPort))
                 {
                     Model.connections.RemoveAt(i--);
                     continue;
@@ -79,7 +91,17 @@ namespace Atom.GraphProcessor
 
         public BaseConnectionProcessor Connect(PortProcessor fromPort, PortProcessor toPort)
         {
-            var connection = fromPort.Connections.FirstOrDefault(tmp => tmp.FromPort == fromPort && tmp.ToPort == toPort);
+            // 直接查找存在的连接，避免 LINQ
+            BaseConnectionProcessor connection = null;
+            foreach (var conn in fromPort.Connections)
+            {
+                if (conn.FromPort == fromPort && conn.ToPort == toPort)
+                {
+                    connection = conn;
+                    break;
+                }
+            }
+            
             if (connection != null)
                 return connection;
 
@@ -106,7 +128,18 @@ namespace Atom.GraphProcessor
             var fromPort = fromNode.Ports[connection.FromPortName];
             var toNode = Nodes[connection.ToNodeID];
             var toPort = toNode.Ports[connection.ToPortName];
-            var tmpConnection = fromPort.Connections.FirstOrDefault(tmp => tmp.ToPort == toPort);
+            
+            // 直接查找存在的连接，避免 LINQ
+            BaseConnectionProcessor tmpConnection = null;
+            foreach (var conn in fromPort.Connections)
+            {
+                if (conn.ToPort == toPort)
+                {
+                    tmpConnection = conn;
+                    break;
+                }
+            }
+            
             if (tmpConnection != null)
                 return;
 
@@ -173,7 +206,17 @@ namespace Atom.GraphProcessor
             var toNode = m_Nodes[connection.ToNodeID];
             var toPort = toNode.Ports[connection.ToPortName];
 
-            var tmpConnection = fromPort.Connections.FirstOrDefault(tmp => tmp.ToNodeID == connection.ToNodeID && tmp.ToPortName == connection.ToPortName);
+            // 直接查找存在的连接，避免 LINQ
+            BaseConnectionProcessor tmpConnection = null;
+            foreach (var conn in fromPort.Connections)
+            {
+                if (conn.ToNodeID == connection.ToNodeID && conn.ToPortName == connection.ToPortName)
+                {
+                    tmpConnection = conn;
+                    break;
+                }
+            }
+            
             if (tmpConnection != null)
                 return;
 

@@ -11,7 +11,7 @@ namespace Atom.GraphProcessor
             return m_EventStation.HasEvent(typeof(TArg));
         }
 
-        public object GetEvent<TArg>() where TArg : struct, IGraphEvent
+        public EventBase GetEvent<TArg>() where TArg : struct, IGraphEvent
         {
             return m_EventStation.GetEvent(typeof(TArg));
         }
@@ -36,7 +36,7 @@ namespace Atom.GraphProcessor
             m_EventStation.Unsubscribe(typeof(TArg), handler);
         }
 
-        public void Publish<TArg>(TArg arg) where TArg : struct, IGraphEvent
+        public void Publish<TArg>(in TArg arg) where TArg : struct, IGraphEvent
         {
             m_EventStation.Publish(typeof(TArg), arg);
         }
