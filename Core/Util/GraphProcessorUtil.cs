@@ -28,7 +28,7 @@ namespace Atom.GraphProcessor
         public T Value;
     }
 
-    public struct NodeStaticInfo
+    public class NodeStaticInfo
     {
         public Type NodeType;
         public bool Hidden;

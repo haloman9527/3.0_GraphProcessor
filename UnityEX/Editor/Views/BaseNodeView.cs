@@ -37,11 +37,29 @@ namespace Atom.GraphProcessor.Editors
         {
             foreach (var script in EditorUtilityExtension.FindAllScriptFromType(ViewModel.GetType()))
             {
+                if (script.GetClass() == null)
+                {
+                    continue;
+                }
+                if (!script.GetClass().IsSubclassOf(typeof(BaseNodeProcessor)))
+                {
+                    continue;
+                }
+                
                 evt.menu.AppendAction($"Open Script/" + script.name, _ => { AssetDatabase.OpenAsset(script); });
             }
 
             foreach (var script in EditorUtilityExtension.FindAllScriptFromType(ViewModel.Model.GetType()))
             {
+                if (script.GetClass() == null)
+                {
+                    continue;
+                }
+                if (!script.GetClass().IsSubclassOf(typeof(BaseNode)))
+                {
+                    continue;
+                }
+                
                 evt.menu.AppendAction($"Open Script/" + script.name, _ => { AssetDatabase.OpenAsset(script); });
             }
 
