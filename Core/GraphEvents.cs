@@ -18,12 +18,12 @@ namespace Atom.GraphProcessor
 
         public void UnRegisterEvent<TArg>() where TArg : struct, IGraphEvent
         {
-            m_EventStation.UnRegisterEvent(typeof(TArg));
+            m_EventStation.Unregister(typeof(TArg));
         }
 
         public void UnRegisterAllEvents()
         {
-            m_EventStation.UnRegisterAllEvents();
+            m_EventStation.UnregisterAll();
         }
 
         public void Subscribe<TArg>(Action<TArg> handler) where TArg : struct, IGraphEvent
