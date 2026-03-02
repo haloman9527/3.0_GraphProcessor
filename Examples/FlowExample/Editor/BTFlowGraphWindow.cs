@@ -26,11 +26,11 @@ using UnityEngine;
 using UnityEngine.UIElements;
 
 [CustomView(typeof(FlowGraph))]
-public class FlowGraphWindow : BaseGraphWindow
+public class BTGraphWindow : BaseGraphWindow
 {
     protected override BaseGraphView NewGraphView()
     {
-        return new FlowGraphView();
+        return new BTGraphView();
     }
 
     protected override void OnKeyDownCallback(KeyDownEvent evt)

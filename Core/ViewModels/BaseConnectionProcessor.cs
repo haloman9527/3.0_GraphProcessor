@@ -124,8 +124,23 @@ namespace Atom.GraphProcessor
 
         internal void Enable()
         {
-            this.m_From = Owner.Nodes[Model.fromNode].Ports[Model.fromPort];
-            this.m_To = Owner.Nodes[Model.toNode].Ports[Model.toPort];
+            if (Owner == null)
+                throw new NullReferenceException("Connection owner cannot be null");
+                
+            if (!Owner.Nodes.TryGetValue(Model.fromNode, out var fromNode))
+                throw new KeyNotFoundException($"From node with ID {Model.fromNode} not found");
+                
+            if (!fromNode.Ports.TryGetValue(Model.fromPort, out var fromPort))
+                throw new KeyNotFoundException($"From port '{Model.fromPort}' not found in node {Model.fromNode}");
+                
+            if (!Owner.Nodes.TryGetValue(Model.toNode, out var toNode))
+                throw new KeyNotFoundException($"To node with ID {Model.toNode} not found");
+                
+            if (!toNode.Ports.TryGetValue(Model.toPort, out var toPort))
+                throw new KeyNotFoundException($"To port '{Model.toPort}' not found in node {Model.toNode}");
+            
+            this.m_From = fromPort;
+            this.m_To = toPort;
             OnEnabled();
         }
         

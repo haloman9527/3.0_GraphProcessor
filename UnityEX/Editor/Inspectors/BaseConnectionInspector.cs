@@ -31,10 +31,10 @@ namespace Atom.GraphProcessor.Editors
             var view = Target as BaseNodeView;
             if (view == null || view.ViewModel == null)
                 return;
-            if (view.BindingProperty != null)
-            {
-            }
-            else
+            // if (view.BindingProperty != null)
+            // {
+            // }
+            // else
             {
                 propertyTree = PropertyTree.Create(view.ViewModel.Model);
                 propertyTree.DrawMonoScriptObjectField = true;

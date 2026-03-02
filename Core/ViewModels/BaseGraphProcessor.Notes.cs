@@ -40,7 +40,7 @@ namespace Atom.GraphProcessor
 
         private void InitNotes()
         {
-            this.m_Notes = new Dictionary<long, StickyNoteProcessor>(System.Math.Min(Model.connections.Count, 4));
+            this.m_Notes = new Dictionary<long, StickyNoteProcessor>(System.Math.Min(m_Model.notes.Count, 4));
             foreach (var note in m_Model.notes)
             {
                 m_Notes.Add(note.id, (StickyNoteProcessor)ViewModelFactory.ProduceViewModel(note));

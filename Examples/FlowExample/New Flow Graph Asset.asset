@@ -13,21 +13,76 @@ MonoBehaviour:
   m_Name: New Flow Graph Asset
   m_EditorClassIdentifier: 
   data:
-    zoom: 3.5178764
+    zoom: 1.3225
     pan:
-      x: -103
-      y: 165
+      x: 386
+      y: 8
     nodes:
     - rid: 7707644130126725127
     - rid: 7707644130126725128
-    connections:
-    - rid: 7707644130126725129
+    - rid: 3964049804988514334
+    - rid: 3964049804988514335
+    - rid: 3964049804988514336
+    - rid: 3964049804988514337
+    - rid: 3964049804988514338
+    connections: []
     groups: []
     notes: []
     startNodeID: 0
   references:
     version: 2
     RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
+    - rid: 3964049804988514334
+      type: {class: BTStartNode, ns: , asm: Atom.GraphProcessor}
+      data:
+        id: 0
+        position:
+          x: 100
+          y: 100
+        comment: 
+        CD: 0
+    - rid: 3964049804988514335
+      type: {class: BTMotionNode, ns: , asm: Atom.GraphProcessor}
+      data:
+        id: 777079884584321024
+        position:
+          x: 276
+          y: 85
+        comment: 
+        configmotionName: 
+        resPath: 
+    - rid: 3964049804988514336
+      type: {class: BTMotionNode, ns: , asm: Atom.GraphProcessor}
+      data:
+        id: 777079891970490368
+        position:
+          x: 326
+          y: 135
+        comment: 
+        configmotionName: 
+        resPath: 
+    - rid: 3964049804988514337
+      type: {class: BTMotionNode, ns: , asm: Atom.GraphProcessor}
+      data:
+        id: 777079892570275840
+        position:
+          x: 376
+          y: 185
+        comment: 
+        configmotionName: 
+        resPath: 
+    - rid: 3964049804988514338
+      type: {class: BTMotionNode, ns: , asm: Atom.GraphProcessor}
+      data:
+        id: 777079893178449920
+        position:
+          x: 426
+          y: 235
+        comment: 
+        configmotionName: 
+        resPath: 
     - rid: 7707644130126725127
       type: {class: StartNode, ns: , asm: Atom.GraphProcessor}
       data:
@@ -42,10 +97,3 @@ MonoBehaviour:
         position:
           x: 292
           y: 100
-    - rid: 7707644130126725129
-      type: {class: BaseConnection, ns: Atom.GraphProcessor, asm: Atom.GraphProcessor}
-      data:
-        fromNode: 0
-        fromPort: Flow-Out
-        toNode: 1
-        toPort: Flow-In

@@ -490,7 +490,7 @@ namespace Atom.GraphProcessor
             successed = false;
             if (node.Ports.ContainsKey(port.Name))
             {
-                node.AddPort(port);
+                node.RemovePort(port);
                 successed = true;
             }
         }

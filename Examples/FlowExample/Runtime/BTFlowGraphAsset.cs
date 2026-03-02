@@ -5,7 +5,7 @@ using Sirenix.OdinInspector;
 using UnityEngine;
 
 [CreateAssetMenu]
-public class FlowGraphAsset : ScriptableObject, IGraphAsset
+public class BTFlowGraphAsset : ScriptableObject, IGraphAsset
 {
     [SerializeField] 
     private FlowGraph data;
@@ -32,18 +32,18 @@ public class FlowGraph : BaseGraph
 [ViewModel(typeof(FlowGraph))]
 public class FlowGraphProcessor : BaseGraphProcessor
 {
-    private StartNodeProcessor StartNode { get; }
+    private BTStartNodeProcessor StartNode { get; }
 
     public FlowGraphProcessor(FlowGraph model) : base(model)
     {
-        if (Nodes.TryGetValue(model.startNodeID, out var _node) && _node is StartNodeProcessor)
+        if (Nodes.TryGetValue(model.startNodeID, out var _node) && _node is BTStartNodeProcessor)
         {
-            StartNode = _node as StartNodeProcessor;
+            StartNode = _node as BTStartNodeProcessor;
         }
 
         if (StartNode == null)
         {
-            StartNode = AddNode(new StartNode() { position = new InternalVector2Int(100, 100) }) as StartNodeProcessor;
+            StartNode = AddNode(new BTStartNode() { position = new InternalVector2Int(100, 100) }) as BTStartNodeProcessor;
             model.startNodeID = StartNode.ID;
         }
     }

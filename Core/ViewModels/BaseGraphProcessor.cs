@@ -53,9 +53,9 @@ namespace Atom.GraphProcessor
         {
             m_Model = model;
             m_ModelType = model.GetType();
-            m_Model.pan = m_Model.pan == default ? InternalVector2Int.zero : Model.pan;
-            m_Model.zoom = m_Model.zoom == 0 ? 1 : Model.zoom;
-            m_Model.notes = m_Model.notes == null ? new List<StickyNote>() : Model.notes;
+            m_Model.pan = m_Model.pan == default ? InternalVector2Int.zero : m_Model.pan;
+            m_Model.zoom = m_Model.zoom == 0 ? 1 : m_Model.zoom;
+            m_Model.notes = m_Model.notes == null ? new List<StickyNote>() : m_Model.notes;
 
             m_GraphEvents = new GraphEvents();
             m_Events = new EventStation<string>();
