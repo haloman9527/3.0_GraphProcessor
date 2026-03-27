@@ -1,16 +1,21 @@
 #node-border {
-    background-color: rgba(0, 0, 0, 0.8);
-    border-radius: 3px;
+    /* 深蓝灰色节点体，参考 Shader Graph 配色，避免纯黑 */
+    background-color: rgba(30, 35, 45, 0.92);
+    border-radius: 6px;
     border-width: 1px;
+    border-color: rgba(60, 70, 90, 0.8);
 }
 
 #selection-border {
-    border-radius: 4px;
+    border-radius: 7px;
 }
 
 #node-border > #title {
-    background-color: rgba(0, 0, 0, 0.0);
-    height: 25px;
+    /* 标题栏：深蓝紫调，与节点体区分，提升层次感 */
+    background-color: rgba(45, 55, 80, 0.95);
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    height: 26px;
 }
 
 #node-border > #title > #title-input {
@@ -58,8 +63,9 @@
 }
 
 #node-border > #title > #title-label {
-    color: #FF6387;
-    padding-left: 5px;
+    /* 柔和的浅蓝白色，可读性好且不刺眼（替代原来的粉红 #FF6387） */
+    color: rgba(200, 215, 240, 1);
+    padding-left: 6px;
     padding-right: 5px;
     margin: 0;
     align-self: center;
@@ -75,7 +81,8 @@
 #node-border > #contents > #top > #input {
     align-self: flex-start;
     margin-right: 5px;
-    background-color: rgba(0, 0, 0, 0.23);
+    /* 稍浅的深蓝灰，与节点体形成微妙层次 */
+    background-color: rgba(20, 25, 38, 0.35);
     border-top-right-radius: 10px;
     border-bottom-right-radius: 10px;
 }
@@ -83,7 +90,7 @@
 #node-border > #contents > #top > #output {
     align-self: flex-start;
     margin-left: 5px;
-    background-color: rgba(0, 0, 0, 0.23);
+    background-color: rgba(20, 25, 38, 0.35);
     border-top-left-radius: 10px;
     border-bottom-left-radius: 10px;
 }
@@ -100,7 +107,7 @@
     align-items: center;
     flex-direction: row;
     background-color: rgba(78, 89, 113, 0.0);
-    border-color: black;
+    border-color: rgba(40, 50, 70, 0.6);
 }
 
 #node-border > #bottom-input {
@@ -109,9 +116,10 @@
     align-items: center;
     flex-direction: row;
     background-color: rgba(78, 89, 113, 0.0);
-    border-color: black;
+    border-color: rgba(40, 50, 70, 0.6);
 }
 
 #divider {
-    background-color: rgba(255, 128, 0, 1);
+    /* 柔和的蓝灰分割线，替代原来刺眼的纯橙色 */
+    background-color: rgba(70, 90, 130, 0.9);
 }

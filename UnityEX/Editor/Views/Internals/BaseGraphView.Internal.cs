@@ -101,13 +101,20 @@ namespace Atom.GraphProcessor.Editors
             this.StretchToParentSize();
         }
 
-        /// <summary> 根据可见区域更新节点 controls 可见性（在视图变换后调用，避免定时轮询）</summary>
+        /// <summary>
+        /// 根据可见区域更新节点 controls 显示状态（在视图变换后调用，避免定时轮询）。
+        /// 使用 style.display 而非 visible，确保隐藏节点不占布局空间。
+        /// </summary>
         private void UpdateNodeControlsVisibility()
         {
             var viewBound = this.worldBound;
             foreach (var pair in this.NodeViews)
             {
-                pair.Value.controls.visible = viewBound.Overlaps(pair.Value.worldBound);
+                // Bug 修复：原为 visible = bool，隐藏时元素仍占布局空间；
+                // 改用 style.display 使隐藏元素完全脱离布局流
+                pair.Value.controls.style.display = viewBound.Overlaps(pair.Value.worldBound)
+                    ? DisplayStyle.Flex
+                    : DisplayStyle.None;
             }
         }
 
@@ -160,8 +167,9 @@ namespace Atom.GraphProcessor.Editors
                 ViewModel.GraphEvents.Subscribe<AddNoteEventArgs>(OnNoteAdded);
                 ViewModel.GraphEvents.Subscribe<RemoveNoteEventArgs>(OnNoteRemoved);
                 
-                // 初始化完成后做一次可见性判断（替代原定时器的首次执行）
-                UpdateNodeControlsVisibility();
+                // Bug 修复：协程结束时节点 worldBound 尚未经过一帧布局，延一帧后再刷新可见性
+                // 否则所有节点 controls 因 worldBound == Rect.zero 而被错误隐藏
+                schedule.Execute(() => UpdateNodeControlsVisibility()).ExecuteLater(0);
                 OnCreated();
             }
         }

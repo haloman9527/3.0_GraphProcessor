@@ -348,7 +348,11 @@ namespace Atom.GraphProcessor.Editors
 
         private void RefreshContentsHorizontalDivider()
         {
-            if (inputContainer.childCount > 0 || outputContainer.childCount > 0 || CheckDrawControls())
+            // Bug 修复：原来直接用 CheckDrawControls() 判断，但 CheckDrawControls 可能被子类重写
+            // 导致 controls 实际隐藏（hidden class 存在）时分割线仍然显示；
+            // 改为检查 controls 是否真正可见（通过 CheckDrawControls 且不带 hidden class）
+            var controlsVisible = CheckDrawControls() && !controls.ClassListContains("hidden");
+            if (inputContainer.childCount > 0 || outputContainer.childCount > 0 || controlsVisible)
                 horizontalDivider.RemoveFromClassList("hidden");
             else
                 horizontalDivider.AddToClassList("hidden");

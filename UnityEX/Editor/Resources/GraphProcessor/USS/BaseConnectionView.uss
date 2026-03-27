@@ -14,7 +14,8 @@
 .flow-point {
     width: 6px;
     height: 6px;
-    background-color: #FFFF00;
+    /* 柔和的浅蓝绿色，替代刺眼的纯黄 #FFFF00 */
+    background-color: rgba(80, 220, 190, 1);
     margin-top: -3px;
     margin-bottom: -3px;
     margin-left: -3px;

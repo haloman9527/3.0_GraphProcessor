@@ -1,7 +1,8 @@
 GridBackground {
-    --grid-background-color: rgb(30, 30, 30);
-    --line-color: rgba(193, 196, 192, 0.05);
-    --thick-line-color: rgba(193, 196, 192, 0.07);
+    /* 深蓝灰背景，比纯灰更有质感，与节点的蓝灰配色统一 */
+    --grid-background-color: rgb(22, 26, 35);
+    --line-color: rgba(100, 120, 160, 0.06);
+    --thick-line-color: rgba(100, 120, 160, 0.10);
     --spacing: 30;
     --thick-lines: 5;
 }

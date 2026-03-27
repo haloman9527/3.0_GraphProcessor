@@ -3,11 +3,13 @@
     align-items: center;
     padding-left: 5px;
     padding-right: 5px;
-    --port-color: #ffc400;
+    /* 暖金黄色端口，保留原有色调但稍微柔和 */
+    --port-color: rgba(255, 185, 50, 1);
 }
 
 .port > #type {
-    color: aliceblue;
+    /* 浅蓝白色端口类型标签，与节点标题色呼应 */
+    color: rgba(180, 200, 230, 1);
 }
 
 .port.vertical {
@@ -47,11 +49,12 @@
 }
 
 #title-output > .port {
-    --port-color: #00FFFF;
+    /* 柔和的冰蓝色，替代刺眼的纯青 #00FFFF */
+    --port-color: rgba(80, 190, 230, 1);
 }
 
 #title-input > .port {
-    --port-color: #00FFFF;
+    --port-color: rgba(80, 190, 230, 1);
 }
 
 #title-input > .port > #type {

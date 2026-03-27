@@ -29,6 +29,7 @@
 }
 
 .highlight {
-    background-color: rgba(0, 255, 255, 1);
+    /* 柔和的冰蓝高亮，替代刺眼的纯青 */
+    background-color: rgba(60, 180, 220, 0.85);
     border-radius: 7px
 }
