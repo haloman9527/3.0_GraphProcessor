@@ -13,25 +13,25 @@ MonoBehaviour:
   m_Name: New Sample Graph Asset
   m_EditorClassIdentifier: 
   data:
-    zoom: 1.3225
+    zoom: 1.520875
     pan:
-      x: 96
-      y: 24
+      x: -248
+      y: -60
     nodes:
-    - rid: 1375571719555645889
-    - rid: 1375571719555645890
-    - rid: 1375571719555645891
-    - rid: 1375571719555645892
+    - rid: 7556594388834713745
+    - rid: 7556594388834713746
+    - rid: 7556594388834713747
+    - rid: 7556594388834713748
     connections:
-    - rid: 1375571719555645893
-    - rid: 1375571719555645894
-    - rid: 1375571719555645895
+    - rid: 7556594388834713749
+    - rid: 7556594388834713750
+    - rid: 7556594388834713751
     groups: []
     notes: []
   references:
     version: 2
     RefIds:
-    - rid: 1375571719555645889
+    - rid: 7556594388834713745
       type: {class: FloatNode, ns: , asm: Atom.GraphProcessor}
       data:
         id: 2
@@ -39,21 +39,21 @@ MonoBehaviour:
           x: 427
           y: 306
         num: 126
-    - rid: 1375571719555645890
+    - rid: 7556594388834713746
       type: {class: AddNode, ns: , asm: Atom.GraphProcessor}
       data:
         id: 3
         position:
           x: 539
           y: 244
-    - rid: 1375571719555645891
+    - rid: 7556594388834713747
       type: {class: LogNode, ns: , asm: Atom.GraphProcessor}
       data:
         id: 4
         position:
           x: 691
           y: 264
-    - rid: 1375571719555645892
+    - rid: 7556594388834713748
       type: {class: FloatNode, ns: , asm: Atom.GraphProcessor}
       data:
         id: 1
@@ -61,21 +61,21 @@ MonoBehaviour:
           x: 427
           y: 221
         num: 12413
-    - rid: 1375571719555645893
+    - rid: 7556594388834713749
       type: {class: BaseConnection, ns: Atom.GraphProcessor, asm: Atom.GraphProcessor}
       data:
         fromNode: 3
         fromPort: Flow-Out
         toNode: 4
         toPort: Flow-In
-    - rid: 1375571719555645894
+    - rid: 7556594388834713750
       type: {class: BaseConnection, ns: Atom.GraphProcessor, asm: Atom.GraphProcessor}
       data:
         fromNode: 1
         fromPort: Flow-Out
         toNode: 3
         toPort: InputA
-    - rid: 1375571719555645895
+    - rid: 7556594388834713751
       type: {class: BaseConnection, ns: Atom.GraphProcessor, asm: Atom.GraphProcessor}
       data:
         fromNode: 2

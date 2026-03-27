@@ -50,14 +50,23 @@ namespace Atom.GraphProcessor.Editors
 
         public static Type GetViewType(Type targetType)
         {
+            // 直接命中缓存（含已解析过的继承链结果）
+            if (s_ViewTypesCache.TryGetValue(targetType, out var cached))
+                return cached;
+
+            var originalType = targetType;
             var viewType = (Type)null;
             while (viewType == null)
             {
                 s_ViewTypesCache.TryGetValue(targetType, out viewType);
-                if (targetType.BaseType == null)
-                    break;
+                if (viewType != null) break;
+                if (targetType.BaseType == null) break;
                 targetType = targetType.BaseType;
             }
+
+            // 将原始请求类型 → 结果写入缓存，避免下次再遍历继承链
+            if (viewType != null && originalType != targetType)
+                s_ViewTypesCache[originalType] = viewType;
 
             return viewType;
         }

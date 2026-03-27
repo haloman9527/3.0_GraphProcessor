@@ -163,7 +163,7 @@ namespace Atom.GraphProcessor.Editors
         /// <param name="edge"></param>
         public sealed override void Disconnect(Edge edge)
         {
-            base.Connect(edge);
+            base.Disconnect(edge);
         }
 
         #endregion

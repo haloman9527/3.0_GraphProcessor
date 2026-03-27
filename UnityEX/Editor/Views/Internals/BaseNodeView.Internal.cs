@@ -45,6 +45,9 @@ namespace Atom.GraphProcessor.Editors
 
         private List<IconBadge> badges = new List<IconBadge>();
         private Dictionary<string, BasePortView> portViews = new Dictionary<string, BasePortView>();
+        // Shift+Click BFS 遍历复用集合，避免每次 new 造成 GC 压力
+        private readonly HashSet<BaseNodeView> m_BfsVisited = new HashSet<BaseNodeView>();
+        private readonly Queue<BaseNodeView> m_BfsQueue = new Queue<BaseNodeView>();
 
         #endregion
 
@@ -179,6 +182,7 @@ namespace Atom.GraphProcessor.Editors
             ViewModel.PropertyChanged -= OnViewModelChanged;
             ViewModel.onPortAdded -= OnPortAdded;
             ViewModel.onPortRemoved -= OnPortRemoved;
+            ViewModel.onIndexChanged -= OnIndexChanged;
             this.DoUnInit();
         }
 
@@ -195,32 +199,35 @@ namespace Atom.GraphProcessor.Editors
         private void OnPointerDown(PointerDownEvent evt)
         {
             if (evt.shiftKey)
-            { 
-                var hashSet = new HashSet<BaseNodeView>();
-                var queue = new Queue<BaseNodeView>();
-                queue.Enqueue(this);
-                while (queue.Count > 0)
+            {
+                // 复用字段级集合，避免每次 Shift+Click 分配 HashSet/Queue
+                m_BfsVisited.Clear();
+                m_BfsQueue.Clear();
+                m_BfsQueue.Enqueue(this);
+                while (m_BfsQueue.Count > 0)
                 {
-                    var n = queue.Dequeue();
-                    if (hashSet.Contains(n))
-                    {
+                    var n = m_BfsQueue.Dequeue();
+                    if (!m_BfsVisited.Add(n))
                         continue;
-                    }
 
-                    hashSet.Add(n);
                     foreach (var p in n.ViewModel.OutPorts)
                     {
                         foreach (var c in p.Connections)
                         {
                             if (Owner.NodeViews.TryGetValue(c.ToNodeID, out var nv))
-                            {
-                                queue.Enqueue(nv);
-                            }
+                                m_BfsQueue.Enqueue(nv);
                         }
                     }
                 }
 
-                Owner.AddToSelection(hashSet.Where(n => n.Selectable));
+                // 直接遍历过滤，不用 LINQ
+                var selectables = new List<BaseNodeView>(m_BfsVisited.Count);
+                foreach (var n in m_BfsVisited)
+                {
+                    if (n.Selectable)
+                        selectables.Add(n);
+                }
+                Owner.AddToSelection(selectables);
                 evt.StopPropagation();
             }
         }

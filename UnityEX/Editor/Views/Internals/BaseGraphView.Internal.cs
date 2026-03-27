@@ -21,7 +21,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using Atom.GraphProcessor.UnityEX.Editor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
@@ -100,20 +99,16 @@ namespace Atom.GraphProcessor.Editors
             this.AddManipulator(new SelectionDragger());
             this.AddManipulator(new RectangleSelector());
             this.StretchToParentSize();
-            this.schedule.Execute(() =>
+        }
+
+        /// <summary> 根据可见区域更新节点 controls 可见性（在视图变换后调用，避免定时轮询）</summary>
+        private void UpdateNodeControlsVisibility()
+        {
+            var viewBound = this.worldBound;
+            foreach (var pair in this.NodeViews)
             {
-                foreach (var pair in this.NodeViews)
-                {
-                    if (!this.worldBound.Overlaps(pair.Value.worldBound))
-                    {
-                        pair.Value.controls.visible = false;
-                    }
-                    else
-                    {
-                        pair.Value.controls.visible = true;
-                    }
-                }
-            }).Every(50);
+                pair.Value.controls.visible = viewBound.Overlaps(pair.Value.worldBound);
+            }
         }
 
         #region Initialize
@@ -165,6 +160,8 @@ namespace Atom.GraphProcessor.Editors
                 ViewModel.GraphEvents.Subscribe<AddNoteEventArgs>(OnNoteAdded);
                 ViewModel.GraphEvents.Subscribe<RemoveNoteEventArgs>(OnNoteRemoved);
                 
+                // 初始化完成后做一次可见性判断（替代原定时器的首次执行）
+                UpdateNodeControlsVisibility();
                 OnCreated();
             }
         }
@@ -219,8 +216,8 @@ namespace Atom.GraphProcessor.Editors
             {
                 var connection = ViewModel.Connections[index];
                 if (connection == null) continue;
-                if (!NodeViews.TryGetValue(connection.FromNodeID, out var fromNodeView)) throw new NullReferenceException($"找不到From节点{connection.FromNodeID}");
-                if (!NodeViews.TryGetValue(connection.ToNodeID, out var toNodeView)) throw new NullReferenceException($"找不到To节点{connection.ToNodeID}");
+                if (!NodeViews.TryGetValue(connection.FromNodeID, out var fromNodeView)) throw new InvalidOperationException($"找不到From节点View: {connection.FromNodeID}");
+                if (!NodeViews.TryGetValue(connection.ToNodeID, out var toNodeView)) throw new InvalidOperationException($"找不到To节点View: {connection.ToNodeID}");
                 ConnectView(fromNodeView, toNodeView, connection);
                 if (index > 0 && index % 10 == 0)
                     yield return null;
@@ -301,7 +298,9 @@ namespace Atom.GraphProcessor.Editors
         public void RemoveGroupView(GroupView groupView)
         {
             groupView.UnInit();
-            groupView.RemoveElementsWithoutNotification(groupView.containedElements.ToArray());
+            // 避免 LINQ ToArray() GC 分配，直接转换为列表
+            var contained = new List<GraphElement>(groupView.containedElements);
+            groupView.RemoveElementsWithoutNotification(contained);
             this.RemoveElement(groupView);
             this.GroupViews.Remove(groupView.ViewModel.ID);
         }
@@ -472,13 +471,15 @@ namespace Atom.GraphProcessor.Editors
         private void OnGroupAddNodes(AddNodesToGroupEventArgs args)
         {
             var groupView = GetGroupView(args.Group.ID);
-            groupView.OnNodesAdded(args.Nodes);
+            if (groupView == null) return;
+            groupView.OnNodesAdded(args.Node);
         }
 
         private void OnGroupRemoveNodes(RemoveNodesFromGroupEventArgs args)
         {
             var groupView = GetGroupView(args.Group.ID);
-            groupView.OnNodesRemoved(args.Nodes);
+            if (groupView == null) return;
+            groupView.OnNodesRemoved(args.Node);
         }
 
         private void OnConnected(AddConnectionEventArgs args)
@@ -491,11 +492,11 @@ namespace Atom.GraphProcessor.Editors
 
         private void OnDisconnected(RemoveConnectionEventArgs args)
         {
-            edges.ForEach(edge =>
+            // 直接通过字典 O(1) 查找，避免全量遍历 edges
+            if (ConnectionViews.TryGetValue(args.Connection, out var connectionView))
             {
-                if (edge.userData != args.Connection) return;
-                DisconnectView(edge as BaseConnectionView);
-            });
+                DisconnectView(connectionView);
+            }
             SetDirty();
         }
 
@@ -514,8 +515,11 @@ namespace Atom.GraphProcessor.Editors
             }
 
             nodeMenu.entries.QuickSort((a, b) => -(a.Menu.Length.CompareTo(b.Menu.Length)));
-            nodeMenu.entries.QuickSort(0, multiLayereEntryCount - 1, (a, b) => String.Compare(a.Path, b.Path, StringComparison.Ordinal));
-            nodeMenu.entries.QuickSort(multiLayereEntryCount, nodeMenu.entries.Count - 1, (a, b) => String.Compare(a.Path, b.Path, StringComparison.Ordinal));
+            // 添加边界检查，防止 multiLayereEntryCount 为 0 或等于 entries.Count 时越界
+            if (multiLayereEntryCount > 0)
+                nodeMenu.entries.QuickSort(0, multiLayereEntryCount - 1, (a, b) => String.Compare(a.Path, b.Path, StringComparison.Ordinal));
+            if (multiLayereEntryCount < nodeMenu.entries.Count)
+                nodeMenu.entries.QuickSort(multiLayereEntryCount, nodeMenu.entries.Count - 1, (a, b) => String.Compare(a.Path, b.Path, StringComparison.Ordinal));
 
             SearchWindow.Open(new SearchWindowContext(c.screenMousePosition), nodeMenu);
         }
@@ -592,11 +596,16 @@ namespace Atom.GraphProcessor.Editors
 
             if (changes.elementsToRemove != null)
             {
-                var graphElements = changes.elementsToRemove
-                    .Where(item => item.selected && item is IGraphElementView)
-                    .Select(item => ((IGraphElementView)item).V).ToArray();
+                // 避免 LINQ Where/Select/ToArray 产生 GC，改用预分配 List
+                var graphElementsList = new List<IGraphElementProcessor>(changes.elementsToRemove.Count);
+                foreach (var item in changes.elementsToRemove)
+                {
+                    if (item.selected && item is IGraphElementView gev)
+                        graphElementsList.Add(gev.V);
+                }
                 changes.elementsToRemove.RemoveAll(item => item is IGraphElementView);
-                this.Context.Do(new RemoveElementsCommand(ViewModel, graphElements));
+                if (graphElementsList.Count > 0)
+                    this.Context.Do(new RemoveElementsCommand(ViewModel, graphElementsList.ToArray()));
             }
 
             UpdateInspector();
@@ -608,6 +617,8 @@ namespace Atom.GraphProcessor.Editors
         {
             ViewModel.Zoom = viewTransform.scale.x;
             ViewModel.Pan = viewTransform.position.ToInternalVector3Int();
+            // 视图变换后更新节点 controls 可见性（事件驱动，替代原定时轮询）
+            UpdateNodeControlsVisibility();
         }
 
         #endregion

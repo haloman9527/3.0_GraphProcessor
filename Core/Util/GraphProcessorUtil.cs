@@ -47,7 +47,7 @@ namespace Atom.GraphProcessor
 
         static GraphProcessorUtil()
         {
-            Init(true);
+            Init(false);
         }
 
         public static void Init(bool force)

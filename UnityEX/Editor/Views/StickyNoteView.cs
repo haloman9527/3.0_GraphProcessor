@@ -71,21 +71,18 @@ namespace Atom.GraphProcessor.Editors
                 {
                     var oldPosition = ViewModel.Position;
                     var oldSize = ViewModel.Size;
-                    this.schedule.Execute(() =>
+                    // 直接获取当前位置，不使用 ExecuteLater 避免竞态条件
+                    var newPosition = GetPosition().position.ToInternalVector2Int();
+                    var newSize = GetPosition().size.ToInternalVector2Int();
+                    Owner.Context.Do(() =>
                     {
-                        var newPosition = GetPosition().position.ToInternalVector2Int();
-                        var newSize = GetPosition().size.ToInternalVector2Int();
-                        Owner.Context.Do(() =>
-                        {
-                            ViewModel.Position = newPosition;
-                            ViewModel.Size = newSize;
-                        }, () =>
-                        {
-                            ViewModel.Position = oldPosition;
-                            ViewModel.Size = oldSize;
-                        });
-                    }).ExecuteLater(20);
-                    
+                        ViewModel.Position = newPosition;
+                        ViewModel.Size = newSize;
+                    }, () =>
+                    {
+                        ViewModel.Position = oldPosition;
+                        ViewModel.Size = oldSize;
+                    });
                     break;
                 }
             }

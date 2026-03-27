@@ -109,7 +109,6 @@ namespace Atom.GraphProcessor
 
         public void AddNodeToGroup(GroupProcessor group, BaseNodeProcessor node)
         {
-            var nodes = new BaseNodeProcessor[] { node };
             if (m_NodeGroupMap.TryGetValue(node.ID, out var _group))
             {
                 if (_group == group)
@@ -119,13 +118,13 @@ namespace Atom.GraphProcessor
                 else
                 {
                     _group.Model.nodes.Remove(node.ID);
-                    _group.NotifyNodeRemoved(nodes);
+                    _group.NotifyNodeRemoved(node);
                 }
             }
 
             m_NodeGroupMap[node.ID] = group;
             group.Model.nodes.Add(node.ID);
-            group.NotifyNodeAdded(nodes);
+            group.NotifyNodeAdded(node);
         }
 
         public void RemoveNodeFromGroup(BaseNodeProcessor node)
@@ -133,21 +132,18 @@ namespace Atom.GraphProcessor
             if (!m_NodeGroupMap.TryGetValue(node.ID, out var group))
                 return;
 
-            var nodes = new BaseNodeProcessor[] { node };
             m_NodeGroupMap.Remove(node.ID);
             group.Model.nodes.Remove(node.ID);
-            group.NotifyNodeRemoved(nodes);
+            group.NotifyNodeRemoved(node);
         }
 
         public void AddGroup(GroupProcessor group)
         {
             this.m_GroupMap.Add(group.ID, group);
-            foreach (var pair in m_GroupMap)
+            // 只处理新加入的 group 中的节点映射，不重复遍历已有 group
+            foreach (var nodeID in group.Nodes)
             {
-                foreach (var nodeID in pair.Value.Nodes)
-                {
-                    this.m_NodeGroupMap[nodeID] = pair.Value;
-                }
+                this.m_NodeGroupMap[nodeID] = group;
             }
         }
 

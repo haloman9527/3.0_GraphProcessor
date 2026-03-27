@@ -20,7 +20,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using UnityEditor.Experimental.GraphView;
 using UnityEditor.UIElements;
 using UnityEngine;
@@ -68,7 +67,14 @@ namespace Atom.GraphProcessor.Editors
             this.BackgroudColorField.SetValueWithoutNotify(ViewModel.BackgroundColor.ToColor());
             base.SetPosition(new Rect(ViewModel.Position.ToVector2(), GetPosition().size));
             WithoutNotify = true;
-            base.AddElements(ViewModel.Nodes.Where(nodeID => Owner.NodeViews.ContainsKey(nodeID)).Select(nodeID => Owner.NodeViews[nodeID]).ToArray());
+            // 使用 TryGetValue 单次查找替代 ContainsKey + 索引器双重查找，避免 LINQ 分配
+            var nodeViewsToAdd = new List<UnityEditor.Experimental.GraphView.GraphElement>(ViewModel.Nodes.Count);
+            foreach (var nodeID in ViewModel.Nodes)
+            {
+                if (Owner.NodeViews.TryGetValue(nodeID, out var nv))
+                    nodeViewsToAdd.Add(nv);
+            }
+            base.AddElements(nodeViewsToAdd);
             WithoutNotify = false;
             BackgroudColorField.RegisterValueChangedCallback(OnGroupColorChanged);
         }
@@ -114,7 +120,7 @@ namespace Atom.GraphProcessor.Editors
             }
         }
 
-        public void OnNodesAdded(BaseNodeProcessor[] nodes)
+        public void OnNodesAdded(BaseNodeProcessor node)
         {
             if (WithoutNotify)
             {
@@ -125,7 +131,8 @@ namespace Atom.GraphProcessor.Editors
             try
             {
                 WithoutNotify = false;
-                base.AddElements(nodes.Select(node => Owner.NodeViews[node.ID]));
+                if (Owner.NodeViews.TryGetValue(node.ID, out var nodeView))
+                    base.AddElements(new GraphElement[] { nodeView });
             }
             finally
             {
@@ -133,7 +140,7 @@ namespace Atom.GraphProcessor.Editors
             }
         }
 
-        public void OnNodesRemoved(BaseNodeProcessor[] nodes)
+        public void OnNodesRemoved(BaseNodeProcessor node)
         {
             if (WithoutNotify)
             {
@@ -144,7 +151,8 @@ namespace Atom.GraphProcessor.Editors
             try
             {
                 WithoutNotify = false;
-                base.RemoveElementsWithoutNotification(nodes.Select(node => Owner.NodeViews[node.ID]));
+                if (Owner.NodeViews.TryGetValue(node.ID, out var nodeView))
+                    base.RemoveElementsWithoutNotification(new GraphElement[] { nodeView });
             }
             finally
             {
@@ -186,8 +194,14 @@ namespace Atom.GraphProcessor.Editors
 
             var tmp = WithoutNotify;
             WithoutNotify = true;
-            var nodes = elements.Where(item => item is BaseNodeView).Select(item => (item as BaseNodeView).ViewModel).ToArray();
-            Owner.Context.Do(new AddToGroupCommand(Owner.ViewModel, this.ViewModel, nodes));
+            // 避免 LINQ Where/Select/ToArray GC 分配
+            var nodes = new List<BaseNodeProcessor>();
+            foreach (var item in elements)
+            {
+                if (item is BaseNodeView nv)
+                    nodes.Add(nv.ViewModel);
+            }
+            Owner.Context.Do(new AddToGroupCommand(Owner.ViewModel, this.ViewModel, nodes.ToArray()));
 
             Owner.SetDirty();
             WithoutNotify = tmp;
@@ -199,8 +213,14 @@ namespace Atom.GraphProcessor.Editors
                 return;
             var tmp = WithoutNotify;
             WithoutNotify = true;
-            var nodes = elements.Where(item => item is BaseNodeView).Select(item => (item as BaseNodeView).ViewModel).ToArray();
-            Owner.Context.Do(new RemoveFromGroupCommand(Owner.ViewModel, this.ViewModel, nodes));
+            // 避免 LINQ Where/Select/ToArray GC 分配
+            var nodes = new List<BaseNodeProcessor>();
+            foreach (var item in elements)
+            {
+                if (item is BaseNodeView nv)
+                    nodes.Add(nv.ViewModel);
+            }
+            Owner.Context.Do(new RemoveFromGroupCommand(Owner.ViewModel, this.ViewModel, nodes.ToArray()));
 
             Owner.SetDirty();
             WithoutNotify = tmp;

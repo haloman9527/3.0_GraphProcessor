@@ -92,7 +92,7 @@ namespace Atom.GraphProcessor
             m_GraphEvents.Publish(new AddNodeEventArgs(node));
         }
 
-        public void RemoveNode(int nodeId)
+        public void RemoveNode(long nodeId)
         {
             RemoveNode(Nodes[nodeId]);
         }
@@ -100,16 +100,18 @@ namespace Atom.GraphProcessor
         public void RemoveNode(BaseNodeProcessor node)
         {
             if (node.Owner != this)
-                throw new NullReferenceException("节点不是此Graph中");
+                throw new InvalidOperationException("节点不属于此 Graph");
 
-            if (m_Groups.NodeGroupMap.TryGetValue(node.ID, out var group))
+            if (m_Groups.NodeGroupMap.ContainsKey(node.ID))
                 m_Groups.RemoveNodeFromGroup(node);
 
             Disconnect(node);
+            var removedIndex = node.Index;
             m_Nodes.Remove(node.ID);
             m_Model.nodes.Remove(node.Model);
             node.Disable();
-            for (int index = 0; index < m_Model.nodes.Count; index++)
+            // 只更新被删除节点之后的节点 Index，避免全量遍历
+            for (int index = removedIndex; index < m_Model.nodes.Count; index++)
             {
                 var nodeData = m_Model.nodes[index];
                 m_Nodes[nodeData.id].Index = index;

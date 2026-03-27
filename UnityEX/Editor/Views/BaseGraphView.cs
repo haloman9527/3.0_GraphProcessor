@@ -19,7 +19,6 @@
 #if UNITY_EDITOR
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Atom.UnityEditors;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
@@ -29,8 +28,6 @@ namespace Atom.GraphProcessor.Editors
 {
     public abstract partial class BaseGraphView
     {
-        List<Port> compatiblePorts = new List<Port>();
-
         protected virtual void OnCreated()
         {
         }
@@ -46,8 +43,29 @@ namespace Atom.GraphProcessor.Editors
             evt.menu.AppendAction("Create Group", delegate
             {
                 var group = ViewModel.NewGroup("New Group");
-                group.Model.nodes.AddRange(selection.Where(select => select is BaseNodeView).Select(select => (select as BaseNodeView).ViewModel.ID));
-                this.Context.Do(new AddGroupCommand(ViewModel, group));
+                // 收集选中的节点
+                var selectedNodes = new List<BaseNodeProcessor>();
+                foreach (var select in selection)
+                {
+                    if (select is BaseNodeView nodeView)
+                        selectedNodes.Add(nodeView.ViewModel);
+                }
+                var capturedGraph = ViewModel;
+                var capturedNodes = selectedNodes.ToArray();
+                // 将 AddGroup + AddToGroup 封装为单个 Undo 步骤，避免跨帧分割
+                this.Context.Do(
+                    () =>
+                    {
+                        capturedGraph.AddGroup(group);
+                        foreach (var node in capturedNodes)
+                            capturedGraph.Groups.AddNodeToGroup(group, node);
+                    },
+                    () =>
+                    {
+                        foreach (var node in capturedNodes)
+                            capturedGraph.Groups.RemoveNodeFromGroup(node);
+                        capturedGraph.RemoveGroup(group);
+                    });
             }, (DropdownMenuAction a) => canDeleteSelection && selection.Find(s => s is BaseNodeView) != null ? DropdownMenuAction.Status.Normal : DropdownMenuAction.Status.Hidden);
 
             base.BuildContextualMenu(evt);
@@ -113,7 +131,8 @@ namespace Atom.GraphProcessor.Editors
         {
             BasePortView portView = startPortView as BasePortView;
 
-            compatiblePorts.Clear();
+            // 每次返回新列表，避免共享引用导致调用方迭代时列表被清空的竞态问题
+            var result = new List<Port>();
             foreach (var _nodeView in NodeViews.Values)
             {
                 if (_nodeView.PortViews.Count == 0)
@@ -124,11 +143,11 @@ namespace Atom.GraphProcessor.Editors
                 foreach (var _portView in _nodeView.PortViews.Values)
                 {
                     if (IsCompatible(_portView, portView, nodeAdapter))
-                        compatiblePorts.Add(_portView);
+                        result.Add(_portView);
                 }
             }
 
-            return compatiblePorts;
+            return result;
         }
 
         protected virtual void BuildNodeMenu(NodeMenuWindow nodeMenu)

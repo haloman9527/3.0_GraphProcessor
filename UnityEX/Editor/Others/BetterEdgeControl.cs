@@ -92,7 +92,7 @@ namespace Atom.GraphProcessor.Editors
                     points.Add(vector1 + new Vector2(0, -1));
                     points.Add(vector1 + new Vector2(0.3f, -0.7f));
                     points.Add(vector1 + new Vector2(0.5f, -0.5f));
-                    points.Add(vector1 + new Vector2(0.5f, -0.3f));
+                    points.Add(vector1 + new Vector2(0.7f, -0.3f));  // 修正：原为(0.5f,-0.3f)，与对称圆弧不一致
                     points.Add(vector1 + new Vector2(1, 0));
 
                     points.Add(c1 + new Vector2(-1, 0));
@@ -190,13 +190,12 @@ namespace Atom.GraphProcessor.Editors
 
         #region Static
 
-        static FieldInfo RenderPointsDirtyField;
+        // RenderPointsDirtyField 已移除（未使用，避免无效反射调用）
         static FieldInfo RenderPointsField;
         static PropertyInfo LayoutProperty;
 
         static BetterEdgeControl()
         {
-            RenderPointsDirtyField = typeof(EdgeControl).GetField("m_RenderPointsDirty", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
             RenderPointsField = typeof(EdgeControl).GetField("m_RenderPoints", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
             LayoutProperty = typeof(EdgeControl).GetProperty("layout", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
         }

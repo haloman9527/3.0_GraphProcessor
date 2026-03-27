@@ -99,14 +99,14 @@ namespace Atom.GraphProcessor
             this.m_Model.position = model.position == default ? InternalVector2Int.zero : model.position;
         }
 
-        internal void NotifyNodeAdded(BaseNodeProcessor[] nodes)
+        internal void NotifyNodeAdded(BaseNodeProcessor node)
         {
-            Owner.GraphEvents.Publish(new AddNodesToGroupEventArgs(this, nodes));
+            Owner.GraphEvents.Publish(new AddNodesToGroupEventArgs(this, node));
         }
 
-        internal void NotifyNodeRemoved(BaseNodeProcessor[] nodes)
+        internal void NotifyNodeRemoved(BaseNodeProcessor node)
         {
-            Owner.GraphEvents.Publish(new RemoveNodesFromGroupEventArgs(this, nodes));
+            Owner.GraphEvents.Publish(new RemoveNodesFromGroupEventArgs(this, node));
         }
     }
 }

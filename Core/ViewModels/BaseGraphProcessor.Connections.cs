@@ -17,7 +17,6 @@
 #endregion
 
 using System;
-using System.Linq;
 using System.Collections.Generic;
 
 namespace Atom.GraphProcessor
@@ -92,33 +91,14 @@ namespace Atom.GraphProcessor
         public BaseConnectionProcessor Connect(PortProcessor fromPort, PortProcessor toPort)
         {
             // 直接查找存在的连接，避免 LINQ
-            BaseConnectionProcessor connection = null;
             foreach (var conn in fromPort.Connections)
             {
                 if (conn.FromPort == fromPort && conn.ToPort == toPort)
-                {
-                    connection = conn;
-                    break;
-                }
+                    return conn;
             }
-            
-            if (connection != null)
-                return connection;
 
-            if (fromPort.Capacity == BasePort.Capacity.Single)
-                Disconnect(fromPort);
-            if (toPort.Capacity == BasePort.Capacity.Single)
-                Disconnect(toPort);
-            connection = NewConnection(fromPort, toPort);
-            connection.Owner = this;
-            connection.Enable();
-            m_Connections.Add(connection);
-            m_Model.connections.Add(connection.Model);
-
-            fromPort.ConnectTo(connection);
-            toPort.ConnectTo(connection);
-
-            m_GraphEvents.Publish(new AddConnectionEventArgs(connection));
+            var connection = NewConnection(fromPort, toPort);
+            InternalConnect(fromPort, toPort, connection);
             return connection;
         }
 
@@ -130,33 +110,13 @@ namespace Atom.GraphProcessor
             var toPort = toNode.Ports[connection.ToPortName];
             
             // 直接查找存在的连接，避免 LINQ
-            BaseConnectionProcessor tmpConnection = null;
             foreach (var conn in fromPort.Connections)
             {
                 if (conn.ToPort == toPort)
-                {
-                    tmpConnection = conn;
-                    break;
-                }
+                    return;
             }
-            
-            if (tmpConnection != null)
-                return;
 
-            if (fromPort.Capacity == BasePort.Capacity.Single)
-                Disconnect(fromPort);
-            if (toPort.Capacity == BasePort.Capacity.Single)
-                Disconnect(toPort);
-
-            connection.Owner = this;
-            connection.Enable();
-            m_Connections.Add(connection);
-            Model.connections.Add(connection.Model);
-
-            fromPort.ConnectTo(connection);
-            toPort.ConnectTo(connection);
-
-            m_GraphEvents.Publish(new AddConnectionEventArgs(connection));
+            InternalConnect(fromPort, toPort, connection);
         }
 
         public void Disconnect(BaseConnectionProcessor connection)
@@ -207,19 +167,18 @@ namespace Atom.GraphProcessor
             var toPort = toNode.Ports[connection.ToPortName];
 
             // 直接查找存在的连接，避免 LINQ
-            BaseConnectionProcessor tmpConnection = null;
             foreach (var conn in fromPort.Connections)
             {
                 if (conn.ToNodeID == connection.ToNodeID && conn.ToPortName == connection.ToPortName)
-                {
-                    tmpConnection = conn;
-                    break;
-                }
+                    return;
             }
-            
-            if (tmpConnection != null)
-                return;
 
+            InternalConnect(fromPort, toPort, connection);
+        }
+
+        /// <summary> 提取公共连接逻辑，消除 Connect/RevertDisconnect 代码重复 </summary>
+        private void InternalConnect(PortProcessor fromPort, PortProcessor toPort, BaseConnectionProcessor connection)
+        {
             if (fromPort.Capacity == BasePort.Capacity.Single)
                 Disconnect(fromPort);
             if (toPort.Capacity == BasePort.Capacity.Single)

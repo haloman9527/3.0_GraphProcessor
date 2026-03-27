@@ -125,7 +125,7 @@ namespace Atom.GraphProcessor
         internal void Enable()
         {
             if (Owner == null)
-                throw new NullReferenceException("Connection owner cannot be null");
+                throw new InvalidOperationException("Connection owner cannot be null when enabling");
                 
             if (!Owner.Nodes.TryGetValue(Model.fromNode, out var fromNode))
                 throw new KeyNotFoundException($"From node with ID {Model.fromNode} not found");

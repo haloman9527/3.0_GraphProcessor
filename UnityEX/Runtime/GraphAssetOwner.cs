@@ -27,6 +27,7 @@ namespace Atom.GraphProcessor
         where TGraph : BaseGraphProcessor
     {
         #region Fields
+        [NonSerialized]
         private TGraph graph = null;
         [SerializeField]
         private TGraphAsset graphAsset = null;

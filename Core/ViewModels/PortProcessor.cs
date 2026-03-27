@@ -18,7 +18,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Atom.GraphProcessor
 {
@@ -44,7 +43,7 @@ namespace Atom.GraphProcessor
         public PortProcessor(BasePort model)
         {
             this.m_Model = model;
-            this.m_ModelType = typeof(BasePort);
+            this.m_ModelType = model.GetType();
         }
         
         #region Properties
@@ -106,13 +105,8 @@ namespace Atom.GraphProcessor
 
         public PortProcessor(string name, BasePort.Direction direction, BasePort.Capacity capacity, Type type = null)
         {
-            this.m_Model = new BasePort(name, direction, capacity, type)
-            {
-                name = name,
-                direction = direction,
-                capacity = capacity
-            };
-            this.m_ModelType = typeof(BasePort);
+            this.m_Model = new BasePort(name, direction, capacity, type);
+            this.m_ModelType = m_Model.GetType();
         }
 
         #region API
@@ -179,11 +173,27 @@ namespace Atom.GraphProcessor
         }
 
         /// <summary>
-        /// 获取连接的第一个接口的值
+        /// 获取连接的第一个接口的值（直接遍历，避免 LINQ 迭代器分配）
         /// </summary>
         public object GetConnectionValue()
         {
-            return GetConnectionValues().FirstOrDefault();
+            if (Model.direction == BasePort.Direction.Left)
+            {
+                foreach (var connection in m_Connections)
+                {
+                    if (connection.FromNode is IGetPortValue fromPort)
+                        return fromPort.GetValue(connection.FromPortName);
+                }
+            }
+            else
+            {
+                foreach (var connection in m_Connections)
+                {
+                    if (connection.ToNode is IGetPortValue toPort)
+                        return toPort.GetValue(connection.ToPortName);
+                }
+            }
+            return null;
         }
 
         /// <summary>
@@ -210,11 +220,27 @@ namespace Atom.GraphProcessor
         }
 
         /// <summary>
-        /// 获取连接的第一个接口的值
+        /// 获取连接的第一个接口的值（直接遍历，避免 LINQ 迭代器分配）
         /// </summary>
         public T GetConnectionValue<T>()
         {
-            return GetConnectionValues<T>().FirstOrDefault();
+            if (Model.direction == BasePort.Direction.Left)
+            {
+                foreach (var connection in m_Connections)
+                {
+                    if (connection.FromNode is IGetPortValue<T> fromPort)
+                        return fromPort.GetValue(connection.FromPortName);
+                }
+            }
+            else
+            {
+                foreach (var connection in m_Connections)
+                {
+                    if (connection.ToNode is IGetPortValue<T> toPort)
+                        return toPort.GetValue(connection.ToPortName);
+                }
+            }
+            return default;
         }
 
         /// <summary>

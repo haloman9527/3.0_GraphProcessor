@@ -14,7 +14,13 @@ namespace Atom.GraphProcessor.Editors
         
         public void Do(Action @do, Action @undo)
         {
+            // Redo 与 Do 相同：重做时执行相同操作
             Do(new CommandDispatcher.ActionCommand(@do, @do, @undo));
+        }
+
+        public void Do(Action @do, Action redo, Action @undo)
+        {
+            Do(new CommandDispatcher.ActionCommand(@do, redo, @undo));
         }
 
         public void Do(ICommand command)

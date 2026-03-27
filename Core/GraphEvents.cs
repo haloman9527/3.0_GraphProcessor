@@ -109,24 +109,24 @@ namespace Atom.GraphProcessor
     public struct AddNodesToGroupEventArgs : IGraphEvent
     {
         public GroupProcessor Group;
-        public BaseNodeProcessor[] Nodes;
+        public BaseNodeProcessor Node;
 
-        public AddNodesToGroupEventArgs(GroupProcessor group, BaseNodeProcessor[] addedNodes)
+        public AddNodesToGroupEventArgs(GroupProcessor group, BaseNodeProcessor addedNode)
         {
             Group = group;
-            Nodes = addedNodes;
+            Node = addedNode;
         }
     }
 
     public struct RemoveNodesFromGroupEventArgs : IGraphEvent
     {
         public GroupProcessor Group;
-        public BaseNodeProcessor[] Nodes;
+        public BaseNodeProcessor Node;
 
-        public RemoveNodesFromGroupEventArgs(GroupProcessor group, BaseNodeProcessor[] removedNodes)
+        public RemoveNodesFromGroupEventArgs(GroupProcessor group, BaseNodeProcessor removedNode)
         {
             Group = group;
-            Nodes = removedNodes;
+            Node = removedNode;
         }
     }
 

@@ -55,7 +55,11 @@ namespace Atom.GraphProcessor
             m_ModelType = model.GetType();
             m_Model.pan = m_Model.pan == default ? InternalVector2Int.zero : m_Model.pan;
             m_Model.zoom = m_Model.zoom == 0 ? 1 : m_Model.zoom;
-            m_Model.notes = m_Model.notes == null ? new List<StickyNote>() : m_Model.notes;
+            // notes 在 BaseGraph 中已初始化，此处保持防御性空检查与 nodes/connections 对齐
+            if (m_Model.nodes == null) m_Model.nodes = new List<BaseNode>();
+            if (m_Model.connections == null) m_Model.connections = new List<BaseConnection>();
+            if (m_Model.groups == null) m_Model.groups = new List<Group>();
+            if (m_Model.notes == null) m_Model.notes = new List<StickyNote>();
 
             m_GraphEvents = new GraphEvents();
             m_Events = new EventStation<string>();

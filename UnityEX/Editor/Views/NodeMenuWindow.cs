@@ -96,25 +96,28 @@ namespace Atom.GraphProcessor.Editors
             var tree = new List<SearchTreeEntry>(entries.Count + 1);
             tree.Add(new SearchTreeGroupEntry(new GUIContent(treeName)));
             
-            HashSet<string> groups = new HashSet<string>();
+            var groups = new HashSet<string>();
+            var pathBuilder = new System.Text.StringBuilder();
             foreach (var nodeEntry in entries)
             {
                 var nodeName = nodeEntry.Menu[nodeEntry.Menu.Length - 1];
 
                 if (nodeEntry.Menu.Length > 1)
                 {
-                    var groupPath = "";
+                    pathBuilder.Clear();
                     for (int i = 0; i < nodeEntry.Menu.Length - 1; i++)
                     {
                         var title = nodeEntry.Menu[i];
-                        groupPath += title;
-                        if (!groups.Contains(groupPath))
+                        if (pathBuilder.Length > 0)
+                            pathBuilder.Append('/');
+                        pathBuilder.Append(title);
+                        var groupPath = pathBuilder.ToString();
+                        if (groups.Add(groupPath))
                         {
                             tree.Add(new SearchTreeGroupEntry(new GUIContent(title))
                             {
                                 level = i + 1
                             });
-                            groups.Add(groupPath);
                         }
                     }
                 }

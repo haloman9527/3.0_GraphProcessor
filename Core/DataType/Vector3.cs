@@ -105,7 +105,8 @@ namespace Atom.GraphProcessor
 
         public override int GetHashCode()
         {
-            return x.GetHashCode() ^ y.GetHashCode() << 2 ^ z.GetHashCode() >> 2;
+            // 添加括号明确运算符优先级，避免位移与XOR的优先级歧义
+            return x.GetHashCode() ^ (y.GetHashCode() << 2) ^ (z.GetHashCode() >> 2);
         }
     }
 }

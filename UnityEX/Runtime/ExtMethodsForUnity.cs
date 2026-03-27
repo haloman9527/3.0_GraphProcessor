@@ -40,7 +40,8 @@ namespace Atom.GraphProcessor
 
         public static InternalVector2Int ToInternalVector2Int(this UnityEngine.Vector2 self)
         {
-            return new InternalVector2Int((int)self.x, (int)self.y);
+            // 使用 RoundToInt 而非强制截断，保留亚像素精度
+            return new InternalVector2Int(UnityEngine.Mathf.RoundToInt(self.x), UnityEngine.Mathf.RoundToInt(self.y));
         }
 
         public static UnityEngine.Vector3 ToVector3(this InternalVector3Int self)
@@ -55,7 +56,8 @@ namespace Atom.GraphProcessor
 
         public static InternalVector3Int ToInternalVector3Int(this UnityEngine.Vector3 self)
         {
-            return new InternalVector3Int((int)self.x, (int)self.y, (int)self.z);
+            // 使用 RoundToInt 而非强制截断，保留亚像素精度
+            return new InternalVector3Int(UnityEngine.Mathf.RoundToInt(self.x), UnityEngine.Mathf.RoundToInt(self.y), UnityEngine.Mathf.RoundToInt(self.z));
         }
     }
 }
