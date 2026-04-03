@@ -91,12 +91,20 @@ namespace Atom.GraphProcessor.Editors
             if (ViewModel.HideLabel)
                 this.PortLabel.AddToClassList("hidden");
 
+            this.RegisterCallback<MouseDownEvent>(OnMouseDown);
+            this.RegisterCallback<MouseUpEvent>(OnMouseUp);
+            this.RegisterCallback<MouseCaptureOutEvent>(OnMouseCaptureOut);
+
             ViewModel.PropertyChanged += OnViewModelChanged;
             this.DoInit();
         }
 
         public void UnInit()
         {
+            this.UnregisterCallback<MouseDownEvent>(OnMouseDown);
+            this.UnregisterCallback<MouseUpEvent>(OnMouseUp);
+            this.UnregisterCallback<MouseCaptureOutEvent>(OnMouseCaptureOut);
+
             ViewModel.PropertyChanged -= OnViewModelChanged;
             this.DoUnInit();
         }
@@ -124,6 +132,25 @@ namespace Atom.GraphProcessor.Editors
                     break;
                 }
             }
+        }
+
+        private void OnMouseDown(MouseDownEvent evt)
+        {
+            if (evt.button != 0)
+                return;
+            GraphView?.ShowPortCompatibilityPreview(this);
+        }
+
+        private void OnMouseUp(MouseUpEvent evt)
+        {
+            if (evt.button != 0)
+                return;
+            GraphView?.ClearPortCompatibilityPreview();
+        }
+
+        private void OnMouseCaptureOut(MouseCaptureOutEvent evt)
+        {
+            GraphView?.ClearPortCompatibilityPreview();
         }
 
         #endregion

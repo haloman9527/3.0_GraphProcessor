@@ -47,6 +47,7 @@ namespace Atom.GraphProcessor.Editors
         private BaseGraphProcessor graphProcessor;
         private BaseGraphView graphView;
         private GraphViewContext context;
+        private ToolbarButton togSnap;
 
         #endregion
 
@@ -157,6 +158,8 @@ namespace Atom.GraphProcessor.Editors
 
             GraphProcessorEditorSettings.MiniMapActive.onValueChanged += OnMiniMapActiveChanged;
             OnMiniMapActiveChanged(GraphProcessorEditorSettings.MiniMapActive.Value);
+            GraphProcessorEditorSettings.GridSnapActive.onValueChanged += OnGridSnapActiveChanged;
+            OnGridSnapActiveChanged(GraphProcessorEditorSettings.GridSnapActive.Value);
 
             AfterLoad();
         }
@@ -168,6 +171,12 @@ namespace Atom.GraphProcessor.Editors
         protected void OnMiniMapActiveChanged(bool newValue)
         {
             graphView.MiniMapActive = newValue;
+        }
+
+        protected void OnGridSnapActiveChanged(bool newValue)
+        {
+            if (togSnap != null)
+                togSnap.text = newValue ? "Snap:On" : "Snap:Off";
         }
 
         #endregion
@@ -191,6 +200,8 @@ namespace Atom.GraphProcessor.Editors
             this.rootVisualElement.Unbind();
 
             GraphProcessorEditorSettings.MiniMapActive.onValueChanged -= OnMiniMapActiveChanged;
+            GraphProcessorEditorSettings.GridSnapActive.onValueChanged -= OnGridSnapActiveChanged;
+            togSnap = null;
 
             this.SetHasUnsavedChanges(false);
         }
@@ -309,6 +320,66 @@ namespace Atom.GraphProcessor.Editors
                         evt.StopImmediatePropagation();
                         break;
                     }
+                    case KeyCode.C:
+                    {
+                        GraphView?.CopySelectionToClipboard();
+                        evt.StopImmediatePropagation();
+                        break;
+                    }
+                    case KeyCode.X:
+                    {
+                        GraphView?.CutSelectionToClipboard();
+                        evt.StopImmediatePropagation();
+                        break;
+                    }
+                    case KeyCode.V:
+                    {
+                        GraphView?.PasteClipboard();
+                        evt.StopImmediatePropagation();
+                        break;
+                    }
+                    case KeyCode.D:
+                    {
+                        GraphView?.DuplicateSelection();
+                        evt.StopImmediatePropagation();
+                        break;
+                    }
+                    case KeyCode.Alpha1:
+                    {
+                        GraphView?.AlignSelectionLeft();
+                        evt.StopImmediatePropagation();
+                        break;
+                    }
+                    case KeyCode.Alpha2:
+                    {
+                        GraphView?.AlignSelectionRight();
+                        evt.StopImmediatePropagation();
+                        break;
+                    }
+                    case KeyCode.Alpha3:
+                    {
+                        GraphView?.AlignSelectionTop();
+                        evt.StopImmediatePropagation();
+                        break;
+                    }
+                    case KeyCode.Alpha4:
+                    {
+                        GraphView?.AlignSelectionBottom();
+                        evt.StopImmediatePropagation();
+                        break;
+                    }
+                    case KeyCode.Alpha5:
+                    {
+                        GraphView?.DistributeSelectionHorizontal();
+                        evt.StopImmediatePropagation();
+                        break;
+                    }
+                    case KeyCode.Alpha6:
+                    {
+                        GraphView?.DistributeSelectionVertical();
+                        evt.StopImmediatePropagation();
+                        break;
+                    }
                 }
             }
         }
@@ -332,6 +403,18 @@ namespace Atom.GraphProcessor.Editors
             };
             togMiniMap.clicked += () => { GraphProcessorEditorSettings.MiniMapActive.Value = !GraphProcessorEditorSettings.MiniMapActive.Value; };
             ToolbarLeft.Add(togMiniMap);
+
+            togSnap = new ToolbarButton()
+            {
+                name = "togSnap",
+                text = GraphProcessorEditorSettings.GridSnapActive.Value ? "Snap:On" : "Snap:Off",
+                tooltip = "网格吸附",
+            };
+            togSnap.clicked += () =>
+            {
+                GraphProcessorEditorSettings.GridSnapActive.Value = !GraphProcessorEditorSettings.GridSnapActive.Value;
+            };
+            ToolbarLeft.Add(togSnap);
 
             if (graphAsset != null && graphAsset is UnityObject)
             {

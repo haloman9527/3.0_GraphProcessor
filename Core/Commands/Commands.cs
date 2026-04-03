@@ -488,7 +488,7 @@ namespace Atom.GraphProcessor
         public void Do()
         {
             successed = false;
-            if (node.Ports.ContainsKey(port.Name))
+            if (port != null && node.Ports.ContainsKey(port.Name))
             {
                 node.RemovePort(port);
                 successed = true;
@@ -507,7 +507,7 @@ namespace Atom.GraphProcessor
                 return;
             }
 
-            node.RemovePort(port);
+            node.AddPort(port);
         }
     }
 
@@ -519,6 +519,12 @@ namespace Atom.GraphProcessor
         PortProcessor to;
         BaseConnectionProcessor connectionVM;
         HashSet<BaseConnectionProcessor> replacedConnections = new HashSet<BaseConnectionProcessor>();
+        bool connected;
+
+        public BaseConnectionProcessor Connection
+        {
+            get { return connected ? connectionVM : null; }
+        }
 
         public ConnectCommand(BaseGraphProcessor graph, PortProcessor from, PortProcessor to)
         {
@@ -539,6 +545,7 @@ namespace Atom.GraphProcessor
 
         public void Do()
         {
+            connected = false;
             replacedConnections.Clear();
             if (from.Capacity == BasePort.Capacity.Single)
             {
@@ -562,6 +569,16 @@ namespace Atom.GraphProcessor
             }
 
             graph.Connect(connectionVM);
+            connected = connectionVM.Owner == graph;
+
+            // 连接未建立时，回滚前置断连，避免出现半成功状态
+            if (!connected)
+            {
+                foreach (var connection in replacedConnections)
+                {
+                    graph.RevertDisconnect(connection);
+                }
+            }
         }
 
         public void Redo()
@@ -571,9 +588,92 @@ namespace Atom.GraphProcessor
 
         public void Undo()
         {
-            graph.Disconnect(connectionVM);
+            if (connected && connectionVM.Owner == graph)
+                graph.Disconnect(connectionVM);
 
             // 还原
+            foreach (var connection in replacedConnections)
+            {
+                graph.RevertDisconnect(connection);
+            }
+        }
+    }
+
+    public class ReconnectCommand : ICommand
+    {
+        private readonly BaseGraphProcessor graph;
+        private readonly BaseConnectionProcessor oldConnection;
+        private readonly PortProcessor newFrom;
+        private readonly PortProcessor newTo;
+
+        private BaseConnectionProcessor newConnection;
+        private readonly HashSet<BaseConnectionProcessor> replacedConnections = new HashSet<BaseConnectionProcessor>();
+        private readonly bool valid;
+
+        public ReconnectCommand(BaseGraphProcessor graph, BaseConnectionProcessor oldConnection, PortProcessor newFrom, PortProcessor newTo)
+        {
+            this.graph = graph;
+            this.oldConnection = oldConnection;
+            this.newFrom = newFrom;
+            this.newTo = newTo;
+
+            valid = oldConnection != null && newFrom != null && newTo != null &&
+                    !(oldConnection.FromPort == newFrom && oldConnection.ToPort == newTo);
+        }
+
+        public void Do()
+        {
+            if (!valid)
+                return;
+
+            replacedConnections.Clear();
+            if (newFrom.Capacity == BasePort.Capacity.Single)
+            {
+                foreach (var connection in newFrom.Connections)
+                {
+                    if (connection != oldConnection)
+                        replacedConnections.Add(connection);
+                }
+            }
+
+            if (newTo.Capacity == BasePort.Capacity.Single)
+            {
+                foreach (var connection in newTo.Connections)
+                {
+                    if (connection != oldConnection)
+                        replacedConnections.Add(connection);
+                }
+            }
+
+            if (oldConnection.Owner == graph)
+                graph.Disconnect(oldConnection);
+
+            foreach (var connection in replacedConnections)
+            {
+                if (connection.Owner == graph)
+                    graph.Disconnect(connection);
+            }
+
+            if (newConnection == null)
+                newConnection = graph.NewConnection(newFrom, newTo);
+
+            graph.Connect(newConnection);
+        }
+
+        public void Redo()
+        {
+            Do();
+        }
+
+        public void Undo()
+        {
+            if (!valid)
+                return;
+
+            if (newConnection != null && newConnection.Owner == graph)
+                graph.Disconnect(newConnection);
+
+            graph.RevertDisconnect(oldConnection);
             foreach (var connection in replacedConnections)
             {
                 graph.RevertDisconnect(connection);

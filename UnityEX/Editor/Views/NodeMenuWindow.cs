@@ -35,7 +35,9 @@ namespace Atom.GraphProcessor.Editors
 
             string[] Menu { get; }
 
-            void CreateNode(BaseGraphView graphView, InternalVector2Int position);
+            Type NodeType { get; }
+
+            BaseNodeProcessor CreateNode(BaseGraphProcessor graph, InternalVector2Int position);
         }
 
         public class NodeEntry : INodeEntry
@@ -54,6 +56,11 @@ namespace Atom.GraphProcessor.Editors
                 get { return menu; }
             }
 
+            public Type NodeType
+            {
+                get { return nodeType; }
+            }
+
             public NodeEntry(string path, string[] menu, Type nodeType)
             {
                 this.path = path;
@@ -61,21 +68,59 @@ namespace Atom.GraphProcessor.Editors
                 this.nodeType = nodeType;
             }
 
-            public void CreateNode(BaseGraphView graphView, InternalVector2Int position)
+            public BaseNodeProcessor CreateNode(BaseGraphProcessor graph, InternalVector2Int position)
             {
-                graphView.Context.Do(new AddNodeCommand(graphView.ViewModel, nodeType, position));
+                if (graph == null)
+                    return null;
+                return graph.NewNode(nodeType, position);
             }
         }
         #endregion
+
+        private sealed class EntryComparer : IComparer<INodeEntry>
+        {
+            private readonly Dictionary<string, int> usage;
+
+            public EntryComparer(Dictionary<string, int> usage)
+            {
+                this.usage = usage;
+            }
+
+            public int Compare(INodeEntry x, INodeEntry y)
+            {
+                usage.TryGetValue(x.Path, out var ux);
+                usage.TryGetValue(y.Path, out var uy);
+                if (ux != uy)
+                    return uy.CompareTo(ux);
+                return string.Compare(x.Path, y.Path, StringComparison.Ordinal);
+            }
+        }
         
         private string treeName;
         private BaseGraphView graphView;
         public List<INodeEntry> entries = new List<INodeEntry>(256);
 
+        private Func<INodeEntry, bool> filter;
+        private Func<BaseNodeProcessor, bool> onNodeCreated;
+        private static readonly Dictionary<string, int> s_UsageTick = new Dictionary<string, int>(256);
+        private static int s_Tick;
+
         public void Initialize(string treeName, BaseGraphView graphView)
         {
             this.treeName = treeName;
             this.graphView = graphView;
+            this.filter = null;
+            this.onNodeCreated = null;
+        }
+
+        public void SetFilter(Func<INodeEntry, bool> filter)
+        {
+            this.filter = filter;
+        }
+
+        public void SetNodeCreatedHandler(Func<BaseNodeProcessor, bool> onNodeCreated)
+        {
+            this.onNodeCreated = onNodeCreated;
         }
 
         public bool OnSelectEntry(SearchTreeEntry searchTreeEntry, SearchWindowContext context)
@@ -85,7 +130,18 @@ namespace Atom.GraphProcessor.Editors
             var graphMousePosition = graphView.contentViewContainer.WorldToLocal(windowMousePosition);
 
             var nodeEntry = searchTreeEntry.userData as INodeEntry;
-            nodeEntry.CreateNode(graphView, graphMousePosition.ToInternalVector2Int());
+            if (nodeEntry == null)
+                return false;
+
+            var node = nodeEntry.CreateNode(graphView.ViewModel, graphMousePosition.ToInternalVector2Int());
+            if (node == null)
+                return false;
+
+            var handled = onNodeCreated != null && onNodeCreated(node);
+            if (!handled)
+                graphView.Context.Do(new AddNodeCommand(graphView.ViewModel, node));
+
+            s_UsageTick[nodeEntry.Path] = ++s_Tick;
             
             graphView.Context.graphWindow.Focus();
             return true;
@@ -95,10 +151,20 @@ namespace Atom.GraphProcessor.Editors
         {
             var tree = new List<SearchTreeEntry>(entries.Count + 1);
             tree.Add(new SearchTreeGroupEntry(new GUIContent(treeName)));
+
+            var visibleEntries = new List<INodeEntry>(entries.Count);
+            foreach (var nodeEntry in entries)
+            {
+                if (filter != null && !filter(nodeEntry))
+                    continue;
+                visibleEntries.Add(nodeEntry);
+            }
+
+            visibleEntries.Sort(new EntryComparer(s_UsageTick));
             
             var groups = new HashSet<string>();
             var pathBuilder = new System.Text.StringBuilder();
-            foreach (var nodeEntry in entries)
+            foreach (var nodeEntry in visibleEntries)
             {
                 var nodeName = nodeEntry.Menu[nodeEntry.Menu.Length - 1];
 

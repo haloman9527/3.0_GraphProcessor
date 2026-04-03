@@ -130,7 +130,7 @@ namespace Atom.GraphProcessor.Editors
             var tmp = WithoutNotify;
             try
             {
-                WithoutNotify = false;
+                WithoutNotify = true;
                 if (Owner.NodeViews.TryGetValue(node.ID, out var nodeView))
                     base.AddElements(new GraphElement[] { nodeView });
             }
@@ -150,7 +150,7 @@ namespace Atom.GraphProcessor.Editors
             var tmp = WithoutNotify;
             try
             {
-                WithoutNotify = false;
+                WithoutNotify = true;
                 if (Owner.NodeViews.TryGetValue(node.ID, out var nodeView))
                     base.RemoveElementsWithoutNotification(new GraphElement[] { nodeView });
             }

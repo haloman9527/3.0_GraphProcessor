@@ -18,98 +18,96 @@ MonoBehaviour:
       x: 380
       y: 28
     nodes:
-    - rid: 7707644130126725127
-    - rid: 7707644130126725128
-    - rid: 7556594388834713619
-    - rid: 7556594388834713620
-    - rid: 7556594388834713621
-    - rid: 7556594388834713622
-    - rid: 7556594388834713623
+    - rid: 6279154847130583314
+    - rid: 6279154847130583315
+    - rid: 6279154847130583316
+    - rid: 6279154847130583317
+    - rid: 6279154847130583318
     connections:
-    - rid: 7556594388834713624
-    - rid: 7556594388834713625
+    - rid: 6279154847130583319
+    - rid: 6279154847130583320
+    - rid: 6279154847130583321
+    - rid: 6279154847130583322
     groups: []
     notes: []
     startNodeID: 0
   references:
     version: 2
     RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
-    - rid: 7556594388834713619
+    - rid: 6279154847130583314
       type: {class: BTStartNode, ns: , asm: Atom.GraphProcessor}
       data:
         id: 0
         position:
-          x: 100
-          y: 100
+          x: 112
+          y: 80
         comment: 
         CD: 0
-    - rid: 7556594388834713620
+    - rid: 6279154847130583315
       type: {class: BTMotionNode, ns: , asm: Atom.GraphProcessor}
       data:
         id: 777079884584321024
         position:
-          x: 276
-          y: 85
+          x: 320
+          y: 80
         comment: 
         configmotionName: 
         resPath: 
-    - rid: 7556594388834713621
+    - rid: 6279154847130583316
       type: {class: BTMotionNode, ns: , asm: Atom.GraphProcessor}
       data:
         id: 777079891970490368
         position:
-          x: 9
-          y: 185
+          x: 48
+          y: 256
         comment: 
         configmotionName: 
         resPath: 
-    - rid: 7556594388834713622
+    - rid: 6279154847130583317
       type: {class: BTMotionNode, ns: , asm: Atom.GraphProcessor}
       data:
         id: 777079892570275840
         position:
-          x: 227
-          y: 252
+          x: 320
+          y: 256
         comment: 
         configmotionName: 
         resPath: 
-    - rid: 7556594388834713623
+    - rid: 6279154847130583318
       type: {class: BTMotionNode, ns: , asm: Atom.GraphProcessor}
       data:
         id: 777079893178449920
         position:
-          x: 545
-          y: 226
+          x: 659
+          y: 193
         comment: 
         configmotionName: 
         resPath: 
-    - rid: 7556594388834713624
+    - rid: 6279154847130583319
       type: {class: BaseConnection, ns: Atom.GraphProcessor, asm: Atom.GraphProcessor}
       data:
         fromNode: 777079891970490368
         fromPort: Flow-Out
         toNode: 777079892570275840
         toPort: Flow-In
-    - rid: 7556594388834713625
+    - rid: 6279154847130583320
       type: {class: BaseConnection, ns: Atom.GraphProcessor, asm: Atom.GraphProcessor}
       data:
         fromNode: 777079892570275840
         fromPort: Flow-Out
         toNode: 777079893178449920
         toPort: Flow-In
-    - rid: 7707644130126725127
-      type: {class: StartNode, ns: , asm: Atom.GraphProcessor}
+    - rid: 6279154847130583321
+      type: {class: BaseConnection, ns: Atom.GraphProcessor, asm: Atom.GraphProcessor}
       data:
-        id: 0
-        position:
-          x: 100
-          y: 100
-    - rid: 7707644130126725128
-      type: {class: RefreshWwiseNode, ns: , asm: Atom.GraphProcessor}
+        fromNode: 0
+        fromPort: Flow-Out
+        toNode: 777079884584321024
+        toPort: Flow-In
+    - rid: 6279154847130583322
+      type: {class: BaseConnection, ns: Atom.GraphProcessor, asm: Atom.GraphProcessor}
       data:
-        id: 1
-        position:
-          x: 292
-          y: 100
+        fromNode: 777079884584321024
+        fromPort: Flow-Out
+        toNode: 777079893178449920
+        toPort: Flow-In

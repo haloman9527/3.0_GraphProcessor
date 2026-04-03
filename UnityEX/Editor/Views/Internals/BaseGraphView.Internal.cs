@@ -99,6 +99,11 @@ namespace Atom.GraphProcessor.Editors
             this.AddManipulator(new SelectionDragger());
             this.AddManipulator(new RectangleSelector());
             this.StretchToParentSize();
+
+            // 拖拽过程中实时网格吸附，避免“松手后跳一下”
+            this.RegisterCallback<MouseMoveEvent>(OnMouseMoveRealtimeSnap);
+            this.RegisterCallback<MouseUpEvent>(OnMouseUpRealtimeSnap);
+            this.RegisterCallback<MouseCaptureOutEvent>(OnMouseCaptureOutRealtimeSnap);
         }
 
         /// <summary>
@@ -115,6 +120,68 @@ namespace Atom.GraphProcessor.Editors
                 pair.Value.controls.style.display = viewBound.Overlaps(pair.Value.worldBound)
                     ? DisplayStyle.Flex
                     : DisplayStyle.None;
+            }
+        }
+
+        private InternalVector2Int SnapPosition(InternalVector2Int position)
+        {
+            if (!GraphProcessorEditorSettings.GridSnapActive.Value)
+                return position;
+
+            var snap = GraphProcessorEditorSettings.GridSnapSize.Value;
+            if (snap <= 1)
+                return position;
+
+            var x = Mathf.RoundToInt(position.x / (float)snap) * snap;
+            var y = Mathf.RoundToInt(position.y / (float)snap) * snap;
+            return new InternalVector2Int(x, y);
+        }
+
+        private Rect SnapRectPosition(Rect rect)
+        {
+            var pos = rect.position.ToInternalVector2Int();
+            var snapped = SnapPosition(pos);
+            if (snapped == pos)
+                return rect;
+
+            rect.position = snapped.ToVector2();
+            return rect;
+        }
+
+        private void ApplyRealtimeSnapForSelection()
+        {
+            if (!GraphProcessorEditorSettings.GridSnapActive.Value)
+                return;
+
+            foreach (var selectable in selection)
+            {
+                switch (selectable)
+                {
+                    case BaseNodeView nodeView when nodeView.Movable:
+                    {
+                        var rect = nodeView.GetPosition();
+                        var snapped = SnapRectPosition(rect);
+                        if (snapped.position != rect.position)
+                            nodeView.SetPosition(snapped);
+                        break;
+                    }
+                    case GroupView groupView:
+                    {
+                        var rect = groupView.GetPosition();
+                        var snapped = SnapRectPosition(rect);
+                        if (snapped.position != rect.position)
+                            groupView.SetPosition(snapped);
+                        break;
+                    }
+                    case StickyNoteView stickyNoteView:
+                    {
+                        var rect = stickyNoteView.GetPosition();
+                        var snapped = SnapRectPosition(rect);
+                        if (snapped.position != rect.position)
+                            stickyNoteView.SetPosition(snapped);
+                        break;
+                    }
+                }
             }
         }
 
@@ -545,16 +612,16 @@ namespace Atom.GraphProcessor.Editors
                 {
                     switch (element)
                     {
-                        // case StickyNoteView stickyNoteView:
-                        // {
-                        //     newPos[stickyNoteView.ViewModel] = stickyNoteView.GetPosition();
-                        //     return true;
-                        // }
+                        case StickyNoteView stickyNoteView:
+                        {
+                            newPos[stickyNoteView.ViewModel] = SnapRectPosition(stickyNoteView.GetPosition());
+                            return true;
+                        }
                         case BaseNodeView nodeView:
                         {
                             if (nodeView.Movable)
                             {
-                                newPos[nodeView.ViewModel] = nodeView.GetPosition();
+                                newPos[nodeView.ViewModel] = SnapRectPosition(nodeView.GetPosition());
                                 // 记录需要重新排序的接口
                                 foreach (var port in nodeView.ViewModel.Ports.Values)
                                 {
@@ -572,14 +639,14 @@ namespace Atom.GraphProcessor.Editors
                         }
                         case GroupView groupView:
                         {
-                            newPos[groupView.ViewModel] = groupView.GetPosition();
+                            newPos[groupView.ViewModel] = SnapRectPosition(groupView.GetPosition());
                             foreach (var nodeId in groupView.ViewModel.Nodes)
                             {
                                 var node = ViewModel.Nodes[nodeId];
                                 var nodeView = NodeViews[nodeId];
                                 if (nodeView.Movable)
                                 {
-                                    newPos[node] = nodeView.GetPosition();
+                                    newPos[node] = SnapRectPosition(nodeView.GetPosition());
                                 }
                             }
 
@@ -627,6 +694,27 @@ namespace Atom.GraphProcessor.Editors
             ViewModel.Pan = viewTransform.position.ToInternalVector3Int();
             // 视图变换后更新节点 controls 可见性（事件驱动，替代原定时轮询）
             UpdateNodeControlsVisibility();
+        }
+
+        private void OnMouseMoveRealtimeSnap(MouseMoveEvent evt)
+        {
+            if ((evt.pressedButtons & 1) == 0)
+                return;
+
+            ApplyRealtimeSnapForSelection();
+        }
+
+        private void OnMouseUpRealtimeSnap(MouseUpEvent evt)
+        {
+            if (evt.button != 0)
+                return;
+
+            ApplyRealtimeSnapForSelection();
+        }
+
+        private void OnMouseCaptureOutRealtimeSnap(MouseCaptureOutEvent evt)
+        {
+            ApplyRealtimeSnapForSelection();
         }
 
         #endregion

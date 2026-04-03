@@ -45,7 +45,16 @@ namespace Atom.GraphProcessor
             {
                 var node = Model.nodes[index];
                 if (node == null)
+                {
+                    Model.nodes.RemoveAt(index--);
                     continue;
+                }
+                // 容错：历史数据或外部合并可能产生重复 id，保留首个并剔除后续重复项
+                if (m_Nodes.ContainsKey(node.id))
+                {
+                    Model.nodes.RemoveAt(index--);
+                    continue;
+                }
                 var nodeProcessor = (BaseNodeProcessor)ViewModelFactory.ProduceViewModel(node);
                 nodeProcessor.Owner = this;
                 nodeProcessor.Index = index;

@@ -16,6 +16,20 @@
     height: 15px;
 }
 
+.port.port-compatible > #connector {
+    border-color: rgba(100, 220, 170, 0.95);
+    box-shadow: 0 0 0 1px rgba(100, 220, 170, 0.35);
+}
+
+.port.port-compatible > #connector > #cap {
+    background-color: rgba(100, 220, 170, 1);
+}
+
+.port.port-source > #connector {
+    border-color: rgba(255, 205, 85, 1);
+    box-shadow: 0 0 0 1px rgba(255, 205, 85, 0.45);
+}
+
 #input > .port.capacity-Single > #connector.connectorBox {
     border-radius: 1px;
 }

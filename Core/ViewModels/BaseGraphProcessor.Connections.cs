@@ -45,6 +45,11 @@ namespace Atom.GraphProcessor
             for (int i = 0; i < Model.connections.Count; i++)
             {
                 var connection = Model.connections[i];
+                if (connection == null)
+                {
+                    Model.connections.RemoveAt(i--);
+                    continue;
+                }
 
                 if (!m_Nodes.TryGetValue(connection.fromNode, out var fromNode))
                 {
@@ -65,6 +70,26 @@ namespace Atom.GraphProcessor
                 }
                 
                 if (!toNode.Ports.TryGetValue(connection.toPort, out var toPort))
+                {
+                    Model.connections.RemoveAt(i--);
+                    continue;
+                }
+
+                // 去重：from+to 端口完全一致的重复连接只保留一条
+                var duplicated = false;
+                for (int c = 0; c < m_Connections.Count; c++)
+                {
+                    var exist = m_Connections[c];
+                    if (exist.FromNodeID == connection.fromNode &&
+                        exist.FromPortName == connection.fromPort &&
+                        exist.ToNodeID == connection.toNode &&
+                        exist.ToPortName == connection.toPort)
+                    {
+                        duplicated = true;
+                        break;
+                    }
+                }
+                if (duplicated)
                 {
                     Model.connections.RemoveAt(i--);
                     continue;
