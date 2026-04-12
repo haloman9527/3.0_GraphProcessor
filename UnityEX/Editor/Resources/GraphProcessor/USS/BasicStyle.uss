@@ -15,6 +15,21 @@
     -unity-text-align: middle-center;
 }
 
+#MainContainer {
+    flex-grow: 1;
+    flex-direction: row;
+}
+
+#GraphViewContainer {
+    flex-grow: 1;
+}
+
+#InspectorView {
+    border-left-width: 1px;
+    border-left-color: rgba(120, 140, 170, 0.25);
+    background-color: rgba(20, 24, 32, 0.92);
+}
+
 .unity-toolbar #ToolbarLeft > ToolbarButton {
     border-left-width: 0;
 }

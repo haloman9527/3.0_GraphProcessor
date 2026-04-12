@@ -4,5 +4,8 @@
         <uie:Toolbar name="ToolbarCenter" style="flex-grow: 1; height: 100%;" />
         <uie:Toolbar name="ToolbarRight" style="flex-direction: row-reverse; height: 100%;" />
     </uie:Toolbar>
-    <ui:VisualElement name="GraphViewContainer" style="flex-grow: 1;" />
+    <ui:VisualElement name="MainContainer" style="flex-grow: 1; flex-direction: row;">
+        <ui:VisualElement name="GraphViewContainer" style="flex-grow: 1;" />
+        <ui:VisualElement name="InspectorView" style="width: 320px; min-width: 260px; max-width: 420px; flex-shrink: 0;" />
+    </ui:VisualElement>
 </ui:UXML>

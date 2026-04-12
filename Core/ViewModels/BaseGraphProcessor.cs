@@ -49,6 +49,11 @@ namespace Atom.GraphProcessor
         /// </summary>
         private BlackboardProcessor<string> m_Blackboard;
 
+        /// <summary>
+        /// 图加载/修复诊断信息
+        /// </summary>
+        private List<string> m_Diagnostics;
+
         public BaseGraphProcessor(BaseGraph model)
         {
             m_Model = model;
@@ -60,10 +65,12 @@ namespace Atom.GraphProcessor
             if (m_Model.connections == null) m_Model.connections = new List<BaseConnection>();
             if (m_Model.groups == null) m_Model.groups = new List<Group>();
             if (m_Model.notes == null) m_Model.notes = new List<StickyNote>();
+            if (m_Model.placemats == null) m_Model.placemats = new List<PlacematData>();
 
             m_GraphEvents = new GraphEvents();
             m_Events = new EventStation<string>();
             m_Blackboard = new BlackboardProcessor<string>(new Blackboard<string>(), new EventStation<string>());
+            m_Diagnostics = new List<string>(16);
 
             BeginInitNodes();
             BeginInitConnections();
@@ -71,6 +78,7 @@ namespace Atom.GraphProcessor
             EndInitNodes();
             InitGroups();
             InitNotes();
+            InitPlacemats();
         }
         
         public BaseGraph Model
@@ -108,6 +116,18 @@ namespace Atom.GraphProcessor
         public BlackboardProcessor<string> Blackboard
         {
             get { return m_Blackboard; }
+        }
+
+        public IReadOnlyList<string> Diagnostics
+        {
+            get { return m_Diagnostics; }
+        }
+
+        internal void ReportDiagnostic(string message)
+        {
+            if (string.IsNullOrWhiteSpace(message))
+                return;
+            m_Diagnostics.Add(message);
         }
     }
 }

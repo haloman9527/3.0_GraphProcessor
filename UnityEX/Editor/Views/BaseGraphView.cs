@@ -35,9 +35,10 @@ namespace Atom.GraphProcessor.Editors
             public readonly List<BaseConnection> Connections = new List<BaseConnection>();
             public readonly List<Group> Groups = new List<Group>();
             public readonly List<StickyNote> Notes = new List<StickyNote>();
+            public readonly List<PlacematData> Placemats = new List<PlacematData>();
             public InternalVector2Int Anchor;
 
-            public bool HasData => Nodes.Count > 0 || Notes.Count > 0 || Groups.Count > 0;
+            public bool HasData => Nodes.Count > 0 || Notes.Count > 0 || Groups.Count > 0 || Placemats.Count > 0;
         }
 
         private enum SelectionAlignMode
@@ -138,6 +139,12 @@ namespace Atom.GraphProcessor.Editors
                 this.Context.Do(() => { ViewModel.AddNote(note); }, () => { ViewModel.RemoveNote(note.ID); });
             });
 
+            evt.menu.AppendAction("Create Placemat", delegate
+            {
+                var placemat = ViewModel.NewPlacemat(localMousePosition.ToInternalVector2Int());
+                this.Context.Do(() => { ViewModel.AddPlacemat(placemat); }, () => { ViewModel.RemovePlacemat(placemat.ID); });
+            });
+
             evt.menu.AppendSeparator();
             evt.menu.AppendAction("Selection/Frame", _ => FrameSelection(), _ => selection.Count > 0 ? DropdownMenuAction.Status.Normal : DropdownMenuAction.Status.Disabled);
             evt.menu.AppendAction("Selection/Copy", _ => CopySelectionToClipboard(), _ => selection.Count > 0 ? DropdownMenuAction.Status.Normal : DropdownMenuAction.Status.Disabled);
@@ -199,6 +206,28 @@ namespace Atom.GraphProcessor.Editors
                 var menu = nodeInfo.Menu;
                 nodeMenu.entries.Add(new NodeMenuWindow.NodeEntry(path, menu, nodeInfo.NodeType));
             }
+        }
+
+        internal List<NodeMenuWindow.INodeEntry> CollectNodeMenuEntries()
+        {
+            var nodeMenu = ScriptableObject.CreateInstance<NodeMenuWindow>();
+            nodeMenu.Initialize("Nodes", this);
+            BuildNodeMenu(nodeMenu);
+            nodeMenu.entries.QuickSort((a, b) => string.Compare(a.Path, b.Path, StringComparison.Ordinal));
+            return new List<NodeMenuWindow.INodeEntry>(nodeMenu.entries);
+        }
+
+        internal void CreateNodeFromLibraryEntry(NodeMenuWindow.INodeEntry entry)
+        {
+            if (entry == null)
+                return;
+
+            var position = GetMousePosition().ToInternalVector2Int();
+            var node = entry.CreateNode(ViewModel, position);
+            if (node == null)
+                return;
+
+            Context.Do(new AddNodeCommand(ViewModel, node));
         }
 
         protected virtual BaseNodeView NewNodeView(BaseNodeProcessor nodeVM)
@@ -503,6 +532,15 @@ namespace Atom.GraphProcessor.Editors
                 noteVMs.Add(ViewModelFactory.ProduceViewModel(noteModel) as StickyNoteProcessor);
             }
 
+            var placematVMs = new List<PlacematProcessor>(clip.Placemats.Count);
+            for (var i = 0; i < clip.Placemats.Count; i++)
+            {
+                var placematModel = (PlacematData)CloneModel(clip.Placemats[i]);
+                placematModel.id = GraphProcessorUtil.GenerateId();
+                placematModel.position = placematModel.position + delta;
+                placematVMs.Add(ViewModelFactory.ProduceViewModel(placematModel) as PlacematProcessor);
+            }
+
             var groupVMs = new List<GroupProcessor>(clip.Groups.Count);
             var groupNodeMaps = new List<(GroupProcessor group, BaseNodeProcessor node)>();
             for (var i = 0; i < clip.Groups.Count; i++)
@@ -568,6 +606,8 @@ namespace Atom.GraphProcessor.Editors
                     ViewModel.AddNode(nodeVMs[i]);
                 for (var i = 0; i < noteVMs.Count; i++)
                     ViewModel.AddNote(noteVMs[i]);
+                for (var i = 0; i < placematVMs.Count; i++)
+                    ViewModel.AddPlacemat(placematVMs[i]);
                 for (var i = 0; i < groupVMs.Count; i++)
                     ViewModel.AddGroup(groupVMs[i]);
                 for (var i = 0; i < groupNodeMaps.Count; i++)
@@ -592,6 +632,11 @@ namespace Atom.GraphProcessor.Editors
                     if (NoteViews.TryGetValue(noteVMs[i].ID, out var noteView))
                         AddToSelection(noteView);
                 }
+                for (var i = 0; i < placematVMs.Count; i++)
+                {
+                    if (PlacematViews.TryGetValue(placematVMs[i].ID, out var placematView))
+                        AddToSelection(placematView);
+                }
                 for (var i = 0; i < groupVMs.Count; i++)
                 {
                     if (GroupViews.TryGetValue(groupVMs[i].ID, out var groupView))
@@ -604,6 +649,8 @@ namespace Atom.GraphProcessor.Editors
                     connectCommands[i].Undo();
                 for (var i = 0; i < groupVMs.Count; i++)
                     ViewModel.RemoveGroup(groupVMs[i]);
+                for (var i = 0; i < placematVMs.Count; i++)
+                    ViewModel.RemovePlacemat(placematVMs[i].ID);
                 for (var i = 0; i < noteVMs.Count; i++)
                     ViewModel.RemoveNote(noteVMs[i].ID);
                 for (var i = 0; i < nodeVMs.Count; i++)
@@ -635,6 +682,9 @@ namespace Atom.GraphProcessor.Editors
                         break;
                     case StickyNoteView noteView:
                         data.Notes.Add((StickyNote)CloneModel(noteView.ViewModel.Model));
+                        break;
+                    case PlacematView placematView:
+                        data.Placemats.Add((PlacematData)CloneModel(placematView.ViewModel.Model));
                         break;
                     case GroupView groupView:
                         selectedGroups.Add(groupView.ViewModel);
@@ -710,6 +760,21 @@ namespace Atom.GraphProcessor.Editors
             for (var i = 0; i < data.Groups.Count; i++)
             {
                 var p = data.Groups[i].position;
+                if (!has)
+                {
+                    has = true;
+                    minX = p.x;
+                    minY = p.y;
+                }
+                else
+                {
+                    if (p.x < minX) minX = p.x;
+                    if (p.y < minY) minY = p.y;
+                }
+            }
+            for (var i = 0; i < data.Placemats.Count; i++)
+            {
+                var p = data.Placemats[i].position;
                 if (!has)
                 {
                     has = true;

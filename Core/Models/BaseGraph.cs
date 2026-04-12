@@ -31,6 +31,7 @@ namespace Atom.GraphProcessor
         [UnityEngine.SerializeReference] public List<BaseConnection> connections = new List<BaseConnection>();
         public List<Group> groups = new List<Group>();
         public List<StickyNote> notes = new List<StickyNote>();
+        public List<PlacematData> placemats = new List<PlacematData>();
     }
 #else
     [Serializable]
@@ -42,6 +43,7 @@ namespace Atom.GraphProcessor
         public List<BaseConnection> connections = new List<BaseConnection>();
         public List<Group> groups = new List<Group>();
         public List<StickyNote> notes = new List<StickyNote>();
+        public List<PlacematData> placemats = new List<PlacematData>();
     }
 #endif
 }

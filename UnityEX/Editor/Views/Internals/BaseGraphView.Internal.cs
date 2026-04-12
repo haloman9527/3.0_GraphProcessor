@@ -52,6 +52,8 @@ namespace Atom.GraphProcessor.Editors
 
         public Dictionary<long, GroupView> GroupViews { get; } = new Dictionary<long, GroupView>();
 
+        public Dictionary<long, PlacematView> PlacematViews { get; } = new Dictionary<long, PlacematView>();
+
         public Dictionary<BaseConnectionProcessor, BaseConnectionView> ConnectionViews { get; } = new Dictionary<BaseConnectionProcessor, BaseConnectionView>();
 
         public bool MiniMapActive
@@ -181,6 +183,14 @@ namespace Atom.GraphProcessor.Editors
                             stickyNoteView.SetPosition(snapped);
                         break;
                     }
+                    case PlacematView placematView:
+                    {
+                        var rect = placematView.GetPosition();
+                        var snapped = SnapRectPosition(rect);
+                        if (snapped.position != rect.position)
+                            placematView.SetPosition(snapped);
+                        break;
+                    }
                 }
             }
         }
@@ -217,6 +227,7 @@ namespace Atom.GraphProcessor.Editors
                 yield return Context.graphWindow.StartCoroutine(GenerateConnectionViews());
                 yield return Context.graphWindow.StartCoroutine(GenerateGroupViews());
                 yield return Context.graphWindow.StartCoroutine(GenerateNoteViews());
+                yield return Context.graphWindow.StartCoroutine(GeneratePlacematViews());
 
                 ViewModel.PropertyChanged += OnViewModelChanged;
 
@@ -233,6 +244,8 @@ namespace Atom.GraphProcessor.Editors
 
                 ViewModel.GraphEvents.Subscribe<AddNoteEventArgs>(OnNoteAdded);
                 ViewModel.GraphEvents.Subscribe<RemoveNoteEventArgs>(OnNoteRemoved);
+                ViewModel.GraphEvents.Subscribe<AddPlacematEventArgs>(OnPlacematAdded);
+                ViewModel.GraphEvents.Subscribe<RemovePlacematEventArgs>(OnPlacematRemoved);
                 
                 // Bug 修复：协程结束时节点 worldBound 尚未经过一帧布局，延一帧后再刷新可见性
                 // 否则所有节点 controls 因 worldBound == Rect.zero 而被错误隐藏
@@ -266,6 +279,8 @@ namespace Atom.GraphProcessor.Editors
 
             ViewModel.GraphEvents.Unsubscribe<AddNoteEventArgs>(OnNoteAdded);
             ViewModel.GraphEvents.Unsubscribe<RemoveNoteEventArgs>(OnNoteRemoved);
+            ViewModel.GraphEvents.Unsubscribe<AddPlacematEventArgs>(OnPlacematAdded);
+            ViewModel.GraphEvents.Unsubscribe<RemovePlacematEventArgs>(OnPlacematRemoved);
             
             OnDestroyed();
         }
@@ -328,6 +343,18 @@ namespace Atom.GraphProcessor.Editors
             }
         }
 
+        private IEnumerator GeneratePlacematViews()
+        {
+            var index = 0;
+            foreach (var placemat in ViewModel.Placemats.Values)
+            {
+                AddPlacematView(placemat);
+                if (index > 0 && index % 10 == 0)
+                    yield return null;
+                index++;
+            }
+        }
+
         #endregion
 
         #region API
@@ -345,6 +372,7 @@ namespace Atom.GraphProcessor.Editors
         public BaseNodeView AddNodeView(BaseNodeProcessor nodeProcessor)
         {
             var nodeView = NewNodeView(nodeProcessor);
+            nodeView.layer = 4;
             this.AddElement(nodeView);
             this.NodeViews[nodeProcessor.ID] = nodeView;
             nodeView.AddToClassList(nodeProcessor.ModelType.Name);
@@ -363,6 +391,7 @@ namespace Atom.GraphProcessor.Editors
         public GroupView AddGroupView(GroupProcessor group)
         {
             var groupView = NewGroupView(group);
+            groupView.layer = 1;
             this.AddElement(groupView);
             this.GroupViews[group.ID] = groupView;
             groupView.SetUp(group, this);
@@ -383,6 +412,7 @@ namespace Atom.GraphProcessor.Editors
         public BaseConnectionView ConnectView(BaseNodeView from, BaseNodeView to, BaseConnectionProcessor connection)
         {
             var connectionView = NewConnectionView(connection);
+            connectionView.layer = 3;
             connectionView.SetUp(connection, this);
             connectionView.Init();
             connectionView.userData = connection;
@@ -417,6 +447,7 @@ namespace Atom.GraphProcessor.Editors
         private void AddNoteView(StickyNoteProcessor note)
         {
             var noteView = new StickyNoteView();
+            noteView.layer = 2;
             noteView.SetUp(note, this);
             noteView.Init();
             NoteViews[note.ID] = noteView;
@@ -429,6 +460,25 @@ namespace Atom.GraphProcessor.Editors
             noteView.UnInit();
             RemoveElement(noteView);
             NoteViews.Remove(noteView.ViewModel.ID);
+        }
+
+        private void AddPlacematView(PlacematProcessor placemat)
+        {
+            var placematView = this.placematContainer.CreatePlacemat<PlacematView>(new Rect(placemat.Position.ToVector2(),  placemat.Size.ToVector2()), 0, placemat.Title);
+            placematView.SetUp(placemat, this);
+            placematView.Init();
+            PlacematViews.Add(placemat.ID, placematView);
+            placematView.SendToBack();
+        }
+
+        private void RemovePlacematView(PlacematProcessor placemat)
+        {
+            if (!PlacematViews.TryGetValue(placemat.ID, out var placematView))
+                return;
+
+            placematView.UnInit();
+            PlacematViews.Remove(placemat.ID);
+            this.placematContainer.Remove(placematView);
         }
 
         /// <summary> 获取鼠标在GraphView中的坐标，如果鼠标不在GraphView内，则返回当前GraphView显示的中心点 </summary>
@@ -531,6 +581,18 @@ namespace Atom.GraphProcessor.Editors
             SetDirty();
         }
 
+        private void OnPlacematAdded(AddPlacematEventArgs args)
+        {
+            AddPlacematView(args.Placemat);
+            SetDirty();
+        }
+
+        private void OnPlacematRemoved(RemovePlacematEventArgs args)
+        {
+            RemovePlacematView(args.Placemat);
+            SetDirty();
+        }
+
         private void OnGroupAdded(AddGroupEventArgs args)
         {
             AddGroupView(args.Group);
@@ -617,6 +679,11 @@ namespace Atom.GraphProcessor.Editors
                             newPos[stickyNoteView.ViewModel] = SnapRectPosition(stickyNoteView.GetPosition());
                             return true;
                         }
+                        case PlacematView placematView:
+                        {
+                            newPos[placematView.ViewModel] = SnapRectPosition(placematView.GetPosition());
+                            return true;
+                        }
                         case BaseNodeView nodeView:
                         {
                             if (nodeView.Movable)
@@ -667,6 +734,10 @@ namespace Atom.GraphProcessor.Editors
 
                     this.Context.Do(new MoveElementsCommand(newPos));
                 }
+
+                // 兜底：每次移动结算后确保 placemat 保持在最底层
+                foreach (var placematView in PlacematViews.Values)
+                    placematView.SendToBack();
             }
 
             if (changes.elementsToRemove != null)
@@ -675,7 +746,7 @@ namespace Atom.GraphProcessor.Editors
                 var graphElementsList = new List<IGraphElementProcessor>(changes.elementsToRemove.Count);
                 foreach (var item in changes.elementsToRemove)
                 {
-                    if (item.selected && item is IGraphElementView gev)
+                    if (item is IGraphElementView gev)
                         graphElementsList.Add(gev.V);
                 }
                 changes.elementsToRemove.RemoveAll(item => item is IGraphElementView);

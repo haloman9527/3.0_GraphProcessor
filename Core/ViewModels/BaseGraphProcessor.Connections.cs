@@ -47,30 +47,35 @@ namespace Atom.GraphProcessor
                 var connection = Model.connections[i];
                 if (connection == null)
                 {
+                    ReportDiagnostic($"[MissingConnection] Null connection at index {i} removed.");
                     Model.connections.RemoveAt(i--);
                     continue;
                 }
 
                 if (!m_Nodes.TryGetValue(connection.fromNode, out var fromNode))
                 {
+                    ReportDiagnostic($"[MissingConnection] fromNode={connection.fromNode} not found, removed ({connection.fromPort}->{connection.toNode}:{connection.toPort}).");
                     Model.connections.RemoveAt(i--);
                     continue;
                 }
                 
                 if (!fromNode.Ports.TryGetValue(connection.fromPort, out var fromPort))
                 {
+                    ReportDiagnostic($"[MissingConnection] fromPort '{connection.fromPort}' missing on node {connection.fromNode}, connection removed.");
                     Model.connections.RemoveAt(i--);
                     continue;
                 }
 
                 if (!m_Nodes.TryGetValue(connection.toNode, out var toNode))
                 {
+                    ReportDiagnostic($"[MissingConnection] toNode={connection.toNode} not found, removed ({connection.fromNode}:{connection.fromPort}->{connection.toPort}).");
                     Model.connections.RemoveAt(i--);
                     continue;
                 }
                 
                 if (!toNode.Ports.TryGetValue(connection.toPort, out var toPort))
                 {
+                    ReportDiagnostic($"[MissingConnection] toPort '{connection.toPort}' missing on node {connection.toNode}, connection removed.");
                     Model.connections.RemoveAt(i--);
                     continue;
                 }
@@ -91,6 +96,7 @@ namespace Atom.GraphProcessor
                 }
                 if (duplicated)
                 {
+                    ReportDiagnostic($"[DuplicateConnection] Duplicate edge {connection.fromNode}:{connection.fromPort}->{connection.toNode}:{connection.toPort} removed.");
                     Model.connections.RemoveAt(i--);
                     continue;
                 }

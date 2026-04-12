@@ -53,6 +53,14 @@ namespace Atom.GraphProcessor
                         note.Size = pair.Value.size.ToInternalVector2Int();
                         break;
                     }
+                    case PlacematProcessor placemat:
+                    {
+                        var rect = new Rect(placemat.Position.ToVector2(), placemat.Size.ToVector2());
+                        oldPos[pair.Key] = rect;
+                        placemat.Position = pair.Value.position.ToInternalVector2Int();
+                        placemat.Size = pair.Value.size.ToInternalVector2Int();
+                        break;
+                    }
                     default:
                     {
                         var rect = new Rect(pair.Key.Position.ToVector2(), Vector2.zero);
@@ -79,6 +87,12 @@ namespace Atom.GraphProcessor
                     {
                         note.Position = pair.Value.position.ToInternalVector2Int();
                         note.Size = pair.Value.size.ToInternalVector2Int();
+                        break;
+                    }
+                    case PlacematProcessor placemat:
+                    {
+                        placemat.Position = pair.Value.position.ToInternalVector2Int();
+                        placemat.Size = pair.Value.size.ToInternalVector2Int();
                         break;
                     }
                     default:
@@ -163,6 +177,11 @@ namespace Atom.GraphProcessor
                         graph.RemoveNote(stickNote.ID);
                         break;
                     }
+                    case PlacematProcessor placemat:
+                    {
+                        graph.RemovePlacemat(placemat.ID);
+                        break;
+                    }
                 }
             }
         }
@@ -195,6 +214,11 @@ namespace Atom.GraphProcessor
                         graph.AddGroup(group);
                         break;
                     }
+                    case PlacematProcessor placemat:
+                    {
+                        graph.AddPlacemat(placemat);
+                        break;
+                    }
                 }
             }
 
@@ -220,6 +244,7 @@ namespace Atom.GraphProcessor
                 }
                 case BaseNodeProcessor:
                 case StickyNoteProcessor:
+                case PlacematProcessor:
                 {
                     return 2;
                 }
@@ -410,6 +435,13 @@ namespace Atom.GraphProcessor
         {
             this.group = group;
             this.oldColor = group.BackgroundColor;
+            this.newColor = newColor;
+        }
+
+        public ChangeGroupColorCommand(GroupProcessor group, InternalColor oldColor, InternalColor newColor)
+        {
+            this.group = group;
+            this.oldColor = oldColor;
             this.newColor = newColor;
         }
 

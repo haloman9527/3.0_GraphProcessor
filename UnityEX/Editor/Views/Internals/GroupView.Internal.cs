@@ -20,6 +20,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEditor.UIElements;
 using UnityEngine;
@@ -39,6 +40,9 @@ namespace Atom.GraphProcessor.Editors
         public BaseGraphView Owner { get; private set; }
 
         bool WithoutNotify { get; set; }
+        bool IsEditingColor { get; set; }
+        InternalColor ColorEditStart { get; set; }
+        InternalColor ColorEditLatest { get; set; }
 
         public GroupView()
         {
@@ -86,6 +90,8 @@ namespace Atom.GraphProcessor.Editors
 
         public void UnInit()
         {
+            CommitPendingColorChange();
+            EditorApplication.update -= PollColorPickerClose;
             ViewModel.PropertyChanged -= OnViewModelChanged;
         }
 
@@ -167,7 +173,67 @@ namespace Atom.GraphProcessor.Editors
 
         private void OnGroupColorChanged(ChangeEvent<Color> evt)
         {
-            Owner.Context.Do(new ChangeGroupColorCommand(ViewModel, evt.newValue.ToInternalColor()));
+            var newColor = evt.newValue.ToInternalColor();
+
+            if (!IsEditingColor)
+            {
+                IsEditingColor = true;
+                ColorEditStart = ViewModel.BackgroundColor;
+                EditorApplication.update -= PollColorPickerClose;
+                EditorApplication.update += PollColorPickerClose;
+            }
+
+            ColorEditLatest = newColor;
+            // 交互期间直接更新视觉，不立刻写入命令栈
+            ViewModel.BackgroundColor = newColor;
+        }
+
+        private void PollColorPickerClose()
+        {
+            if (IsColorPickerOpened())
+                return;
+
+            CommitPendingColorChange();
+            EditorApplication.update -= PollColorPickerClose;
+        }
+
+        private void CommitPendingColorChange()
+        {
+            if (!IsEditingColor)
+                return;
+
+            IsEditingColor = false;
+            var oldColor = ColorEditStart;
+            var newColor = ColorEditLatest;
+            if (IsSameColor(oldColor, newColor))
+                return;
+
+            Owner.Context.Do(new ChangeGroupColorCommand(ViewModel, oldColor, newColor));
+        }
+
+        private static bool IsSameColor(InternalColor a, InternalColor b)
+        {
+            return Mathf.Approximately(a.r, b.r) &&
+                   Mathf.Approximately(a.g, b.g) &&
+                   Mathf.Approximately(a.b, b.b) &&
+                   Mathf.Approximately(a.a, b.a);
+        }
+
+        private static bool IsColorPickerOpened()
+        {
+            var windows = Resources.FindObjectsOfTypeAll<EditorWindow>();
+            for (var i = 0; i < windows.Length; i++)
+            {
+                var window = windows[i];
+                if (window == null)
+                    continue;
+
+                var type = window.GetType();
+                if (type != null && (type.Name == "ColorPicker" || type.FullName == "UnityEditor.ColorPicker"))
+                    return true;
+            }
+
+            return false;
         }
 
         #endregion

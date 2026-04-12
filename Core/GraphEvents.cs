@@ -149,4 +149,24 @@ namespace Atom.GraphProcessor
             Note = removedNote;
         }
     }
+
+    public struct AddPlacematEventArgs : IGraphEvent
+    {
+        public PlacematProcessor Placemat;
+
+        public AddPlacematEventArgs(PlacematProcessor addedPlacemat)
+        {
+            Placemat = addedPlacemat;
+        }
+    }
+
+    public struct RemovePlacematEventArgs : IGraphEvent
+    {
+        public PlacematProcessor Placemat;
+
+        public RemovePlacematEventArgs(PlacematProcessor removedPlacemat)
+        {
+            Placemat = removedPlacemat;
+        }
+    }
 }
