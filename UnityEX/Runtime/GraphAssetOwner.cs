@@ -56,8 +56,10 @@ namespace Atom.GraphProcessor
             { 
                 if (graph == null && graphAsset != null)
                 {
-                    var graphData = graphAsset.LoadGraph();
+                    var graphData = graphAsset.LoadGraph()?.Clone();
+                    var validation = GraphValidationUtil.Repair(graphData);
                     graph = ViewModelFactory.ProduceViewModel(graphData) as TGraph;
+                    graph?.AppendDiagnostics(validation.Messages);
                 }
                 
                 return graph;

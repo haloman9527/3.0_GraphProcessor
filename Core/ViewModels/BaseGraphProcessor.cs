@@ -123,11 +123,34 @@ namespace Atom.GraphProcessor
             get { return m_Diagnostics; }
         }
 
+        public GraphValidationResult ValidateModel()
+        {
+            return GraphValidationUtil.Validate(m_Model);
+        }
+
+        public GraphValidationResult RepairModel()
+        {
+            var result = GraphValidationUtil.Repair(m_Model);
+            AppendDiagnostics(result.Messages);
+            return result;
+        }
+
         internal void ReportDiagnostic(string message)
         {
             if (string.IsNullOrWhiteSpace(message))
                 return;
             m_Diagnostics.Add(message);
+        }
+
+        internal void AppendDiagnostics(IEnumerable<string> messages)
+        {
+            if (messages == null)
+                return;
+
+            foreach (var message in messages)
+            {
+                ReportDiagnostic(message);
+            }
         }
     }
 }

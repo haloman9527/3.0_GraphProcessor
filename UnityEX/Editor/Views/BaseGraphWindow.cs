@@ -303,7 +303,7 @@ namespace Atom.GraphProcessor.Editors
         // 从Graph资源加载
         public void LoadFromGraphAsset(IGraphAsset graphAsset)
         {
-            Load(ViewModelFactory.ProduceViewModel(graphAsset.LoadGraph().Clone()) as BaseGraphProcessor, null, graphAsset);
+            Load(ViewModelFactory.ProduceViewModel(Atom.GraphProcessor.Editors.GraphProcessorEditorUtil.Clone(graphAsset.LoadGraph())) as BaseGraphProcessor, null, graphAsset);
         }
 
         // 直接加载GraphVM对象
@@ -351,7 +351,7 @@ namespace Atom.GraphProcessor.Editors
 
         protected virtual void Save()
         {
-            GraphAsset?.SaveGraph(GraphProcessor.Model.Clone());
+            GraphAsset?.SaveGraph(Atom.GraphProcessor.Editors.GraphProcessorEditorUtil.Clone(GraphProcessor.Model));
             if (UnityGraphAsset)
                 EditorUtility.SetDirty(UnityGraphAsset);
             AssetDatabase.SaveAssets();

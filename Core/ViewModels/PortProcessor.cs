@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace Atom.GraphProcessor
 {
@@ -33,6 +34,12 @@ namespace Atom.GraphProcessor
         private BaseNodeProcessor m_Owner;
 
         internal List<BaseConnectionProcessor> m_Connections = new List<BaseConnectionProcessor>();
+        [ThreadStatic]
+        private static HashSet<string> s_EvaluationStack;
+        [ThreadStatic]
+        private static Dictionary<string, object> s_EvaluationCache;
+        [ThreadStatic]
+        private static int s_EvaluationDepth;
         
         public event Action<BaseConnectionProcessor> OnConnected;
         public event Action<BaseConnectionProcessor> onDisconnected;
@@ -177,23 +184,45 @@ namespace Atom.GraphProcessor
         /// </summary>
         public object GetConnectionValue()
         {
-            if (Model.direction == BasePort.Direction.Left)
+            if (!TryEnterEvaluation(out var evaluationKey))
+                return null;
+
+            try
             {
-                foreach (var connection in m_Connections)
+                if (TryGetCachedValue<object>(evaluationKey, out var cachedValue))
+                    return cachedValue;
+
+                object result = null;
+                if (Model.direction == BasePort.Direction.Left)
                 {
-                    if (connection.FromNode is IGetPortValue fromPort)
-                        return fromPort.GetValue(connection.FromPortName);
+                    foreach (var connection in m_Connections)
+                    {
+                        if (connection.FromNode is IGetPortValue fromPort)
+                        {
+                            result = fromPort.GetValue(connection.FromPortName);
+                            break;
+                        }
+                    }
                 }
+                else
+                {
+                    foreach (var connection in m_Connections)
+                    {
+                        if (connection.ToNode is IGetPortValue toPort)
+                        {
+                            result = toPort.GetValue(connection.ToPortName);
+                            break;
+                        }
+                    }
+                }
+
+                CacheValue(evaluationKey, result);
+                return result;
             }
-            else
+            finally
             {
-                foreach (var connection in m_Connections)
-                {
-                    if (connection.ToNode is IGetPortValue toPort)
-                        return toPort.GetValue(connection.ToPortName);
-                }
+                ExitEvaluation(evaluationKey);
             }
-            return null;
         }
 
         /// <summary>
@@ -201,21 +230,31 @@ namespace Atom.GraphProcessor
         /// </summary>
         public IEnumerable<object> GetConnectionValues()
         {
-            if (Model.direction == BasePort.Direction.Left)
+            if (!TryEnterEvaluation(out var evaluationKey))
+                yield break;
+
+            try
             {
-                foreach (var connection in Connections)
+                if (Model.direction == BasePort.Direction.Left)
                 {
-                    if (connection.FromNode is IGetPortValue fromPort)
-                        yield return fromPort.GetValue(connection.FromPortName);
+                    foreach (var connection in Connections)
+                    {
+                        if (connection.FromNode is IGetPortValue fromPort)
+                            yield return fromPort.GetValue(connection.FromPortName);
+                    }
+                }
+                else
+                {
+                    foreach (var connection in Connections)
+                    {
+                        if (connection.ToNode is IGetPortValue toPort)
+                            yield return toPort.GetValue(connection.ToPortName);
+                    }
                 }
             }
-            else
+            finally
             {
-                foreach (var connection in Connections)
-                {
-                    if (connection.ToNode is IGetPortValue toPort)
-                        yield return toPort.GetValue(connection.ToPortName);
-                }
+                ExitEvaluation(evaluationKey);
             }
         }
 
@@ -224,23 +263,50 @@ namespace Atom.GraphProcessor
         /// </summary>
         public T GetConnectionValue<T>()
         {
-            if (Model.direction == BasePort.Direction.Left)
+            if (!TryEnterEvaluation(out var evaluationKey))
+                return default;
+
+            try
             {
-                foreach (var connection in m_Connections)
+                if (TryGetCachedValue<T>(evaluationKey, out var cachedValue))
+                    return cachedValue;
+
+                T result = default;
+                var found = false;
+                if (Model.direction == BasePort.Direction.Left)
                 {
-                    if (connection.FromNode is IGetPortValue<T> fromPort)
-                        return fromPort.GetValue(connection.FromPortName);
+                    foreach (var connection in m_Connections)
+                    {
+                        if (connection.FromNode is IGetPortValue<T> fromPort)
+                        {
+                            result = fromPort.GetValue(connection.FromPortName);
+                            found = true;
+                            break;
+                        }
+                    }
                 }
+                else
+                {
+                    foreach (var connection in m_Connections)
+                    {
+                        if (connection.ToNode is IGetPortValue<T> toPort)
+                        {
+                            result = toPort.GetValue(connection.ToPortName);
+                            found = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (found || typeof(T).IsValueType)
+                    CacheValue(evaluationKey, result);
+
+                return result;
             }
-            else
+            finally
             {
-                foreach (var connection in m_Connections)
-                {
-                    if (connection.ToNode is IGetPortValue<T> toPort)
-                        return toPort.GetValue(connection.ToPortName);
-                }
+                ExitEvaluation(evaluationKey);
             }
-            return default;
         }
 
         /// <summary>
@@ -248,22 +314,83 @@ namespace Atom.GraphProcessor
         /// </summary>
         public IEnumerable<T> GetConnectionValues<T>()
         {
-            if (Model.direction == BasePort.Direction.Left)
+            if (!TryEnterEvaluation(out var evaluationKey))
+                yield break;
+
+            try
             {
-                foreach (var connection in Connections)
+                if (Model.direction == BasePort.Direction.Left)
                 {
-                    if (connection.FromNode is IGetPortValue<T> fromPort)
-                        yield return fromPort.GetValue(connection.FromPortName);
+                    foreach (var connection in Connections)
+                    {
+                        if (connection.FromNode is IGetPortValue<T> fromPort)
+                            yield return fromPort.GetValue(connection.FromPortName);
+                    }
+                }
+                else
+                {
+                    foreach (var connection in Connections)
+                    {
+                        if (connection.ToNode is IGetPortValue<T> toPort)
+                            yield return toPort.GetValue(connection.ToPortName);
+                    }
                 }
             }
-            else
+            finally
             {
-                foreach (var connection in Connections)
-                {
-                    if (connection.ToNode is IGetPortValue<T> toPort)
-                        yield return toPort.GetValue(connection.ToPortName);
-                }
+                ExitEvaluation(evaluationKey);
             }
+        }
+
+        private bool TryEnterEvaluation(out string evaluationKey)
+        {
+            var ownerId = Owner?.ID ?? 0;
+            evaluationKey = ownerId + ":" + Name + ":" + Direction;
+            var isRootEvaluation = s_EvaluationDepth == 0;
+            s_EvaluationDepth++;
+            if (isRootEvaluation)
+                s_EvaluationCache = new Dictionary<string, object>();
+            s_EvaluationStack ??= new HashSet<string>();
+            if (s_EvaluationStack.Add(evaluationKey))
+                return true;
+
+            s_EvaluationDepth--;
+            if (s_EvaluationDepth == 0)
+                s_EvaluationCache?.Clear();
+
+            var message = $"[GraphProcessor] Cyclic port evaluation detected at node={ownerId}, port={Name}, direction={Direction}.";
+            Owner?.Owner?.ReportDiagnostic(message);
+            Debug.LogError(message);
+            return false;
+        }
+
+        private static void ExitEvaluation(string evaluationKey)
+        {
+            s_EvaluationStack?.Remove(evaluationKey);
+            s_EvaluationDepth--;
+            if (s_EvaluationDepth <= 0)
+            {
+                s_EvaluationDepth = 0;
+                s_EvaluationCache?.Clear();
+            }
+        }
+
+        private static bool TryGetCachedValue<T>(string evaluationKey, out T value)
+        {
+            if (s_EvaluationCache != null && s_EvaluationCache.TryGetValue(evaluationKey, out var cached) && cached is T typed)
+            {
+                value = typed;
+                return true;
+            }
+
+            value = default;
+            return false;
+        }
+
+        private static void CacheValue(string evaluationKey, object value)
+        {
+            s_EvaluationCache ??= new Dictionary<string, object>();
+            s_EvaluationCache[evaluationKey] = value;
         }
 
         #endregion

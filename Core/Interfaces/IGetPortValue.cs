@@ -35,4 +35,14 @@ namespace Atom.GraphProcessor
     {
         void GetValue(string portName, T value);
     }
+
+    public interface IWritePortValue
+    {
+        void SetValue(string portName, object value);
+    }
+
+    public interface IWritePortValue<T>
+    {
+        void SetValue(string portName, T value);
+    }
 }

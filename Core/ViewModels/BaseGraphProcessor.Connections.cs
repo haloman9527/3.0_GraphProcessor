@@ -80,6 +80,13 @@ namespace Atom.GraphProcessor
                     continue;
                 }
 
+                if (!TryValidateConnection(fromPort, toPort, out var error))
+                {
+                    ReportDiagnostic($"[InvalidConnection] {error}, removed ({connection.fromNode}:{connection.fromPort}->{connection.toNode}:{connection.toPort}).");
+                    Model.connections.RemoveAt(i--);
+                    continue;
+                }
+
                 // 去重：from+to 端口完全一致的重复连接只保留一条
                 var duplicated = false;
                 for (int c = 0; c < m_Connections.Count; c++)
@@ -121,6 +128,9 @@ namespace Atom.GraphProcessor
 
         public BaseConnectionProcessor Connect(PortProcessor fromPort, PortProcessor toPort)
         {
+            if (!TryValidateConnection(fromPort, toPort, out _))
+                return null;
+
             // 直接查找存在的连接，避免 LINQ
             foreach (var conn in fromPort.Connections)
             {
@@ -139,6 +149,9 @@ namespace Atom.GraphProcessor
             var fromPort = fromNode.Ports[connection.FromPortName];
             var toNode = Nodes[connection.ToNodeID];
             var toPort = toNode.Ports[connection.ToPortName];
+
+            if (!TryValidateConnection(fromPort, toPort, out _))
+                return;
             
             // 直接查找存在的连接，避免 LINQ
             foreach (var conn in fromPort.Connections)
@@ -210,6 +223,9 @@ namespace Atom.GraphProcessor
         /// <summary> 提取公共连接逻辑，消除 Connect/RevertDisconnect 代码重复 </summary>
         private void InternalConnect(PortProcessor fromPort, PortProcessor toPort, BaseConnectionProcessor connection)
         {
+            if (!TryValidateConnection(fromPort, toPort, out var error))
+                throw new InvalidOperationException(error);
+
             if (fromPort.Capacity == BasePort.Capacity.Single)
                 Disconnect(fromPort);
             if (toPort.Capacity == BasePort.Capacity.Single)
@@ -236,6 +252,69 @@ namespace Atom.GraphProcessor
                 toPort = to.Name
             };
             return ViewModelFactory.ProduceViewModel(connection) as BaseConnectionProcessor;
+        }
+
+        private static bool TryValidateConnection(PortProcessor fromPort, PortProcessor toPort, out string error)
+        {
+            if (fromPort == null || toPort == null)
+            {
+                error = "Port is null";
+                return false;
+            }
+
+            if (fromPort.Owner == null || toPort.Owner == null)
+            {
+                error = "Port owner is null";
+                return false;
+            }
+
+            if (ReferenceEquals(fromPort, toPort))
+            {
+                error = "Cannot connect a port to itself";
+                return false;
+            }
+
+            if (fromPort.Owner == toPort.Owner && fromPort.Name == toPort.Name)
+            {
+                error = "Cannot connect the same node port to itself";
+                return false;
+            }
+
+            if (!IsOutputDirection(fromPort.Direction) || !IsInputDirection(toPort.Direction))
+            {
+                error = $"Invalid direction pair {fromPort.Direction}->{toPort.Direction}";
+                return false;
+            }
+
+            if (!ArePortTypesCompatible(fromPort.PortType, toPort.PortType))
+            {
+                error = $"Incompatible port types {fromPort.PortType?.Name ?? "Any"}->{toPort.PortType?.Name ?? "Any"}";
+                return false;
+            }
+
+            error = null;
+            return true;
+        }
+
+        private static bool ArePortTypesCompatible(Type fromType, Type toType)
+        {
+            fromType ??= typeof(object);
+            toType ??= typeof(object);
+
+            if (fromType == typeof(object) || toType == typeof(object))
+                return true;
+
+            return toType.IsAssignableFrom(fromType) || fromType.IsAssignableFrom(toType);
+        }
+
+        private static bool IsInputDirection(BasePort.Direction direction)
+        {
+            return direction == BasePort.Direction.Left || direction == BasePort.Direction.Top;
+        }
+
+        private static bool IsOutputDirection(BasePort.Direction direction)
+        {
+            return direction == BasePort.Direction.Right || direction == BasePort.Direction.Bottom;
         }
 
         #endregion
