@@ -182,9 +182,9 @@ namespace Atom.GraphProcessor.Editors
 
             BuildToolBar();
 
-            GraphProcessorEditorSettings.MiniMapActive.onValueChanged += OnMiniMapActiveChanged;
+            GraphProcessorEditorSettings.MiniMapActive.OnValueChanged += OnMiniMapActiveChanged;
             OnMiniMapActiveChanged(GraphProcessorEditorSettings.MiniMapActive.Value);
-            GraphProcessorEditorSettings.GridSnapActive.onValueChanged += OnGridSnapActiveChanged;
+            GraphProcessorEditorSettings.GridSnapActive.OnValueChanged += OnGridSnapActiveChanged;
             OnGridSnapActiveChanged(GraphProcessorEditorSettings.GridSnapActive.Value);
 
             AfterLoad();
@@ -238,10 +238,10 @@ namespace Atom.GraphProcessor.Editors
 
             this.rootVisualElement.Unbind();
 
-            GraphProcessorEditorSettings.MiniMapActive.onValueChanged -= OnMiniMapActiveChanged;
-            GraphProcessorEditorSettings.GridSnapActive.onValueChanged -= OnGridSnapActiveChanged;
-            GraphProcessorEditorSettings.InspectorActive.onValueChanged -= OnInspectorActiveChanged;
-            GraphProcessorEditorSettings.ItemLibraryActive.onValueChanged -= OnItemLibraryActiveChanged;
+            GraphProcessorEditorSettings.MiniMapActive.OnValueChanged -= OnMiniMapActiveChanged;
+            GraphProcessorEditorSettings.GridSnapActive.OnValueChanged -= OnGridSnapActiveChanged;
+            GraphProcessorEditorSettings.InspectorActive.OnValueChanged -= OnInspectorActiveChanged;
+            GraphProcessorEditorSettings.ItemLibraryActive.OnValueChanged -= OnItemLibraryActiveChanged;
             togSnap = null;
             togInspector = null;
             togItemLibrary = null;
@@ -566,8 +566,8 @@ namespace Atom.GraphProcessor.Editors
             btnSave.clicked += Save;
             ToolbarRight.Add(btnSave);
 
-            GraphProcessorEditorSettings.InspectorActive.onValueChanged += OnInspectorActiveChanged;
-            GraphProcessorEditorSettings.ItemLibraryActive.onValueChanged += OnItemLibraryActiveChanged;
+            GraphProcessorEditorSettings.InspectorActive.OnValueChanged += OnInspectorActiveChanged;
+            GraphProcessorEditorSettings.ItemLibraryActive.OnValueChanged += OnItemLibraryActiveChanged;
             OnInspectorActiveChanged(GraphProcessorEditorSettings.InspectorActive.Value);
             OnItemLibraryActiveChanged(GraphProcessorEditorSettings.ItemLibraryActive.Value);
         }
