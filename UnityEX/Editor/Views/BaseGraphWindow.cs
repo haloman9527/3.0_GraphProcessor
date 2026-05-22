@@ -159,7 +159,7 @@ namespace Atom.GraphProcessor.Editors
             BeforeLoad(graph, graphOwner, graphAsset);
 
             var historyLimit = Mathf.Max(50, GraphProcessorEditorSettings.CommandHistoryLimit.Value);
-            this.context = new GraphViewContext() { graphWindow = this, commandDispatcher = new CommandDispatcher(historyLimit) };
+            this.context = new GraphViewContext() { graphWindow = this, CommandService = new CommandService(historyLimit) };
             this.graphProcessor = graph;
             this.unityGraphOwner = graphOwner as UnityObject;
             this.graphAsset = graphAsset;
@@ -386,11 +386,11 @@ namespace Atom.GraphProcessor.Editors
                 switch (evt.keyCode)
                 {
                     case KeyCode.Z:
-                        context.commandDispatcher.Undo();
+                        context.CommandService.Undo();
                         evt.StopPropagation();
                         break;
                     case KeyCode.Y:
-                        context.commandDispatcher.Redo();
+                        context.CommandService.Redo();
                         evt.StopPropagation();
                         break;
                     case KeyCode.S:
