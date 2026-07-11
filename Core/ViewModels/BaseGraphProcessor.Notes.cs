@@ -40,10 +40,29 @@ namespace Atom.GraphProcessor
 
         private void InitNotes()
         {
-            this.m_Notes = new Dictionary<long, StickyNoteProcessor>(System.Math.Min(m_Model.notes.Count, 4));
-            foreach (var note in m_Model.notes)
+            if (m_Model.notes == null)
+                m_Model.notes = new List<StickyNote>();
+
+            m_Notes = new Dictionary<long, StickyNoteProcessor>(m_Model.notes.Count);
+            for (var index = 0; index < m_Model.notes.Count; index++)
             {
-                m_Notes.Add(note.id, (StickyNoteProcessor)ViewModelFactory.ProduceViewModel(note));
+                var note = m_Model.notes[index];
+                if (note == null)
+                {
+                    ReportDiagnostic($"[MissingNote] Null note at index {index} removed.");
+                    m_Model.notes.RemoveAt(index--);
+                    continue;
+                }
+
+                if (m_Notes.ContainsKey(note.id))
+                {
+                    ReportDiagnostic($"[DuplicateNote] Note id={note.id} duplicated, later entry removed.");
+                    m_Model.notes.RemoveAt(index--);
+                    continue;
+                }
+
+                var noteProcessor = ViewModelFactory.ProduceViewModel(note) as StickyNoteProcessor;
+                m_Notes.Add(note.id, noteProcessor);
             }
         }
 
@@ -61,6 +80,9 @@ namespace Atom.GraphProcessor
 
         public void AddNote(StickyNoteProcessor note)
         {
+            if (note == null || m_Notes.ContainsKey(note.ID))
+                return;
+
             m_Notes.Add(note.ID, note);
             m_Model.notes.Add(note.Model);
             m_GraphEvents.Publish(new AddNoteEventArgs(note));
