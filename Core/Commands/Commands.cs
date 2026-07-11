@@ -24,6 +24,14 @@ using UnityEngine;
 
 namespace Atom.GraphProcessor
 {
+    internal static class GraphCommandResults
+    {
+        public static CommandResult Failure(string message)
+        {
+            return CommandResult.Failure(new CommandIssue(CommandIssueSeverity.Error, message));
+        }
+    }
+
     public class MoveElementsCommand : ICommand
     {
         private Dictionary<IGraphElementProcessor_Scope, Rect> oldPos;
@@ -34,7 +42,9 @@ namespace Atom.GraphProcessor
             this.newPos = newPos;
         }
 
-        public void Do()
+        public string Description { get; }
+
+        public CommandResult Execute()
         {
             if (oldPos == null)
                 oldPos = new Dictionary<IGraphElementProcessor_Scope, Rect>();
@@ -70,14 +80,11 @@ namespace Atom.GraphProcessor
                     }
                 }
             }
+
+            return CommandResult.Success();
         }
 
-        public void Redo()
-        {
-            Do();
-        }
-
-        public void Undo()
+        public CommandResult Undo()
         {
             foreach (var pair in oldPos)
             {
@@ -102,6 +109,8 @@ namespace Atom.GraphProcessor
                     }
                 }
             }
+
+            return CommandResult.Success();
         }
     }
 
@@ -149,7 +158,9 @@ namespace Atom.GraphProcessor
             this.graphElements.QuickSort((a, b) => { return GetPriority(a).CompareTo(GetPriority(b)); });
         }
 
-        public void Do()
+        public string Description { get; }
+
+        public CommandResult Execute()
         {
             // 正向移除
             for (int i = 0; i < graphElements.Count; i++)
@@ -184,9 +195,11 @@ namespace Atom.GraphProcessor
                     }
                 }
             }
+
+            return CommandResult.Success();
         }
 
-        public void Undo()
+        public CommandResult Undo()
         {
             // 反向添加
             for (int i = graphElements.Count - 1; i >= 0; i--)
@@ -226,12 +239,10 @@ namespace Atom.GraphProcessor
             {
                 graph.Groups.AddNodeToGroup(pair.Value, pair.Key);
             }
+
+            return CommandResult.Success();
         }
 
-        public void Redo()
-        {
-            Do();
-        }
 
         public int GetPriority(IGraphElementProcessor graphElement)
         {
@@ -277,19 +288,21 @@ namespace Atom.GraphProcessor
             this.nodeVM = node;
         }
 
-        public void Do()
+        public string Description { get; }
+
+        public CommandResult Execute()
         {
             graph.AddNode(nodeVM);
+
+            return CommandResult.Success();
         }
 
-        public void Redo()
-        {
-            Do();
-        }
 
-        public void Undo()
+        public CommandResult Undo()
         {
             graph.RemoveNode(nodeVM);
+
+            return CommandResult.Success();
         }
     }
 
@@ -310,19 +323,20 @@ namespace Atom.GraphProcessor
             this.group = ViewModelFactory.ProduceViewModel(group) as GroupProcessor;
         }
 
-        public void Do()
+        public string Description { get; }
+
+        public CommandResult Execute()
         {
             graph.AddGroup(group);
+
+            return CommandResult.Success();
         }
 
-        public void Redo()
-        {
-            Do();
-        }
-
-        public void Undo()
+        public CommandResult Undo()
         {
             graph.RemoveGroup(group);
+
+            return CommandResult.Success();
         }
     }
 
@@ -339,25 +353,27 @@ namespace Atom.GraphProcessor
             this.nodes = nodes;
         }
 
-        public void Do()
+        public string Description { get; }
+
+        public CommandResult Execute()
         {
             foreach (var node in nodes)
             {
                 graph.Groups.AddNodeToGroup(group, node);
             }
+
+            return CommandResult.Success();
         }
 
-        public void Redo()
-        {
-            Do();
-        }
 
-        public void Undo()
+        public CommandResult Undo()
         {
             foreach (var node in nodes)
             {
                 graph.Groups.RemoveNodeFromGroup(node);
             }
+
+            return CommandResult.Success();
         }
     }
 
@@ -374,25 +390,27 @@ namespace Atom.GraphProcessor
             this.nodes = nodes;
         }
 
-        public void Do()
+        public string Description { get; }
+
+        public CommandResult Execute()
         {
             foreach (var node in nodes)
             {
                 graph.Groups.RemoveNodeFromGroup(node);
             }
+
+            return CommandResult.Success();
         }
 
-        public void Redo()
-        {
-            Do();
-        }
 
-        public void Undo()
+        public CommandResult Undo()
         {
             foreach (var node in nodes)
             {
                 graph.Groups.AddNodeToGroup(group, node);
             }
+
+            return CommandResult.Success();
         }
     }
 
@@ -409,19 +427,21 @@ namespace Atom.GraphProcessor
             this.newName = newName;
         }
 
-        public void Do()
+        public string Description { get; }
+
+        public CommandResult Execute()
         {
             group.GroupName = newName;
+
+            return CommandResult.Success();
         }
 
-        public void Redo()
-        {
-            Do();
-        }
 
-        public void Undo()
+        public CommandResult Undo()
         {
             group.GroupName = oldName;
+
+            return CommandResult.Success();
         }
     }
 
@@ -430,7 +450,7 @@ namespace Atom.GraphProcessor
         public GroupProcessor group;
         public InternalColor oldColor;
         public InternalColor newColor;
-        
+
         public ChangeGroupColorCommand(GroupProcessor group, InternalColor newColor)
         {
             this.group = group;
@@ -445,19 +465,19 @@ namespace Atom.GraphProcessor
             this.newColor = newColor;
         }
 
-        public void Do()
+        public string Description { get; }
+
+        public CommandResult Execute()
         {
             group.BackgroundColor = newColor;
+            return CommandResult.Success();
         }
 
-        public void Redo()
-        {
-            Do();
-        }
 
-        public void Undo()
+        public CommandResult Undo()
         {
             group.BackgroundColor = oldColor;
+            return CommandResult.Success();
         }
     }
 
@@ -473,7 +493,9 @@ namespace Atom.GraphProcessor
             port = new PortProcessor(name, direction, capacity, type);
         }
 
-        public void Do()
+        public string Description { get; }
+
+        public CommandResult Execute()
         {
             successed = false;
             if (!node.Ports.ContainsKey(port.Name))
@@ -481,21 +503,21 @@ namespace Atom.GraphProcessor
                 node.AddPort(port);
                 successed = true;
             }
+
+            return CommandResult.Success();
         }
 
-        public void Redo()
-        {
-            Do();
-        }
 
-        public void Undo()
+        public CommandResult Undo()
         {
             if (!successed)
             {
-                return;
+                return CommandResult.Success();
             }
 
             node.RemovePort(port);
+
+            return CommandResult.Success();
         }
     }
 
@@ -517,7 +539,9 @@ namespace Atom.GraphProcessor
             node.Ports.TryGetValue(name, out port);
         }
 
-        public void Do()
+        public string Description { get; }
+
+        public CommandResult Execute()
         {
             successed = false;
             if (port != null && node.Ports.ContainsKey(port.Name))
@@ -525,21 +549,21 @@ namespace Atom.GraphProcessor
                 node.RemovePort(port);
                 successed = true;
             }
+
+            return CommandResult.Success();
         }
 
-        public void Redo()
-        {
-            Do();
-        }
 
-        public void Undo()
+        public CommandResult Undo()
         {
             if (!successed)
             {
-                return;
+                return CommandResult.Success();
             }
 
             node.AddPort(port);
+
+            return CommandResult.Success();
         }
     }
 
@@ -561,7 +585,7 @@ namespace Atom.GraphProcessor
         public ConnectCommand(BaseGraphProcessor graph, PortProcessor from, PortProcessor to)
         {
             this.graph = graph;
-            this.connectionVM = graph.NewConnection(from, to);
+            this.connectionVM = graph != null && from != null && to != null ? graph.NewConnection(from, to) : null;
 
             this.from = from;
             this.to = to;
@@ -575,8 +599,16 @@ namespace Atom.GraphProcessor
             this.to = graph.Nodes[connection.ToNodeID].Ports[connection.ToPortName];
         }
 
-        public void Do()
+        public string Description { get; }
+
+        public CommandResult Execute()
         {
+            if (graph == null || connectionVM == null)
+                return GraphCommandResults.Failure("Connection command is not initialized.");
+
+            if (!graph.CanConnect(from, to, out var error))
+                return GraphCommandResults.Failure(error);
+
             connected = false;
             replacedConnections.Clear();
             if (from.Capacity == BasePort.Capacity.Single)
@@ -610,15 +642,15 @@ namespace Atom.GraphProcessor
                 {
                     graph.RevertDisconnect(connection);
                 }
+
+                return GraphCommandResults.Failure("Connection was not established.");
             }
+
+            return CommandResult.Success();
         }
 
-        public void Redo()
-        {
-            Do();
-        }
 
-        public void Undo()
+        public CommandResult Undo()
         {
             if (connected && connectionVM.Owner == graph)
                 graph.Disconnect(connectionVM);
@@ -628,6 +660,8 @@ namespace Atom.GraphProcessor
             {
                 graph.RevertDisconnect(connection);
             }
+
+            return CommandResult.Success();
         }
     }
 
@@ -649,14 +683,19 @@ namespace Atom.GraphProcessor
             this.newFrom = newFrom;
             this.newTo = newTo;
 
-            valid = oldConnection != null && newFrom != null && newTo != null &&
+            valid = graph != null && oldConnection != null && oldConnection.Owner == graph && newFrom != null && newTo != null &&
                     !(oldConnection.FromPort == newFrom && oldConnection.ToPort == newTo);
         }
 
-        public void Do()
+        public string Description { get; }
+
+        public CommandResult Execute()
         {
             if (!valid)
-                return;
+                return GraphCommandResults.Failure("Reconnect command is not valid.");
+
+            if (!graph.CanConnect(newFrom, newTo, out var error))
+                return GraphCommandResults.Failure(error);
 
             replacedConnections.Clear();
             if (newFrom.Capacity == BasePort.Capacity.Single)
@@ -690,17 +729,27 @@ namespace Atom.GraphProcessor
                 newConnection = graph.NewConnection(newFrom, newTo);
 
             graph.Connect(newConnection);
+
+            if (newConnection.Owner != graph)
+            {
+                graph.RevertDisconnect(oldConnection);
+                foreach (var connection in replacedConnections)
+                {
+                    graph.RevertDisconnect(connection);
+                }
+
+                return GraphCommandResults.Failure("Reconnection was not established.");
+            }
+
+            return CommandResult.Success();
         }
 
-        public void Redo()
-        {
-            Do();
-        }
 
-        public void Undo()
+        public CommandResult Undo()
         {
             if (!valid)
-                return;
+
+                return CommandResult.Success();
 
             if (newConnection != null && newConnection.Owner == graph)
                 graph.Disconnect(newConnection);
@@ -710,6 +759,8 @@ namespace Atom.GraphProcessor
             {
                 graph.RevertDisconnect(connection);
             }
+
+            return CommandResult.Success();
         }
     }
 }

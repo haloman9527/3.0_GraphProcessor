@@ -128,7 +128,7 @@ namespace Atom.GraphProcessor
 
         public BaseConnectionProcessor Connect(PortProcessor fromPort, PortProcessor toPort)
         {
-            if (!TryValidateConnection(fromPort, toPort, out _))
+            if (!CanConnect(fromPort, toPort, out _))
                 return null;
 
             // 直接查找存在的连接，避免 LINQ
@@ -145,12 +145,16 @@ namespace Atom.GraphProcessor
 
         public void Connect(BaseConnectionProcessor connection)
         {
-            var fromNode = Nodes[connection.FromNodeID];
-            var fromPort = fromNode.Ports[connection.FromPortName];
-            var toNode = Nodes[connection.ToNodeID];
-            var toPort = toNode.Ports[connection.ToPortName];
+            if (connection == null)
+                return;
 
-            if (!TryValidateConnection(fromPort, toPort, out _))
+            if (!Nodes.TryGetValue(connection.FromNodeID, out var fromNode) ||
+                !fromNode.Ports.TryGetValue(connection.FromPortName, out var fromPort) ||
+                !Nodes.TryGetValue(connection.ToNodeID, out var toNode) ||
+                !toNode.Ports.TryGetValue(connection.ToPortName, out var toPort))
+                return;
+
+            if (!CanConnect(fromPort, toPort, out _))
                 return;
             
             // 直接查找存在的连接，避免 LINQ
@@ -252,6 +256,17 @@ namespace Atom.GraphProcessor
                 toPort = to.Name
             };
             return ViewModelFactory.ProduceViewModel(connection) as BaseConnectionProcessor;
+        }
+
+        public bool CanConnect(PortProcessor fromPort, PortProcessor toPort, out string error)
+        {
+            if (fromPort?.Owner?.Owner != this || toPort?.Owner?.Owner != this)
+            {
+                error = "Ports must belong to this graph";
+                return false;
+            }
+
+            return TryValidateConnection(fromPort, toPort, out error);
         }
 
         private static bool TryValidateConnection(PortProcessor fromPort, PortProcessor toPort, out string error)

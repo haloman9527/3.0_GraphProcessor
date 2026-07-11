@@ -222,11 +222,13 @@ namespace Atom.GraphProcessor
             switch (port.Direction)
             {
                 case BasePort.Direction.Left:
+                case BasePort.Direction.Top:
                 {
                     m_InPorts.Remove(port);
                     break;
                 }
                 case BasePort.Direction.Right:
+                case BasePort.Direction.Bottom:
                 {
                     m_OutPorts.Remove(port);
                     break;

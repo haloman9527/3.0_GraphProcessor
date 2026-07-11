@@ -303,7 +303,24 @@ namespace Atom.GraphProcessor.Editors
         // 从Graph资源加载
         public void LoadFromGraphAsset(IGraphAsset graphAsset)
         {
-            Load(ViewModelFactory.ProduceViewModel(Atom.GraphProcessor.Editors.GraphProcessorEditorUtil.Clone(graphAsset.LoadGraph())) as BaseGraphProcessor, null, graphAsset);
+            var graphData = graphAsset.LoadCloneOrCreate(out var message);
+            if (graphData == null)
+            {
+                Debug.LogError(message);
+                return;
+            }
+
+            if (!string.IsNullOrEmpty(message))
+                Debug.LogWarning(message);
+
+            var graph = ViewModelFactory.ProduceViewModel(graphData) as BaseGraphProcessor;
+            if (graph == null)
+            {
+                Debug.LogError($"No graph processor is registered for graph type {graphData.GetType().Name}.");
+                return;
+            }
+
+            Load(graph, null, graphAsset);
         }
 
         // 直接加载GraphVM对象

@@ -146,6 +146,7 @@ namespace Atom.GraphProcessor
                 return;
 
             var groupIds = new HashSet<long>();
+            var groupedNodeIds = new HashSet<long>();
             for (var i = 0; i < graph.groups.Count; i++)
             {
                 var group = graph.groups[i];
@@ -188,6 +189,14 @@ namespace Atom.GraphProcessor
                     if (!localNodeIds.Add(nodeId))
                     {
                         result.Add($"[InvalidGroup] Group id={group.id} contains duplicated node {nodeId}." + (repair ? " Later entry removed." : string.Empty));
+                        if (repair)
+                            group.nodes.RemoveAt(j--);
+                        continue;
+                    }
+
+                    if (!groupedNodeIds.Add(nodeId))
+                    {
+                        result.Add($"[InvalidGroup] Node id={nodeId} belongs to multiple groups." + (repair ? " Later group entry removed." : string.Empty));
                         if (repair)
                             group.nodes.RemoveAt(j--);
                     }

@@ -9,6 +9,48 @@ namespace Atom.GraphProcessor
 {
     public static class GraphRuntimeUtil
     {
+        public static BaseGraph LoadCloneOrCreate(this IGraphAsset graphAsset, out string message)
+        {
+            if (graphAsset == null)
+            {
+                message = "Graph asset is null.";
+                return null;
+            }
+
+            try
+            {
+                var graphData = graphAsset.LoadGraph()?.Clone();
+                if (graphData != null)
+                {
+                    message = null;
+                    return graphData;
+                }
+            }
+            catch (Exception exception)
+            {
+                message = $"Graph asset could not be loaded: {exception.Message}";
+                return null;
+            }
+
+            var graphType = graphAsset.GraphType;
+            if (graphType == null || !typeof(BaseGraph).IsAssignableFrom(graphType))
+            {
+                message = "Graph asset returned no graph and declares an invalid graph type.";
+                return null;
+            }
+
+            try
+            {
+                message = $"Graph asset contains no graph. A transient {graphType.Name} instance was created.";
+                return Activator.CreateInstance(graphType) as BaseGraph;
+            }
+            catch (Exception exception)
+            {
+                message = $"Graph asset contains no graph and {graphType.Name} could not be created: {exception.Message}";
+                return null;
+            }
+        }
+
         public static BaseGraph Clone(this BaseGraph graph)
         {
             return graph == null ? null : (BaseGraph)CloneObject(graph, new Dictionary<object, object>(ReferenceEqualityComparer.Instance));

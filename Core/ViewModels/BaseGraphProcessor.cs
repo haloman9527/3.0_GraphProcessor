@@ -56,6 +56,9 @@ namespace Atom.GraphProcessor
 
         public BaseGraphProcessor(BaseGraph model)
         {
+            if (model == null)
+                throw new ArgumentNullException(nameof(model));
+
             m_Model = model;
             m_ModelType = model.GetType();
             m_Model.pan = m_Model.pan == default ? InternalVector2Int.zero : m_Model.pan;

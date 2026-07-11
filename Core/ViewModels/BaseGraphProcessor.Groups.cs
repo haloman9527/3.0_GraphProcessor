@@ -40,6 +40,7 @@ namespace Atom.GraphProcessor
         private void InitGroups()
         {
             this.m_Groups = new Groups();
+            var groupedNodeIds = new HashSet<long>();
             
             for (int i = 0; i < Model.groups.Count; i++)
             {
@@ -50,10 +51,26 @@ namespace Atom.GraphProcessor
                     continue;
                 }
 
+                if (group.nodes == null)
+                {
+                    ReportDiagnostic($"[InvalidGroup] Group id={group.id} had a null node list, recreated.");
+                    group.nodes = new List<long>();
+                }
+
                 for (int j = group.nodes.Count - 1; j >= 0; j--)
                 {
                     if (!m_Nodes.ContainsKey(group.nodes[j]))
+                    {
+                        ReportDiagnostic($"[InvalidGroup] Group id={group.id} contains missing node {group.nodes[j]}, removed.");
                         group.nodes.RemoveAt(j);
+                        continue;
+                    }
+
+                    if (!groupedNodeIds.Add(group.nodes[j]))
+                    {
+                        ReportDiagnostic($"[InvalidGroup] Node id={group.nodes[j]} belongs to multiple groups, removed from group id={group.id}.");
+                        group.nodes.RemoveAt(j);
+                    }
                 }
 
                 var groupVM = (GroupProcessor)ViewModelFactory.ProduceViewModel(group);
@@ -139,10 +156,21 @@ namespace Atom.GraphProcessor
 
         public void AddGroup(GroupProcessor group)
         {
+            if (group == null)
+                throw new ArgumentNullException(nameof(group));
+
+            group.Model.nodes ??= new List<long>();
             this.m_GroupMap.Add(group.ID, group);
             // 只处理新加入的 group 中的节点映射，不重复遍历已有 group
-            foreach (var nodeID in group.Nodes)
+            for (var index = group.Model.nodes.Count - 1; index >= 0; index--)
             {
+                var nodeID = group.Model.nodes[index];
+                if (m_NodeGroupMap.ContainsKey(nodeID))
+                {
+                    group.Model.nodes.RemoveAt(index);
+                    continue;
+                }
+
                 this.m_NodeGroupMap[nodeID] = group;
             }
         }
@@ -153,7 +181,8 @@ namespace Atom.GraphProcessor
             {
                 foreach (var nodeID in group.Nodes)
                 {
-                    m_NodeGroupMap.Remove(nodeID);
+                    if (m_NodeGroupMap.TryGetValue(nodeID, out var mappedGroup) && mappedGroup == group)
+                        m_NodeGroupMap.Remove(nodeID);
                 }
 
                 return true;

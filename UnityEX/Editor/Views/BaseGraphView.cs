@@ -114,7 +114,7 @@ namespace Atom.GraphProcessor.Editors
                     case "Copy":
                     case "Paste":
                     case "Duplicate":
-                        
+
                     case "Light Theme":
                     case "Dark Theme":
                     case "Small Text Size":
@@ -258,7 +258,7 @@ namespace Atom.GraphProcessor.Editors
 
             if (Selection.activeGameObject != null && Selection.activeGameObject.GetComponent<IGraphAssetOwner>() != null)
                 return;
-            
+
             ObjectInspector.Show(this);
         }
 
@@ -357,7 +357,7 @@ namespace Atom.GraphProcessor.Editors
                 Context.Do(() =>
                 {
                     ViewModel.AddNode(newNode);
-                    connectCommand?.Do();
+                    connectCommand?.Execute();
 
                     if (connectCommand != null && connectCommand.Connection == null)
                     {
@@ -613,7 +613,7 @@ namespace Atom.GraphProcessor.Editors
                 for (var i = 0; i < groupNodeMaps.Count; i++)
                     ViewModel.Groups.AddNodeToGroup(groupNodeMaps[i].group, groupNodeMaps[i].node);
                 for (var i = 0; i < connectCommands.Count; i++)
-                    connectCommands[i].Do();
+                    connectCommands[i].Execute();
 
                 for (var i = connectCommands.Count - 1; i >= 0; i--)
                 {

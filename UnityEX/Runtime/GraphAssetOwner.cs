@@ -56,10 +56,25 @@ namespace Atom.GraphProcessor
             { 
                 if (graph == null && graphAsset != null)
                 {
-                    var graphData = graphAsset.LoadGraph()?.Clone();
+                    var graphData = graphAsset.LoadCloneOrCreate(out var message);
+                    if (graphData == null)
+                    {
+                        Debug.LogError(message, this);
+                        return null;
+                    }
+
+                    if (!string.IsNullOrEmpty(message))
+                        Debug.LogWarning(message, this);
+
                     var validation = GraphValidationUtil.Repair(graphData);
                     graph = ViewModelFactory.ProduceViewModel(graphData) as TGraph;
-                    graph?.AppendDiagnostics(validation.Messages);
+                    if (graph == null)
+                    {
+                        Debug.LogError($"No graph processor is registered for graph type {graphData.GetType().Name}.", this);
+                        return null;
+                    }
+
+                    graph.AppendDiagnostics(validation.Messages);
                 }
                 
                 return graph;
