@@ -170,7 +170,7 @@ namespace Atom.GraphProcessor
 
             foreach (var connection in port.Connections)
             {
-                yield return port.Direction == BasePort.Direction.Left ? connection.FromNode : connection.ToNode;
+                yield return port.Direction.IsInput() ? connection.FromNode : connection.ToNode;
             }
         }
 

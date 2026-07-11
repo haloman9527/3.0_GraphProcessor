@@ -193,7 +193,7 @@ namespace Atom.GraphProcessor
                     return cachedValue;
 
                 object result = null;
-                if (Model.direction == BasePort.Direction.Left)
+                if (Direction.IsInput())
                 {
                     foreach (var connection in m_Connections)
                     {
@@ -235,7 +235,7 @@ namespace Atom.GraphProcessor
 
             try
             {
-                if (Model.direction == BasePort.Direction.Left)
+                if (Direction.IsInput())
                 {
                     foreach (var connection in Connections)
                     {
@@ -273,7 +273,7 @@ namespace Atom.GraphProcessor
 
                 T result = default;
                 var found = false;
-                if (Model.direction == BasePort.Direction.Left)
+                if (Direction.IsInput())
                 {
                     foreach (var connection in m_Connections)
                     {
@@ -319,7 +319,7 @@ namespace Atom.GraphProcessor
 
             try
             {
-                if (Model.direction == BasePort.Direction.Left)
+                if (Direction.IsInput())
                 {
                     foreach (var connection in Connections)
                     {

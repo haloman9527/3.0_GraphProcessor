@@ -169,6 +169,9 @@ namespace Atom.GraphProcessor
 
         public void Disconnect(BaseConnectionProcessor connection)
         {
+            if (connection == null || connection.Owner != this)
+                return;
+
             if (connection.FromNode.Ports.TryGetValue(connection.FromPortName, out PortProcessor fromPort))
             {
                 fromPort.DisconnectTo(connection);
@@ -187,6 +190,9 @@ namespace Atom.GraphProcessor
 
         public void Disconnect(BaseNodeProcessor node)
         {
+            if (node == null || node.Owner != this)
+                return;
+
             for (int i = 0; i < m_Connections.Count; i++)
             {
                 var connection = m_Connections[i];
@@ -200,19 +206,31 @@ namespace Atom.GraphProcessor
 
         public void Disconnect(PortProcessor port)
         {
-            for (int i = 0; i < port.m_Connections.Count; i++)
+            if (port?.Owner?.Owner != this)
+                return;
+
+            while (port.m_Connections.Count > 0)
             {
-                Disconnect(port.m_Connections[i--]);
+                var connection = port.m_Connections[port.m_Connections.Count - 1];
+                if (connection?.Owner != this)
+                {
+                    port.m_Connections.RemoveAt(port.m_Connections.Count - 1);
+                    continue;
+                }
+
+                Disconnect(connection);
             }
         }
 
         public void RevertDisconnect(BaseConnectionProcessor connection)
         {
-            var fromNode = m_Nodes[connection.FromNodeID];
-            var fromPort = fromNode.Ports[connection.FromPortName];
-
-            var toNode = m_Nodes[connection.ToNodeID];
-            var toPort = toNode.Ports[connection.ToPortName];
+            if (connection == null ||
+                !m_Nodes.TryGetValue(connection.FromNodeID, out var fromNode) ||
+                !fromNode.Ports.TryGetValue(connection.FromPortName, out var fromPort) ||
+                !m_Nodes.TryGetValue(connection.ToNodeID, out var toNode) ||
+                !toNode.Ports.TryGetValue(connection.ToPortName, out var toPort) ||
+                !CanConnect(fromPort, toPort, out _))
+                return;
 
             // 直接查找存在的连接，避免 LINQ
             foreach (var conn in fromPort.Connections)
@@ -227,7 +245,10 @@ namespace Atom.GraphProcessor
         /// <summary> 提取公共连接逻辑，消除 Connect/RevertDisconnect 代码重复 </summary>
         private void InternalConnect(PortProcessor fromPort, PortProcessor toPort, BaseConnectionProcessor connection)
         {
-            if (!TryValidateConnection(fromPort, toPort, out var error))
+            if (connection == null)
+                throw new ArgumentNullException(nameof(connection));
+
+            if (!CanConnect(fromPort, toPort, out var error))
                 throw new InvalidOperationException(error);
 
             if (fromPort.Capacity == BasePort.Capacity.Single)
@@ -295,7 +316,7 @@ namespace Atom.GraphProcessor
                 return false;
             }
 
-            if (!IsOutputDirection(fromPort.Direction) || !IsInputDirection(toPort.Direction))
+            if (!fromPort.Direction.IsOutput() || !toPort.Direction.IsInput())
             {
                 error = $"Invalid direction pair {fromPort.Direction}->{toPort.Direction}";
                 return false;
@@ -320,16 +341,6 @@ namespace Atom.GraphProcessor
                 return true;
 
             return toType.IsAssignableFrom(fromType) || fromType.IsAssignableFrom(toType);
-        }
-
-        private static bool IsInputDirection(BasePort.Direction direction)
-        {
-            return direction == BasePort.Direction.Left || direction == BasePort.Direction.Top;
-        }
-
-        private static bool IsOutputDirection(BasePort.Direction direction)
-        {
-            return direction == BasePort.Direction.Right || direction == BasePort.Direction.Bottom;
         }
 
         #endregion

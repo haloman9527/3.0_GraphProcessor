@@ -53,4 +53,17 @@ namespace Atom.GraphProcessor
             this.portType = type;
         }
     }
+
+    public static class PortDirectionExtensions
+    {
+        public static bool IsInput(this BasePort.Direction direction)
+        {
+            return direction == BasePort.Direction.Left || direction == BasePort.Direction.Top;
+        }
+
+        public static bool IsOutput(this BasePort.Direction direction)
+        {
+            return direction == BasePort.Direction.Right || direction == BasePort.Direction.Bottom;
+        }
+    }
 }

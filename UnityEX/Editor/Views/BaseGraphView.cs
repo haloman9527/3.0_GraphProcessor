@@ -348,7 +348,7 @@ namespace Atom.GraphProcessor.Editors
                 ConnectCommand connectCommand = null;
                 if (targetPort != null)
                 {
-                    if (sourcePort.Direction == BasePort.Direction.Left || sourcePort.Direction == BasePort.Direction.Top)
+                    if (sourcePort.Direction.IsInput())
                         connectCommand = new ConnectCommand(ViewModel, targetPort, sourcePort);
                     else
                         connectCommand = new ConnectCommand(ViewModel, sourcePort, targetPort);
@@ -420,14 +420,14 @@ namespace Atom.GraphProcessor.Editors
             if (node == null || sourcePort == null)
                 return null;
 
-            var sourceIsInput = sourcePort.Direction == BasePort.Direction.Left || sourcePort.Direction == BasePort.Direction.Top;
+            var sourceIsInput = sourcePort.Direction.IsInput();
             var needInput = !sourceIsInput;
             var targetDirection = needInput ? BasePort.Direction.Left : BasePort.Direction.Right;
             PortProcessor fallback = null;
 
             foreach (var port in node.Ports.Values)
             {
-                var isInput = port.Direction == BasePort.Direction.Left || port.Direction == BasePort.Direction.Top;
+                var isInput = port.Direction.IsInput();
                 if (needInput != isInput)
                     continue;
 
